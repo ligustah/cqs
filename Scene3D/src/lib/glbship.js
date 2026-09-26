@@ -119,13 +119,30 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
   if (engines.length) {
     const disc = new THREE.CircleGeometry(1, 32);
     const glow = new THREE.MeshBasicMaterial({ map: throatTexture(), color: new THREE.Color(1, 1, 1).multiplyScalar(cfg.throatGlow ?? 3.0), side: THREE.DoubleSide });
+    // the bell wall between throat and lip catches the throat's light: a short
+    // open cone, bright at the throat and fading toward the lip, seen from inside
+    const lining = new THREE.CylinderGeometry(0.97, 0.85, 0.35, 32, 4, true);
+    lining.rotateX(Math.PI / 2); // axis along +Z: +Z end = lip, -Z end = throat
+    lining.translate(0, 0, -0.175);
+    const ramp = [];
+    const pos = lining.attributes.position;
+    for (let i = 0; i < pos.count; i++) { const k = (pos.getZ(i) + 0.35) / 0.35; ramp.push(...new THREE.Color('#9fb8ff').multiplyScalar(0.9 * (1 - k) ** 2 + 0.04).toArray()); }
+    lining.setAttribute('color', new THREE.Float32BufferAttribute(ramp, 3));
+    const liningMat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
     for (const e of engines) {
+      const q = new THREE.Quaternion().setFromUnitVectors(new V3(0, 0, 1), e.dir);
       const m = new THREE.Mesh(disc, glow);
       m.scale.setScalar(e.radius * 0.85);
       m.position.copy(e.p).addScaledVector(e.dir, -e.radius * 0.35);
-      m.quaternion.setFromUnitVectors(new V3(0, 0, 1), e.dir);
+      m.quaternion.copy(q);
       m.name = 'nozzle-glow';
       group.add(m);
+      const w = new THREE.Mesh(lining, liningMat);
+      w.scale.setScalar(e.radius);
+      w.position.copy(e.p);
+      w.quaternion.copy(q);
+      w.name = 'nozzle-lining';
+      group.add(w);
     }
   }
   const lights = (cfg.lights || []).flatMap((l) => {

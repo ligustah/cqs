@@ -99,9 +99,10 @@ const lightFS = /* glsl */`
 
 /**
  * Attach plumes + lights to a ship group. Returns { update(t) }.
- * opts.power: 0..1 engine throttle multiplier; opts.plumeScale lengthens plumes.
+ * opts.power: 0..1 engine throttle multiplier; opts.plumeScale lengthens plumes;
+ * opts.spill: false skips the stern spill light (small or distant ships in a fleet).
  */
-export function attachEffects(group, { power = 1, plumeScale = 1 } = {}) {
+export function attachEffects(group, { power = 1, plumeScale = 1, spill = true } = {}) {
   const info = group.userData.ship;
   const updaters = [];
   const plumes = [];
@@ -129,7 +130,7 @@ export function attachEffects(group, { power = 1, plumeScale = 1 } = {}) {
   // the intensity is that of the plume glow: radiance ~0.25 over ~1.5 r^2 per
   // engine. Two bell radii aft keeps the near field on the stern plate at a
   // few percent of the sun's irradiance, as an extended source would.
-  if (info.engines.length && power > 0.05) {
+  if (spill && info.engines.length && power > 0.05) {
     const c = info.engines.reduce((acc, e) => acc.add(e.p), new THREE.Vector3()).divideScalar(info.engines.length);
     const rMax = Math.max(...info.engines.map((e) => e.radius));
     const spread = Math.max(...info.engines.map((e) => e.p.distanceTo(c)));

@@ -17,7 +17,7 @@ export const LIVERIES = {
   // linear-space albedo: off-white paint (~0.6) -> ~0.055 (sRGB ~66), mid texel (~0.22) -> ~0.03,
   // dark metal (~0.08) -> ~0.02. Markings: low-visibility, a slightly lighter
   // grey that keeps only a hint of their hue (markSat) at about the hull's value.
-  dark: { base: 0.016, gain: 0.065, tint: '#e3e7eb', mark: 0.15, markSat: 0.2, sat0: 0.22, sat1: 0.5, matte: 0.55, metal: 0.25 },
+  dark: { base: 0.016, gain: 0.065, tint: '#e3e7eb', mark: 0.11, markSat: 0.05, sat0: 0.22, sat1: 0.5, matte: 0.55, metal: 0.25 },
   // civilian hulls: same grey, markings and cargo colours a little brighter
   civil: { base: 0.018, gain: 0.07, tint: '#e8ebee', mark: 0.5, markSat: 0.7, sat0: 0.22, sat1: 0.45, matte: 0.3, metal: 1 },
 };

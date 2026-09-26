@@ -56,7 +56,7 @@ export function buildFleet({ palette, buildShip, attachEffects }) {
     holder.add(g);
     holder.userData.ship = s;
     root.add(holder);
-    effects.push(attachEffects(g, { power: 1, plumeScale: 1.4 }));
+    effects.push(attachEffects(g, { power: 1, plumeScale: 1.4, spill: false }));
     const entry = { group: holder, cls: 'fighter' };
     ships.push(entry);
     fighters.push(entry);

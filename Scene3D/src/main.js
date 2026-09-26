@@ -6,6 +6,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 import { createPalette } from './lib/materials.js';
@@ -117,6 +118,14 @@ function start() {
   bloom.compositeMaterial.uniforms.bloomFactors.value = [1.0, 0.45, 0.18, 0.06, 0.02];
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
+  // +-0.5 LSB dither after the sRGB encode: smooth sun glare and planet limb gradients band otherwise
+  composer.addPass(new ShaderPass({
+    uniforms: { tDiffuse: { value: null } },
+    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    fragmentShader: `uniform sampler2D tDiffuse; varying vec2 vUv;
+      float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+      void main(){ vec4 c = texture2D(tDiffuse, vUv); float n = h(gl_FragCoord.xy) + h(gl_FragCoord.yx + 17.0) - 1.0; gl_FragColor = vec4(c.rgb + n / 255.0, c.a); }`,
+  }));
 
   const effects = [];
   const tickers = [];
