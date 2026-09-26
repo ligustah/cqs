@@ -1,0 +1,277 @@
+<!doctype html>
+<!--
+  Headless GLB inspection still (used by tools/render-glb.mjs, also works in a browser).
+    tools/glb-view.html?src=.glbtmp/x/ship.glb&rot=0,90,0&az=35&el=20&w=900&h=650&bg=light&wire=0
+  src   GLB url, relative to the Scene3D root (or an absolute served path)
+  rot   x,y,z degrees, Euler XYZ, same convention as asset.rotate in src/lib/glbship.js
+        (after rotation the bow should face +Z and dorsal +Y)
+  az/el camera azimuth / elevation in degrees, same as index.html: az 0 = front (+Z), 90 = port (+X)
+  bg    light | dark     wire  1 = triangle wireframe overlay     fov  vertical fov (default 30)
+  Sets window.__ready / window.__info (or window.__error); window.__render({az, el}) re-renders.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLB View</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #cdd0d4; }
+  canvas { display: block; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+window.__ready = false;
+window.__error = null;
+const q = new URLSearchParams(location.search);
+const num = (k, d) => { const v = parseFloat(q.get(k)); return Number.isFinite(v) ? v : d; };
+const W = num('w', innerWidth), H = num('h', innerHeight);
+const DARK = q.get('bg') === 'dark';
+const WIRE = q.get('wire') === '1';
+const FOV = num('fov', 30);
+const ROT = (q.get('rot') || '0,0,0').split(',').map((v) => parseFloat(v) || 0);
+const DEG = Math.PI / 180;
+const BG = DARK ? 0x1d1f23 : 0xcdd0d4;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
+renderer.autoClear = false;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(BG);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.55;
+
+const hemi = new THREE.HemisphereLight(0xf2f4f8, 0x5a5c60, 0.7);
+scene.add(hemi);
+const key = new THREE.DirectionalLight(0xfff6ea, 2.6);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.bias = -0.0004;
+key.shadow.radius = 3;
+scene.add(key, key.target);
+
+const camera = new THREE.PerspectiveCamera(FOV, W / H, 0.01, 1000);
+
+// ---- axis gizmo: its own scene, drawn into the bottom-left corner -------------------
+const gizmo = new THREE.Scene();
+const gizmoCam = new THREE.OrthographicCamera(-2.4, 2.4, 2.4, -2.4, 0.1, 10);
+function label(text, color) {
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 64;
+  const g = c.getContext('2d');
+  g.font = 'bold 40px "DejaVu Sans", Arial, sans-serif';
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.lineWidth = 7; g.strokeStyle = DARK ? '#000' : '#fff';
+  g.strokeText(text, 128, 34);
+  g.fillStyle = color; g.fillText(text, 128, 34);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false, toneMapped: false }));
+  s.scale.set(2.2, 0.55, 1);
+  return s;
+}
+for (const [dir, color, text] of [
+  [new THREE.Vector3(1, 0, 0), '#e0352b', 'X'],
+  [new THREE.Vector3(0, 1, 0), '#2fae3c', 'Y'],
+  [new THREE.Vector3(0, 0, 1), '#2f63e0', '+Z BOW'],
+]) {
+  const mat = new THREE.MeshBasicMaterial({ color, toneMapped: false, transparent: true }); // transparent pass, after the backdrop
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1, 8), mat);
+  const tip = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.2, 12), mat);
+  const up = new THREE.Vector3(0, 1, 0);
+  shaft.quaternion.setFromUnitVectors(up, dir); shaft.position.copy(dir).multiplyScalar(0.5);
+  tip.quaternion.setFromUnitVectors(up, dir); tip.position.copy(dir).multiplyScalar(1.05);
+  const l = label(text, color); l.position.copy(dir).multiplyScalar(1.55); l.renderOrder = 1;
+  gizmo.add(shaft, tip, l);
+}
+gizmo.add(new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 8), new THREE.MeshBasicMaterial({ color: 0x888888 })));
+{ // translucent backdrop so the gizmo stays readable where it overlaps the model
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d');
+  g.fillStyle = DARK ? 'rgba(20,21,24,0.6)' : 'rgba(236,237,239,0.6)';
+  g.beginPath(); g.arc(64, 64, 62, 0, Math.PI * 2); g.fill();
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+  const disc = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false, depthWrite: false, toneMapped: false }));
+  disc.scale.set(4.7, 4.7, 1); disc.renderOrder = -1;
+  gizmo.add(disc);
+}
+
+// ---- model -------------------------------------------------------------------------
+const pivot = new THREE.Group();
+pivot.rotation.set(ROT[0] * DEG, ROT[1] * DEG, ROT[2] * DEG, 'XYZ');
+scene.add(pivot);
+let points = [], center = new THREE.Vector3(), radius = 1, ground = null;
+
+async function load() {
+  const src = q.get('src');
+  if (!src) throw new Error('missing ?src=');
+  const loader = new GLTFLoader();
+  loader.setMeshoptDecoder(MeshoptDecoder);
+  const url = new URL(src, new URL('../', location.href)).href;
+  const gltf = await loader.loadAsync(url);
+  const model = gltf.scene;
+  pivot.add(model);
+  scene.updateMatrixWorld(true);
+
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  let tris = 0, verts = 0, meshes = 0;
+  const mats = new Map();
+  const MAPS = ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap', 'bumpMap', 'displacementMap',
+    'alphaMap', 'clearcoatMap', 'clearcoatNormalMap', 'transmissionMap', 'sheenColorMap', 'specularIntensityMap', 'iridescenceMap', 'anisotropyMap'];
+  const wireMat = new THREE.MeshBasicMaterial({ wireframe: true, color: DARK ? 0xffffff : 0x000000, transparent: true, opacity: DARK ? 0.28 : 0.22, depthWrite: false, toneMapped: false });
+  const wires = [];
+  model.traverse((o) => {
+    if (!o.isMesh) return;
+    meshes++;
+    o.castShadow = o.receiveShadow = true;
+    const g = o.geometry, pos = g.attributes.position;
+    tris += (g.index ? g.index.count : pos.count) / 3;
+    verts += pos.count;
+    // world-space sample of the vertices for tight camera framing (capped at ~120k per mesh)
+    const step = Math.max(1, Math.ceil(pos.count / 120000));
+    const v = new THREE.Vector3();
+    for (let i = 0; i < pos.count; i += step) points.push(v.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld).clone());
+    for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
+      if (WIRE) { m.polygonOffset = true; m.polygonOffsetFactor = 1; m.polygonOffsetUnits = 1; }
+      if (mats.has(m)) continue;
+      const maps = MAPS.filter((k) => m[k]);
+      mats.set(m, {
+        name: m.name || '(unnamed)', type: m.type, maps,
+        mapSizes: Object.fromEntries(maps.map((k) => { const im = m[k].image; return [k, im ? `${im.width}x${im.height}` : '?']; })),
+        color: m.color ? '#' + m.color.getHexString() : null,
+        emissive: m.emissive && m.emissive.getHex() ? '#' + m.emissive.getHexString() : null,
+        metalness: m.metalness, roughness: m.roughness,
+        transparent: m.transparent, doubleSided: m.side === THREE.DoubleSide,
+      });
+    }
+    if (WIRE) wires.push(o);
+  });
+  for (const o of wires) o.add(new THREE.Mesh(o.geometry, wireMat));
+  const r3 = (v) => v.toArray().map((x) => +x.toFixed(4));
+  window.__info = {
+    src, rot: ROT, tris: Math.round(tris), vertices: verts, meshes,
+    materials: [...mats.values()],
+    bbox: { min: r3(box.min), max: r3(box.max), size: r3(size) },
+    longestAxis: 'XYZ'[size.toArray().indexOf(Math.max(size.x, size.y, size.z))],
+    extensionsUsed: gltf.parser.json.extensionsUsed || [],
+  };
+
+  // centre the model at the origin (rotation-only pivot keeps the axes honest)
+  box.getCenter(center);
+  pivot.position.sub(center);
+  for (const p of points) p.sub(center);
+  center.set(0, 0, 0);
+  radius = Math.max(size.length() / 2, 1e-4);
+  scene.updateMatrixWorld(true);
+
+  ground = new THREE.Mesh(new THREE.PlaneGeometry(radius * 40, radius * 40),
+    new THREE.ShadowMaterial({ color: 0x000000, opacity: DARK ? 0.45 : 0.2 }));
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -size.y / 2 - radius * 0.002;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  const s = key.shadow.camera;
+  s.left = s.bottom = -radius * 1.2; s.right = s.top = radius * 1.2;
+  s.near = radius * 0.1; s.far = radius * 6;
+  key.shadow.normalBias = radius * 0.004;
+  s.updateProjectionMatrix();
+}
+
+// camera direction from az/el (index.html convention)
+function dirFrom(az, el) {
+  return new THREE.Vector3(Math.sin(az * DEG) * Math.cos(el * DEG), Math.sin(el * DEG), Math.cos(az * DEG) * Math.cos(el * DEG));
+}
+// Tight perspective fit: with the view basis fixed, each frustum side plane is a support plane of
+// the vertex sample, so the camera position that touches both side planes (or both top/bottom
+// planes, whichever needs more distance) is closed-form and leaves the silhouette centred.
+function frame(az, el) {
+  const d = dirFrom(az, el);
+  const up = Math.abs(d.y) > 0.9999 ? new THREE.Vector3(-Math.sin(az * DEG), 0, -Math.cos(az * DEG)) : new THREE.Vector3(0, 1, 0);
+  const f = d.clone().negate();
+  const r = new THREE.Vector3().crossVectors(f, up).normalize();
+  const u = new THREE.Vector3().crossVectors(r, f).normalize();
+  const margin = 1.1;
+  const tv = Math.tan(FOV * DEG / 2) / margin, th = tv * (W / H);
+  const n = [r.clone().addScaledVector(f, -th), r.clone().negate().addScaledVector(f, -th),
+    u.clone().addScaledVector(f, -tv), u.clone().negate().addScaledVector(f, -tv)];
+  const sup = [-Infinity, -Infinity, -Infinity, -Infinity];
+  for (const p of points) for (let i = 0; i < 4; i++) sup[i] = Math.max(sup[i], p.dot(n[i]));
+  const [A, B, C, E] = sup;
+  const back = Math.min(-(A + B) / (2 * th), -(C + E) / (2 * tv));
+  const pos = new THREE.Vector3().addScaledVector(r, (A - B) / 2).addScaledVector(u, (C - E) / 2).addScaledVector(f, back);
+  let near = Infinity, far = 0;
+  const tmp = new THREE.Vector3();
+  for (const p of points) { const z = tmp.subVectors(p, pos).dot(f); near = Math.min(near, z); far = Math.max(far, z); }
+  camera.up.copy(up);
+  camera.position.copy(pos);
+  camera.lookAt(pos.clone().add(f));
+  camera.near = Math.max(near * 0.5, far * 0.001);
+  camera.far = far * 1.5;
+  camera.aspect = W / H;
+  camera.updateProjectionMatrix();
+
+  // studio turns with the camera: key light from the camera's upper left (mirrored below for
+  // views from underneath) and the reflection environment rotated to the camera azimuth
+  const kel = el >= 0 ? Math.min(el + 40, 75) : Math.max(el - 30, -75);
+  key.position.copy(dirFrom(az + 40, kel).multiplyScalar(radius * 3));
+  key.target.position.set(0, 0, 0);
+  scene.environmentRotation.set(0, az * DEG, 0);
+  if (ground) ground.visible = el > 3;
+}
+
+function draw() {
+  renderer.setViewport(0, 0, W, H);
+  renderer.clear();
+  renderer.render(scene, camera);
+  // gizmo: same orientation as the main camera
+  const gs = Math.round(Math.min(W, H) * 0.27), pad = Math.round(gs * 0.06);
+  gizmoCam.position.copy(camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(-4));
+  gizmoCam.quaternion.copy(camera.quaternion);
+  gizmoCam.updateMatrixWorld();
+  renderer.setViewport(pad, pad, gs, gs);
+  renderer.clearDepth();
+  renderer.render(gizmo, gizmoCam);
+  renderer.setViewport(0, 0, W, H);
+}
+
+const frames = (n) => new Promise((res) => { const tick = () => (--n <= 0 ? res() : requestAnimationFrame(tick)); requestAnimationFrame(tick); });
+window.__render = async ({ az = 35, el = 20 } = {}) => {
+  frame(az, el);
+  draw();
+  await frames(2);
+  return { az, el };
+};
+
+try {
+  await load();
+  await window.__render({ az: num('az', 35), el: num('el', 20) });
+  window.__ready = true;
+} catch (e) {
+  window.__error = String(e && e.stack || e);
+  console.error(window.__error);
+}
+</script>
+</body>
+</html>

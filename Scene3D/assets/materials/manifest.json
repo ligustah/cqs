@@ -1,0 +1,79 @@
+{
+  "generator": "fal-ai/patina/material",
+  "sets": {
+    "hull": {
+      "maps": [
+        "basecolor",
+        "normal",
+        "roughness",
+        "metalness",
+        "height"
+      ],
+      "prompt": "Top-down orthographic photograph of a real spacecraft exterior hull surface, flat and evenly lit, seamless tileable texture. Matte off-white thermal-control paint with a chalky, diffuse, non-glossy finish over composite structural panels. Rectangular panels of varied sizes, each roughly one to two metres across, separated by thin recessed seams; rows of small flush countersunk fasteners along the panel edges; a few small flush access hatches with rounded corners. Realistic weathering: faint scuffs, light grime settled in the seams, slight panel-to-panel colour variation from warm white to pale grey. The panel grid continues evenly across every edge. No text or markings."
+    },
+    "orange": {
+      "maps": [
+        "basecolor",
+        "normal",
+        "roughness",
+        "metalness",
+        "height"
+      ],
+      "prompt": "Signal-orange glossy painted spacecraft hull panels with thin recessed seams, small stencilled maintenance markings, light wear on edges, seamless"
+    },
+    "armor": {
+      "maps": [
+        "basecolor",
+        "normal",
+        "roughness",
+        "metalness",
+        "height"
+      ],
+      "prompt": "Top-down orthographic photo scan of gunmetal grey heavy warship armour plating, flat even diffuse lighting with no shadows and no lighting gradient. A staggered grid of thick rectangular steel armour plates, several plates across the tile, each plate with chamfered bevelled edges, recessed hex bolts along the plate borders and fine weld bead seams between plates. Matte weathered grey paint, worn and chipped plate edges exposing bare scratched steel, fine scuffs and grime, no rust, no text, no markings, seamless tileable texture (enable_prompt_expansion=false, seed 81031891)"
+    },
+    "ceramic": {
+      "maps": [
+        "basecolor",
+        "normal",
+        "roughness",
+        "metalness",
+        "height"
+      ],
+      "prompt": "Dark charcoal ceramic heat-shield tiles, square tiles with narrow gaps, slightly uneven, faint scorch streaks, seamless"
+    },
+    "foil": {
+      "maps": [
+        "basecolor",
+        "normal",
+        "roughness",
+        "metalness",
+        "height"
+      ],
+      "prompt": "Crinkled gold multi-layer insulation foil blanket for spacecraft, reflective metallic gold with creases and stitched seams, seamless",
+      "overrides": {
+        "metalness": 1,
+        "note": "PATINA metalness predictor returns 0 for bare gold foil; treat as fully metallic"
+      }
+    },
+    "deck": {
+      "maps": [
+        "basecolor",
+        "normal",
+        "roughness",
+        "metalness",
+        "height"
+      ],
+      "prompt": "Spaceship hangar deck plating, top-down view of worn bare dark grey steel diamond-tread floor plates about one metre square, straight seams aligned to the image edges, flat matte yellow painted safety lines with chipped non-metallic paint, recessed flush tie-down cups, scuffs and grime, seamless"
+    },
+    "radiator": {
+      "maps": [
+        "basecolor",
+        "normal",
+        "roughness",
+        "metalness",
+        "height"
+      ],
+      "prompt": "Spacecraft radiator panel, dense parallel cooling fins, dark anodised metal with faint blue heat discolouration, seamless"
+    }
+  }
+}

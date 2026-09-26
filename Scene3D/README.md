@@ -81,6 +81,7 @@ Scene3D/
 npm install                     # three + playwright-core, only needed for the tools
 node tools/scale-check.mjs      # envelope vs. game size for every ship + hangar loads
 node tools/shoot.mjs "mode=ship&ship=destroyer&az=35&el=18" shots/destroyer.png
+node tools/render-glb.mjs any/where/ship.glb shots/ship --rot 0,90,0   # GLB inspection stills + contact sheet + mesh info
 node tools/build-artifact.mjs   # single-page package for sharing
 ```
 
