@@ -104,7 +104,7 @@ vec4 inscatter(vec3 ro, vec3 rd, vec3 L, out float hitPlanet) {
   // grey transmittance of the whole ray (camera sits above the atmosphere)
   float rc = length(ro);
   float muC = dot(ro, rd) / rc;
-  vec3 Tv = hitPlanet > 0.5 ? vec3(0.0) : transmittance(rc, muC);
+  vec3 Tv = hitPlanet > 0.5 ? vec3(1.0) : transmittance(rc, muC);
   return vec4(col, dot(Tv, vec3(0.2126, 0.7152, 0.0722)));
 }
 `;

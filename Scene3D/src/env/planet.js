@@ -46,15 +46,18 @@ float fbm4(vec3 p) {
 
 Terrain terrain(vec3 n, float fp) {
   Terrain T;
-  vec3 p = n * 1.3 + SEED;
-  vec3 w = vec3(snoise(p * 0.75), snoise(p * 0.75 + vec3(19.1, 7.3, 2.9)), snoise(p * 0.75 + vec3(5.7, 31.3, 13.1)));
-  vec3 q = p + w * 0.45;
-  float c = fbm4(q);
+  vec3 p = n + SEED * 0.1;
+  // large-scale warp: sinuous coasts, gulfs and peninsulas
+  vec3 w = vec3(snoise(p * 2.1), snoise(p * 2.1 + vec3(19.1, 7.3, 2.9)), snoise(p * 2.1 + vec3(5.7, 31.3, 13.1)));
+  vec3 q = p + w * 0.15;
+  // ocean basins + continents + subcontinental shapes
+  float c = 0.45 * snoise(q * 1.2 + SEED) + 0.36 * snoise(q * 3.3 + vec3(3.1, 1.7, 5.3))
+          + 0.18 * snoise(q * 7.1 + vec3(9.2, 4.4, 0.7)) + 0.09 * snoise(q * 14.6 + vec3(1.9, 8.3, 6.6));
   // fold belts along the zero-crossings of a second field (plate boundaries)
-  float belt = 1.0 - abs(snoise(q * 1.6 + vec3(7.1, 3.3, 9.9)));
+  float belt = 1.0 - abs(snoise(q * 4.4 + vec3(7.1, 3.3, 9.9)));
   belt *= belt; belt *= belt;
   // detail octaves, faded out once they get smaller than a pixel
-  float det = 0.0, ridg = 0.0, a = 0.5, f = 26.0;
+  float det = 0.0, ridg = 0.0, a = 0.5, f = 30.0;
   for (int i = 0; i < 5; i++) {
     float wgt = 1.0 - smoothstep(0.18, 0.45, f * fp);
     if (wgt <= 0.0) break;
@@ -63,17 +66,17 @@ Terrain terrain(vec3 n, float fp) {
     ridg += a * wgt * (1.0 - abs(s));
     f *= 2.03; a *= 0.5;
   }
-  float h = c + 0.06 * w.y - SEA;
-  float landish = smoothstep(-0.02, 0.1, h);
-  h += landish * belt * (0.12 + 0.16 * ridg);
-  h += det * mix(0.045, 0.075, landish);
+  float h = c + 0.05 * w.y - SEA;
+  float landish = smoothstep(-0.02, 0.08, h);
+  h += landish * belt * (0.10 + 0.18 * ridg);
+  h += det * mix(0.05, 0.08, landish);
   T.h = h;
   T.det = det;
   T.belt = belt;
-  T.m = clamp(0.45 + 0.6 * snoise(n * 2.3 + vec3(13.0, 2.0, 7.0)) + 0.3 * w.z + 0.3 * (1.0 - smoothstep(0.0, 0.1, h)), 0.0, 1.0);
+  T.m = clamp(0.45 + 0.55 * snoise(n * 5.5 + vec3(13.0, 2.0, 7.0)) + 0.25 * w.z + 0.3 * (1.0 - smoothstep(0.0, 0.08, h)), 0.0, 1.0);
   float lat = abs(n.y);
-  T.t = 1.0 - 1.05 * pow(lat, 1.6) - 1.7 * max(h - 0.03, 0.0) + 0.1 * w.x + 0.03 * det;
-  T.rock = smoothstep(0.09, 0.2, h) * (0.35 + 0.65 * belt);
+  T.t = 1.0 - 1.05 * pow(lat, 1.6) - 1.7 * max(h - 0.03, 0.0) + 0.09 * w.x + 0.03 * det;
+  T.rock = smoothstep(0.08, 0.18, h) * (0.35 + 0.65 * belt);
   return T;
 }
 
@@ -120,25 +123,28 @@ float cloudField(vec3 n, float t, int oct, float fp) {
   const vec3 S1 = normalize(vec3(0.37, 0.45, 0.81));
   const vec3 S2 = normalize(vec3(-0.62, -0.38, 0.69));
   const vec3 S3 = normalize(vec3(0.80, -0.25, -0.55));
-  p = rotAxis(p, S1, 5.5 * exp(-(1.0 - dot(n, S1)) * 260.0));
-  p = rotAxis(p, S2, -4.5 * exp(-(1.0 - dot(n, S2)) * 320.0));
-  p = rotAxis(p, S3, -3.5 * exp(-(1.0 - dot(n, S3)) * 200.0));
-  vec3 q = p * 2.6 + vec3(0.0, 0.0, t * 0.0015);
-  vec3 w = vec3(snoise(q * 0.9 + vec3(0.0, t * 0.001, 0.0)), snoise(q * 0.9 + vec3(8.1, 2.3, 5.5)), snoise(q * 0.9 + vec3(3.3, 9.7, 1.1)));
-  q += w * 0.55;
-  q.y *= 1.7; // zonal shear: streaks run along the lines of latitude
+  p = rotAxis(p, S1, 6.0 * exp(-(1.0 - dot(n, S1)) * 380.0));
+  p = rotAxis(p, S2, -5.0 * exp(-(1.0 - dot(n, S2)) * 450.0));
+  p = rotAxis(p, S3, -4.0 * exp(-(1.0 - dot(n, S3)) * 300.0));
+  // weather regimes: overcast fronts vs clear high-pressure cells
+  float regime = snoise(p * 2.3 + vec3(4.0, 1.0, 8.0));
+  vec3 q = p * 6.5 + vec3(0.0, 0.0, t * 0.003);
+  vec3 w = vec3(snoise(q * 0.45 + vec3(0.0, t * 0.002, 0.0)), snoise(q * 0.45 + vec3(8.1, 2.3, 5.5)), snoise(q * 0.45 + vec3(3.3, 9.7, 1.1)));
+  q += w * 1.1;
+  q.y *= 1.3; // mild zonal shear
   float s = 0.0, a = 0.5, f = 1.0;
-  for (int i = 0; i < 7; i++) {
+  for (int i = 0; i < 8; i++) {
     if (i >= oct) break;
-    float wgt = 1.0 - smoothstep(0.2, 0.5, f * 2.6 * fp);
+    float wgt = 1.0 - smoothstep(0.2, 0.5, f * 6.5 * fp);
     if (wgt <= 0.0) break;
     s += a * wgt * snoise(q * f);
-    f *= 2.13; a *= 0.53;
+    f *= 2.1; a *= 0.52;
   }
   float lat = abs(n.y);
   // wet equator, clear subtropics, stormy mid-latitudes
-  float thr = 0.02 + 0.16 * smoothstep(0.1, 0.28, lat) * (1.0 - smoothstep(0.34, 0.5, lat)) - 0.05 * smoothstep(0.5, 0.75, lat);
-  return smoothstep(thr, thr + 0.3, s + 0.12 * w.x);
+  float thr = 0.06 + 0.14 * smoothstep(0.1, 0.28, lat) * (1.0 - smoothstep(0.34, 0.5, lat)) - 0.05 * smoothstep(0.5, 0.75, lat);
+  thr -= 0.2 * regime;
+  return smoothstep(thr, thr + 0.32, s);
 }
 
 // warm settlement lights for the night side (luminance, ~0..1.5)
@@ -306,14 +312,17 @@ export function createPlanet(scene, {
   direction = PLANET_DIR,
   orbitRate = 0.0006,     // rad/s of apparent ground motion under the fleet
   windRate = 0.00011,     // extra zonal drift of the cloud deck (rad/s)
-  orientation = new THREE.Euler(0.0, 0.0, 0.0),
+  pole = new THREE.Vector3(-0.597, 0.726, -0.340), // world direction of the north pole at t = 0
+  longitude = 0,          // spin about the pole (deg): picks which lands face the fleet
 } = {}) {
   const dirOverride = vecParam('envdir');
-  const rotOverride = vecParam('envrot');
+  const poleOverride = vecParam('envpole');
+  const lonOverride = parseFloat(query.get('envlon'));
   const angOverride = parseFloat(query.get('envang'));
   if (Number.isFinite(angOverride)) angularRadius = angOverride;
   const dir = (dirOverride ? new THREE.Vector3(...dirOverride) : direction.clone()).normalize();
-  if (rotOverride) orientation = new THREE.Euler(...rotOverride.map(THREE.MathUtils.degToRad));
+  if (poleOverride) pole = new THREE.Vector3(...poleOverride);
+  if (Number.isFinite(lonOverride)) longitude = lonOverride;
 
   const dist = radius / Math.sin(THREE.MathUtils.degToRad(angularRadius));
   const center = dir.clone().multiplyScalar(dist);
@@ -377,7 +386,9 @@ export function createPlanet(scene, {
   // to stern, i.e. a rotation about the axis Z × up through the planet centre.
   const up = dir.clone().negate();
   const orbitAxis = new THREE.Vector3(0, 0, 1).cross(up).normalize();
-  const q0 = new THREE.Quaternion().setFromEuler(orientation);
+  const poleDir = pole.clone().normalize();
+  const q0 = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), poleDir)
+    .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(longitude)));
   const qOrbit = new THREE.Quaternion();
   const qWind = new THREE.Quaternion();
   const Y = new THREE.Vector3(0, 1, 0);
