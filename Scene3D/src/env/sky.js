@@ -58,7 +58,7 @@ function buildStars(count, radius, seed) {
     else K = u < 0.14 ? 8500 + rnd() * 12000 : u < 0.45 ? 5600 + rnd() * 2400 : 3300 + rnd() * 2300;
     const c = starColor(K).lerp(new THREE.Color(1, 1, 1), 0.35);
     // peak radiance of the PSF; compressed dynamic range (0.3 of true flux ratio)
-    const peak = 0.012 * Math.pow(10, -0.4 * 0.72 * (m - mHi));
+    const peak = 0.028 * Math.pow(10, -0.4 * 0.62 * (m - mHi));
     col[i * 3] = c.r * peak; col[i * 3 + 1] = c.g * peak; col[i * 3 + 2] = c.b * peak;
     size[i] = m < 1.5 ? 15 : m < 3.5 ? 6 : 4;
   }
@@ -69,7 +69,7 @@ function buildStars(count, radius, seed) {
   return g;
 }
 
-export function createSky(scene, { stars = 15000, radius = 9000 } = {}) {
+export function createSky(scene, { stars = 18000, radius = 9000 } = {}) {
   const group = new THREE.Group();
   group.name = 'sky';
   group.renderOrder = -10;
@@ -94,29 +94,37 @@ export function createSky(scene, { stars = 15000, radius = 9000 } = {}) {
         ${NOISE}
         void main() {
           vec3 d = normalize(vDir);
-          float n1 = snoise(d * 2.6 + 1.3);
-          float n2 = snoise(d * 6.5 + 4.1);
-          float n3 = snoise(d * 15.0 - 2.7);
-          float b = dot(d, uBandN) + 0.03 * n1;           // warped galactic latitude
+          // cheap domain warp shared by every layer
+          float w1 = snoise(d * 3.1 + 1.3);
+          float w2 = snoise(d * 7.3 + 4.1);
+          vec3 dw = d + 0.05 * vec3(w1, w2, w1 * w2);
+          float n2 = snoise(dw * 11.0 - 2.7);
+          float n3 = snoise(dw * 27.0 + 5.3);
+          // galactic band: unresolved starlight, broader and warmer toward the core
+          float b = dot(d, uBandN);
+          float bb = b + 0.025 * w1;
           float lc = dot(d, uCore);
-          float coreW = smoothstep(-0.1, 1.0, lc);
-          float width = mix(0.075, 0.19, coreW * coreW);
-          float band = exp(-b * b / (width * width));
-          float bulge = exp(-(1.0 - lc) * 7.0) * exp(-b * b / 0.05);
-          float clump = clamp(0.6 + 0.35 * n2 + 0.2 * n3, 0.0, 1.4);
-          // dark rifts hugging the mid-plane
-          float lane = exp(-pow((b - 0.012 * n3) / 0.04, 2.0));
-          float dust = smoothstep(0.05, 0.65, 0.55 * n2 + 0.35 * n1 + 0.35) * lane;
-          vec3 starlight = mix(vec3(0.62, 0.70, 0.95), vec3(1.0, 0.80, 0.60), coreW);
-          vec3 col = starlight * (band * clump * 0.016 + bulge * 0.028) * (1.0 - 0.8 * dust);
-          // emission nebula near the env-map glow: H-alpha magenta core, teal O-III fringe
+          float coreW = smoothstep(-0.2, 1.0, lc);
+          float width = mix(0.085, 0.2, coreW * coreW);
+          float band = exp(-bb * bb / (width * width));
+          float bulge = exp(-(1.0 - lc) * 6.5) * exp(-b * b / 0.035);
+          float grain = clamp(0.5 + 0.32 * n2 + 0.28 * n3 + 0.15 * w2, 0.05, 1.3);
+          // filamentary dust rifts hugging the mid-plane
+          float lane = exp(-pow((bb - 0.012 * n2) / 0.055, 2.0));
+          float rid = 1.0 - abs(n2);
+          float dust = lane * clamp(0.3 + 0.8 * smoothstep(0.45, 0.95, rid * rid + 0.25 * w2), 0.0, 1.0);
+          vec3 starlight = mix(vec3(0.60, 0.68, 0.95), vec3(1.0, 0.82, 0.62), coreW);
+          vec3 col = starlight * (band * grain * 0.022 + bulge * 0.03) * (1.0 - 0.88 * dust);
+          // emission nebula near the env-map glow: wispy H-alpha filaments, O-III teal heart
           float dn = 1.0 - dot(d, uNeb);
-          float shape = smoothstep(-0.1, 0.9, 0.55 * snoise(d * 4.0 + 7.0) + 0.45 * n2 + 0.25);
-          float neb = exp(-dn * 22.0) * shape;
-          float fringe = exp(-dn * 9.0) * smoothstep(0.2, 0.8, n3 * 0.5 + n1 * 0.5 + 0.3) * (1.0 - neb);
-          col += neb * vec3(0.050, 0.010, 0.040) + fringe * vec3(0.0, 0.012, 0.016);
-          col *= 1.0 - 0.6 * dust * smoothstep(0.0, 0.3, neb);
-          col += vec3(0.0016, 0.0019, 0.0034); // faint zodiacal/extragalactic floor
+          float env = exp(-dn * 16.0);
+          float fil = 1.0 - abs(snoise(dw * 5.2 + 7.0) + 0.35 * n3);
+          fil = fil * fil * fil;
+          float heart = exp(-dn * 70.0) * (0.6 + 0.4 * n2);
+          col += env * (0.25 + 0.75 * fil) * (0.7 + 0.3 * n3) * vec3(0.042, 0.008, 0.032);
+          col += heart * vec3(0.004, 0.018, 0.020);
+          col *= 1.0 - 0.5 * dust * smoothstep(0.1, 0.5, env);
+          col += vec3(0.0015, 0.0018, 0.0032); // faint zodiacal/extragalactic floor
           gl_FragColor = vec4(col, 1.0);
         }`,
     }),

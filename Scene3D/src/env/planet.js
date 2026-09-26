@@ -144,7 +144,7 @@ float cloudField(vec3 n, float t, int oct, float fp) {
   // wet equator, clear subtropics, stormy mid-latitudes
   float thr = 0.06 + 0.14 * smoothstep(0.1, 0.28, lat) * (1.0 - smoothstep(0.34, 0.5, lat)) - 0.05 * smoothstep(0.5, 0.75, lat);
   thr -= 0.2 * regime;
-  return smoothstep(thr, thr + 0.32, s);
+  return smoothstep(thr, thr + 0.2, s);
 }
 
 // warm settlement lights for the night side (luminance, ~0..1.5)
@@ -178,6 +178,7 @@ float cityLights(vec3 n, Terrain T, float fp, out float warm) {
 
 const COMMON = /* glsl */`
 uniform vec3 uCenter; uniform float uR; uniform vec3 uSun; uniform float uSunE; uniform float uTime;
+uniform mat3 uWorldToObj;
 varying vec3 vObj; varying vec3 vWN; varying vec3 vRel;
 `;
 
@@ -207,9 +208,12 @@ float V_GGX(float NoV, float NoL, float a) {
   return 0.5 / max(gv + gl, 1e-5);
 }
 void main() {
-  vec3 n = normalize(vObj);
-  vec3 N = normalize(vWN);
+  // exact ray/sphere hit (the mesh is only a proxy): smooth positions and derivatives
   vec3 rd = normalize(vRel);
+  vec3 ro = (cameraPosition - uCenter) / uR;
+  vec2 th = raySphere(ro, rd, 1.0);
+  vec3 N = th.x < th.y && th.x > 0.0 ? normalize(ro + rd * th.x) : normalize(vWN);
+  vec3 n = uWorldToObj * N;
   vec3 V = -rd;
   vec3 L = uSun;
   float fp = max(length(fwidth(n)), 1e-6);
@@ -224,7 +228,7 @@ void main() {
   float hp = max(T.h, 0.0) * 0.010;
   vec3 Nb = N;
   {
-    vec3 dpx = dFdx(vWN), dpy = dFdy(vWN);
+    vec3 dpx = dFdx(N), dpy = dFdy(N);
     float dhx = dFdx(hp), dhy = dFdy(hp);
     vec3 r1 = cross(dpy, N), r2 = cross(N, dpx);
     float det = dot(dpx, r1);
@@ -273,19 +277,22 @@ ${NOISE}
 ${ATMO_GLSL}
 ${WORLD_GLSL}
 void main() {
-  vec3 n = normalize(vObj);
-  vec3 N = normalize(vWN);
   vec3 rd = normalize(vRel);
+  vec3 ro = (cameraPosition - uCenter) / uR;
+  float r = 1.0 + CLOUD_H;
+  vec2 th = raySphere(ro, rd, r);
+  vec3 N = th.x < th.y && th.x > 0.0 ? normalize(ro + rd * th.x) : normalize(vWN);
+  vec3 n = uWorldToObj * N;
   vec3 V = -rd;
   vec3 L = uSun;
   float fp = max(length(fwidth(n)), 1e-6);
-  float d = cloudField(n, uTime, 7, fp);
+  float d = cloudField(n, uTime, 8, fp);
   if (d < 0.004) discard;
   // puffy relief from the screen-space density gradient
   vec3 Nc = N;
   {
     float hp = d * 0.0016;
-    vec3 dpx = dFdx(vWN), dpy = dFdy(vWN);
+    vec3 dpx = dFdx(N), dpy = dFdy(N);
     float dhx = dFdx(hp), dhy = dFdy(hp);
     vec3 r1 = cross(dpy, N), r2 = cross(N, dpx);
     float det = dot(dpx, r1);
@@ -293,7 +300,6 @@ void main() {
   }
   float muS = dot(N, L);
   float muV = max(dot(N, V), 0.0);
-  float r = 1.0 + CLOUD_H;
   vec3 sunL = uSunE * transmittance(r, muS) * sunShadow(N * r, L);
   float lit = clamp((dot(Nc, L) + 0.15) / 1.15, 0.0, 1.0);
   float thick = mix(0.72, 1.0, smoothstep(0.2, 0.9, d)); // thin wisps let more light through, look greyer
@@ -339,6 +345,7 @@ export function createPlanet(scene, {
     uSun: { value: sunDir },
     uSunE: { value: SUN_E },
     uTime: { value: 0 },
+    uWorldToObj: { value: new THREE.Matrix3() },
   });
   const matOpts = { transparent: false, depthTest: false, depthWrite: false };
 
@@ -401,6 +408,9 @@ export function createPlanet(scene, {
     clouds.quaternion.copy(qOrbit).multiply(q0).multiply(qWind);
     m4.makeRotationFromQuaternion(clouds.quaternion).transpose();
     surfaceMat.uniforms.uWorldToCloud.value.setFromMatrix4(m4);
+    cloudMat.uniforms.uWorldToObj.value.setFromMatrix4(m4);
+    m4.makeRotationFromQuaternion(surface.quaternion).transpose();
+    surfaceMat.uniforms.uWorldToObj.value.setFromMatrix4(m4);
     surfaceMat.uniforms.uTime.value = t;
     cloudMat.uniforms.uTime.value = t;
   }

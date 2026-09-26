@@ -116,7 +116,7 @@ export function createAtmosphereShell({ radius, center, sunDir, sunE, segments =
       uR: { value: radius },
       uSun: { value: sunDir },
       uSunE: { value: sunE },
-      uBoost: { value: 1.6 },
+      uBoost: { value: 0.85 },
     },
     vertexShader: /* glsl */`
       varying vec3 vRel;
