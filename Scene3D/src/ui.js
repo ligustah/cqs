@@ -70,7 +70,18 @@ export function createUI({ mode, still, world, classes, order, onMode, onFocus, 
         <div><dt>Envelope</dt><dd>${fmt(s.envelopeVolume, 0)} m³</dd></div>
         ${spec.size ? `<div><dt>Slots</dt><dd>${fmt(s.envelopeVolume / SLOT_VOLUME, 2)} × ${SLOT_VOLUME} m³</dd></div>` : ''}
       </dl>
-      ${loads}`;
+      ${loads}
+      ${art(s.source)}`;
+  }
+
+  // fal concept art the mesh was reconstructed from, plus the in-orbit concept shot
+  function art(src) {
+    if (!src?.concept && !src?.beauty) return '';
+    const fig = (url, cap) => url ? `<figure><a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${cap}" loading="lazy"></a><figcaption>${cap}</figcaption></figure>` : '';
+    return `
+        <h3>Concept art</h3>
+        <div class="art">${fig(src.beauty, 'In orbit (concept)')}${fig(src.concept, 'Design reference (image-to-3D input)')}</div>
+        <p class="gen">${src.generator ? `Mesh: ${src.generator}` : ''}</p>`;
   }
   select(world.selected || 'carrier');
 

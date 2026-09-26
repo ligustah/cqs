@@ -11,6 +11,7 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 import { createPalette } from './lib/materials.js';
 import { attachEffects } from './lib/effects.js';
 import { CLASSES, SLOT_VOLUME, carrierLoads } from './lib/scale.js';
+import { hangarInsideFraction } from './lib/hangar.js';
 import { buildShip, loadShips, setShipContext, LOAD_ERRORS, ORDER } from './ships/index.js';
 import { loadPatinaLibrary, proceduralStandIn } from './lib/patina.js';
 import { panelSet } from './lib/textures.js';
@@ -44,13 +45,17 @@ await loadShips(onlyShip);
 if (mode === 'check') {
   const rows = [];
   const env = {};
-  let hangar = null;
+  let hangar = null, hangarInside = null;
   for (const cls of ORDER) {
     const t0 = performance.now();
     const g = buildShip(cls, palette);
     const s = g.userData.ship;
     env[cls] = s.envelope.size.clone();
-    if (cls === 'carrier' && s.anchors.hangar) hangar = new THREE.Vector3(...s.anchors.hangar.size).multiplyScalar(s.scaleCorrection);
+    if (cls === 'carrier' && s.anchors.hangar) {
+      hangar = new THREE.Vector3(...s.anchors.hangar.size).multiplyScalar(s.scaleCorrection);
+      const r = hangarInsideFraction(g, s.anchors.hangar);
+      hangarInside = { fraction: +r.fraction.toFixed(3), samples: r.samples, misses: r.misses };
+    }
     rows.push({
       cls, name: s.meta?.name, size: CLASSES[cls].size,
       L: +s.envelope.size.z.toFixed(2), B: +s.envelope.size.x.toFixed(2), H: +s.envelope.size.y.toFixed(2),
@@ -60,7 +65,7 @@ if (mode === 'check') {
     });
   }
   const loads = hangar ? carrierLoads(hangar, env) : [];
-  window.__report = { errors: LOAD_ERRORS, rows, hangar: hangar && hangar.toArray().map((v) => +v.toFixed(2)), loads, slotVolume: SLOT_VOLUME };
+  window.__report = { errors: LOAD_ERRORS, rows, hangar: hangar && hangar.toArray().map((v) => +v.toFixed(2)), loads, hangarInside, slotVolume: SLOT_VOLUME };
   window.__ready = true;
   document.body.dataset.ready = '1';
 } else {

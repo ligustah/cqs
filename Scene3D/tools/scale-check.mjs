@@ -36,6 +36,12 @@ if (report.hangar) {
     console.log(`  ${pad(l.cls, 10)} need ${pad(l.need, 3)} fits ${pad(l.fits, 4)} ${l.ok ? 'OK' : 'FAIL'}`);
     if (!l.ok) ok = false;
   }
+  if (report.hangarInside) {
+    const hi = report.hangarInside;
+    const pass = hi.fraction >= 0.95;
+    console.log(`  hangar box inside hull: ${(hi.fraction * 100).toFixed(1)}% of ${hi.samples} samples ${pass ? 'OK' : 'FAIL (need >= 95%)'}${pass ? '' : ' escapes ' + JSON.stringify(hi.misses)}`);
+    if (!pass) ok = false;
+  }
   const carrier = report.rows.find((r) => r.cls === 'carrier');
   const hv = report.hangar[0] * report.hangar[1] * report.hangar[2];
   if (carrier && hv > carrier.volume * 0.6) { console.log('  hangar volume implausibly large for the hull'); ok = false; }

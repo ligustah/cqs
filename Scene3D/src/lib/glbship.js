@@ -19,6 +19,7 @@ export function loadGLB(url) {
 /**
  * cfg (from a ship module's `asset` export):
  *   glb        path to the optimised GLB
+ *   concept    image-to-3D input image (fal concept art); beauty: in-orbit concept shot
  *   rotate     [x, y, z] degrees applied first so that the bow faces +Z and dorsal +Y
  *   length     design length in metres (bounding-box Z); scale.js then applies
  *              the small volume correction for the class's hangar slots
@@ -54,6 +55,7 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
     triangles += (g.index ? g.index.count : g.attributes.position.count) / 3;
     o.castShadow = true;
     o.receiveShadow = true;
+    o.userData.hull = true; // raycast target for the hangar containment test
     const mats = Array.isArray(o.material) ? o.material : [o.material];
     const next = mats.map((m) => {
       if (upgraded.has(m)) return upgraded.get(m);
@@ -108,7 +110,7 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
   const size = env.getSize(new V3());
   group.userData.ship = {
     name: cfg.name,
-    source: { glb: cfg.glb, generator: cfg.generator, concept: cfg.concept },
+    source: { glb: cfg.glb, generator: cfg.generator, concept: cfg.concept, beauty: cfg.beauty },
     envelope: { min: env.min.clone(), max: env.max.clone(), size, center: env.getCenter(new V3()) },
     envelopeVolume: size.x * size.y * size.z,
     engines, lights, anchors,
