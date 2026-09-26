@@ -7,41 +7,72 @@ const LIGHT_COLORS = {
   red: LIVERY.navRed, green: LIVERY.navGreen, white: '#ffffff', amber: LIVERY.amber, cyan: '#7fe8ff',
 };
 
+// Fusion-torch exhaust. The mesh is only a bounding cylinder (radius 1 = sheath
+// edge, length 1, nozzle at z = 0, plume toward -z); the fragment shader finds
+// where the view ray passes closest to the plume axis and integrates a
+// Gaussian core + sheath there, so the jet reads as a luminous volume from any
+// angle: white-hot core, blue sheath, decaying shock diamonds.
 const plumeGeometry = (() => {
-  // unit plume: radius 1 at z=0 widening to 1.35 at z=-1 (scaled per engine)
-  const g = new THREE.CylinderGeometry(1.0, 1.35, 1, 32, 12, true);
+  const g = new THREE.CylinderGeometry(1, 1, 1, 24, 1, false);
   g.translate(0, -0.5, 0);
   g.rotateX(-Math.PI / 2);
   g.rotateY(Math.PI);
   return g;
 })();
 
-function plumeMaterial(color) {
+function plumeMaterial(color, seed) {
   return new THREE.ShaderMaterial({
-    uniforms: { uTime: { value: 0 }, uColor: { value: new THREE.Color(color) }, uPower: { value: 1 }, uSeed: { value: Math.random() * 10 } },
+    uniforms: {
+      uTime: { value: 0 }, uPower: { value: 1 }, uSeed: { value: seed },
+      uSheath: { value: new THREE.Color(color) },
+      uAspect: { value: 1 }, // plume length / sheath radius (for the ray metric)
+    },
     vertexShader: /* glsl */`
-      varying float vT; varying vec3 vN; varying vec3 vV;
+      varying vec3 vObj; varying vec3 vCam;
       void main() {
-        vT = clamp(-position.z, 0.0, 1.0);
-        vec4 mv = modelViewMatrix * vec4(position, 1.0);
-        vN = normalize(normalMatrix * normal);
-        vV = normalize(-mv.xyz);
-        gl_Position = projectionMatrix * mv;
+        vObj = position;
+        vCam = (inverse(modelMatrix) * vec4(cameraPosition, 1.0)).xyz;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }`,
     fragmentShader: /* glsl */`
-      uniform float uTime; uniform vec3 uColor; uniform float uPower; uniform float uSeed;
-      varying float vT; varying vec3 vN; varying vec3 vV;
+      uniform float uTime, uPower, uSeed, uAspect; uniform vec3 uSheath;
+      varying vec3 vObj; varying vec3 vCam;
       void main() {
-        float edge = pow(abs(dot(normalize(vN), normalize(vV))), 1.6);
-        float along = pow(1.0 - vT, 2.2);
-        float diamonds = 0.75 + 0.25 * sin(vT * 38.0 - uTime * 30.0 + uSeed);
-        float flicker = 0.9 + 0.1 * sin(uTime * 53.0 + uSeed * 7.0) * sin(uTime * 17.0 + uSeed);
-        float a = edge * along * diamonds * flicker * uPower;
-        vec3 col = mix(uColor, vec3(1.0), smoothstep(0.55, 1.0, edge) * (1.0 - vT) * 0.8);
-        gl_FragColor = vec4(col * a * 3.2, a);
+        // work in a space where radial and axial units are both metres-proportional
+        vec3 o = vCam * vec3(1.0, 1.0, uAspect);
+        vec3 d = normalize(vObj * vec3(1.0, 1.0, uAspect) - o);
+        float dxy2 = max(dot(d.xy, d.xy), 1e-4);
+        float t = -dot(o.xy, d.xy) / dxy2;
+        vec2 q = o.xy + t * d.xy;
+        float rho = length(q);                       // closest distance to the axis (sheath radii)
+        float s = clamp(-(o.z + t * d.z) / uAspect, -0.2, 1.2); // 0 at nozzle, 1 at plume tail
+        float inside = smoothstep(-0.02, 0.03, s) * (1.0 - smoothstep(0.85, 1.0, s));
+        float path = min(1.0 / sqrt(dxy2), 2.5);      // longer path when looking down the jet
+        float sc = 0.10 * (1.0 + 1.8 * s);            // core radius grows downstream
+        float ss = 0.42 * (1.0 + 1.1 * s);
+        float diamonds = 1.0 + 1.6 * exp(-s * 7.0) * pow(0.5 + 0.5 * cos(s * 48.0 - uTime * 2.0), 10.0);
+        float flick = 0.94 + 0.06 * sin(uTime * 61.0 + uSeed * 9.0) * sin(uTime * 23.0 + uSeed);
+        float core = exp(-rho * rho / (sc * sc)) * exp(-s * 3.2) * diamonds;
+        float sheath = exp(-rho * rho / (ss * ss)) * exp(-s * 1.7);
+        vec3 col = vec3(1.0, 0.97, 1.0) * core * 4.5 + uSheath * sheath * 0.55;
+        col *= inside * path * flick * uPower;
+        gl_FragColor = vec4(col, 1.0);
       }`,
-    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.BackSide,
   });
+}
+
+let flareTex = null;
+function flareTexture() {
+  if (flareTex) return flareTex;
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d');
+  const grd = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  grd.addColorStop(0, 'rgba(255,255,255,1)'); grd.addColorStop(0.08, 'rgba(235,242,255,0.9)');
+  grd.addColorStop(0.25, 'rgba(150,190,255,0.28)'); grd.addColorStop(1, 'rgba(90,130,255,0)');
+  g.fillStyle = grd; g.fillRect(0, 0, 256, 256);
+  flareTex = new THREE.CanvasTexture(c); flareTex.colorSpace = THREE.SRGBColorSpace;
+  return flareTex;
 }
 
 const lightVS = /* glsl */`
@@ -76,11 +107,15 @@ export function attachEffects(group, { power = 1, plumeScale = 1 } = {}) {
   const info = group.userData.ship;
   const updaters = [];
   const plumes = [];
+  let seed = 1;
   for (const e of info.engines) {
-    const m = plumeMaterial(e.color ?? LIVERY.engine);
+    const m = plumeMaterial(e.color ?? '#3f6dff', seed++ * 1.37);
+    const sheathR = e.radius * 1.35;
+    const len = e.length * 5 * plumeScale; // fusion torches run ~30 nozzle radii
     m.uniforms.uPower.value = power;
+    m.uniforms.uAspect.value = len / sheathR;
     const mesh = new THREE.Mesh(plumeGeometry, m);
-    mesh.scale.set(e.radius * 0.92, e.radius * 0.92, e.length * plumeScale);
+    mesh.scale.set(sheathR, sheathR, len);
     mesh.position.copy(e.p);
     mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, -1), e.dir);
     mesh.renderOrder = 10;
@@ -88,6 +123,22 @@ export function attachEffects(group, { power = 1, plumeScale = 1 } = {}) {
     mesh.name = 'plume';
     group.add(mesh);
     plumes.push(m);
+    // blinding nozzle flare
+    const flare = new THREE.Sprite(new THREE.SpriteMaterial({ map: flareTexture(), color: new THREE.Color(1, 1, 1).multiplyScalar(1.8 * power), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+    flare.scale.setScalar(e.radius * 3.2);
+    flare.position.copy(e.p).addScaledVector(e.dir, e.radius * 0.3);
+    flare.renderOrder = 11;
+    group.add(flare);
+  }
+  // one real light per capital ship so the drive illuminates its own stern
+  const big = info.engines.filter((e) => e.radius >= 1.2);
+  if (big.length && power > 0.05) {
+    const c = big.reduce((acc, e) => acc.add(e.p), new THREE.Vector3()).divideScalar(big.length);
+    const r = Math.max(...big.map((e) => e.radius));
+    const dir = big[0].dir;
+    const L = new THREE.PointLight('#b9cfff', 120 * r * r * big.length * power, r * 50, 2);
+    L.position.copy(c).addScaledVector(dir, r * 2.5);
+    group.add(L);
   }
   if (plumes.length) updaters.push((t) => { for (const m of plumes) m.uniforms.uTime.value = t; });
 
