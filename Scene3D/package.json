@@ -1,0 +1,16 @@
+{
+  "name": "cqs-orbital-fleet",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Real-time 3D scene of the Conquer-Space reboot orbital fleet (fighter, corvette, destroyer, freighter, carrier) at game-consistent scale.",
+  "type": "module",
+  "scripts": {
+    "serve": "node tools/serve.mjs",
+    "shoot": "node tools/shoot.mjs",
+    "check": "node tools/scale-check.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.56.1",
+    "three": "0.186.1"
+  }
+}
