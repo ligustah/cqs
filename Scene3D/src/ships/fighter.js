@@ -21,5 +21,6 @@ export const asset = {
   anchors: {},
 };
 export const variants = {
-  t4: { detail: { set: 'hull', tile: 4, normalStrength: 1.2, roughAmount: 0.6, cavity: 0.6 } },
+  t4: { detail: { set: 'hull', tile: 4, normalStrength: 0.6, roughAmount: 0.5, cavity: 0.9 } },
+  t0: { detail: null },
 };

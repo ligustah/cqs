@@ -11,7 +11,8 @@ export const asset = {
   concept: './assets/concepts/corvette.webp', beauty: './assets/concepts/corvette-beauty.webp',
   rotate: [0, -90, 0],
   length: 24,
-  detail: { set: 'hull', tile: 3, normalStrength: 0.8, roughAmount: 0.5, cavity: 0.35 },
+  crease: 35,
+  detail: { set: 'hull', tile: 3, normalStrength: 1.0, roughAmount: 0.5, cavity: 0.4 },
   materials: { '*': { envMapIntensity: 1.0 } },
   engines: [
     // main hull: four nozzles at the corners of the stern frame (exit plane z = -12)
@@ -38,8 +39,4 @@ export const asset = {
 // TEMP comparison variants
 export const variants = {
   chk: { engines: asset.engines.map((e) => ({ ...e, radius: 0.07 })) },
-  c35: { crease: 35 },
-  nod: { crease: 35, detail: null },
-  c35s: { crease: 35, detail: { set: 'hull', tile: 2.5, normalStrength: 1.3, roughAmount: 0.6, cavity: 0.5 } },
-  c35a: { crease: 35, detail: { set: 'armor', tile: 3, normalStrength: 0.8, roughAmount: 0.5, cavity: 0.35 } },
 };
