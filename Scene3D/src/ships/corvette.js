@@ -26,17 +26,13 @@ export const asset = {
   ],
   lights: [
     // sidelights on the outboard faces of the drive pods (beam extremities), steady
-    { p: [7.665, -3.2, 0.0], color: 'red', size: 0.3 },
-    { p: [-7.642, -3.2, 0.0], color: 'green', size: 0.3 },
-    // anti-collision strobes: sensor mast top and keel
-    { p: [0.0, 4.27, -3.3], color: 'white', size: 0.35, blink: { period: 1.4, duty: 0.1 } },
-    { p: [-0.064, -5.015, -2.25], color: 'white', size: 0.35, blink: { period: 1.4, duty: 0.1, phase: 0.5 } },
+    { p: [7.665, -3.2, 0.0], color: 'red', size: 0.4 },
+    { p: [-7.642, -3.2, 0.0], color: 'green', size: 0.4 },
+    // anti-collision strobes: cap of the sensor-mast pole (highest solid point) and keel
+    { p: [-0.05, 5.0, -4.6], color: 'white', size: 0.4, blink: { period: 1.4, duty: 0.1 } },
+    { p: [-0.064, -5.015, -2.25], color: 'white', size: 0.4, blink: { period: 1.4, duty: 0.1, phase: 0.5 } },
     // stern light on the upper stern frame, steady
-    { p: [-0.064, -0.92, -11.14], color: 'white', size: 0.25 },
+    { p: [-0.064, -0.92, -11.14], color: 'white', size: 0.3 },
   ],
   anchors: {},
-};
-// TEMP comparison variants
-export const variants = {
-  chk: { engines: asset.engines.map((e) => ({ ...e, radius: 0.07 })) },
 };
