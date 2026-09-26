@@ -19,6 +19,7 @@ export const asset = {
   concept: './assets/concepts/fighter.webp', beauty: './assets/concepts/fighter-beauty.webp',
   rotate: [0, 0, 0],
   length: 24.763,
+  livery: 'dark',
   crease: 35, // faceted armour panels shade flat; bells and barrels (<12 deg per segment) stay smooth
   detail: { set: 'hull', tile: 6, normalStrength: 0.6, roughAmount: 0.5, cavity: 0.8 },
   materials: { '*': { envMapIntensity: 1.0 } },

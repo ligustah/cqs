@@ -12,6 +12,7 @@ export const asset = {
   concept: './assets/concepts/corvette.webp', beauty: './assets/concepts/corvette-beauty.webp',
   rotate: [0, -90, 0],
   length: 38.098,
+  livery: 'dark',
   crease: 35,
   detail: { set: 'hull', tile: 6, normalStrength: 1.0, roughAmount: 0.5, cavity: 0.4 },
   materials: { '*': { envMapIntensity: 1.0 } },
