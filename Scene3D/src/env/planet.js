@@ -54,29 +54,32 @@ Terrain terrain(vec3 n, float fp) {
   float c = 0.45 * snoise(q * 1.2 + SEED) + 0.36 * snoise(q * 3.3 + vec3(3.1, 1.7, 5.3))
           + 0.18 * snoise(q * 7.1 + vec3(9.2, 4.4, 0.7)) + 0.09 * snoise(q * 14.6 + vec3(1.9, 8.3, 6.6));
   // fold belts along the zero-crossings of a second field (plate boundaries)
-  float belt = 1.0 - abs(snoise(q * 4.4 + vec3(7.1, 3.3, 9.9)));
-  belt *= belt; belt *= belt;
-  // detail octaves, faded out once they get smaller than a pixel
-  float det = 0.0, ridg = 0.0, a = 0.5, f = 30.0;
+  float belt = smoothstep(0.72, 0.98, 1.0 - abs(snoise(q * 4.4 + vec3(7.1, 3.3, 9.9))));
+  // detail octaves, faded out once they get smaller than a pixel; ridged
+  // multifractal for the mountains (sharp crests, smooth valleys)
+  float det = 0.0, ridg = 0.0, a = 0.5, f = 30.0, prev = 1.0;
   for (int i = 0; i < 5; i++) {
     float wgt = 1.0 - smoothstep(0.18, 0.45, f * fp);
     if (wgt <= 0.0) break;
     float s = snoise(n * f + SEED * float(i + 2));
     det += a * wgt * s;
-    ridg += a * wgt * (1.0 - abs(s));
+    float r = 1.0 - abs(s);
+    r *= r;
+    ridg += a * wgt * r * prev;
+    prev = clamp(r * 1.6, 0.0, 1.0);
     f *= 2.03; a *= 0.5;
   }
   float h = c + 0.05 * w.y - SEA;
   float landish = smoothstep(-0.02, 0.08, h);
-  h += landish * belt * (0.10 + 0.18 * ridg);
-  h += det * mix(0.05, 0.08, landish);
+  h += landish * belt * (0.05 + 0.26 * ridg);
+  h += det * mix(0.05, 0.06, landish);
   T.h = h;
   T.det = det;
   T.belt = belt;
   T.m = clamp(0.45 + 0.55 * snoise(n * 5.5 + vec3(13.0, 2.0, 7.0)) + 0.25 * w.z + 0.3 * (1.0 - smoothstep(0.0, 0.08, h)), 0.0, 1.0);
   float lat = abs(n.y);
   T.t = 1.0 - 1.05 * pow(lat, 1.6) - 1.7 * max(h - 0.03, 0.0) + 0.09 * w.x + 0.03 * det;
-  T.rock = smoothstep(0.08, 0.18, h) * (0.35 + 0.65 * belt);
+  T.rock = smoothstep(0.1, 0.2, h) * (0.3 + 0.7 * belt);
   return T;
 }
 
@@ -98,8 +101,8 @@ vec3 landAlbedo(Terrain T) {
   col = mix(TUNDRA, col, smoothstep(0.2, 0.34, t));
   col *= 0.85 + 0.3 * (T.det * 0.5 + 0.5);
   col = mix(col, ROCK, T.rock);
-  col = mix(vec3(0.40, 0.35, 0.25), col, smoothstep(0.0, 0.01, T.h));
-  float snow = max(smoothstep(0.17, 0.10, t), smoothstep(0.23, 0.3, T.h + 0.04 * T.det));
+  col = mix(vec3(0.36, 0.32, 0.23), col, mix(1.0, smoothstep(0.0, 0.0035, T.h), smoothstep(0.5, 0.7, t)));
+  float snow = max(smoothstep(0.17, 0.10, t), smoothstep(0.26, 0.33, T.h + 0.04 * T.det));
   return mix(col, SNOW, snow);
 }
 
@@ -225,7 +228,7 @@ void main() {
   alb = mix(alb, vec3(0.60, 0.67, 0.76), seaIce);
 
   // relief: bump normal from screen-space height derivatives (land only)
-  float hp = max(T.h, 0.0) * 0.010;
+  float hp = max(T.h, 0.0) * 0.006;
   vec3 Nb = N;
   {
     vec3 dpx = dFdx(N), dpy = dFdy(N);

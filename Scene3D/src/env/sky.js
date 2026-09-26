@@ -13,7 +13,7 @@ import { ENV } from './state.js';
 // Galactic frame: band plane through the env-map nebula direction, tilted so it
 // crosses the hero and lineup skies diagonally.
 const NEBULA_DIR = new THREE.Vector3(-0.7, 0.35, -0.6).normalize();
-const BAND_B = new THREE.Vector3(0.3, 0.78, -0.55).normalize();
+const BAND_B = new THREE.Vector3(0.512, -0.074, -0.856).normalize();
 const BAND_N = new THREE.Vector3().crossVectors(NEBULA_DIR, BAND_B).normalize();
 const CORE_DIR = NEBULA_DIR.clone().applyAxisAngle(BAND_N, -0.32).normalize();
 
@@ -94,37 +94,35 @@ export function createSky(scene, { stars = 18000, radius = 9000 } = {}) {
         ${NOISE}
         void main() {
           vec3 d = normalize(vDir);
-          // cheap domain warp shared by every layer
           float w1 = snoise(d * 3.1 + 1.3);
-          float w2 = snoise(d * 7.3 + 4.1);
-          vec3 dw = d + 0.05 * vec3(w1, w2, w1 * w2);
-          float n2 = snoise(dw * 11.0 - 2.7);
-          float n3 = snoise(dw * 27.0 + 5.3);
+          float w2 = snoise(d * 6.7 + 4.1);
+          vec3 dw = d + 0.04 * vec3(w1, w2, w1 * w2);
+          float n2 = snoise(dw * 13.0 - 2.7);
+          float n3 = snoise(dw * 31.0 + 5.3);
           // galactic band: unresolved starlight, broader and warmer toward the core
           float b = dot(d, uBandN);
-          float bb = b + 0.025 * w1;
+          float bb = b + 0.02 * w1;
           float lc = dot(d, uCore);
           float coreW = smoothstep(-0.2, 1.0, lc);
-          float width = mix(0.085, 0.2, coreW * coreW);
+          float width = mix(0.07, 0.16, coreW * coreW);
           float band = exp(-bb * bb / (width * width));
-          float bulge = exp(-(1.0 - lc) * 6.5) * exp(-b * b / 0.035);
-          float grain = clamp(0.5 + 0.32 * n2 + 0.28 * n3 + 0.15 * w2, 0.05, 1.3);
-          // filamentary dust rifts hugging the mid-plane
-          float lane = exp(-pow((bb - 0.012 * n2) / 0.055, 2.0));
-          float rid = 1.0 - abs(n2);
-          float dust = lane * clamp(0.3 + 0.8 * smoothstep(0.45, 0.95, rid * rid + 0.25 * w2), 0.0, 1.0);
-          vec3 starlight = mix(vec3(0.60, 0.68, 0.95), vec3(1.0, 0.82, 0.62), coreW);
-          vec3 col = starlight * (band * grain * 0.022 + bulge * 0.03) * (1.0 - 0.88 * dust);
-          // emission nebula near the env-map glow: wispy H-alpha filaments, O-III teal heart
+          float bulge = exp(-(1.0 - lc) * 8.0) * exp(-b * b / 0.02);
+          float grain = clamp(0.55 + 0.25 * n2 + 0.3 * n3 + 0.15 * w2, 0.05, 1.3);
+          // clumpy dark nebulae along the mid-plane
+          float lane = exp(-pow((bb + 0.01 * n2) / 0.045, 2.0));
+          float dust = lane * smoothstep(-0.25, 0.45, 0.6 * w2 + 0.4 * n2);
+          vec3 starlight = mix(vec3(0.58, 0.67, 0.95), vec3(1.0, 0.83, 0.64), coreW);
+          vec3 col = starlight * (band * grain * 0.014 + bulge * 0.02) * (1.0 - 0.85 * dust);
+          // emission nebula near the env-map glow: soft H-alpha magenta, faint teal heart
           float dn = 1.0 - dot(d, uNeb);
-          float env = exp(-dn * 16.0);
-          float fil = 1.0 - abs(snoise(dw * 5.2 + 7.0) + 0.35 * n3);
-          fil = fil * fil * fil;
-          float heart = exp(-dn * 70.0) * (0.6 + 0.4 * n2);
-          col += env * (0.25 + 0.75 * fil) * (0.7 + 0.3 * n3) * vec3(0.042, 0.008, 0.032);
-          col += heart * vec3(0.004, 0.018, 0.020);
-          col *= 1.0 - 0.5 * dust * smoothstep(0.1, 0.5, env);
-          col += vec3(0.0015, 0.0018, 0.0032); // faint zodiacal/extragalactic floor
+          float env = exp(-dn * 14.0);
+          float cloud = smoothstep(-0.35, 0.8, 0.55 * snoise(dw * 4.3 + 7.0) + 0.3 * w2 + 0.25 * n2);
+          float wisp = 1.0 - abs(n2 + 0.4 * n3);
+          wisp *= wisp;
+          col += env * cloud * (0.55 + 0.45 * wisp) * vec3(0.024, 0.0045, 0.019);
+          col += exp(-dn * 60.0) * cloud * vec3(0.002, 0.010, 0.012);
+          col *= 1.0 - 0.45 * dust * smoothstep(0.1, 0.5, env);
+          col += vec3(0.0014, 0.0017, 0.003); // faint zodiacal/extragalactic floor
           gl_FragColor = vec4(col, 1.0);
         }`,
     }),

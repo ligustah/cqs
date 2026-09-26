@@ -22,8 +22,8 @@ const float HR = ${ATMO.HR.toFixed(6)};
 const float HM = ${ATMO.HM.toFixed(6)};
 const float R_TOP = ${ATMO.top.toFixed(6)};
 // scattering coefficients per planet radius; vertical optical depth ≈ Earth's
-const vec3 BETA_R = vec3(0.0460, 0.1080, 0.2650) / HR;
-const float BETA_M = 0.030 / HM;
+const vec3 BETA_R = vec3(0.0300, 0.0700, 0.1720) / HR; // ~0.65x Earth: clearer disc, limb stays opaque
+const float BETA_M = 0.020 / HM;
 const float BETA_ME = BETA_M * 1.11;
 const float MIE_G = 0.76;
 
@@ -116,7 +116,7 @@ export function createAtmosphereShell({ radius, center, sunDir, sunE, segments =
       uR: { value: radius },
       uSun: { value: sunDir },
       uSunE: { value: sunE },
-      uBoost: { value: 0.85 },
+      uBoost: { value: 1.0 },
     },
     vertexShader: /* glsl */`
       varying vec3 vRel;
