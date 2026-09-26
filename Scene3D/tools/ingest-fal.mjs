@@ -8,7 +8,7 @@
 //   "meshes":    { "fighter": { "url": "https://…glb", "model": "tripo3d/p2/image-to-3d" }, … },
 //   "materials": { "hull": { "basecolor": "https://…", "normal": "…", "roughness": "…", "metalness": "…", "height": "…", "prompt": "…" }, … }
 // }
-// Concepts -> assets/concepts/<name>.webp (1600 px), meshes -> assets/ships/<name>.glb
+// Concepts -> assets/concepts/<name>.webp (1600 px), meshes -> assets/ships/<name>.glb (raw copy in assets/ships/raw/, gitignored)
 // (optimised with optimize-glb.mjs), materials -> assets/materials/<set>/<map>.webp + manifest.json.
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -37,8 +37,10 @@ for (const [name, m] of Object.entries(spec.meshes || {})) {
   await mkdir(join(ROOT, 'assets/ships/raw'), { recursive: true });
   const raw = join(ROOT, `assets/ships/raw/${name}.glb`);
   await writeFile(raw, await download(m.url));
-  const tris = String(pipeline.stages.C_optimise.tris[name.split('-')[0]] ?? 120000);
-  execFileSync('node', [join(ROOT, 'tools/optimize-glb.mjs'), raw, join(ROOT, `assets/ships/${name}.glb`), '--tris', tris, '--tex', String(pipeline.stages.C_optimise.texture)], { stdio: 'inherit' });
+  const cls = name.split('-')[0];
+  const tris = String(pipeline.stages.C_optimise.tris[cls] ?? 120000);
+  const tex = pipeline.stages.C_optimise.texture;
+  execFileSync('node', [join(ROOT, 'tools/optimize-glb.mjs'), raw, join(ROOT, `assets/ships/${name}.glb`), '--tris', tris, '--tex', String(typeof tex === 'object' ? tex[cls] ?? 2048 : tex)], { stdio: 'inherit' });
 }
 
 if (spec.materials) {

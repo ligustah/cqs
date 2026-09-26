@@ -73,7 +73,13 @@
         "destroyer": 150000,
         "carrier": 250000
       },
-      "texture": 2048
+      "texture": {
+        "fighter": 2048,
+        "corvette": 2048,
+        "freighter": 4096,
+        "destroyer": 4096,
+        "carrier": 4096
+      }
     },
     "D_materials": {
       "model": "fal-ai/patina/material",
