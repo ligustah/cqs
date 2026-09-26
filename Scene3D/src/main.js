@@ -108,7 +108,13 @@ function start() {
   const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(w, h, { type: THREE.HalfFloatType, samples: 4 }));
   composer.setPixelRatio(renderer.getPixelRatio());
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(w, h), 0.55, 0.5, 1.6);
+  // Lens glare, not haze. Threshold is scene-linear radiance (before exposure):
+  // sunlit clouds peak ~1.2 and dark hulls ~0.1, so only the star, the hot
+  // throat of each drive bell and the nav lights (>= 3) pass. Mip weights fall
+  // steeply so the glow stays tight around the source (~0.4x its energy).
+  const bloom = new UnrealBloomPass(new THREE.Vector2(w, h), 0.12, 0.0, 2.0);
+  bloom.highPassUniforms.smoothWidth.value = 1.0;
+  bloom.compositeMaterial.uniforms.bloomFactors.value = [1.0, 0.45, 0.18, 0.06, 0.02];
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
 

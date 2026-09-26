@@ -9,14 +9,17 @@
 //     own weathering and panel-to-panel variation (compressed, not flattened);
 //   - saturated markings (orange bands, cobalt IDs, civilian containers) keep
 //     their hue but are dimmed to low-visibility tones;
-//   - roughness is pushed toward matte so there are no glossy highlights.
+//   - roughness is pushed toward matte so there are no glossy highlights, and
+//     metalness is scaled down: the hull is paint (a dielectric), not bare metal.
 import * as THREE from 'three';
 
 export const LIVERIES = {
-  // linear-space values: off-white paint (~0.6) -> ~0.055 (sRGB ~66), dark metal (~0.08) -> ~0.02
-  dark: { base: 0.016, gain: 0.065, tint: '#e6ebf0', mark: 0.22, sat0: 0.22, sat1: 0.5, matte: 0.35 },
+  // linear-space albedo: off-white paint (~0.6) -> ~0.055 (sRGB ~66), mid texel (~0.22) -> ~0.03,
+  // dark metal (~0.08) -> ~0.02. Markings: low-visibility, a slightly lighter
+  // grey that keeps only a hint of their hue (markSat) at about the hull's value.
+  dark: { base: 0.016, gain: 0.065, tint: '#e3e7eb', mark: 0.15, markSat: 0.2, sat0: 0.22, sat1: 0.5, matte: 0.55, metal: 0.25 },
   // civilian hulls: same grey, markings and cargo colours a little brighter
-  civil: { base: 0.018, gain: 0.07, tint: '#e8ebee', mark: 0.5, sat0: 0.22, sat1: 0.45, matte: 0.3 },
+  civil: { base: 0.018, gain: 0.07, tint: '#e8ebee', mark: 0.5, markSat: 0.7, sat0: 0.22, sat1: 0.45, matte: 0.3, metal: 1 },
 };
 
 /** Repaint a MeshStandard/Physical material in place. opts: a LIVERIES key or an object. */
@@ -25,6 +28,7 @@ export function applyLivery(material, opts = 'dark') {
   const uniforms = {
     uLivBase: { value: o.base }, uLivGain: { value: o.gain }, uLivTint: { value: new THREE.Color(o.tint) },
     uLivMark: { value: o.mark }, uLivSat: { value: new THREE.Vector2(o.sat0, o.sat1) }, uLivMatte: { value: o.matte },
+    uLivMarkSat: { value: o.markSat ?? 0.7 }, uLivMetal: { value: o.metal ?? 1 },
   };
   material.userData.livery = uniforms;
   const prev = material.onBeforeCompile;
@@ -32,7 +36,7 @@ export function applyLivery(material, opts = 'dark') {
     prev?.call(material, shader, renderer);
     Object.assign(shader.uniforms, uniforms);
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform float uLivBase, uLivGain, uLivMark, uLivMatte; uniform vec3 uLivTint; uniform vec2 uLivSat;')
+      .replace('#include <common>', '#include <common>\nuniform float uLivBase, uLivGain, uLivMark, uLivMatte, uLivMarkSat, uLivMetal; uniform vec3 uLivTint; uniform vec2 uLivSat;')
       .replace('#include <map_fragment>', `#include <map_fragment>
         {
           vec3 c = diffuseColor.rgb;
@@ -40,10 +44,11 @@ export function applyLivery(material, opts = 'dark') {
           float mx = max(c.r, max(c.g, c.b)), mn = min(c.r, min(c.g, c.b));
           float sat = (mx - mn) / max(mx, 1e-4);
           vec3 grey = (uLivBase + uLivGain * l) * uLivTint;
-          vec3 mark = mix(vec3(l), c, 0.7) * uLivMark; // dimmed, slightly desaturated low-visibility markings
+          vec3 mark = mix(vec3(l), c, uLivMarkSat) * uLivMark; // dimmed, desaturated low-visibility markings
           diffuseColor.rgb = mix(grey, mark, smoothstep(uLivSat.x, uLivSat.y, sat));
         }`)
-      .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, 1.0, uLivMatte);');
+      .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, 1.0, uLivMatte);')
+      .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor *= uLivMetal;');
   };
   const prevKey = material.customProgramCacheKey.bind(material);
   material.customProgramCacheKey = () => `livery|${prevKey()}`;

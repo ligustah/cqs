@@ -14,13 +14,15 @@ const cache = new Map();
 const DEG = Math.PI / 180;
 
 let throatTex = null;
-/** Radial glow for a nozzle throat: white-hot centre fading to a dim blue rim. */
+/** Radial glow for a nozzle throat: small white-hot centre, pale blue body, dark rim
+ *  so the disc melts into the unlit bell wall instead of reading as a flat lamp. */
 function throatTexture() {
   if (throatTex) return throatTex;
   const c = document.createElement('canvas'); c.width = c.height = 128;
   const g = c.getContext('2d');
   const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
-  grd.addColorStop(0, '#ffffff'); grd.addColorStop(0.35, '#d4e2ff'); grd.addColorStop(0.75, '#5a7fd8'); grd.addColorStop(1, '#1b2748');
+  grd.addColorStop(0, '#ffffff'); grd.addColorStop(0.12, '#f3f5ff'); grd.addColorStop(0.3, '#b3c0e8');
+  grd.addColorStop(0.55, '#56669c'); grd.addColorStop(0.8, '#1d2340'); grd.addColorStop(1, '#06070d');
   g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
   throatTex = new THREE.CanvasTexture(c); throatTex.colorSpace = THREE.SRGBColorSpace;
   return throatTex;
@@ -105,8 +107,9 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
   group.name = cfg.name || 'glb-ship';
   group.add(model);
 
-  // hot glow in each nozzle throat, recessed inside the bell so only the bell
-  // interior lights up (the short plume itself comes from effects.js)
+  // hot glow in each nozzle throat, recessed inside the bell so it is seen only
+  // through the bell mouth (the short plume itself comes from effects.js).
+  // Centre radiance = throatGlow: above the bloom threshold only in the hot core.
   const V3 = THREE.Vector3;
   const engines = (cfg.engines || []).flatMap((e) => {
     const list = [{ ...e }];
@@ -115,7 +118,7 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
   }).map((e) => ({ p: new V3(...e.p), dir: new V3(...(e.dir || [0, 0, -1])).normalize(), radius: e.radius, color: e.color || null, length: e.length ?? e.radius * 2.5 }));
   if (engines.length) {
     const disc = new THREE.CircleGeometry(1, 32);
-    const glow = new THREE.MeshBasicMaterial({ map: throatTexture(), color: new THREE.Color(1, 1, 1).multiplyScalar(cfg.throatGlow ?? 1.6), side: THREE.DoubleSide });
+    const glow = new THREE.MeshBasicMaterial({ map: throatTexture(), color: new THREE.Color(1, 1, 1).multiplyScalar(cfg.throatGlow ?? 3.0), side: THREE.DoubleSide });
     for (const e of engines) {
       const m = new THREE.Mesh(disc, glow);
       m.scale.setScalar(e.radius * 0.85);

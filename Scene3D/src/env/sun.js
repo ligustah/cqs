@@ -1,6 +1,7 @@
 // The local star: a screen-aligned billboard at SUN_DIR with a limb-darkened
-// disc, a layered glare halo, four thin diffraction spikes and a faint cyan
-// anamorphic streak. Its lens elements fade when the planet occludes the star.
+// disc, a layered glare halo and four thin diffraction spikes (what a still
+// camera records; no anamorphic streak). Its lens elements fade when the
+// planet occludes the star.
 import * as THREE from 'three';
 
 export function createSun({ dir, distance, discRadius = 0.0052, extent = 0.62 }) {
@@ -43,9 +44,6 @@ export function createSun({ dir, distance, discRadius = 0.0052, extent = 0.62 })
         float spikes = exp(-ao.y / 0.0008) * exp(-ao.x / 0.075) + exp(-ao.x / 0.0008) * exp(-ao.y / 0.075);
         spikes += 0.35 * (exp(-ao.y / 0.0022) * exp(-ao.x / 0.02) + exp(-ao.x / 0.0022) * exp(-ao.y / 0.02));
         col += vec3(1.0, 0.93, 0.84) * spikes * 1.1 * uVis;
-        // anamorphic streak: thin, long, horizontal, cyan like the drive glow
-        float st = exp(-abs(vOff.y) / 0.0011) * (0.6 * exp(-abs(vOff.x) / 0.08) + 0.4 * exp(-abs(vOff.x) / 0.4));
-        col += vec3(0.42, 0.74, 1.0) * st * 0.45 * uVis;
         gl_FragColor = vec4(col, 1.0);
       }`,
     transparent: false,

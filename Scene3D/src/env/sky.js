@@ -1,6 +1,7 @@
-// Background sky at infinity: a restrained galactic band with dust lanes and a
-// magenta emission nebula (matching the nebula glow baked into the env map),
-// a magnitude-distributed star field with black-body tints, and the local star
+// Background sky at infinity, as a camera exposed for sunlit hulls records it:
+// near-black, a very faint galactic band with dust lanes and only a trace of
+// emission nebula, a magnitude-distributed star field with black-body tints
+// (faint: AgX's long toe lifts even m 7.6 stars), and the local star
 // at SUN_DIR. The group follows the camera and draws first (renderOrder -10)
 // with depth test/write off, so everything else paints over it.
 import * as THREE from 'three';
@@ -10,7 +11,7 @@ import { NOISE, FAR_CLAMP } from './glsl.js';
 import { createSun } from './sun.js';
 import { ENV } from './state.js';
 
-// Galactic frame: band plane through the env-map nebula direction, tilted so it
+// Galactic frame: band plane through the nebula direction, tilted so it
 // crosses the hero and lineup skies diagonally.
 const NEBULA_DIR = new THREE.Vector3(-0.7, 0.35, -0.6).normalize();
 const BAND_B = new THREE.Vector3(0.512, -0.074, -0.856).normalize();
@@ -58,7 +59,7 @@ function buildStars(count, radius, seed) {
     else K = u < 0.14 ? 8500 + rnd() * 12000 : u < 0.45 ? 5600 + rnd() * 2400 : 3300 + rnd() * 2300;
     const c = starColor(K).lerp(new THREE.Color(1, 1, 1), 0.35);
     // peak radiance of the PSF; compressed dynamic range (0.3 of true flux ratio)
-    const peak = 0.028 * Math.pow(10, -0.4 * 0.62 * (m - mHi));
+    const peak = 0.0055 * Math.pow(10, -0.4 * 0.62 * (m - mHi)); // brightest ~0.9: below the bloom threshold
     col[i * 3] = c.r * peak; col[i * 3 + 1] = c.g * peak; col[i * 3 + 2] = c.b * peak;
     size[i] = m < 1.5 ? 15 : m < 3.5 ? 6 : 4;
   }
@@ -112,17 +113,17 @@ export function createSky(scene, { stars = 18000, radius = 9000 } = {}) {
           float lane = exp(-pow((bb + 0.01 * n2) / 0.045, 2.0));
           float dust = lane * smoothstep(-0.25, 0.45, 0.6 * w2 + 0.4 * n2);
           vec3 starlight = mix(vec3(0.58, 0.67, 0.95), vec3(1.0, 0.83, 0.64), coreW);
-          vec3 col = starlight * (band * grain * 0.014 + bulge * 0.02) * (1.0 - 0.85 * dust);
-          // emission nebula near the env-map glow: soft H-alpha magenta, faint teal heart
+          vec3 col = starlight * (band * grain * 0.0032 + bulge * 0.0045) * (1.0 - 0.85 * dust);
+          // emission nebula: only a trace of dusty H-alpha, barely above the floor
           float dn = 1.0 - dot(d, uNeb);
           float env = exp(-dn * 14.0);
           float cloud = smoothstep(-0.35, 0.8, 0.55 * snoise(dw * 4.3 + 7.0) + 0.3 * w2 + 0.25 * n2);
           float wisp = 1.0 - abs(n2 + 0.4 * n3);
           wisp *= wisp;
-          col += env * cloud * (0.55 + 0.45 * wisp) * vec3(0.024, 0.0045, 0.019);
-          col += exp(-dn * 60.0) * cloud * vec3(0.002, 0.010, 0.012);
+          col += env * cloud * (0.55 + 0.45 * wisp) * vec3(0.0016, 0.0009, 0.0013);
+          col += exp(-dn * 60.0) * cloud * vec3(0.0003, 0.0010, 0.0012);
           col *= 1.0 - 0.45 * dust * smoothstep(0.1, 0.5, env);
-          col += vec3(0.0014, 0.0017, 0.003); // faint zodiacal/extragalactic floor
+          col += vec3(0.0008, 0.0009, 0.0013); // faint zodiacal/extragalactic floor
           gl_FragColor = vec4(col, 1.0);
         }`,
     }),
