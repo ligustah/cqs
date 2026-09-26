@@ -20,6 +20,7 @@ import { createLighting } from './env/lighting.js';
 import { createSky } from './env/sky.js';
 import { createPlanet } from './env/planet.js';
 import { buildFleet } from './fleet.js';
+import { parkInHangar } from './lib/park.js';
 import { createUI } from './ui.js';
 
 const params = new URLSearchParams(location.search);
@@ -37,7 +38,10 @@ const palette = createPalette();
 const library = await loadPatinaLibrary();
 if (!Object.keys(library).length && params.has('standin')) library.hull = proceduralStandIn(panelSet({ seed: 7, style: 'hull' }));
 setShipContext({ library, livery: params.get('livery') || null });
-const onlyShip = mode === 'ship' ? [params.get('ship') || (ORDER.includes(hash) ? hash : 'fighter')] : ORDER;
+const studioShip = params.get('ship') || (ORDER.includes(hash) ? hash : 'fighter');
+// ?parked=1 fills the studio carrier's hangar with real ships, so every class is needed
+const studioParked = mode === 'ship' && params.has('parked') && params.get('parked') !== '0';
+const onlyShip = mode === 'ship' && !studioParked ? [studioShip] : ORDER;
 await loadShips(onlyShip);
 
 // ---------------------------------------------------------------------------
@@ -150,14 +154,17 @@ function start() {
     g.position.sub(s.envelope.center);
     scene.add(g);
     effects.push(attachEffects(g));
+    if (studioParked && s.anchors.hangarDeck) effects.push(...parkInHangar(g, { buildShip, palette, attachEffects }).effects);
     const box = new THREE.Box3().setFromObject(g);
     lighting.fitShadow(box);
     const diag = s.envelope.size.length();
     const az = THREE.MathUtils.degToRad(parseFloat(params.get('az') ?? '35'));
     const el = THREE.MathUtils.degToRad(parseFloat(params.get('el') ?? '18'));
     const dist = diag * 1.15 * parseFloat(params.get('dist') ?? '1');
-    camera.position.set(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(dist);
-    controls.target.set(0, 0, 0);
+    // parked=1 frames the hangar (the parked ships), otherwise the whole ship
+    const focus = studioParked && s.anchors.hangar ? s.anchors.hangar.p.clone().multiplyScalar(s.scaleCorrection).sub(s.envelope.center) : new THREE.Vector3();
+    camera.position.set(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(dist).add(focus);
+    controls.target.copy(focus);
     if (params.has('planet')) createPlanet(scene);
     if (params.has('debug')) g.add(debugOverlay(s));
     return { ships: [{ group: g, cls }], selected: cls, focus: () => {} };
@@ -182,6 +189,7 @@ function start() {
     const dot = (p, color, r) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 12, 8), new THREE.MeshBasicMaterial({ color, depthTest: false })); m.position.copy(p); m.renderOrder = 11; o.add(m); };
     for (const en of s.engines) dot(en.p, '#ff2020', Math.max(0.15, en.radius * 0.25));
     for (const l of s.lights) dot(l.p, l.color === 'red' ? '#ff3030' : l.color === 'green' ? '#30ff60' : '#ffffff', Math.max(0.12, L * 0.004));
+    for (const l of s.interiorLights || []) dot(l.p, '#ffc070', Math.max(0.2, L * 0.006));
     const h = s.anchors.hangar;
     if (h) {
       const hb = new THREE.Box3().setFromCenterAndSize(h.p, new THREE.Vector3(...h.size));
