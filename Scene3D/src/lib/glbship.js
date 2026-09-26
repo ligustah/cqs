@@ -13,6 +13,19 @@ loader.setMeshoptDecoder(MeshoptDecoder);
 const cache = new Map();
 const DEG = Math.PI / 180;
 
+let throatTex = null;
+/** Radial glow for a nozzle throat: white-hot centre fading to a dim blue rim. */
+function throatTexture() {
+  if (throatTex) return throatTex;
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d');
+  const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  grd.addColorStop(0, '#ffffff'); grd.addColorStop(0.35, '#d4e2ff'); grd.addColorStop(0.75, '#5a7fd8'); grd.addColorStop(1, '#1b2748');
+  g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
+  throatTex = new THREE.CanvasTexture(c); throatTex.colorSpace = THREE.SRGBColorSpace;
+  return throatTex;
+}
+
 export function loadGLB(url) {
   if (!cache.has(url)) cache.set(url, loader.loadAsync(url));
   return cache.get(url);
@@ -92,21 +105,23 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
   group.name = cfg.name || 'glb-ship';
   group.add(model);
 
-  // glowing engine cores so bloom has a source even if the texture is dark
+  // hot glow in each nozzle throat, recessed inside the bell so only the bell
+  // interior lights up (the short plume itself comes from effects.js)
   const V3 = THREE.Vector3;
   const engines = (cfg.engines || []).flatMap((e) => {
     const list = [{ ...e }];
     if (e.mirrorX) list.push({ ...e, p: [-e.p[0], e.p[1], e.p[2]] });
     return list;
-  }).map((e) => ({ p: new V3(...e.p), dir: new V3(...(e.dir || [0, 0, -1])).normalize(), radius: e.radius, color: e.color || null, length: e.length ?? e.radius * 6 }));
-  if (engines.length && palette?.engine) {
-    const disc = new THREE.CylinderGeometry(1, 1, 0.08, 32);
-    disc.rotateX(Math.PI / 2);
+  }).map((e) => ({ p: new V3(...e.p), dir: new V3(...(e.dir || [0, 0, -1])).normalize(), radius: e.radius, color: e.color || null, length: e.length ?? e.radius * 2.5 }));
+  if (engines.length) {
+    const disc = new THREE.CircleGeometry(1, 32);
+    const glow = new THREE.MeshBasicMaterial({ map: throatTexture(), color: new THREE.Color(1, 1, 1).multiplyScalar(cfg.throatGlow ?? 1.6), side: THREE.DoubleSide });
     for (const e of engines) {
-      const m = new THREE.Mesh(disc, palette.engine);
-      m.scale.set(e.radius, e.radius, e.radius);
-      m.position.copy(e.p);
-      m.quaternion.setFromUnitVectors(new V3(0, 0, -1), e.dir);
+      const m = new THREE.Mesh(disc, glow);
+      m.scale.setScalar(e.radius * 0.85);
+      m.position.copy(e.p).addScaledVector(e.dir, -e.radius * 0.35);
+      m.quaternion.setFromUnitVectors(new V3(0, 0, 1), e.dir);
+      m.name = 'nozzle-glow';
       group.add(m);
     }
   }

@@ -7,11 +7,13 @@ const LIGHT_COLORS = {
   red: LIVERY.navRed, green: LIVERY.navGreen, white: '#ffffff', amber: LIVERY.amber, cyan: '#7fe8ff',
 };
 
-// Fusion-torch exhaust. The mesh is only a bounding cylinder (radius 1 = sheath
-// edge, length 1, nozzle at z = 0, plume toward -z); the fragment shader finds
-// where the view ray passes closest to the plume axis and integrates a
-// Gaussian core + sheath there, so the jet reads as a luminous volume from any
-// angle: white-hot core, blue sheath, decaying shock diamonds.
+// Fusion-drive exhaust. In vacuum the plasma is nearly invisible a short way
+// past the magnetic nozzle, so the drive reads as a hot glow in the bell and a
+// short, soft plume (a few nozzle radii), never a long beam. The mesh is only a
+// bounding cylinder (radius 1 = sheath edge, length 1, nozzle at z = 0, plume
+// toward -z); the fragment shader finds where the view ray passes closest to
+// the plume axis and integrates a Gaussian core + sheath there, so the plume
+// reads as a luminous volume from any angle.
 const plumeGeometry = (() => {
   const g = new THREE.CylinderGeometry(1, 1, 1, 24, 1, false);
   g.translate(0, -0.5, 0);
@@ -47,15 +49,18 @@ function plumeMaterial(color, seed) {
         float rho = length(q);                       // closest distance to the axis (sheath radii)
         float s = clamp(-(o.z + t * d.z) / uAspect, -0.2, 1.2); // 0 at nozzle, 1 at plume tail
         float inside = smoothstep(-0.02, 0.03, s) * (1.0 - smoothstep(0.85, 1.0, s));
-        float path = min(1.0 / sqrt(dxy2), 2.5);      // longer path when looking down the jet
+        float path = min(1.0 / sqrt(dxy2), 1.5);      // longer path when looking down the jet
         float sc = 0.10 * (1.0 + 1.8 * s);            // core radius grows downstream
         float ss = 0.42 * (1.0 + 1.1 * s);
-        float diamonds = 1.0 + 1.6 * exp(-s * 7.0) * pow(0.5 + 0.5 * cos(s * 48.0 - uTime * 2.0), 10.0);
+        float diamonds = 1.0 + 0.5 * exp(-s * 6.0) * pow(0.5 + 0.5 * cos(s * 18.0 - uTime * 2.0), 8.0);
         float flick = 0.94 + 0.06 * sin(uTime * 61.0 + uSeed * 9.0) * sin(uTime * 23.0 + uSeed);
-        float core = exp(-rho * rho / (sc * sc)) * exp(-s * 3.2) * diamonds;
-        float sheath = exp(-rho * rho / (ss * ss)) * exp(-s * 1.7);
-        vec3 col = vec3(1.0, 0.97, 1.0) * core * 4.5 + uSheath * sheath * 0.55;
-        col *= inside * path * flick * uPower;
+        float core = exp(-rho * rho / (sc * sc)) * exp(-s * 4.5) * diamonds;
+        float sheath = exp(-rho * rho / (ss * ss)) * exp(-s * 3.0);
+        vec3 col = vec3(1.0, 0.97, 1.0) * core * 2.2 + uSheath * sheath * 0.35;
+        // seen end-on the plume is optically thin, not a searchlight: fade it
+        // when looking down the axis so only the bell glow remains
+        float axial = abs(normalize(vObj - vCam).z);
+        col *= inside * path * flick * uPower * mix(1.0, 0.25, smoothstep(0.55, 0.95, axial));
         gl_FragColor = vec4(col, 1.0);
       }`,
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.BackSide,
@@ -111,7 +116,7 @@ export function attachEffects(group, { power = 1, plumeScale = 1 } = {}) {
   for (const e of info.engines) {
     const m = plumeMaterial(e.color ?? '#3f6dff', seed++ * 1.37);
     const sheathR = e.radius * 1.35;
-    const len = e.length * 5 * plumeScale; // fusion torches run ~30 nozzle radii
+    const len = e.length * plumeScale; // short plume: a few nozzle radii (glbship default 3 r)
     m.uniforms.uPower.value = power;
     m.uniforms.uAspect.value = len / sheathR;
     const mesh = new THREE.Mesh(plumeGeometry, m);
@@ -123,9 +128,9 @@ export function attachEffects(group, { power = 1, plumeScale = 1 } = {}) {
     mesh.name = 'plume';
     group.add(mesh);
     plumes.push(m);
-    // blinding nozzle flare
-    const flare = new THREE.Sprite(new THREE.SpriteMaterial({ map: flareTexture(), color: new THREE.Color(1, 1, 1).multiplyScalar(1.8 * power), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
-    flare.scale.setScalar(e.radius * 3.2);
+    // glow in the nozzle throat
+    const flare = new THREE.Sprite(new THREE.SpriteMaterial({ map: flareTexture(), color: new THREE.Color(1, 1, 1).multiplyScalar(0.45 * power), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+    flare.scale.setScalar(e.radius * 1.6);
     flare.position.copy(e.p).addScaledVector(e.dir, e.radius * 0.3);
     flare.renderOrder = 11;
     group.add(flare);
