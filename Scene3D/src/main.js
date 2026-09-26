@@ -144,7 +144,37 @@ function start() {
     camera.position.set(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(dist);
     controls.target.set(0, 0, 0);
     if (params.has('planet')) createPlanet(scene);
+    if (params.has('debug')) g.add(debugOverlay(s));
     return { ships: [{ group: g, cls }], selected: cls, focus: () => {} };
+  }
+
+  // ?debug: ship-frame axes (X red = port, Y green = dorsal, Z blue = bow), a
+  // 1 m / 5 m keel grid, engine and light anchors, hangar box and mouth.
+  function debugOverlay(s) {
+    const o = new THREE.Group();
+    const e = s.envelope, inv = 1 / s.scaleCorrection;
+    const min = e.min.clone().multiplyScalar(inv), max = e.max.clone().multiplyScalar(inv), size = max.clone().sub(min);
+    const L = Math.max(size.x, size.z);
+    const axes = new THREE.AxesHelper(L * 0.6);
+    axes.material.depthTest = false; axes.renderOrder = 10;
+    o.add(axes);
+    const n = Math.ceil(L / 5) * 5 + 10;
+    const grid = new THREE.GridHelper(n, n, '#ff8a4c', '#3a4150');
+    grid.position.y = min.y;
+    o.add(grid);
+    const box = new THREE.Box3Helper(new THREE.Box3(min, max), '#62dcff');
+    o.add(box);
+    const dot = (p, color, r) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 12, 8), new THREE.MeshBasicMaterial({ color, depthTest: false })); m.position.copy(p); m.renderOrder = 11; o.add(m); };
+    for (const en of s.engines) dot(en.p, '#ff2020', Math.max(0.15, en.radius * 0.25));
+    for (const l of s.lights) dot(l.p, l.color === 'red' ? '#ff3030' : l.color === 'green' ? '#30ff60' : '#ffffff', Math.max(0.12, L * 0.004));
+    const h = s.anchors.hangar;
+    if (h) {
+      const hb = new THREE.Box3().setFromCenterAndSize(h.p, new THREE.Vector3(...h.size));
+      const hh = new THREE.Box3Helper(hb, '#ff5a14'); hh.material.depthTest = false; hh.renderOrder = 10; o.add(hh);
+    }
+    const mo = s.anchors.hangarMouth;
+    if (mo) o.add(new THREE.ArrowHelper((mo.dir || new THREE.Vector3(0, 0, 1)).clone().normalize(), mo.p, L * 0.25, '#ffd000'));
+    return o;
   }
 
   // --- lineup: scale chart. Sterns aligned at x = 0 on a shared metre ruler,

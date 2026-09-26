@@ -1,5 +1,5 @@
 {
-  "about": "Asset pipeline for the CQS reboot orbital fleet. All ship meshes, their textures and the tiling PBR materials are generated with fal.ai (via Composio). three.js then plays Blender's role: import, orient, scale to game data, material upgrade, lighting and rendering. Designs are original; no legacy art is used as input.",
+  "about": "Asset pipeline for the CQS reboot orbital fleet. All ship meshes, their textures and the tiling PBR materials are generated with fal.ai (fal MCP connector). three.js then plays Blender's role: import, orient, scale to game data, material upgrade, lighting and rendering. Designs are original; no legacy art is used as input.",
   "style": "Photorealistic spacecraft in a credible near-future 'naval-industrial' design language, as in a high-end aerospace concept photograph: faceted hard-surface hull with chamfered edges and layered armour plates, off-white thermal-control paint with realistic weathering, scuffs and panel-to-panel colour variation, signal-orange hazard and identification markings and stencilled hull numbers like on real naval ships, small cobalt-blue identification bands, bare brushed-metal and gunmetal structural frames, gold and silver multi-layer insulation blankets on sensor and electronics boxes, dark ceramic heat tiles on the belly, radiator panels, RCS thruster quads, antennas and hand rails at human scale, large fusion-drive engine bells with magnetic-nozzle coils, heavy radiation shielding between the drive and the crew sections. Physically based materials, real-world engineering logic, no aerodynamic wings, no neon, no glowing trim, not a video game, not stylised, not a toy. Original design, not based on any existing franchise.",
   "stages": {
     "A_concept": {
@@ -12,7 +12,8 @@
           "num_images": 2,
           "output_format": "png"
         },
-        "prompt": "A professional concept art design sheet for an original science-fiction space fleet on a clean neutral light-grey studio background. Five ship classes arranged in a tidy grid, each large enough to read its details (not to scale), each with a small clean sans-serif caption: FIGHTER (compact single-seat space-superiority strike craft with a bubble canopy, twin engines and forked stabiliser blades carrying cannons), CORVETTE (short, wide armoured escort gunship with two dorsal twin-barrel turrets, bow torpedo tubes, outrigger engine pods), CIVIL FREIGHTER (long lean spine ship with a forward crew module, a truss keel carrying stacked colourful cargo containers in orange, cobalt, teal, yellow and crimson, and an aft reactor and engine block), DESTROYER (long heavy warship with an armoured wedge prow and a spinal mass-driver muzzle, three turrets, a stepped command tower, big radiator panels and a cluster of engines), FLEET CARRIER (huge slab-sided carrier with a wide brightly lit open hangar bay in the bow, a command island offset to one side, glowing warp-field emitter vanes, point-defence turrets and a massive engine cluster). {style} Photorealistic, like a professional studio photograph of highly detailed physical models, soft even studio lighting, three-quarter views, natural materials and wear."
+        "prompt": "A professional concept art design sheet for an original science-fiction space fleet on a clean neutral light-grey studio background. Five ship classes arranged in a tidy grid, each large enough to read its details (not to scale), each with a small clean sans-serif caption: FIGHTER (compact single-seat space-superiority strike craft about 16 m long with a bubble canopy, a boarding ladder and access hatches, twin engines and forked stabiliser blades carrying cannons), CORVETTE (short, wide armoured escort gunship about 31 m long with two dorsal twin-barrel turrets, bow torpedo tubes, outrigger engine pods, a row of small bridge windows and crew airlock hatches), CIVIL FREIGHTER (long lean spine ship about 50 m long with a forward crew module with small windows and a docking hatch, a truss keel carrying stacked colourful cargo containers in orange, cobalt, teal, yellow and crimson, and an aft reactor and engine block), DESTROYER (long heavy warship about 67 m long with a blunt, faceted, armoured bow block, squared-off and not pointed, housing the recessed muzzle of a spinal mass-driver, three turrets, a stepped command tower with rows of small windows, big radiator panels and a cluster of engines, tiny hatches and ladders showing its size), FLEET CARRIER (huge slab-sided carrier about 260 m long with a wide open hangar bay in the bow lit by interior floodlights with tiny parked craft and deck crew visible for scale, a command island offset to one side with many rows of small windows, dark unlit matte-grey warp-field emitter vanes made of ribbed metal and ceramic with exposed cabling and mounting brackets, point-defence turrets and a massive engine cluster). Photorealistic spacecraft in a credible near-future 'naval-industrial' design language, as in a high-end aerospace concept photograph: faceted hard-surface hull with chamfered edges and layered armour plates, off-white thermal-control paint with realistic weathering, scuffs and panel-to-panel colour variation, signal-orange hazard and identification markings and stencilled hull numbers like on real naval ships, small painted cobalt-blue identification bands, bare brushed-metal and gunmetal structural frames, gold and silver multi-layer insulation blankets on sensor and electronics boxes, dark ceramic heat tiles on the belly, radiator panels, RCS thruster quads, antennas and hand rails at human scale, hatches, ladders and small windows that make each ship read as a real engineered object at its true size, large fusion-drive engine bells with magnetic-nozzle coils, heavy radiation shielding between the drive and the crew sections. Physically based materials, real-world engineering logic, no aerodynamic wings, no neon, no glowing trim, no glowing panel lines, no emissive strips, engines and emitters switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. Photorealistic, like a professional studio photograph of highly detailed physical models, soft even studio lighting, three-quarter views, natural materials and wear.",
+        "note": "2 candidates judged by a 3-agent panel (originality, realism, consistency); candidate 0 chosen. The panel flagged the fighter as reading like a franchise fighter, so the fighter was redesigned (ships.fighter below) and generated with the approved corvette as an extra family reference."
       },
       "isolatedTemplate": "Using the attached concept sheet only as the design-language reference, render ONLY the {class} as one isolated object: {description} Three-quarter view from the front-left and slightly above (camera about 35 degrees off the bow, 20 degrees up). The entire ship is visible and centred with generous empty margin, filling about 70% of the frame. Plain seamless light-grey studio background, soft even lighting, no floor, no cast shadow, no environment, no stars, no text, no labels, no engine exhaust plumes, no motion blur. Photorealistic, like a studio photograph of a highly detailed physical model with real materials and subtle weathering, sharp focus, suitable for 3D reconstruction. {style}",
       "isolatedParams": {
@@ -22,11 +23,12 @@
         "output_format": "png"
       },
       "ships": {
-        "fighter": "a 16 m single-seat space-superiority fighter: compact faceted fuselage, bubble canopy, twin plasma engines at the rear, forked stabiliser blades with cannon barrels, missile rails under the blades, bone-white hull with signal-orange squadron stripes and a small hull number.",
+        "fighter": "a 16 m single-seat space-superiority fighter with a compact, non-aerodynamic layout: one elongated faceted armoured fuselage shaped like a flattened hexagonal pod, a small framed cockpit canopy set low and flush into the upper forward hull (not a bubble on a stalk), a heavy armoured engine block at the stern with two large fusion engine bells side by side, a dorsal spine carrying two short trapezoidal radiator panels laid flat along the hull, two compact weapon sponsons hugging the lower flanks each carrying a single long railgun barrel that runs forward alongside the nose, small missile bays with hatch doors on the belly, RCS thruster quads on the four corners of the hull, a sensor blister under the nose. No wings, no wingtip guns, no tail fins, no S-foils, nothing projecting outward from the sides. Bone-white thermal paint with signal-orange squadron bands, a small cobalt identification band and stencilled hull number F-402.",
         "corvette": "a 32 m armoured escort corvette gunship: short, wide wedge hull, stepped bridge with a window band, two dorsal twin-barrel railgun turrets, four bow torpedo tube doors, two outrigger engine pods on armoured pylons, radiator panels, a sensor mast with gold-foil boxes, hull number K-214 in orange.",
         "freighter": "a 50 m civil freighter: long lean spine ship with a compact forward crew module with windows, a boxed truss keel carrying two rows of stacked standard cargo containers in signal orange, cobalt, teal, sun-yellow, crimson and white, an aft shielded reactor module with radiators and two engines, teal civilian stripe and registry number CT-4.",
-        "destroyer": "a 68 m heavy destroyer: long armoured hull with a wedge prow and a large spinal mass-driver muzzle in the bow, three dorsal gun turrets with long barrels, a stepped command tower with a window band, sensor masts, big radiator panels along the flanks, a heavy engine block with four large plasma nozzles, hull number DD-12 in orange.",
-        "carrier": "a 260 m fleet carrier: huge slab-sided armoured hull with a wide open brightly lit hangar bay mouth in the bow showing a deck inside, a command island superstructure offset to the starboard side, dark metallic warp-field emitter vanes with faint cobalt emitter strips along the flanks, point-defence turrets, radiator arrays, a massive engine cluster of six nozzles at the stern, hull number CV-50 in orange."
+        "destroyer": "a 68 m heavy destroyer: long armoured hull with a blunt faceted armoured bow block (not a triangular wedge) housing a large spinal mass-driver muzzle, three dorsal gun turrets with long barrels, a stepped command tower with a window band, sensor masts, big radiator panels along the flanks, a heavy engine block with four large plasma nozzles, hull number DD-12 in orange.",
+        "carrier": "a 260 m fleet carrier: huge slab-sided armoured hull with a wide open brightly lit hangar bay mouth in the bow showing a deck inside, a command island superstructure offset to the starboard side, dark metallic, unlit warp-field emitter vanes along the flanks, point-defence turrets, radiator arrays, a massive engine cluster of six nozzles at the stern, hull number CV-50 in orange.",
+        "freighter-troops": "a 50 m civil troop transport, the passenger variant of the same freighter family: identical compact forward crew module with windows, the same boxed truss keel, aft shielded reactor module, radiators and two engines, but instead of cargo containers the keel carries a row of three long pressurised cylindrical troop habitat modules, off-white with rows of small round windows, boarding hatches, docking collars and hand rails, teal civilian stripe and registry number CT-7."
       },
       "beautyTemplate": "Using the attached image as the exact ship design, create a photorealistic photograph of this {class} under thrust in low orbit above an Earth-like planet: its fusion drive firing a long, intensely bright blue-white plasma exhaust plume with faint shock diamonds, lit by a single hard sunlight from the upper right with deep realistic shadows and blue planet-shine from below, shot with a long lens like a real orbital photograph, natural camera exposure, no lens-flare spam, cinematic but believable, not a video game. {style}",
       "beautyParams": {
@@ -34,7 +36,18 @@
         "resolution": "2K",
         "num_images": 1,
         "output_format": "png"
-      }
+      },
+      "variantReferences": {
+        "freighter-troops": [
+          "bible",
+          "freighter (approved isolated image)"
+        ],
+        "fighter": [
+          "bible",
+          "corvette (approved isolated image)"
+        ]
+      },
+      "beautyNote": "fighter beauty was regenerated once with an extra clause: only the two rear bells fire, straight aft as one collimated jet; nothing else glows."
     },
     "B_mesh": {
       "primary": {
@@ -44,7 +57,8 @@
           "pbr": true,
           "texture_quality": "detailed",
           "delight": true,
-          "export_uv": true
+          "export_uv": true,
+          "face_limit_max": 50000
         }
       },
       "comparison": {
@@ -54,15 +68,48 @@
           "generate_type": "Normal",
           "face_count": 300000
         },
-        "note": "run on the fighter and carrier; keep whichever reconstructs hard-surface detail better"
+        "note": "bake-off on the fighter only"
       },
       "faceLimits": {
-        "fighter": 60000,
-        "corvette": 100000,
-        "freighter": 120000,
-        "destroyer": 150000,
-        "carrier": 250000
-      }
+        "fighter": 50000,
+        "corvette": 50000,
+        "freighter": 50000,
+        "destroyer": 50000,
+        "carrier": 50000
+      },
+      "bakeoff": {
+        "subject": "fighter",
+        "result": "tripo3d/p2/image-to-3d (2 of 3 judges)",
+        "tripo": "49,860 tris native, crisp and correct hull number and livery, CAD-like planar topology, no decimation loss; hull slightly rounded by smooth vertex normals",
+        "hunyuan": "sharper hull chamfers (geometry judge preferred it) but garbled and mirrored hull numbers, messy stern needing remodelling, 176k tris decimated to 60k",
+        "judges": [
+          {
+            "lens": "geometry",
+            "winner": "hunyuan",
+            "scores": {
+              "tripo": 6.3,
+              "hunyuan": 7.6
+            }
+          },
+          {
+            "lens": "texture/PBR",
+            "winner": "tripo",
+            "scores": {
+              "tripo": 7.5,
+              "hunyuan": 6
+            }
+          },
+          {
+            "lens": "production",
+            "winner": "tripo",
+            "scores": {
+              "tripo": 8,
+              "hunyuan": 6
+            }
+          }
+        ]
+      },
+      "used": "tripo3d/p2/image-to-3d for every ship: fighter, corvette, freighter, freighter-troops, destroyer, carrier (face_limit is capped at 50,000 by the endpoint)"
     },
     "C_optimise": {
       "tool": "tools/optimize-glb.mjs",

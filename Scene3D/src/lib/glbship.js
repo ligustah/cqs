@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
 import { addDetailLayer } from './patina.js';
 
 const loader = new GLTFLoader();
@@ -25,6 +26,8 @@ export function loadGLB(url) {
  *              the small volume correction for the class's hangar slots
  *   detail     { set: 'hull', tile: 4, normalStrength, roughAmount, cavity }
  *   materials  optional per-material overrides by GLB material name or '*'
+ *   crease     optional angle in degrees: split vertex normals at sharper edges
+ *              so faceted hard-surface hulls shade flat instead of rounded
  *   engines    [{ p: [x,y,z], radius, dir? }]    (metres, ship frame, before correction)
  *   lights     [{ p, color, size, blink }]
  *   anchors    { name: { p, ...extra } }
@@ -46,13 +49,18 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
 
   // material upgrade: shared per prototype (buildShip caches prototypes)
   const upgraded = new Map();
+  const creased = new Map();
   const detailSet = cfg.detail ? library[cfg.detail.set] : null;
   let triangles = 0, meshes = 0;
   model.traverse((o) => {
     if (!o.isMesh) return;
     meshes++;
-    const g = o.geometry;
+    let g = o.geometry;
     triangles += (g.index ? g.index.count : g.attributes.position.count) / 3;
+    if (cfg.crease) {
+      if (!creased.has(g)) creased.set(g, toCreasedNormals(g, cfg.crease * DEG));
+      g = o.geometry = creased.get(g);
+    }
     o.castShadow = true;
     o.receiveShadow = true;
     o.userData.hull = true; // raycast target for the hangar containment test
