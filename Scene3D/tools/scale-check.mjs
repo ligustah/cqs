@@ -2,6 +2,7 @@
 //   node tools/scale-check.mjs            -> table + exit code 1 on failure
 //   node tools/scale-check.mjs --json     -> raw report
 import { openBrowser } from './browser.mjs';
+import { carrierLoads, CLASSES } from '../src/lib/scale.js';
 
 const b = await openBrowser();
 const { pg, logs } = await b.page();
@@ -41,6 +42,21 @@ if (report.hangar) {
     const pass = hi.fraction >= 0.95;
     console.log(`  hangar box inside hull: ${(hi.fraction * 100).toFixed(1)}% of ${hi.samples} samples ${pass ? 'OK' : 'FAIL (need >= 95%)'}${pass ? '' : ' escapes ' + JSON.stringify(hi.misses)}`);
     if (!pass) ok = false;
+  }
+  // Carrier size from game data: UnitEnum.CARRIER has spaceTransport = 50 and
+  // Fleet.mayLeaveSystem() needs capacity >= the summed getSize() of the carried
+  // non-warp ships. The hangar cavity scales with the hull, so the smallest
+  // carrier is the one whose scaled hangar still fits every legal full load.
+  const carrierRow = report.rows.find((r) => r.cls === 'carrier');
+  if (carrierRow) {
+    const env = Object.fromEntries(report.rows.filter((r) => r.size).map((r) => [r.cls, { x: r.B, y: r.H, z: r.L }]));
+    const fitsAt = (k) => carrierLoads({ x: report.hangar[0] * k, y: report.hangar[1] * k, z: report.hangar[2] * k }, env).every((l) => l.ok);
+    let k = 1;
+    if (fitsAt(1)) { while (k > 0.5 && fitsAt(k - 0.005)) k -= 0.005; }
+    const tight = carrierLoads({ x: report.hangar[0] * k, y: report.hangar[1] * k, z: report.hangar[2] * k }, env).filter((l) => l.fits === l.need).map((l) => l.cls);
+    console.log(`  capacity ${CLASSES.carrier.capacity} slots (UnitEnum.CARRIER spaceTransport); loads: ${report.loads.map((l) => `${l.need} ${l.cls} x ${CLASSES[l.cls].size}`).join(', ')}`);
+    console.log(`  smallest carrier whose hangar fits every load: ${(carrierRow.L * k).toFixed(1)} m (binding: ${tight.join(', ') || '-'}); built: ${carrierRow.L} m (+${((1 / k - 1) * 100).toFixed(1)}%)`);
+    if (1 / k - 1 > 0.1 && carrierRow.L > 240) { console.log('  carrier is more than 10% larger than its hangar loads require'); ok = false; }
   }
   const carrier = report.rows.find((r) => r.cls === 'carrier');
   const hv = report.hangar[0] * report.hangar[1] * report.hangar[2];
