@@ -136,40 +136,71 @@ function start() {
     return { ships: [{ group: g, cls }], selected: cls, focus: () => {} };
   }
 
-  // --- lineup: every class side by side on a 10 m measuring grid -----------
+  // --- lineup: scale chart. Sterns aligned at x = 0 on a shared metre ruler,
+  // one row per class (smallest in front), bows toward +X.
   function setupLineup() {
+    camera.fov = parseFloat(params.get('fov') || '24');
+    camera.updateProjectionMatrix();
     const ships = [];
-    const gap = 26;
-    let x = 0;
+    const gap = 16;
     const built = ORDER.map((cls) => buildShip(cls, palette));
+    const side = Math.cbrt(SLOT_VOLUME);
+    let z = side / 2 + gap; // row 0 is the slot cube at z = 0
+    let maxL = 0;
     built.forEach((g, i) => {
       const s = g.userData.ship;
-      // profile view: bow toward +X
-      g.rotation.y = Math.PI / 2;
-      const L = s.envelope.size.z, B = s.envelope.size.x;
-      const cx = x + L / 2;
-      g.position.set(cx - s.envelope.center.z, -s.envelope.min.y, s.envelope.center.x);
-      x += L + gap;
+      const L = s.envelope.size.z, B = s.envelope.size.x, H = s.envelope.size.y;
+      g.rotation.y = Math.PI / 2; // bow -> +X
+      const rowZ = -(z + B / 2);
+      z += B + gap;
+      maxL = Math.max(maxL, L);
+      // local envelope min.z (stern) lands on x = 0; bottom on y = 0
+      g.position.set(-s.envelope.min.z, -s.envelope.min.y, rowZ + s.envelope.center.x);
       scene.add(g);
       effects.push(attachEffects(g, { power: 0.6 }));
-      ships.push({ group: g, cls: ORDER[i], center: new THREE.Vector3(cx, s.envelope.size.y / 2, 0), length: L, beam: B });
+      ships.push({ group: g, cls: ORDER[i], center: new THREE.Vector3(L / 2, H / 2, rowZ), length: L, beam: B });
       const label = document.createElement('div');
-      label.className = 'ship-label';
-      label.innerHTML = `<b>${CLASSES[ORDER[i]].label}</b><span>${L.toFixed(1)} m</span>`;
+      label.className = 'ship-label row';
+      label.innerHTML = `<b>${CLASSES[ORDER[i]].label}</b><span>${L.toFixed(1)} m · ${CLASSES[ORDER[i]].size ? CLASSES[ORDER[i]].size + ' slot' + (CLASSES[ORDER[i]].size > 1 ? 's' : '') : 'hangar ' + CLASSES[ORDER[i]].capacity + ' slots'}</span>`;
       const lo = new CSS2DObject(label);
-      lo.position.set(cx, -2, B / 2 + 10);
+      lo.center.set(0, 0.5);
+      lo.position.set(L + 8, H / 2, rowZ);
       scene.add(lo);
     });
-    const total = x - gap;
-    const grid = measuringGrid(total + 120, 260);
-    grid.position.set(total / 2, 0, 0);
+    // reference cube: one hangar slot (800 m^3) in the front row
+    const cube = new THREE.Mesh(new THREE.BoxGeometry(side, side, side), new THREE.MeshBasicMaterial({ color: '#ff5a14', transparent: true, opacity: 0.2, depthWrite: false }));
+    cube.add(new THREE.LineSegments(new THREE.EdgesGeometry(cube.geometry), new THREE.LineBasicMaterial({ color: '#ff8a4c' })));
+    cube.position.set(side / 2, side / 2, 0);
+    scene.add(cube);
+    const cubeLabel = document.createElement('div');
+    cubeLabel.className = 'ship-label row';
+    cubeLabel.innerHTML = `<b>1 hangar slot</b><span>${side.toFixed(2)} m cube = ${SLOT_VOLUME} m³ of parking envelope</span>`;
+    const cl = new CSS2DObject(cubeLabel);
+    cl.center.set(0, 0.5);
+    cl.position.set(side + 8, side / 2, 0);
+    scene.add(cl);
+    // grid + ruler
+    const depth = z + 40, width = maxL + 140;
+    const grid = measuringGrid(width, depth);
+    grid.position.set(width / 2 - 40, 0, -depth / 2 + side / 2 + 24);
     scene.add(grid);
+    for (let m = 0; m <= maxL + 1; m += 25) {
+      const tick = document.createElement('div');
+      tick.className = 'ruler-tick';
+      tick.textContent = `${m} m`;
+      const to = new CSS2DObject(tick);
+      to.center.set(0, 0);
+      to.position.set(m, 0, side / 2 + 10);
+      scene.add(to);
+    }
     const box = new THREE.Box3();
     ships.forEach((s) => box.expandByObject(s.group));
     lighting.fitShadow(box);
+    box.expandByObject(cube);
     const center = box.getCenter(new THREE.Vector3());
-    controls.target.copy(center);
-    camera.position.set(center.x - total * 0.12, total * 0.32, total * 0.95);
+    const span = Math.max(box.max.x - box.min.x, box.max.z - box.min.z);
+    controls.target.copy(center).add(new THREE.Vector3(span * 0.06, 0, 0));
+    camera.position.copy(center).add(new THREE.Vector3(-span * 0.55, span * 1.35, span * 1.9));
     // ghost hangar with the 50-fighter load
     const carrierShip = ships.find((s) => s.cls === 'carrier');
     const hangarViz = carrierShip ? hangarLoadViz(carrierShip.group, built[0].userData.ship.envelope.size) : null;
@@ -178,7 +209,7 @@ function start() {
       focus(cls) {
         const s = ships.find((q) => q.cls === cls);
         if (!s) return;
-        flyTo(s.center, Math.max(30, s.length * 1.6), new THREE.Vector3(-0.35, 0.35, 1));
+        flyTo(s.center, Math.max(40, s.length * 2.4), new THREE.Vector3(-0.3, 0.55, 1));
       },
       toggle(key, on) { if (key === 'hangar' && hangarViz) hangarViz.visible = on; },
     };
@@ -226,7 +257,7 @@ function start() {
     const m = new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, side: THREE.DoubleSide,
       uniforms: { uSize: { value: new THREE.Vector2(width, depth) } },
-      vertexShader: `varying vec2 vP; varying vec2 vUv; void main(){ vUv = uv; vP = position.xz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+      vertexShader: `varying vec2 vP; varying vec2 vUv; void main(){ vUv = uv; vP = (modelMatrix * vec4(position, 1.0)).xz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
       fragmentShader: `
         varying vec2 vP; varying vec2 vUv; uniform vec2 uSize;
         float line(vec2 p, float s, float w){ vec2 g = abs(fract(p / s - 0.5) - 0.5) * s / fwidth(p); return 1.0 - clamp(min(g.x, g.y) - w, 0.0, 1.0); }
@@ -339,6 +370,7 @@ function start() {
     composer.render();
     labelRenderer.render(scene, camera);
     frames++;
+    if (frames === 2) { const l = document.getElementById('loading'); if (l) { if (still) l.hidden = true; else l.classList.add('done'); } }
     if (still && frames === 3) { window.__ready = true; document.body.dataset.ready = '1'; return; }
     requestAnimationFrame(frame);
   }

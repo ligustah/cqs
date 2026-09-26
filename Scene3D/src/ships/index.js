@@ -28,8 +28,9 @@ function fallback(cls, palette) {
   return b.finish({ broken: true });
 }
 
-/** Build a ship of class `cls`, normalised to its game-derived hangar size. */
-export function buildShip(cls, palette, opts = {}) {
+const protos = new Map();
+
+function buildFresh(cls, palette, opts) {
   const mod = SHIPS[cls];
   let group;
   try {
@@ -43,6 +44,23 @@ export function buildShip(cls, palette, opts = {}) {
   normalizeShip(group, cls);
   Object.assign(group.userData.ship, { cls, meta: mod?.meta ?? { name: cls }, spec: CLASSES[cls] });
   return group;
+}
+
+/**
+ * Build a ship of class `cls`, normalised to its game-derived hangar size.
+ * Repeated calls with the same options return new instances that share
+ * geometry, materials and the (read-only) userData.ship record.
+ */
+export function buildShip(cls, palette, opts = {}) {
+  const key = `${cls}:${JSON.stringify(opts)}`;
+  let proto = protos.get(key);
+  if (!proto) { proto = buildFresh(cls, palette, opts); protos.set(key, proto); }
+  const g = new THREE.Group();
+  g.name = proto.name;
+  for (const child of proto.children) g.add(child.clone());
+  g.scale.copy(proto.scale);
+  g.userData.ship = proto.userData.ship;
+  return g;
 }
 
 export { THREE };
