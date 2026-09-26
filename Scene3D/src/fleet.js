@@ -68,7 +68,9 @@ export function buildFleet({ palette, buildShip, attachEffects }) {
     { rx: cB * 3.4, rz: cL * 1.9, y: -30, speed: -0.035, phase: 2.2, tilt: -0.06, n: 3 },
     { rx: cB * 1.8, rz: cL * 1.2, y: 120, speed: 0.06, phase: 4.1, tilt: 0.12, n: 2 },
   ];
-  const vic = [V(0, 0, 0), V(-18, -2, -20), V(18, 2, -20)];
+  // vic formation spaced by the fighter's own size (about 1.6 spans abeam, 1.3 lengths astern)
+  const fE = buildShip('fighter', palette).userData.ship.envelope.size;
+  const vic = [V(0, 0, 0), V(-fE.x * 1.6, -fE.y * 0.3, -fE.z * 1.3), V(fE.x * 1.6, fE.y * 0.3, -fE.z * 1.3)];
   for (const p of patrols) {
     const members = [];
     for (let i = 0; i < p.n; i++) members.push({ holder: addFighter(i === 0 ? 'lead' : 'wing'), offset: vic[i] });

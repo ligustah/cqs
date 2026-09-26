@@ -9,7 +9,8 @@ export const asset = {
   concept: './assets/concepts/destroyer.webp', beauty: './assets/concepts/destroyer-beauty.webp',
   rotate: [0, -90, 0],
   length: 38.3,
-  detail: { set: 'hull', tile: 4, normalStrength: 0.8, roughAmount: 0.5, cavity: 0.5 },
+  crease: 35,
+  detail: { set: 'armor', tile: 4, normalStrength: 1.0, roughAmount: 0.5, cavity: 0.5 },
   materials: { '*': { envMapIntensity: 1.0 } },
   engines: [
     { p: [5.057, -1.224, -19.15], radius: 1.19 },
@@ -20,8 +21,10 @@ export const asset = {
     { p: [-5.108, -4.377, -19.15], radius: 1.19 },
   ],
   lights: [
-    { p: [7.25, -3.0, -9.0], color: 'red', size: 0.5 },
-    { p: [-7.25, -3.0, -9.0], color: 'green', size: 0.5 },
+    { p: [7.41, -3.0, -3.80], color: 'red', mirrorX: true, mirrorColor: 'green', size: 0.5 },
+    { p: [0, 4.82, -4.8], color: 'white', size: 0.5, blink: { period: 1.4, duty: 0.1 } },
+    { p: [0, -7.28, -2.0], color: 'white', size: 0.5, blink: { period: 1.4, duty: 0.1, phase: 0.5 } },
+    { p: [0, 4.45, -9.10], color: 'white', size: 0.4 },
   ],
   anchors: {},
 };

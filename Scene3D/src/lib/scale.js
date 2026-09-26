@@ -6,15 +6,17 @@
 // The CARRIER carries getSpaceUnitCapacity() = 50 size units of non-warp ships.
 //
 // We read "size" as the ship's parking envelope in a hangar (the axis-aligned
-// bounding box, L x B x H). One size unit is fixed at SLOT_VOLUME cubic metres,
-// set so that the fighter comes out at ~16 m long.
+// bounding box, L x B x H), so a destroyer takes 12x the fighter's volume, not
+// 12x its length. One size unit is SLOT_VOLUME cubic metres, set from the
+// smallest class: a fighter with a crew of 1-4 is ~25 m long.
 // Each ship is uniformly scaled so its envelope volume = size x SLOT_VOLUME.
 //
-// The carrier's own hull is not a hangar slot. Its hangar bay is sized so that
-// every legal full load physically fits (50 fighters, 10 corvettes,
-// 4 destroyers or 12 freighters, with 2 m clearance). See carrierLoads().
+// The carrier's own hull is not a hangar slot (it is warp-capable and never
+// carried). It is a 900 m design whose hangar bay must physically hold every
+// legal full load (50 fighters, 10 corvettes, 4 destroyers or 12 civil ships,
+// with 2 m clearance). See carrierLoads().
 
-export const SLOT_VOLUME = 800; // m^3 per hangar size unit
+export const SLOT_VOLUME = 3200; // m^3 per hangar size unit (fighter ~25 m)
 
 export const CLASSES = {
   fighter:   { size: 1,  label: 'Fighter',     gameId: 'FIGHTER',   role: 'Space-superiority strike craft' },

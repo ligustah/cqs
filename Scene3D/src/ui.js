@@ -68,6 +68,7 @@ export function createUI({ mode, still, world, classes, order, onMode, onFocus, 
         <div><dt>Beam</dt><dd>${fmt(e.x)} m</dd></div>
         <div><dt>Height</dt><dd>${fmt(e.y)} m</dd></div>
         <div><dt>Envelope</dt><dd>${fmt(s.envelopeVolume, 0)} m³</dd></div>
+        ${s.meta?.crew ? `<div><dt>Crew</dt><dd>${s.meta.crew}</dd></div>` : ''}
         ${spec.size ? `<div><dt>Slots</dt><dd>${fmt(s.envelopeVolume / SLOT_VOLUME, 2)} × ${SLOT_VOLUME} m³</dd></div>` : ''}
       </dl>
       ${loads}

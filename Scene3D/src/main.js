@@ -213,6 +213,23 @@ function start() {
     cube.add(new THREE.LineSegments(new THREE.EdgesGeometry(cube.geometry), new THREE.LineBasicMaterial({ color: '#ff8a4c' })));
     cube.position.set(side / 2, side / 2, 0);
     scene.add(cube);
+    // a 1.8 m crew member beside the cube: the same human scale every hull is detailed to
+    const person = new THREE.Group();
+    const suit = new THREE.MeshStandardMaterial({ color: '#c9ccd2', roughness: 0.7 });
+    const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 1.05, 4, 12), suit);
+    body.position.y = 0.22 + 1.05 / 2 + 0.02;
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 12), suit);
+    head.position.y = 1.62;
+    person.add(body, head);
+    person.position.set(side + 2.5, 0, 0);
+    scene.add(person);
+    const personLabel = document.createElement('div');
+    personLabel.className = 'ship-label row';
+    personLabel.innerHTML = '<b>crew member</b><span>1.8 m</span>';
+    const pl = new CSS2DObject(personLabel);
+    pl.center.set(0.5, 1);
+    pl.position.set(side + 2.5, 2.4, 0);
+    scene.add(pl);
     const cubeLabel = document.createElement('div');
     cubeLabel.className = 'ship-label row';
     cubeLabel.innerHTML = `<b>1 hangar slot</b><span>${side.toFixed(2)} m cube = ${SLOT_VOLUME} m³ of parking envelope</span>`;
