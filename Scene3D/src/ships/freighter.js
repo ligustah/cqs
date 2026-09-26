@@ -1,18 +1,24 @@
-// PLACEHOLDER — replaced by the final design.
-import { ShipBuilder, geo, section } from '../lib/kit.js';
-
-export const meta = { name: 'placeholder freighter', designation: '---', blurb: '' };
-
-export function build(mat) {
-  const b = new ShipBuilder('freighter', mat, { uvScale: 4 });
-  b.add(geo.loft([
-    { z: -50 / 2, sec: section.superellipse(8 * 0.5, 8, 4) },
-    { z: 50 * 0.2, sec: section.superellipse(8, 8, 4) },
-    { z: 50 / 2, sec: section.superellipse(8 * 0.2, 8 * 0.3, 4) },
-  ]), 'hull');
-  b.engine({ p: [0, 0, -50 / 2], radius: 8 * 0.25 });
-  b.light({ p: [8 / 2, 0, 0], color: 'green', blink: { period: 1.4, duty: 0.15 } });
-  b.light({ p: [-8 / 2, 0, 0], color: 'red', blink: { period: 1.4, duty: 0.15 } });
-  
-  return b.finish();
-}
+// draft
+export const meta = { name: 'Drover-class civil transport', designation: 'CT-4', blurb: 'draft' };
+export const asset = {
+  glb: './assets/ships/freighter.glb', generator: 'tripo3d/p2/image-to-3d',
+  concept: './assets/concepts/freighter.webp', beauty: './assets/concepts/freighter-beauty.webp',
+  rotate: [0, 0, 0],
+  length: 30.88,
+  detail: { set: 'hull', tile: 3, normalStrength: 0.6, roughAmount: 0.5, cavity: 0.5 },
+  materials: { '*': { envMapIntensity: 1.0 } },
+  engines: [
+    { p: [1.866, -0.513, -15.44], radius: 0.953 },
+    { p: [-1.725, -0.514, -15.44], radius: 0.955 },
+  ],
+  lights: [],
+  anchors: {},
+};
+export const variants = {
+  cargo: {},
+  troops: {
+    glb: './assets/ships/freighter-troops.glb',
+    concept: './assets/concepts/freighter-troops.webp', beauty: './assets/concepts/freighter-troops-beauty.webp',
+    length: 30.69,
+  },
+};

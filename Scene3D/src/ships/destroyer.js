@@ -1,18 +1,27 @@
-// PLACEHOLDER — replaced by the final design.
-import { ShipBuilder, geo, section } from '../lib/kit.js';
-
-export const meta = { name: 'placeholder destroyer', designation: '---', blurb: '' };
-
-export function build(mat) {
-  const b = new ShipBuilder('destroyer', mat, { uvScale: 4 });
-  b.add(geo.loft([
-    { z: -68 / 2, sec: section.superellipse(14 * 0.5, 10, 4) },
-    { z: 68 * 0.2, sec: section.superellipse(14, 10, 4) },
-    { z: 68 / 2, sec: section.superellipse(14 * 0.2, 10 * 0.3, 4) },
-  ]), 'hull');
-  b.engine({ p: [0, 0, -68 / 2], radius: 10 * 0.25 });
-  b.light({ p: [14 / 2, 0, 0], color: 'green', blink: { period: 1.4, duty: 0.15 } });
-  b.light({ p: [-14 / 2, 0, 0], color: 'red', blink: { period: 1.4, duty: 0.15 } });
-  
-  return b.finish();
-}
+// Destroyer DD-12 — generated with fal (see pipeline/fal-pipeline.json).
+// Draft: anchors being measured.
+export const meta = {
+  name: 'Bastion-class destroyer', designation: 'DD-12',
+  blurb: 'Heavy line destroyer built around a spinal mass driver in an armoured octagonal bow block, with twin-gun dorsal turrets, a stepped command tower and six fusion bells in the stern.',
+};
+export const asset = {
+  glb: './assets/ships/destroyer.glb', generator: 'tripo3d/p2/image-to-3d',
+  concept: './assets/concepts/destroyer.webp', beauty: './assets/concepts/destroyer-beauty.webp',
+  rotate: [0, -90, 0],
+  length: 38.3,
+  detail: { set: 'hull', tile: 4, normalStrength: 0.8, roughAmount: 0.5, cavity: 0.5 },
+  materials: { '*': { envMapIntensity: 1.0 } },
+  engines: [
+    { p: [5.057, -1.224, -19.15], radius: 1.19 },
+    { p: [-0.517, -0.810, -19.15], radius: 1.19 },
+    { p: [-5.129, -1.235, -19.15], radius: 1.19 },
+    { p: [5.123, -4.368, -19.15], radius: 1.19 },
+    { p: [-0.534, -5.262, -19.15], radius: 1.19 },
+    { p: [-5.108, -4.377, -19.15], radius: 1.19 },
+  ],
+  lights: [
+    { p: [7.25, -3.0, -9.0], color: 'red', size: 0.5 },
+    { p: [-7.25, -3.0, -9.0], color: 'green', size: 0.5 },
+  ],
+  anchors: {},
+};
