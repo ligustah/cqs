@@ -109,12 +109,52 @@
           }
         ]
       },
-      "used": "tripo3d/p2/image-to-3d for every ship: fighter, corvette, freighter, freighter-troops, destroyer, carrier (face_limit is capped at 50,000 by the endpoint)"
+      "used": "tripo3d/h3.1/multiview-to-3d for every final ship (the earlier tripo3d/p2/image-to-3d meshes were superseded)",
+      "final": {
+        "model": "tripo3d/h3.1/multiview-to-3d",
+        "inputs": "image_urls [front, left (port), back, right (starboard)] cropped from one 4K nano-banana-pro/edit orthographic turnaround sheet of the approved concept (one image keeps the views consistent)",
+        "params": {
+          "texture": true,
+          "pbr": true,
+          "texture_quality": "detailed",
+          "geometry_quality": "detailed",
+          "face_limit": "per class, see faceLimitsFinal"
+        },
+        "faceLimitsFinal": {
+          "fighter": 80000,
+          "corvette": 100000,
+          "freighter": 120000,
+          "destroyer": 150000,
+          "carrier": 250000
+        },
+        "why": "Pilot on fighter + destroyer (3 judges each: geometry, texture/PBR, production) ranked H3.1 multiview first on both (Borda 10 and 12), ahead of H3.1 single-view, Hunyuan3D v3.1 Pro multiview and the P2 single-view meshes: crisper facets, legible non-mirrored hull numbers on both flanks, a real stern and belly instead of hallucinated ones, cleaner topology at the budget; also cheaper ($0.60 per model with detailed geometry + textures vs $1.20 for P2).",
+        "turnaroundPrompt": "Technical orthographic turnaround sheet of EXACTLY this spacecraft (same design, proportions, livery, markings, weathering). Six views in a clean 3 x 2 grid of equal cells on a plain seamless light-grey background: top row: FRONT view (straight at the bow, camera level), PORT SIDE view (straight at the left side, bow pointing left), STERN view (straight at the engines from behind, camera level); bottom row: STARBOARD SIDE view (straight at the right side, bow pointing right), TOP view (plan view straight down, bow pointing up), BOTTOM view (straight up at the belly, bow pointing up). Orthographic long-lens projection, every view at the same scale, centred in its cell with margin, soft even studio lighting, no cast shadows, no floor, no text, no labels, no captions, no grid lines, no engine exhaust. Photorealistic studio photograph of a detailed physical model."
+      },
+      "pilot": {
+        "ships": [
+          "fighter",
+          "destroyer"
+        ],
+        "borda": {
+          "fighter": {
+            "h31multi": 10,
+            "h31single": 9,
+            "hunmulti": 6,
+            "p2": 5
+          },
+          "destroyer": {
+            "h31multi": 12,
+            "h31single": 7,
+            "p2": 7,
+            "hunmulti": 4
+          }
+        }
+      }
     },
     "C_optimise": {
       "tool": "tools/optimize-glb.mjs",
       "tris": {
-        "fighter": 60000,
+        "fighter": 80000,
         "corvette": 100000,
         "freighter": 120000,
         "destroyer": 150000,
