@@ -35,7 +35,7 @@ const palette = createPalette();
 // fal PATINA tiling PBR sets (assets/materials); ?standin uses procedural textures for testing
 const library = await loadPatinaLibrary();
 if (!Object.keys(library).length && params.has('standin')) library.hull = proceduralStandIn(panelSet({ seed: 7, style: 'hull' }));
-setShipContext({ library });
+setShipContext({ library, livery: params.get('livery') || null });
 const onlyShip = mode === 'ship' ? [params.get('ship') || (ORDER.includes(hash) ? hash : 'fighter')] : ORDER;
 await loadShips(onlyShip);
 

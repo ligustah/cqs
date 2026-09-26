@@ -6,6 +6,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
 import { addDetailLayer } from './patina.js';
+import { applyLivery } from './livery.js';
 
 const loader = new GLTFLoader();
 loader.setMeshoptDecoder(MeshoptDecoder);
@@ -25,6 +26,7 @@ export function loadGLB(url) {
  *   length     design length in metres (bounding-box Z); scale.js then applies
  *              the small volume correction for the class's hangar slots
  *   detail     { set: 'hull', tile: 4, normalStrength, roughAmount, cavity }
+ *   livery     optional repaint of the generated texture: 'dark' | 'civil' | {base, gain, mark, ...} (see livery.js)
  *   materials  optional per-material overrides by GLB material name or '*'
  *   crease     optional angle in degrees: split vertex normals at sharper edges
  *              so faceted hard-surface hulls shade flat instead of rounded
@@ -74,6 +76,7 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
       if (over.metalness !== undefined) mm.metalness = over.metalness;
       if (over.color) mm.color = new THREE.Color(over.color);
       if (over.emissiveBoost && mm.emissiveMap) mm.emissiveIntensity = over.emissiveBoost;
+      if (cfg.livery) applyLivery(mm, cfg.livery);
       if (detailSet) {
         // object-space units per metre: undo the model scale and any node scale
         const nodeScale = new THREE.Vector3(); o.getWorldScale(nodeScale);

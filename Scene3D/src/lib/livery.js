@@ -1,0 +1,52 @@
+// Operational livery for generated hulls.
+//
+// The image-to-3D inputs are painted light (studio lighting on light paint
+// gives the reconstruction the most shading detail), so the generated
+// textures carry an off-white livery. In service the fleet wears a dark matte
+// anti-reflective grey that is hard to spot against space. This pass repaints
+// the base colour at shading time:
+//   - neutral paint (low saturation) maps to dark grey, keeping the texture's
+//     own weathering and panel-to-panel variation (compressed, not flattened);
+//   - saturated markings (orange bands, cobalt IDs, civilian containers) keep
+//     their hue but are dimmed to low-visibility tones;
+//   - roughness is pushed toward matte so there are no glossy highlights.
+import * as THREE from 'three';
+
+export const LIVERIES = {
+  // linear-space values: off-white paint (~0.6) -> ~0.055 (sRGB ~66), dark metal (~0.08) -> ~0.02
+  dark: { base: 0.016, gain: 0.065, tint: '#e6ebf0', mark: 0.22, sat0: 0.22, sat1: 0.5, matte: 0.35 },
+  // civilian hulls: same grey, markings and cargo colours a little brighter
+  civil: { base: 0.018, gain: 0.07, tint: '#e8ebee', mark: 0.5, sat0: 0.22, sat1: 0.45, matte: 0.3 },
+};
+
+/** Repaint a MeshStandard/Physical material in place. opts: a LIVERIES key or an object. */
+export function applyLivery(material, opts = 'dark') {
+  const o = { ...LIVERIES.dark, ...(typeof opts === 'string' ? LIVERIES[opts] : opts) };
+  const uniforms = {
+    uLivBase: { value: o.base }, uLivGain: { value: o.gain }, uLivTint: { value: new THREE.Color(o.tint) },
+    uLivMark: { value: o.mark }, uLivSat: { value: new THREE.Vector2(o.sat0, o.sat1) }, uLivMatte: { value: o.matte },
+  };
+  material.userData.livery = uniforms;
+  const prev = material.onBeforeCompile;
+  material.onBeforeCompile = (shader, renderer) => {
+    prev?.call(material, shader, renderer);
+    Object.assign(shader.uniforms, uniforms);
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform float uLivBase, uLivGain, uLivMark, uLivMatte; uniform vec3 uLivTint; uniform vec2 uLivSat;')
+      .replace('#include <map_fragment>', `#include <map_fragment>
+        {
+          vec3 c = diffuseColor.rgb;
+          float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
+          float mx = max(c.r, max(c.g, c.b)), mn = min(c.r, min(c.g, c.b));
+          float sat = (mx - mn) / max(mx, 1e-4);
+          vec3 grey = (uLivBase + uLivGain * l) * uLivTint;
+          vec3 mark = mix(vec3(l), c, 0.7) * uLivMark; // dimmed, slightly desaturated low-visibility markings
+          diffuseColor.rgb = mix(grey, mark, smoothstep(uLivSat.x, uLivSat.y, sat));
+        }`)
+      .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, 1.0, uLivMatte);');
+  };
+  const prevKey = material.customProgramCacheKey.bind(material);
+  material.customProgramCacheKey = () => `livery|${prevKey()}`;
+  material.needsUpdate = true;
+  return material;
+}

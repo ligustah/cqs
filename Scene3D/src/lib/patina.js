@@ -113,7 +113,8 @@ export function addDetailLayer(material, set, { unitsPerMetre = 1, tile = 4, nor
       .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\nif (uDetStrength > 0.0) normal = detPerturb(normal, -vViewPosition);')
       .replace('#include <aomap_fragment>', '#include <aomap_fragment>\nif (uDetCavity > 0.0) { float h = detTri(uDetHeight); float cav = mix(1.0, smoothstep(0.05, 0.45, h), uDetCavity); reflectedLight.indirectDiffuse *= cav; reflectedLight.directDiffuse *= mix(1.0, cav, 0.6); }');
   };
-  material.customProgramCacheKey = () => 'patina-detail';
+  const prevKey = material.customProgramCacheKey.bind(material);
+  material.customProgramCacheKey = () => `patina-detail|${prevKey()}`;
   material.needsUpdate = true;
   return material;
 }

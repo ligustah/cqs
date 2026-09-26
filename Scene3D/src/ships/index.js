@@ -50,6 +50,7 @@ function buildFresh(cls, palette, opts) {
     if (mod.asset) {
       const v = opts.variant && mod.variants?.[opts.variant];
       const cfg = { name: cls, ...mod.asset, ...(v || {}) };
+      if (CONTEXT.livery) cfg.livery = CONTEXT.livery === 'none' ? null : CONTEXT.livery; // ?livery= override for look-dev
       group = buildGLBShip(GLTFS[v?.glb ? `${cls}:${opts.variant}` : cls], cfg, { palette, library: CONTEXT.library });
     } else {
       group = mod.build(palette, opts);
