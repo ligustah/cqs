@@ -3,17 +3,29 @@
 import * as THREE from 'three';
 import { normalizeShip, CLASSES } from '../lib/scale.js';
 import { ShipBuilder, geo } from '../lib/kit.js';
+import { loadGLB, buildGLBShip } from '../lib/glbship.js';
 
 export const ORDER = ['fighter', 'corvette', 'freighter', 'destroyer', 'carrier'];
 export const SHIPS = {};
 export const LOAD_ERRORS = {};
+const GLTFS = {};
+let CONTEXT = { library: {} };
+
+/** Shared build context (e.g. the PATINA material library). */
+export function setShipContext(ctx) { CONTEXT = { ...CONTEXT, ...ctx }; }
 
 /** Load ship modules (all, or a subset). Safe to call more than once. */
 export async function loadShips(only = ORDER) {
   await Promise.all(only.map(async (cls) => {
     if (SHIPS[cls]) return;
     try {
-      SHIPS[cls] = await import(`./${cls}.js`);
+      const mod = await import(`./${cls}.js`);
+      // generated ships: preload the fal GLB (and optional variants)
+      if (mod.asset) {
+        GLTFS[cls] = await loadGLB(mod.asset.glb);
+        for (const [v, a] of Object.entries(mod.variants || {})) if (a.glb) GLTFS[`${cls}:${v}`] = await loadGLB(a.glb);
+      }
+      SHIPS[cls] = mod;
     } catch (e) {
       LOAD_ERRORS[cls] = String(e?.stack || e);
       console.error(`[ships] failed to load ${cls}.js:`, e);
@@ -35,7 +47,13 @@ function buildFresh(cls, palette, opts) {
   let group;
   try {
     if (!mod) throw new Error(LOAD_ERRORS[cls] || `${cls} not loaded`);
-    group = mod.build(palette, opts);
+    if (mod.asset) {
+      const v = opts.variant && mod.variants?.[opts.variant];
+      const cfg = { name: cls, ...mod.asset, ...(v || {}) };
+      group = buildGLBShip(GLTFS[v?.glb ? `${cls}:${opts.variant}` : cls], cfg, { palette, library: CONTEXT.library });
+    } else {
+      group = mod.build(palette, opts);
+    }
   } catch (e) {
     console.error(`[ships] ${cls}.build failed:`, e);
     LOAD_ERRORS[cls] = LOAD_ERRORS[cls] || String(e?.stack || e);

@@ -11,7 +11,9 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 import { createPalette } from './lib/materials.js';
 import { attachEffects } from './lib/effects.js';
 import { CLASSES, SLOT_VOLUME, carrierLoads } from './lib/scale.js';
-import { buildShip, loadShips, LOAD_ERRORS, ORDER } from './ships/index.js';
+import { buildShip, loadShips, setShipContext, LOAD_ERRORS, ORDER } from './ships/index.js';
+import { loadPatinaLibrary, proceduralStandIn } from './lib/patina.js';
+import { panelSet } from './lib/textures.js';
 import { createLighting } from './env/lighting.js';
 import { createSky } from './env/sky.js';
 import { createPlanet } from './env/planet.js';
@@ -29,6 +31,10 @@ window.__report = null;
 window.__ready = false;
 
 const palette = createPalette();
+// fal PATINA tiling PBR sets (assets/materials); ?standin uses procedural textures for testing
+const library = await loadPatinaLibrary();
+if (!Object.keys(library).length && params.has('standin')) library.hull = proceduralStandIn(panelSet({ seed: 7, style: 'hull' }));
+setShipContext({ library });
 const onlyShip = mode === 'ship' ? [params.get('ship') || (ORDER.includes(hash) ? hash : 'fighter')] : ORDER;
 await loadShips(onlyShip);
 

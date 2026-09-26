@@ -1,0 +1,43 @@
+{
+  "about": "Asset pipeline for the CQS reboot orbital fleet. All ship meshes, their textures and the tiling PBR materials are generated with fal.ai (via Composio). three.js then plays Blender's role: import, orient, scale to game data, material upgrade, lighting and rendering. Designs are original; no legacy art is used as input.",
+  "style": "Shared design language 'naval-industrial near future': faceted hard-surface hulls with chamfered edges and layered armour plating, bone-white composite hull panels with fine panel lines, signal-orange command stripes and stencilled hull numbers, cobalt-blue trim accents, gunmetal structural frames and exposed spines, gold-foil insulated sensor boxes, dark ceramic heat tiles on the belly, radiator fin arrays, small RCS thruster quads, glowing cyan plasma engine nozzles. Credible engineered spacecraft, no aerodynamic wings, original design not based on any existing franchise.",
+  "stages": {
+    "A_concept": {
+      "model": "fal-ai/nano-banana-pro",
+      "editModel": "fal-ai/nano-banana-pro/edit",
+      "bible": {
+        "params": { "aspect_ratio": "16:9", "resolution": "2K", "num_images": 2, "output_format": "png" },
+        "prompt": "A professional concept art design sheet for an original science-fiction space fleet on a clean neutral light-grey studio background. Five ship classes arranged in a tidy grid, each large enough to read its details (not to scale), each with a small clean sans-serif caption: FIGHTER (compact single-seat space-superiority strike craft with a bubble canopy, twin engines and forked stabiliser blades carrying cannons), CORVETTE (short, wide armoured escort gunship with two dorsal twin-barrel turrets, bow torpedo tubes, outrigger engine pods), CIVIL FREIGHTER (long lean spine ship with a forward crew module, a truss keel carrying stacked colourful cargo containers in orange, cobalt, teal, yellow and crimson, and an aft reactor and engine block), DESTROYER (long heavy warship with an armoured wedge prow and a spinal mass-driver muzzle, three turrets, a stepped command tower, big radiator panels and a cluster of engines), FLEET CARRIER (huge slab-sided carrier with a wide brightly lit open hangar bay in the bow, a command island offset to one side, glowing warp-field emitter vanes, point-defence turrets and a massive engine cluster). {style} Crisp realistic high-detail industrial design render, soft even studio lighting, three-quarter views."
+      },
+      "isolatedTemplate": "Using the attached concept sheet only as the design-language reference, render ONLY the {class} as one isolated object: {description} Three-quarter view from the front-left and slightly above (camera about 35 degrees off the bow, 20 degrees up). The entire ship is visible and centred with generous empty margin, filling about 70% of the frame. Plain seamless light-grey studio background, soft even lighting, no floor, no cast shadow, no environment, no stars, no text, no labels, no engine exhaust plumes, no motion blur. Sharp, clean product-render style suitable for 3D reconstruction. {style}",
+      "isolatedParams": { "aspect_ratio": "4:3", "resolution": "2K", "num_images": 2, "output_format": "png" },
+      "ships": {
+        "fighter": "a 16 m single-seat space-superiority fighter: compact faceted fuselage, bubble canopy, twin plasma engines at the rear, forked stabiliser blades with cannon barrels, missile rails under the blades, bone-white hull with signal-orange squadron stripes and a small hull number.",
+        "corvette": "a 32 m armoured escort corvette gunship: short, wide wedge hull, stepped bridge with a window band, two dorsal twin-barrel railgun turrets, four bow torpedo tube doors, two outrigger engine pods on armoured pylons, radiator panels, a sensor mast with gold-foil boxes, hull number K-214 in orange.",
+        "freighter": "a 50 m civil freighter: long lean spine ship with a compact forward crew module with windows, a boxed truss keel carrying two rows of stacked standard cargo containers in signal orange, cobalt, teal, sun-yellow, crimson and white, an aft shielded reactor module with radiators and two engines, teal civilian stripe and registry number CT-4.",
+        "destroyer": "a 68 m heavy destroyer: long armoured hull with a wedge prow and a large spinal mass-driver muzzle in the bow, three dorsal gun turrets with long barrels, a stepped command tower with a window band, sensor masts, big radiator panels along the flanks, a heavy engine block with four large plasma nozzles, hull number DD-12 in orange.",
+        "carrier": "a 260 m fleet carrier: huge slab-sided armoured hull with a wide open brightly lit hangar bay mouth in the bow showing a deck inside, a command island superstructure offset to the starboard side, glowing cobalt warp-field emitter vanes along the flanks, point-defence turrets, radiator arrays, a massive engine cluster of six nozzles at the stern, hull number CV-50 in orange."
+      }
+    },
+    "B_mesh": {
+      "primary": { "model": "tripo3d/p2/image-to-3d", "params": { "texture": true, "pbr": true, "texture_quality": "detailed", "delight": true, "export_uv": true } },
+      "comparison": { "model": "fal-ai/hunyuan-3d/v3.1/pro/image-to-3d", "params": { "enable_pbr": true, "generate_type": "Normal", "face_count": 300000 }, "note": "run on the fighter and carrier; keep whichever reconstructs hard-surface detail better" },
+      "faceLimits": { "fighter": 60000, "corvette": 100000, "freighter": 120000, "destroyer": 150000, "carrier": 250000 }
+    },
+    "C_optimise": { "tool": "tools/optimize-glb.mjs", "tris": { "fighter": 60000, "corvette": 100000, "freighter": 120000, "destroyer": 150000, "carrier": 250000 }, "texture": 2048 },
+    "D_materials": {
+      "model": "fal-ai/patina/material",
+      "params": { "image_size": "square_hd", "maps": ["basecolor", "normal", "roughness", "metalness", "height"], "upscale_factor": 2, "tiling_mode": "both", "output_format": "png" },
+      "sets": {
+        "hull": "Bone-white painted composite spacecraft hull plating, rectangular panels of varied sizes with thin recessed seams, small access hatches, rows of flush fasteners, subtle grime and micro scratches, satin paint, seamless",
+        "orange": "Signal-orange glossy painted spacecraft hull panels with thin recessed seams, small stencilled maintenance markings, light wear on edges, seamless",
+        "armor": "Gunmetal grey heavy warship armour plating, thick bolted plates with chamfered edges, weld seams, worn edges showing bare steel, seamless",
+        "ceramic": "Dark charcoal ceramic heat-shield tiles, square tiles with narrow gaps, slightly uneven, faint scorch streaks, seamless",
+        "foil": "Crinkled gold multi-layer insulation foil blanket for spacecraft, reflective metallic gold with creases and stitched seams, seamless",
+        "deck": "Spaceship hangar deck plating, dark grey non-slip tread steel plates with painted yellow safety lines and recessed tie-down points, seamless",
+        "radiator": "Spacecraft radiator panel, dense parallel cooling fins, dark anodised metal with faint blue heat discolouration, seamless"
+      },
+      "use": "hull/orange/armor as tri-planar detail layers on the generated meshes; all sets as full materials for scene-built parts (hangar deck, engine bells, scale-lineup props)"
+    }
+  }
+}
