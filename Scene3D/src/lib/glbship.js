@@ -290,6 +290,8 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
       if (over.metalness !== undefined) mm.metalness = over.metalness;
       if (over.color) mm.color = new THREE.Color(over.color);
       if (over.emissiveBoost && mm.emissiveMap) mm.emissiveIntensity = over.emissiveBoost;
+      // true-scale ports and panes are a few texels wide: keep them sharp at grazing angles
+      for (const t of [mm.map, mm.normalMap, mm.roughnessMap]) if (t) t.anisotropy = 8;
       if (cfg.livery) applyLivery(mm, cfg.livery);
       if (cfg.livery && cfg.liveryKeep) keeps.forEach((kp, k) => keepInterior(mm, kp, o.matrixWorld, k));
       if (gate) gateInteriorLights(mm, gate, o.matrixWorld, cfg.interiorBounce || null);

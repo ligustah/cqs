@@ -43,6 +43,18 @@
 //   sun's shadows still ground the ships in the sunlit bays. Each flood shows as a 3 m emissive
 //   lens under the ceiling (it blooms), and `interiorBounce` adds what the lit deck reflects
 //   back up: ~12 % of the deck's irradiance on the ceiling, half that on walls and frame faces.
+// - True-scale surface detail (texture only, geometry untouched): the base-colour and normal maps are
+//   8192 px (0.185 m per texel on the hull, was 0.37 m) with three fal PATINA tiles baked in by
+//   world-planar projection in this frame (each facet takes its dominant axis, rows follow y so
+//   they run unbroken along the hull): flanks and ends up to the deck edge, 30 m tiles of ~0.8 m
+//   ports (~0.9 m with their rims) in rows 3.6 m apart, 1.8 x 2.5 m crew hatches with 1 m hand
+//   rails; the island's walls, 32 m tiles of ribbon rows of ~1 m panes 3.7 m apart; tops,
+//   bottoms, chamfers, turrets and sponsons, a 16 m plating tile (2.7 m plates, 1-2.5 m flush
+//   hatches, vents, stencils), also layered under the ports. The tiles modulate the generated
+//   paint (ratio to their own mean), so the stripes and markings stay; the ports' blue-grey glass
+//   is picked up by the livery's glass test. The hangar cavity (liveryKeep box) and the drive
+//   bells are left as generated. The CV-50 hull number (15 m letters, 57 m long, both flanks,
+//   bow section) was re-thresholded at the new resolution for crisp edges, on a port-free panel.
 // - liveryKeep: the operational repaint stops at the hangar: inside the cavity box the generated
 //   texture keeps its own plating (x 0.2, 8 % saturation: the bake is a warm tan, the deck is
 //   grey steel), so the deck reads as lit grey steel instead of the near-black hull paint. The
