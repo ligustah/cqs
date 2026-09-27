@@ -2,6 +2,7 @@
 // contract as ShipBuilder.finish(): a Group whose userData.ship carries the
 // envelope, engines, lights and anchors used by scale.js, effects.js and fleet.js.
 import * as THREE from 'three';
+import { LITE } from './device.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { toCreasedNormals, mergeVertices, mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -34,8 +35,10 @@ function throatTexture() {
 // Artifact hosting does not serve .glb, so tools/build-artifact.mjs ships each GLB as
 // base64 text (<name>.glb.b64.txt) and sets window.__glbB64; decode it here.
 async function loadB64(url) {
-  const r = await fetch(`${url}.b64.txt`);
-  if (!r.ok) throw new Error(`${r.status} ${url}.b64.txt`);
+  // the phone tier loads a copy with downscaled textures (tools/lite-glb.mjs via build-artifact)
+  const file = `${url}${LITE ? '.lite' : ''}.b64.txt`;
+  const r = await fetch(file);
+  if (!r.ok) throw new Error(`${r.status} ${file}`);
   const bin = atob((await r.text()).trim());
   const buf = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);

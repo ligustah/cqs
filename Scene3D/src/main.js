@@ -17,6 +17,7 @@ import { buildShip, loadShips, setShipContext, LOAD_ERRORS, ORDER } from './ship
 import { loadPatinaLibrary, proceduralStandIn } from './lib/patina.js';
 import { panelSet } from './lib/textures.js';
 import { createLighting, SUN_DIR } from './env/lighting.js';
+import { TIER } from './lib/device.js';
 import { createSky } from './env/sky.js';
 import { createPlanet } from './env/planet.js';
 import { ENV } from './env/state.js';
@@ -102,7 +103,7 @@ function start() {
   const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
   const w = parseInt(params.get('w')) || container.clientWidth || innerWidth;
   const h = parseInt(params.get('h')) || container.clientHeight || innerHeight;
-  renderer.setPixelRatio(still ? 1 : Math.min(devicePixelRatio, 2));
+  renderer.setPixelRatio(still ? 1 : Math.min(devicePixelRatio, TIER.pixelRatio));
   renderer.setSize(w, h);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   // Exposed like a camera metered for sunlit subjects: Khronos PBR Neutral keeps the scene's
@@ -127,8 +128,19 @@ function start() {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#010205');
   const camera = new THREE.PerspectiveCamera(parseFloat(params.get('fov') || '38'), w / h, 0.5, 250000);
+  // Shots are composed for a ~16:10 landscape frame. On a portrait screen (a phone) the same
+  // vertical lens would show a thin slice, so the projection widens until the frame covers at
+  // least 60 % of the landscape frame's width; the authored fov is left untouched.
+  const updateProjection = camera.updateProjectionMatrix.bind(camera);
+  camera.updateProjectionMatrix = () => {
+    const fov = camera.fov, k = Math.max(1, (0.6 * 1.6) / camera.aspect);
+    if (k > 1) camera.fov = 2 * Math.atan(Math.tan((fov * Math.PI) / 360) * k) * (180 / Math.PI);
+    updateProjection();
+    camera.fov = fov;
+  };
+  camera.updateProjectionMatrix();
 
-  const lighting = createLighting(renderer, scene);
+  const lighting = createLighting(renderer, scene, { shadowSize: TIER.shadowSize });
   const sky = createSky(scene);
 
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -137,7 +149,7 @@ function start() {
   controls.rotateSpeed = 0.6;
   controls.zoomSpeed = 0.9;
 
-  const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(w, h, { type: THREE.HalfFloatType, samples: 4 }));
+  const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(w, h, { type: THREE.HalfFloatType, samples: TIER.samples }));
   composer.setPixelRatio(renderer.getPixelRatio());
   composer.addPass(new RenderPass(scene, camera));
   // Lens glare, not haze. Threshold is scene-linear radiance (before exposure):
