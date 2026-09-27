@@ -174,8 +174,8 @@
         "carrier": 250000
       },
       "texture": {
-        "fighter": 2048,
-        "corvette": 2048,
+        "fighter": 4096,
+        "corvette": 4096,
         "freighter": 4096,
         "destroyer": 4096,
         "carrier": 4096
