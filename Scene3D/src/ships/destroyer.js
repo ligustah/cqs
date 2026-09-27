@@ -20,7 +20,7 @@
 //   is the centre of that bore opening. `mouth` is the shroud mouth on the same axis.
 // - Lights sit ~6 cm proud of the surface they are mounted on.
 export const meta = {
-  name: 'Bastion-class destroyer', designation: 'DD-12', crew: 'about 450',
+  name: 'Bastion-class destroyer', designation: 'DD-12', crew: 'about 2,000',
   blurb: 'Heavy line destroyer built around a massive spinal railgun: an armoured bow block with the recessed muzzle, an exposed rail channel with capacitor banks along the spine, a stepped command tower, two small turrets, radiator panels on the flanks of the engine section and five fusion bells in the stern.',
 };
 

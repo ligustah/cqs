@@ -17,7 +17,7 @@
 //   so one mirrored entry. Radius 0.585 keeps the glow disc and lining inside the wall.
 //   The railgun muzzles are recorded as anchors.
 export const meta = {
-  name: 'Petrel-class fighter', designation: 'F-402', crew: 'about 12',
+  name: 'Petrel-class fighter', designation: 'F-402', crew: 'about 40',
   blurb: 'Space-superiority fighter: a faceted armoured pod with a three-pane flight-deck canopy, twin fusion bells in an armoured stern block and a long railgun on each flank sponson, each sponson ending in a small secondary drive bell.',
 };
 export const asset = {

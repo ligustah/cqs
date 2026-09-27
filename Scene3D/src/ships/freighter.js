@@ -13,7 +13,7 @@
 // game's ground-unit size units (UnitMap.getGroundUnitSize: infantry 1, vehicles 3, aircraft 4),
 // not people.
 export const meta = {
-  name: 'Drover-class civil transport', designation: 'CT-4 / CT-7', crew: 'about 20 (troop variant: ground-unit capacity 750; infantry 1, vehicles 3, aircraft 4)',
+  name: 'Drover-class civil transport', designation: 'CT-4 / CT-7', crew: 'about 80 (troop variant: ground-unit capacity 750; infantry 1, vehicles 3, aircraft 4)',
   blurb: 'Civil workhorse: a forward crew module and an aft reactor block with two fusion bells and radiator panels, joined by a truss keel that carries twenty-foot containers (CT-4) or pressurised habitat cylinders (CT-7 troop transport: ground-unit capacity 750, the game\'s groundTransport).',
 };
 

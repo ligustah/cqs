@@ -48,7 +48,7 @@
 //   grey steel), so the deck reads as lit grey steel instead of the near-black hull paint. The
 //   interior also takes the 'deck' PATINA set as its detail layer (plating relief, seams, tone).
 export const meta = {
-  name: 'Keystone-class fleet carrier', designation: 'CV-50', crew: 'about 9,000',
+  name: 'Keystone-class fleet carrier', designation: 'CV-50', crew: 'about 20,000',
   blurb: 'Warp-capable fleet carrier: a 900 m armoured box hull around one through-deck hangar that opens at the bow mouth and through six framed bays along each flank, with a stepped island, twin-gun turrets along the spine and on two stern sponsons, and six fusion bells in the stern block.',
 };
 

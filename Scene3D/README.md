@@ -167,11 +167,11 @@ troop transport comes out shorter than the cargo ship.
 
 | Class | Length | Crew |
 | --- | --- | --- |
-| Fighter | 71 m | about 12 |
-| Corvette | 102 m | about 90 |
-| Civil ship (cargo / troops) | 135 m / 120 m | about 20 (troops: ground-unit capacity 750) |
-| Destroyer | 200 m | about 450 |
-| Carrier | 900 m | about 9,000 |
+| Fighter | 71 m | about 40 |
+| Corvette | 102 m | about 350 |
+| Civil ship (cargo / troops) | 135 m / 120 m | about 80 (troops: ground-unit capacity 750) |
+| Destroyer | 200 m | about 2,000 |
+| Carrier | 900 m | about 20,000 |
 
 Crews are design estimates from each hull's volume; the game's chassis population
 cost (`crew`) is an abstract unit and is not used. The troop transport's 750 is the

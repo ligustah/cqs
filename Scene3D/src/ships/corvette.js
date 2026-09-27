@@ -16,7 +16,7 @@
 //   anchors are listed explicitly.
 // - Lights sit ~5 cm proud of the surface they are mounted on.
 export const meta = {
-  name: 'Warden-class corvette', designation: 'K-214', crew: 'about 90',
+  name: 'Warden-class corvette', designation: 'K-214', crew: 'about 350',
   blurb: 'Armoured escort corvette: a chamfered bow with four torpedo doors, a stepped bridge, two twin-barrel dorsal turrets and a sensor mast, four fusion bells in the stern frame and two outrigger drive pods on pylons.',
 };
 const MAIN_BELL = { depth: 2.909, throat: 0.951, wall: [[0.951, 1.706], [1.902, 1.51], [2.377, 1.398]] };
