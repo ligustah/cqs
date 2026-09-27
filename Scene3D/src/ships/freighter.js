@@ -23,24 +23,24 @@ export const asset = {
   glb: './assets/ships/freighter.glb', generator: 'tripo3d/h3.1/multiview-to-3d',
   concept: './assets/concepts/freighter.webp', beauty: './assets/concepts/freighter-beauty.webp',
   rotate: [0, -90, 0],
-  length: 135.361, // 135.4 x 53.0 x 39.1 m = 280,000 m^3: 4 slots
+  length: 132.16, // 132.2 x 51.5 x 41.2 m = 280,000 m^3: 4 slots
   livery: 'civil',
   crease: 35,
   detail: { set: 'hull', tile: 6, normalStrength: 0.9, roughAmount: 0.5, cavity: 0.4 },
-  // two main bells, exit rim at z -24.2, inner lip r 2.01 (outer 2.16)
+  // two main bells side by side: exit rim at z -66.08, inner lip r 5.0 (outer 5.65)
   engines: [
-    // depth / throat / wall ray-cast on the GLB: throat plate ~1.05 r in, 0.5 r throat
-    { p: [7.904, -1.359, -67.541], radius: 5.593, mirrorX: true, depth: 5.733, throat: 2.797, wall: [[2.797, 4.978], [4.195, 4.587]] },
+    // depth / throat / wall ray-cast on the GLB: throat dish ~5.6 m in, an inner ring at r 3.0-3.3 sits ~1.5 m in
+    { p: [7.13, -1.87, -66.08], radius: 5.0, mirrorX: true, depth: 5.5, throat: 2.6, wall: [[1.0, 4.97], [2.8, 4.64], [4.4, 4.31], [4.7, 3.97]] },
   ],
   lights: [
-    // port / starboard: forward edge frame of the outboard radiator face (the beam extremity), near its top
-    { p: [26.521, 0.839, -26.849], color: 'red', size: 0.4 },
-    { p: [-26.544, 0.839, -26.849], color: 'green', size: 0.4 },
+    // port / starboard: forward edge of the outboard radiator face (the beam extremity), near its top
+    { p: [25.8, 0.3, -27.6], color: 'red', size: 0.4 },
+    { p: [-25.8, 0.3, -27.6], color: 'green', size: 0.4 },
     // anti-collision strobes: reactor block top and belly, alternating
-    { p: [0, 10.096, -27.967], color: 'white', size: 0.4, blink: { ...STROBE } },
-    { p: [0, -13.256, -26.849], color: 'white', size: 0.4, blink: { ...STROBE, phase: 0.5 } },
-    // stern light: aft face of the reactor block below the bell pair (clear of the centre slot)
-    { p: [0.28, -9.789, -52.467], color: 'white', size: 0.4 },
+    { p: [0, 8.3, -26], color: 'white', size: 0.4, blink: { ...STROBE } },
+    { p: [0, -15.45, -45], color: 'white', size: 0.4, blink: { ...STROBE, phase: 0.5 } },
+    // stern light: aft face of the reactor block below the bell pair
+    { p: [0, -9, -50.55], color: 'white', size: 0.4 },
   ],
   anchors: {},
 };
