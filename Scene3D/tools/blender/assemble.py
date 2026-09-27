@@ -68,8 +68,15 @@ def cut_hull(hull, cuts):
     part replaces). Returns the number of faces removed."""
     if not cuts:
         return 0
+    me = hull.data
+    # keep the hull's split normals (a straightened hull's flat panels and sharp creases) through
+    # the bmesh round trip: a corner attribute survives the weld and the delete
+    cn = np.empty(len(me.loops) * 3)
+    me.corner_normals.foreach_get('vector', cn)
+    keep = me.attributes.get('keep_nrm') or me.attributes.new('keep_nrm', 'FLOAT_VECTOR', 'CORNER')
+    keep.data.foreach_set('vector', cn)
     bm = bmesh.new()
-    bm.from_mesh(hull.data)
+    bm.from_mesh(me)
     boxes = []  # (lo, hi, mode)
     for c in cuts:
         lo, hi = Vector(c['box'][0]), Vector(c['box'][1])
@@ -117,10 +124,113 @@ def cut_hull(hull, cuts):
                     for l in f.loops:
                         l[uv].uv = other[uv].uv
         bmesh.ops.recalc_face_normals(bm, faces=filled)
-    bm.to_mesh(hull.data)
+    bm.to_mesh(me)
     bm.free()
-    hull.data.update()
+    me.update()
+    kn = np.empty(len(me.loops) * 3)
+    me.attributes['keep_nrm'].data.foreach_get('vector', kn)
+    kn = kn.reshape(-1, 3)
+    # fill faces (no stored normal) take their face normal
+    lp = np.repeat(np.arange(len(me.polygons)), [p.loop_total for p in me.polygons])
+    fn = np.empty(len(me.polygons) * 3); me.polygons.foreach_get('normal', fn)
+    fn = fn.reshape(-1, 3)
+    bad = np.linalg.norm(kn, axis=1) < 0.5
+    kn[bad] = fn[lp[bad]]
+    me.normals_split_custom_set(kn.tolist())
+    me.attributes.remove(me.attributes['keep_nrm'])
+    me.update()
     return len(dead)
+
+
+def feature_frames(f):
+    """Oriented box(es) of a spec feature: [(centre, R (cols: right, up, n), half-size)], one per
+    side for mirrorX. right = up x n, so a feature reads left to right seen from outside."""
+    out = []
+    for mir in ([False, True] if f.get('mirrorX') else [False]):
+        s = Vector((-1, 1, 1)) if mir else Vector((1, 1, 1))
+        m = lambda v: Vector((v[0] * s.x, v[1], v[2]))
+        n = m(f['n']).normalized()
+        up = m(f.get('up', [0, 1, 0]))
+        up = (up - n * up.dot(n)).normalized()
+        right = up.cross(n)
+        R = Matrix((right, up, n)).transposed()
+        w, h, d = f['size']
+        out.append((m(f['p']), R, Vector((w / 2, h / 2, d / 2)), mir))
+    return out
+
+
+def flatten_hull(hull, feats):
+    """Press a lumpy relief flat: every hull vertex inside a feature's oriented box (spec
+    `features` with flatten) moves along the feature normal onto its plane; the corners of the
+    faces touching the box take the plane normal. The plane passes through `p` (flatten.plane
+    'p', default) or the median height of the hull surface on a band round the box ('ring',
+    flatten.ring metres wide, sampled by rays on a 0.2 m grid). Collapsed side walls keep their UVs (zero area, invisible); the
+    texture over the pressed area is repainted by tools/blender/hulltex.py (feature `paint`)."""
+    if not feats:
+        return []
+    me = hull.data
+    caster = F.HullCaster(hull)
+    nv = len(me.vertices)
+    co = np.empty(nv * 3); me.vertices.foreach_get('co', co)
+    co = co.reshape(-1, 3)
+    S = np.stack([co[:, 0], co[:, 2], -co[:, 1]], 1)  # ship frame
+    moved = np.zeros(nv, bool)
+    target_n = {}
+    rep = []
+    for f in feats:
+        cfg = f['flatten'] if isinstance(f['flatten'], dict) else {}
+        for c, R, half, mir in feature_frames(f):
+            Rn = np.array(R)
+            L = (S - np.array(c)) @ Rn  # local (right, up, n)
+            inside = np.all(np.abs(L) <= np.array(half), 1)
+            if cfg.get('plane', 'p') == 'ring':
+                # the hull surface height on a band round the box, from a 0.2 m grid of rays (area
+                # weighted: thin seams and small lumps do not move the median)
+                r = cfg.get('ring', 0.6)
+                hs = []
+                for gu in np.arange(-half.x - r, half.x + r + 1e-6, 0.2):
+                    for gv in np.arange(-half.y - r, half.y + r + 1e-6, 0.2):
+                        if abs(gu) <= half.x and abs(gv) <= half.y:
+                            continue
+                        o = c + R.col[0] * gu + R.col[1] * gv + R.col[2] * (half.z + 2)
+                        hit = caster.cast(o, -R.col[2], 2 * half.z + 2)
+                        if hit is not None:
+                            hs.append(half.z + 2 - hit[3])
+                off = float(np.median(hs)) if len(hs) >= 5 else 0.0
+            else:
+                off = float(cfg.get('offset', 0.0))
+            dz = off - L[inside, 2]
+            lim = cfg.get('maxMove', half.z)
+            ok = np.abs(dz) <= lim
+            idx = np.where(inside)[0][ok]
+            S[idx] += np.outer(dz[ok], Rn[:, 2])
+            moved[idx] = True
+            nn = Vector(Rn[:, 2])
+            for i in idx.tolist():
+                target_n[i] = nn
+            rep.append({'id': f.get('id'), 'mirror': mir, 'verts': int(len(idx)), 'plane_offset': round(off, 3),
+                        'max_move': round(float(np.abs(dz[ok]).max()) if ok.any() else 0.0, 3), 'skipped': int((~ok).sum())})
+    if moved.any():
+        B = np.stack([S[:, 0], -S[:, 2], S[:, 1]], 1)
+        me.vertices.foreach_set('co', B.ravel())
+        me.update()
+        # corner normals: a moved vertex lies on its feature plane now; its corners on faces that
+        # face the same way (the pressed area and the flat hull round it) take the plane normal
+        ln = np.empty(len(me.loops) * 3); me.corner_normals.foreach_get('vector', ln)
+        ln = ln.reshape(-1, 3)
+        lv = np.empty(len(me.loops), np.int64); me.loops.foreach_get('vertex_index', lv)
+        lp = np.repeat(np.arange(len(me.polygons)), [p.loop_total for p in me.polygons])
+        fn = np.empty(len(me.polygons) * 3); me.polygons.foreach_get('normal', fn)
+        fn = fn.reshape(-1, 3)
+        for li in np.where(moved[lv])[0].tolist():
+            nn = target_n[int(lv[li])]
+            b = np.array((nn.x, -nn.z, nn.y))
+            if fn[lp[li]] @ b > 0.87:  # within 30 degrees
+                ln[li] = b
+        me.normals_split_custom_set(ln.tolist())
+        me.update()
+    print(f'[assemble] flatten: {rep}')
+    return rep
 
 
 def main():
@@ -159,19 +269,28 @@ def main():
                               scale=hs.get('scale'), tmpdir=tmp)
     report['hull'] = hinfo
     report['cut_faces'] = cut_hull(hull, spec.get('cuts'))
+    report['flatten'] = flatten_hull(hull, [f for f in spec.get('features', []) if f.get('flatten')])
     caster = F.HullCaster(hull)
     tick('hull')
 
-    parts_dir = rel(spec.get('partsDir', '../../assets/parts'))
-    manifest = P.load_manifest(parts_dir)
+    # parts kits: partsDir (default kit) plus named kits (spec "kits": {"fal": dir}); a part name
+    # "<kit>:<file>" (e.g. "fal:dome") comes from that kit, a bare name from the default one
+    kits = {'': rel(spec.get('partsDir', '../../assets/parts'))}
+    kits.update({k: rel(v) for k, v in (spec.get('kits') or {}).items()})
+    manifests = {k: P.load_manifest(d) for k, d in kits.items()}
     placements = PL.expand(spec.get('placements', []))
     names = sorted({q['part'] for q in placements if q['part'] != 'patch'})
-    parts = {n: P.load_part(n, parts_dir, manifest, tmp, spec.get('fixes', {})) for n in names}
+
+    def load(n):
+        kit, _, file = n.rpartition(':')
+        return P.load_part(n, kits[kit], manifests[kit], tmp, spec.get('fixes', {}), file=file)
+    parts = {n: load(n) for n in names}
     tick('parts')
 
     defaults = spec.get('partDefaults', {})
     hull_tex = P.hull_texture(hull)
-    palette = P.Palette(256)
+    patch_cfg = spec.get('patchTexture', {})
+    atlas = P.PatchAtlas(**{k: patch_cfg[k] for k in ('density', 'cap', 'tile', 'tone') if k in patch_cfg})
     seat_cfg = spec.get('seat', {})
     placements = [{**defaults.get(q['part'], {}), **q} for q in placements]
     tag_of = lambda q: f"{q.get('id') or q['part']} @{[round(v, 2) for v in q['p']]}"
@@ -209,7 +328,10 @@ def main():
         col = cover.get('color', 'sample')
         if col == 'sample':
             col = P.sample_hull_color(caster, hull_tex, c, R.col[0], R.col[1], n, w, h)
-        patches.append(((w, h), depth, cover.get('chamfer', 0.03), PM, palette.add(col)))
+        # the plate's front face in the ship frame (for its plating tone)
+        FM = PM.copy()
+        FM.translation = PM.translation + n * depth
+        patches.append(((w, h), depth, cover.get('chamfer', 0.03), PM, atlas.add(w, h, FM, col)))
     plates = PL.PlateCaster(patches) if patches else None
     both = PL.MultiCaster([caster] + ([plates] if plates else []))
 
@@ -253,7 +375,7 @@ def main():
             o.matrix_world = F.b_mat(M)
             col.objects.link(o)
             objs.append(o)
-        merged.append(F.join(objs, f'parts_{name}'))
+        merged.append(F.join(objs, f"parts_{name.replace(':', '-')}"))
     for p in parts.values():
         bpy.data.objects.remove(p.mesh)
         bpy.data.objects.remove(p.mirror)
@@ -263,21 +385,21 @@ def main():
         for (w, h), depth, chamfer, PM, ci in patches:
             nf0 = len(bm.faces)
             pb = P.patch_bmesh(w, h, depth, chamfer)
+            # UVs from the plate's own (x, y) (part frame x = Blender x, part y = Blender z)
+            puv = pb.loops.layers.uv.new('UVMap')
+            for f in pb.faces:
+                for l in f.loops:
+                    l[puv].uv = atlas.uv(ci, l.vert.co.x, l.vert.co.z)
             pb.transform(F.b_mat(PM))
             me = bpy.data.meshes.new('tmp')
             pb.to_mesh(me)
             pb.free()
             bm.from_mesh(me)
             bpy.data.meshes.remove(me)
-            bm.faces.ensure_lookup_table()
-            u = palette.uv(ci)
-            for f in bm.faces[nf0:]:
-                for l in f.loops:
-                    l[uvl].uv = u
         me = bpy.data.meshes.new('parts_patch')
         bm.to_mesh(me)
         bm.free()
-        me.materials.append(palette.material(tmp))
+        me.materials.append(atlas.material(tmp))
         po = bpy.data.objects.new('parts_patch', me)
         col.objects.link(po)
         P.harden(po)

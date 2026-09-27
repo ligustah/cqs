@@ -222,6 +222,9 @@ function interiorLight(spec) {
  *   materials  optional per-material overrides by GLB material name or '*'
  *   crease     optional angle in degrees: split vertex normals at sharper edges
  *              so faceted hard-surface hulls shade flat instead of rounded
+ *   hullNodes  optional list of GLB node names that are hull (tools/blender/assemble.py output:
+ *              ['hull']); meshes under "parts_<name>" nodes are kit parts: no crease, not a
+ *              raycast target, tagged userData.part. Omitted: every mesh is hull (as before)
  *   engines    [{ p: [x,y,z], radius, dir?, depth?, throat?, wall? }]    (metres, ship frame, before
  *              correction): p = centre of the exit plane, radius = inner wall at the exit, depth =
  *              how far inside the lip the throat plate sits, throat = radius of the hot throat
@@ -262,12 +265,17 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
   // liveryKeep: one box or a list of boxes (the first is the interior box other features use)
   const keeps = cfg.liveryKeep ? [].concat(cfg.liveryKeep) : [];
   let triangles = 0, meshes = 0;
+  // assembled GLBs (tools/blender/assemble.py): only meshes under a node named in cfg.hullNodes
+  // are hull (crease, raycast target); the merged kit parts ("parts_<name>" nodes) keep their
+  // hardened normals and are tagged userData.part = <name> instead
+  const nodeOf = (o) => { for (let p = o; p && p !== model; p = p.parent) if (p.name) { if (cfg.hullNodes.includes(p.name)) return { hull: true }; if (p.name.startsWith('parts_')) return { part: p.name.slice(6) }; } return { hull: true }; };
   model.traverse((o) => {
     if (!o.isMesh) return;
     meshes++;
+    const role = cfg.hullNodes ? nodeOf(o) : { hull: true };
     let g = o.geometry;
     triangles += (g.index ? g.index.count : g.attributes.position.count) / 3;
-    if (cfg.crease) {
+    if (cfg.crease && role.hull) {
       // toCreasedNormals un-indexes the mesh (3 vertices per triangle); weld it again so only the
       // vertices on creases stay split: about a third of the vertex work in every pass
       if (!creased.has(g)) creased.set(g, mergeVertices(toCreasedNormals(g, cfg.crease * DEG)));
@@ -275,7 +283,8 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
     }
     o.castShadow = true;
     o.receiveShadow = true;
-    o.userData.hull = true; // raycast target for the hangar containment test
+    if (role.hull) o.userData.hull = true; // raycast target for the hangar containment test
+    else o.userData.part = role.part;
     const mats = Array.isArray(o.material) ? o.material : [o.material];
     // the interior keep-box is evaluated in the ship frame, so a material is shared only
     // between meshes with the same object-to-ship transform

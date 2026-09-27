@@ -157,18 +157,28 @@ class Part:
         self.name, self.mesh, self.mirror, self.mount, self.bbox = name, mesh, mirror, mount, bbox
 
 
-def load_part(name, parts_dir, manifest, tmpdir, fixes):
-    src = os.path.join(parts_dir, f'{name}.glb')
-    dec = F.decode([(src, f'part-{name}')], tmpdir)[f'part-{name}']
+def is_blender_kit(manifest):
+    """tools/blender/kit.py output (assets/parts-blender): every part mounts on +Z, already light
+    and crisp, so the fal kit's repairs and decimation defaults do not apply."""
+    return str(manifest.get('generator', '')).startswith('tools/blender/kit.py')
+
+
+def load_part(name, parts_dir, manifest, tmpdir, fixes, file=None):
+    """name: the spec's part name (fixes key); file: the part file stem in parts_dir (default name)."""
+    file = file or name
+    legacy = not is_blender_kit(manifest)
+    src = os.path.join(parts_dir, f'{file}.glb')
+    tag = name.replace(':', '-')
+    dec = F.decode([(src, f'part-{tag}')], tmpdir)[f'part-{tag}']
     ms, new = F.import_glb(dec)
     obj = F.join(ms, f'src_{name}')
     for o in new:
         if o.name in bpy.data.objects and o != obj:
             bpy.data.objects.remove(o)
-    fx = {**DEFAULT_FIXES.get(name, {}), **(fixes.get(name) or {})}
+    fx = {**(DEFAULT_FIXES.get(file, {}) if legacy else {}), **(fixes.get(name) or {})}
     if fx.get('tube'):
         fix_rail(obj.data, fx['tube'])
-    ratio = fx.get('decimate', DECIMATE.get(name, 1))
+    ratio = fx.get('decimate', DECIMATE.get(file, 1) if legacy else 1)
     if ratio < 1:
         decimate(obj, ratio)
     if fx.get('glass'):
@@ -184,7 +194,7 @@ def load_part(name, parts_dir, manifest, tmpdir, fixes):
     harden(mir)
     g = part_frame_coords(obj.data)
     bbox = (g.min(0), g.max(0))
-    return Part(name, obj, mir, mount_of(manifest, name), bbox)
+    return Part(name, obj, mir, mount_of(manifest, file), bbox)
 
 
 # ------------------------------------------------------------------------------------------
@@ -230,6 +240,104 @@ class Palette:
         t.image = img
         t.interpolation = 'Closest'
         nt.links.new(t.outputs['Color'], b.inputs['Base Color'])
+        b.inputs['Roughness'].default_value = 0.6
+        b.inputs['Metallic'].default_value = 0.0
+        return m
+
+
+class PatchAtlas:
+    """Textured cover plates: every plate gets its own rectangle of one atlas texture (`density`
+    px per metre, at most `cap` px a side), filled with the hull colour sampled round it times a
+    panel-to-panel plating tone from the PATINA hull set's height map, sampled tri-planar in the
+    ship frame at `tile` metres per repeat exactly as src/lib/patina.js samples its detail layer
+    (so the plate's tone steps line up with the runtime PATINA seams and cavities). The livery
+    repaints the atlas like the hull texture. UVs: Blender convention (v up, rows bottom-up)."""
+
+    def __init__(self, density=48, cap=768, tile=6.0, tone=0.5, patina=None):
+        self.items = []  # (w, h, PM (ship frame 4x4, part frame -> ship), rgb)
+        self.density, self.cap, self.tile, self.tone = density, cap, tile, tone
+        self.patina = patina or os.path.join(F.SCENE3D, 'assets/materials/hull/height.webp')
+        self.rects = []
+        self.size = (0, 0)
+
+    def add(self, w, h, PM, rgb):
+        self.items.append((w, h, PM, tuple(rgb)))
+        return len(self.items) - 1
+
+    def _pack(self, W=2048):
+        x = y = row = 0
+        for w, h, _PM, _c in self.items:
+            rw = int(min(self.cap, max(8, round(w * self.density)))) + 4
+            rh = int(min(self.cap, max(8, round(h * self.density)))) + 4
+            if x + rw > W:
+                x, y, row = 0, y + row, 0
+            self.rects.append((x, y, rw, rh))
+            x += rw
+            row = max(row, rh)
+        H = 1
+        while H < y + row:
+            H *= 2
+        self.size = (W, H)
+
+    def uv(self, i, lx, ly):
+        """uv of plate i at local plate coordinates (lx, ly) in metres (centre = 0)."""
+        if not self.rects:
+            self._pack()
+        w, h = self.items[i][:2]
+        x, y, rw, rh = self.rects[i]
+        W, H = self.size
+        u = (x + 2 + (lx / w + 0.5) * (rw - 4)) / W
+        v = (y + 2 + (ly / h + 0.5) * (rh - 4)) / H
+        return (u, v)
+
+    def material(self, tmpdir):
+        import hulltex
+        if not self.rects:
+            self._pack()
+        W, H = self.size
+        px = np.ones((H, W, 4), np.float32)
+        hm = None
+        if self.tone and os.path.exists(self.patina):
+            try:
+                img = bpy.data.images.load(self.patina)
+                a = np.empty(img.size[0] * img.size[1] * 4, np.float32)
+                img.pixels.foreach_get(a)
+                hm = a.reshape(img.size[1], img.size[0], 4)[::-1, :, 0].copy()  # rows top-down, as stored
+                bpy.data.images.remove(img)
+            except Exception as e:  # noqa: BLE001
+                print('[assemble] patch atlas: no PATINA tone:', e)
+        for i, (w, h, PM, c) in enumerate(self.items):
+            x, y, rw, rh = self.rects[i]
+            gx = ((np.arange(rw) - 2 + 0.5) / (rw - 4) - 0.5) * w
+            gy = ((np.arange(rh) - 2 + 0.5) / (rh - 4) - 0.5) * h
+            X, Y = np.meshgrid(gx, gy)
+            R = np.array(PM.to_3x3()); t = np.array(PM.translation)
+            pos = t[None, None, :] + X[..., None] * R[:, 0] + Y[..., None] * R[:, 1]
+            nrm = np.broadcast_to(R[:, 2], pos.shape)
+            k = np.ones(X.shape, np.float32)
+            if hm is not None:
+                hh = hulltex.triplanar(hm, pos, nrm, self.tile)
+                k = 1 + self.tone * (hh / hm.mean() - 1)
+            # stored sRGB colour, darkened/brightened by the tone (as hulltex does on the hull)
+            px[y:y + rh, x:x + rw, :3] = np.clip(np.array(c)[None, None, :] * k[..., None], 0, 1)
+        gen = bpy.data.images.new('patch_atlas_gen', W, H, alpha=False)
+        gen.pixels.foreach_set(px.ravel())
+        path = os.path.join(tmpdir, 'patch_atlas.png')
+        gen.filepath_raw = path
+        gen.file_format = 'PNG'
+        gen.save()
+        bpy.data.images.remove(gen)
+        img = bpy.data.images.load(path)
+        img.name = 'patch_atlas'
+        img.colorspace_settings.name = 'sRGB'
+        img.pack()
+        m = bpy.data.materials.new('patch')
+        m.use_nodes = True
+        nt = m.node_tree
+        b = nt.nodes.get('Principled BSDF')
+        tx = nt.nodes.new('ShaderNodeTexImage')
+        tx.image = img
+        nt.links.new(tx.outputs['Color'], b.inputs['Base Color'])
         b.inputs['Roughness'].default_value = 0.6
         b.inputs['Metallic'].default_value = 0.0
         return m

@@ -76,8 +76,10 @@ def bake_contact(hull, parts, cfg, threads=2, tmpdir=None):
     tex.select = True
     nt.nodes.active = tex
     # only the hull is baked; parts are ray targets
-    for o in bpy.context.view_layer.objects:
-        o.select_set(False)
+    bpy.context.view_layer.update()
+    for o in bpy.context.scene.objects:
+        if o is not None:
+            o.select_set(False)
     hull.select_set(True)
     bpy.context.view_layer.objects.active = hull
     with bpy.context.temp_override(active_object=hull, selected_objects=[hull], object=hull):

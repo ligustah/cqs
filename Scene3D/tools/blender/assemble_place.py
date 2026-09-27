@@ -105,6 +105,12 @@ def matrix(q, mount, pm, n):
     rot = q.get('rot', 0) or 0
     if mount == '+Y':
         R = basis_y(n, q.get('along'), q['up'], rot)
+    elif q.get('xAlong') and q.get('along') is not None:
+        # +Z parts that tile along their X (the Blender kit's rail, pipes, conduit, radiator):
+        # +X along the row, +Z along n
+        R = basis_y(n, q['along'], q['up'], 0) @ Matrix(((1, 0, 0), (0, 0, 1), (0, -1, 0)))
+        if rot:
+            R = R @ Matrix.Rotation(math.radians(rot), 3, 'Z')
     else:
         R = basis_z(n, q['up'], rot)
     s = q.get('scale', 1) or 1

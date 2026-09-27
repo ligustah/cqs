@@ -52,6 +52,10 @@ PRESETS = {
     'fighter': dict(rotate=(0, -90, 0), length=71.712),
     'corvette': dict(rotate=(0, -90, 0), length=107.1),
     'corvette-live': dict(rotate=(0, -90, 0), length=108.1),  # working-tree hull (src/ships/corvette.js now says 108.1)
+    # the v7 clean corvette hull, assembly pilot 2: small facets (bridge tower tiers, pads) count as
+    # planar regions (down to ~1.2 m^2, 4 faces), and the remaining free faces shade sharp above 20
+    # degrees, so lumps read as facets instead of smooth blotches
+    'corvette-v7': dict(rotate=(0, -90, 0), length=108.1, min_area=0.0001, min_faces=4, crease=20.0),
     'freighter': dict(rotate=(0, -90, 0), length=134.12),
     'freighter-troops': dict(rotate=(0, -90, 0), length=128.84),
     # long, gently faceted bow: blend the shallow creases, do not call the crowned bow plates a cylinder
@@ -69,7 +73,7 @@ PRESETS = {
 DEFAULTS = dict(angle=10.0, tol=0.0012, clamp=0.002, min_area=0.0004, min_faces=6,
                 merge_angle=14.0, curv_sag=0.6, curv_expl=0.7, chain_deg=16.0, crease=35.0,
                 parallel=4.0, soft=8.0, free_normals='crease', smooth_curved=0, weld=1e-6, normal='highpass', nrm_sigma=0.006,
-                variants='', tex=0, tris=10_000_000, rotate=None, length=None, keep_box=None,
+                variants='', tex=0, uvmaps=0, tris=10_000_000, rotate=None, length=None, keep_box=None,
                 debug=False, optimize=True, work=None)
 
 
@@ -101,6 +105,7 @@ def parse():
     ap.add_argument('--length', type=float, help='ship length (m) for metric reports and keep boxes')
     ap.add_argument('--keep-box', action='append', help='x0,y0,z0,x1,y1,z1 in the ship frame (metres): vertices inside never move')
     ap.add_argument('--debug', action='store_true', help='also write out-regions.glb')
+    ap.add_argument('--uvmaps', type=int, help='also write out-uvmaps.npz: texture-aligned region / class / ship-frame position and normal maps at this size (for tools/blender/hulltex.py)')
     ap.add_argument('--no-optimize', dest='optimize', action='store_false', default=None)
     ap.add_argument('--work', help='work folder [out.work]')
     a = ap.parse_args()
@@ -292,6 +297,28 @@ def debug_colors(me, label, klass):
     attr = me.color_attributes.new('Color', 'BYTE_COLOR', 'CORNER')
     attr.data.foreach_set('color', np.repeat(col, 3, axis=0).ravel().tolist())
     me.color_attributes.active_color = attr
+
+
+def write_uvmaps(me, T, S, label, klass, size, path):
+    """Texture-aligned maps of the straightened mesh (glTF UV convention, row 0 = v 0):
+    face class (-1 no face, 0 free, 1 planar, 2 curved), region id (-1 = free / none), ship-frame
+    position (m) and face normal (planar faces: their region's fitted plane is where they now lie)."""
+    import uvraster
+    uv = np.zeros(len(me.loops) * 2)
+    me.uv_layers.active.data.foreach_get('uv', uv)
+    uv = uv.reshape(-1, 3, 2)
+    uv[:, :, 1] = 1 - uv[:, :, 1]  # Blender -> glTF v
+    t0 = time.time()
+    cov = uvraster.raster(uv, size, size, dilate=0.75)
+    tri = S[T]
+    fn = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
+    fn /= np.maximum(np.linalg.norm(fn, axis=1), 1e-12)[:, None]
+    cls = np.where(label >= 0, klass[np.maximum(label, 0)], 0).astype(np.int8)
+    np.savez_compressed(path, face=cov.face, cls=cov.per_face(cls, -1).astype(np.int8),
+                        region=cov.per_face(np.where(cls == 1, label, -1).astype(np.int32), -1),
+                        pos=cov.interp(tri.astype(np.float32)).astype(np.float16),
+                        nrm=cov.interp(np.repeat(fn[:, None, :], 3, 1).astype(np.float32)).astype(np.float16))
+    log(f'uvmaps {size}px {time.time() - t0:.1f}s -> {path}')
 
 
 # --------------------------------------------------------------------------------------------
@@ -511,6 +538,10 @@ def straighten(o):
     log(f'disp max {metrics["disp_max_m"]:.3f} m mean {metrics["disp_mean_m"] * 1000:.1f} mm  planar {metrics["planar_area_frac"]:.1%}  '
         f'curved {metrics["curved_area_frac"]:.1%}  rms {metrics["planar_rms_before_mm"]:.0f}->{metrics["planar_rms_after_mm"]:.0f} mm  '
         f'normal dev {metrics["planar_normal_dev_before_deg"]:.1f}->{metrics["planar_normal_dev_after_deg"]:.2f} deg')
+
+    if o['uvmaps']:
+        write_uvmaps(me, T, S1, label, klass, o['uvmaps'], os.path.splitext(out)[0] + '-uvmaps.npz')
+        metrics['uvmaps'] = os.path.splitext(out)[0] + '-uvmaps.npz'
 
     bl = os.path.join(work, 'blender.glb')
     export_glb(ob, bl)
