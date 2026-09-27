@@ -131,16 +131,18 @@ export function parkInHangar(carrierGroup, { buildShip, palette, attachEffects, 
     return sides.get(key);
   };
 
+  // a hull only has to clear the fixed bulkhead at a zone's end by half the hull-to-hull clearance
+  const end = clearance / 2;
   // try to place an envelope (metres, L along z, B along x) in a zone side; returns centre [x, z] or null
   const place = (s, L, B, cls, perRow = Infinity) => {
     const fitsRow = (row) => {
       const xOuter = row.cursor; // outboard edge of the next ship (already includes clearance)
       const xInner = xOuter + s.dir * B;
       const inboardLimit = s.in - s.dir * clearance;
-      return (s.dir < 0 ? xInner >= inboardLimit : xInner <= inboardLimit) && row.front - L >= s.zAft + clearance && row.cls === cls && row.n < perRow;
+      return (s.dir < 0 ? xInner >= inboardLimit : xInner <= inboardLimit) && row.front - L >= s.zAft + end && row.cls === cls && row.n < perRow;
     };
     if (!s.row || !fitsRow(s.row)) {
-      const front = s.row ? s.row.front - s.row.depth - clearance : s.zFront - clearance;
+      const front = s.row ? s.row.front - s.row.depth - clearance : s.zFront - end;
       const row = { front, depth: 0, cursor: s.out + s.dir * clearance, cls, n: 0 };
       if (!fitsRow(row)) return null;
       s.row = row;
@@ -195,7 +197,7 @@ export function parkInHangar(carrierGroup, { buildShip, palette, attachEffects, 
     for (const s of sides.values()) {
       const mine = out.ships.filter((q) => `${q.zone}:${q.side}` === `${s.zone}:${s.side}`);
       if (!mine.length) continue;
-      const front = s.zFront - clearance, back = s.row.front - s.row.depth;
+      const front = s.zFront - end, back = s.row.front - s.row.depth;
       const shift = ((s.zFront + s.zAft) / 2 - (front + back) / 2) / k;
       for (const q of mine) q.group.position.z += shift;
     }
