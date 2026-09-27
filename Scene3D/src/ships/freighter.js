@@ -4,10 +4,10 @@
 // containers (CT-4 cargo) or habitat cylinders (CT-7 troop transport).
 //
 // Scale: the game's civil ship is 4 hangar slots (UnitEnum getSize() = 4), so
-// EACH variant's envelope is 4 x 70,000 = 280,000 m^3. The troop variant's
-// bulkier habitat cylinders make its envelope wider and taller than the cargo
-// ship's, so at exactly 4 slots it comes out shorter: 48.4 m (cargo) versus
-// 42.9 m (troops). Every anchor below is in these real metres (bow +Z, dorsal
+// EACH variant's envelope is 4 x 70,000 = 280,000 m^3. Both hulls were regenerated at true size
+// (20-ft ISO containers, ~1 m windows, 2 m hatches) and reconstructed with near-identical
+// envelopes, so at exactly 4 slots they come out about the same length: 132.2 m (cargo) and
+// 131.8 m (troops). Every anchor below is in these real metres (bow +Z, dorsal
 // +Y, port +X), measured on the GLB after rotate -> scale -> centre.
 // Troop capacity from game data: UnitEnum TRANSPORTER groundTransport = 750, counted in the
 // game's ground-unit size units (UnitMap.getGroundUnitSize: infantry 1, vehicles 3, aircraft 4),
@@ -52,17 +52,18 @@ export const variants = {
     glb: './assets/ships/freighter-troops.glb',
     concept: './assets/concepts/freighter-troops.webp', beauty: './assets/concepts/freighter-troops-beauty.webp',
     rotate: [0, -90, 0],
-    length: 119.979, // 120.0 x 53.3 x 43.9 m = 280,000 m^3: 4 slots like the cargo ship
-    // exit rim at z -21.45, inner lip r 1.55 (outer 1.76)
+    length: 131.81, // 131.8 x 51.9 x 40.9 m = 280,000 m^3: 4 slots like the cargo ship
+    // two bells side by side: exit rim at z -65.92, inner lip r 5.15 (outer 5.69); an inner
+    // converging nozzle (lip r 3.0 about 0.4 m in) narrows to the throat ~8.4 m in
     engines: [
-      { p: [7.607, -4.615, -59.85], radius: 4.251, mirrorX: true, depth: 5.034, throat: 1.902, wall: [[2.126, 3.971], [2.797, 3.804], [4.251, 2.014]] },
+      { p: [6.78, -1.565, -65.915], radius: 5.15, mirrorX: true, depth: 8.3, throat: 1.6, wall: [[0.45, 3.0], [2.6, 2.7], [6.4, 2.36], [7.6, 2.02]] },
     ],
     lights: [ // same placement rules as the cargo ship, measured on this hull
-      { p: [26.7, -2.237, -26.849], color: 'red', size: 0.4 },
-      { p: [-26.706, -2.237, -26.849], color: 'green', size: 0.4 },
-      { p: [0, 4.503, -26.849], color: 'white', size: 0.4, blink: { ...STROBE } },
-      { p: [0, -16.305, -26.569], color: 'white', size: 0.4, blink: { ...STROBE, phase: 0.5 } },
-      { p: [0, -12.026, -49.866], color: 'white', size: 0.4 },
+      { p: [26.12, 0.3, -28], color: 'red', size: 0.4 },
+      { p: [-26.07, 0.3, -28], color: 'green', size: 0.4 },
+      { p: [0, 8.44, -27], color: 'white', size: 0.4, blink: { ...STROBE } },
+      { p: [0, -15.22, -44], color: 'white', size: 0.4, blink: { ...STROBE, phase: 0.5 } },
+      { p: [0, -9, -51.25], color: 'white', size: 0.4 },
     ],
   },
 };
