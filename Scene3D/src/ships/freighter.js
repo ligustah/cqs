@@ -15,6 +15,8 @@
 // Troop capacity from game data: UnitEnum TRANSPORTER groundTransport = 750, counted in the
 // game's ground-unit size units (UnitMap.getGroundUnitSize: infantry 1, vehicles 3, aircraft 4),
 // not people.
+import { LIVERIES } from '../lib/livery.js';
+
 export const meta = {
   name: 'Drover-class civil transport', designation: 'CT-4 / CT-7', crew: 'about 80 (troop variant: ground-unit capacity 750; infantry 1, vehicles 3, aircraft 4)',
   blurb: 'Civil workhorse: a forward crew module and an aft reactor block with two fusion bells and radiator panels, joined by a truss keel that carries twenty-foot containers (CT-4) or pressurised habitat cylinders (CT-7 troop transport: ground-unit capacity 750, the game\'s groundTransport).',
@@ -27,7 +29,10 @@ export const asset = {
   concept: './assets/concepts/freighter.webp', beauty: './assets/concepts/freighter-beauty.webp',
   rotate: [0, -90, 0], // bow +Z, dorsal +Y, port +X
   length: 134.12, // 134.1 x 54.7 x 38.2 m = 280,000 m^3: 4 slots (scaleCorrection ~1.000)
-  livery: 'civil',
+  // civil livery, with the generated paint's lilac / pink cast (hue ~255-15 deg incl. violet window glass, at linear saturation 0.1-0.5,
+  // ~70 % of texels) held to grey: that band needs saturation 0.5-0.75 before it reads as a marking, so the
+  // hull no longer renders purple while the vivid container and trim colours keep their hue
+  livery: { ...LIVERIES.civil, magentaHue: [255, 15], magentaSat: [0.5, 0.75], magentaMarkSat: 0.5 },
   crease: 35,
   detail: { set: 'hull', tile: 6, normalStrength: 0.9, roughAmount: 0.5, cavity: 0.4 },
   // two main bells side by side: exit rim at z -67.05, centres x +-7.74 y 0.1, inner lip r 4.75 (outer ~5.35)

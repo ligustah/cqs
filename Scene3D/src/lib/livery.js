@@ -36,6 +36,11 @@ export function applyLivery(material, opts = 'dark') {
   const uniforms = {
     uLivBase: { value: o.base }, uLivGain: { value: o.gain }, uLivTint: { value: new THREE.Color(o.tint) },
     uLivMark: { value: o.mark }, uLivSat: { value: new THREE.Vector2(o.sat0, o.sat1) }, uLivMatte: { value: o.matte },
+    // opt-in (default: off, identical shading): texels in the pink / magenta hue band (magentaHue
+    // [from, to] degrees, wrapping through red) use their own saturation window magentaSat [s0, s1] and
+    // markSat magentaMarkSat, so a lilac-tinted paint reads as grey hull while vivid cargo colours stay
+    uLivMagHue: { value: new THREE.Vector2(...(o.magentaHue || [285, 15])) }, uLivMagOn: { value: o.magentaSat ? 1 : 0 },
+    uLivMagSat: { value: new THREE.Vector2(...(o.magentaSat || [o.sat0, o.sat1])) }, uLivMagMarkSat: { value: o.magentaMarkSat ?? o.markSat ?? 0.7 },
     uLivMarkSat: { value: o.markSat ?? 0.7 }, uLivCyanSat: { value: o.cyanSat ?? o.markSat ?? 0.7 }, uLivMetal: { value: o.metal ?? 1 }, uLivCopperSat: { value: o.copperSat ?? o.markSat ?? 0.7 },
   };
   material.userData.livery = uniforms;
@@ -44,7 +49,7 @@ export function applyLivery(material, opts = 'dark') {
     prev?.call(material, shader, renderer);
     Object.assign(shader.uniforms, uniforms);
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform float uLivBase, uLivGain, uLivMark, uLivMatte, uLivMarkSat, uLivMetal, uLivCopperSat, uLivCyanSat; uniform vec3 uLivTint; uniform vec2 uLivSat; float livGlass;')
+      .replace('#include <common>', '#include <common>\nuniform float uLivBase, uLivGain, uLivMark, uLivMatte, uLivMarkSat, uLivMetal, uLivCopperSat, uLivCyanSat; uniform vec3 uLivTint; uniform vec2 uLivSat, uLivMagHue, uLivMagSat; uniform float uLivMagOn, uLivMagMarkSat; float livGlass;')
       .replace('#include <map_fragment>', `#include <map_fragment>
         {
           vec3 c = diffuseColor.rgb;
@@ -64,8 +69,13 @@ export function applyLivery(material, opts = 'dark') {
           vec3 grey = (uLivBase + uLivGain * l) * uLivTint;
           float cyan = smoothstep(160.0, 172.0, hue) * (1.0 - smoothstep(198.0, 210.0, hue));
           float mSat = mix(mix(uLivMarkSat, max(uLivMarkSat, uLivCopperSat), copper), min(uLivMarkSat, uLivCyanSat), cyan);
+          // opt-in pink / magenta band (hue wraps through 360): its own saturation window and markSat
+          float hm = hue < uLivMagHue.y ? hue + 360.0 : hue;
+          float magenta = uLivMagOn * smoothstep(uLivMagHue.x - 10.0, uLivMagHue.x, hm) * (1.0 - smoothstep(uLivMagHue.y + 360.0, uLivMagHue.y + 370.0, hm));
+          mSat = mix(mSat, min(mSat, uLivMagMarkSat), magenta);
+          vec2 satWin = mix(uLivSat, uLivMagSat, magenta);
           vec3 mark = mix(vec3(l), c, mSat) * uLivMark; // dimmed low-visibility markings; copper keeps some hue
-          diffuseColor.rgb = mix(grey, mark, smoothstep(uLivSat.x, uLivSat.y, sat));
+          diffuseColor.rgb = mix(grey, mark, smoothstep(satWin.x, satWin.y, sat));
           // glass: dark, blue-tinted, not strongly saturated (cobalt paint is)
           livGlass = smoothstep(1.12, 1.4, c.b / max(c.r, 1e-3)) * (1.0 - smoothstep(0.05, 0.12, l)) * (1.0 - smoothstep(0.55, 0.75, sat));
           diffuseColor.rgb *= mix(1.0, 0.4, livGlass);
