@@ -543,6 +543,777 @@
         }
       ],
       "notes": "20-ft ISO container 6.06 (X) x 2.59 (Y) x 2.44 (Z) m, doors at +X, bottom at y = 0 (deck normal +Y), origin at the bottom centre. Corrugated side walls reconstructed soft/wavy: reads as a container at hangar distances, not crisp up close."
+    },
+    "turret": {
+      "file": "turret.glb",
+      "size": [
+        8.97,
+        7.02,
+        16.52
+      ],
+      "bbox": {
+        "min": [
+          -4.486,
+          0,
+          -5.951
+        ],
+        "max": [
+          4.486,
+          7.018,
+          10.573
+        ]
+      },
+      "tris": 13231,
+      "bytes": 305064,
+      "texture": 1024,
+      "mount": {
+        "anchor": "foot",
+        "normal": "+Y",
+        "origin": "barbette axis (training axis) at the foot, y = 0; barrels point +Z"
+      },
+      "normaliseRot": "0,-90,0",
+      "scale": {
+        "uniform": 16.874,
+        "key": "barbette (foot) diameter = 8 m (M size)"
+      },
+      "variants": {
+        "S": {
+          "scale": 0.5,
+          "base": 4,
+          "barrelsOut": 3.25,
+          "gunhouse": [
+            4.2,
+            3.51,
+            5
+          ],
+          "door": [
+            1.05,
+            1.65
+          ]
+        },
+        "M": {
+          "scale": 1,
+          "base": 8,
+          "barrelsOut": 6.5,
+          "gunhouse": [
+            8.4,
+            7.02,
+            10
+          ],
+          "door": [
+            2.1,
+            3.3
+          ]
+        },
+        "L": {
+          "scale": 1.75,
+          "base": 14,
+          "barrelsOut": 11.4,
+          "gunhouse": [
+            14.7,
+            12.3,
+            17.5
+          ],
+          "door": [
+            3.7,
+            5.8
+          ]
+        }
+      },
+      "anchors": {
+        "mantletZ": 4.06,
+        "barrelAxisY": 4.3,
+        "barrelAxesX": [
+          -1.28,
+          1.28
+        ],
+        "barrelOD": 0.9,
+        "doorCentre": [
+          4.2,
+          4,
+          -1.6
+        ],
+        "note": "metres at M (scale 1); multiply by the variant scale"
+      },
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e386-d107-7802-a0a5-7ce28658d710",
+          "role": "concept; door concept as the style reference",
+          "resolution": "2K"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e387-ecdf-7a22-9752-503c69d200ff",
+          "face_limit": 15000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Twin-barrel gun turret, ONE design: round bolted barbette ring (8 m at M), faceted gunhouse (~8.4 x 10 m, roof 6.0 m, blister top 7.0 m), flat mantlet at z = 4.06 with two embrasures, twin barrels (0.9 m OD, axes x = +-1.28, y = 4.3) protruding 6.5 m to z = 10.57, boxy sighting blister with a dark slit at the rear left of the roof. Size variants are uniform scalings (S 0.5, M 1, L 1.75). The generated barrels are shorter than the brief at every size (barrels out 3.25 / 6.5 / 11.4 m vs 6 / 14 / 24 m), so the barrels are also a separate part (twinBarrel) to be lengthened in Blender. Side access door: Tripo mirrored it onto BOTH sides (x = +-4.2, centred ~z -1.6, y ~4.0); its frame is ~2.1 x 3.3 m at M (leaf ~1.7 x 2.9), not 1 x 2 m: at M overlay the kit door.glb (1.4 x 2.4 frame fits inside the recess) or keep it as a large hatch; at S it becomes 1.05 x 1.65 m (close to a crew door) and at L 3.7 x 5.8 m (drop it or read it as a cargo hatch)."
+    },
+    "twinBarrel": {
+      "file": "twinBarrel.glb",
+      "size": [
+        4.72,
+        1.95,
+        11.3
+      ],
+      "bbox": {
+        "min": [
+          -2.361,
+          -0.974,
+          0
+        ],
+        "max": [
+          2.361,
+          0.974,
+          11.3
+        ]
+      },
+      "tris": 3717,
+      "bytes": 194340,
+      "texture": 1024,
+      "mount": {
+        "anchor": "back",
+        "normal": "+Z",
+        "origin": "centre of the back (mounting) face"
+      },
+      "normaliseRot": "0,0,0",
+      "scale": {
+        "uniform": 11.5339,
+        "key": "barrel centre spacing = 2.54 m (matches turret M embrasures); overall length 11.3 m"
+      },
+      "variants": {
+        "S": {
+          "scale": 0.5,
+          "barrelsOut": 4.42,
+          "briefBarrels": 6
+        },
+        "M": {
+          "scale": 1,
+          "barrelsOut": 8.83,
+          "briefBarrels": 14
+        },
+        "L": {
+          "scale": 1.75,
+          "barrelsOut": 15.45,
+          "briefBarrels": 24
+        }
+      },
+      "anchors": {
+        "breechFaceZ": 2.47,
+        "barrelAxesX": [
+          -1.27,
+          1.27
+        ],
+        "barrelAxisY": 0,
+        "barrelOD": 0.94,
+        "plainTube": [
+          6.6,
+          10.3
+        ],
+        "note": "metres at M"
+      },
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e38f-055b-7052-b572-4c2f5eaebafa",
+          "role": "concept; references: the turret concept as the design reference and the door concept as the style reference",
+          "resolution": "2K"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e392-ef5a-7cd2-b3f3-be17fcd742ce",
+          "face_limit": 4000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Twin gun barrels on a 4.72 x 1.95 x 2.47 m breech block, same barrel spacing (2.54 m) and OD (0.94 m) as the turret, so it drops into the turret embrasures at the same variant scale. Back of the breech block at z = 0, barrels along +Z, barrel axes at y = 0. To fit on the turret (M): delete the turret barrels, place the breech face at the mantlet (z = 4.06 - 2.47 = 1.59) with the axes at y = 4.3; the barrels then end at z = 12.9. To reach the brief lengths, stretch the plain uniform tube section (z 6.6-10.3 at M) along Z: +5.2 m at M (14 m out), +1.6 m at S (6 m), +8.6 m at L (24 m)."
+    },
+    "pdc": {
+      "file": "pdc.glb",
+      "size": [
+        1.8,
+        1.78,
+        2
+      ],
+      "bbox": {
+        "min": [
+          -0.87,
+          0,
+          -0.659
+        ],
+        "max": [
+          0.934,
+          1.785,
+          1.341
+        ]
+      },
+      "tris": 5533,
+      "bytes": 281052,
+      "texture": 1024,
+      "mount": {
+        "anchor": "foot",
+        "normal": "+Y",
+        "origin": "pedestal axis at the foot, y = 0; barrels point +Z"
+      },
+      "normaliseRot": "0,-90,0",
+      "scale": {
+        "uniform": 2.0389,
+        "key": "largest dimension = 2 m"
+      },
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e386-d1f8-7712-86f0-613f32e10e02",
+          "role": "concept; door concept as the style reference",
+          "resolution": "2K"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e387-edd5-76d1-b7eb-2b70f59a219c",
+          "face_limit": 6000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Point-defence mount: bolted round pedestal (1.08 m flange), armoured cradle, six-barrel rotary cannon with two clamp rings pointing +Z and slightly up, ammunition box on one side, sensor box on the other. The barrels reconstructed as separate tubes (readable)."
+    },
+    "missilePod": {
+      "file": "missilePod.glb",
+      "size": [
+        3.48,
+        5.63,
+        1.19
+      ],
+      "bbox": {
+        "min": [
+          -1.741,
+          -2.815,
+          0
+        ],
+        "max": [
+          1.741,
+          2.815,
+          1.191
+        ]
+      },
+      "tris": 3948,
+      "bytes": 360288,
+      "texture": 1024,
+      "mount": {
+        "anchor": "back",
+        "normal": "+Z",
+        "origin": "centre of the back (mounting) face"
+      },
+      "normaliseRot": "90,0,0",
+      "scale": {
+        "uniform": 5.7454,
+        "key": "hatch pitch 1.2 m (measured 4 cells on the long axis, length 5.63 m)"
+      },
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e386-d2b4-7661-a18f-bd3373a80a77",
+          "role": "concept; door concept as the style reference",
+          "resolution": "2K"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e387-eecd-70a1-94a5-47325d44827f",
+          "face_limit": 5000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "VLS block, 2 x 4 square cells at ~1.2 m pitch (1.23 across, 1.2 along), closed armoured hatch lids with hinge bars on the +Z deck; long axis along Y. Back at z = 0, deck at z ~1.1 (1.19 m with the hatch lids); sink it into the hull as needed (flush deck: position.z = -1.1 along the normal)."
+    },
+    "railgunSegment": {
+      "file": "railgunSegment.glb",
+      "size": [
+        5,
+        4.77,
+        19.45
+      ],
+      "bbox": {
+        "min": [
+          -2.5,
+          0,
+          -9.728
+        ],
+        "max": [
+          2.5,
+          4.771,
+          9.728
+        ]
+      },
+      "tris": 5057,
+      "bytes": 460092,
+      "texture": 1024,
+      "mount": {
+        "anchor": "seg",
+        "normal": "+Y",
+        "origin": "centre of the section length (z), centred on x, bottom at y = 0; the bore runs along Z; tile at a 19.46 m pitch"
+      },
+      "normaliseRot": "0,-90,0",
+      "scale": {
+        "uniform": 19.7822,
+        "key": "cross-section width = 5 m"
+      },
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e386-d36a-7aa2-87ca-7c7bc5dddf40",
+          "role": "concept; door concept as the style reference",
+          "resolution": "2K"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e387-efc9-7d61-a41f-b480755de405",
+          "face_limit": 6000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Tileable spinal railgun section: gunmetal rails top and bottom, ceramic insulator stacks, three clamping collars / capacitor bands, cable trays on both sides, bolted end flanges. Tripo made it 4:1, not 2:1, so at the 5 m cross-section it is 19.46 m long (two brief lengths; the brief 10 m pitch would need a Blender cut). The end flanges do not match: -Z end 4.4 x 3.2 m (y 0.79-3.96), +Z end 3.3 x 3.2 m, and small rail stubs/feet stick past them; square both ends to one flange profile in Blender before tiling. The end plates are closed (flat caps), so the joints are opaque."
+    },
+    "railgunMuzzle": {
+      "file": "railgunMuzzle.glb",
+      "size": [
+        4.4,
+        4.48,
+        6.21
+      ],
+      "bbox": {
+        "min": [
+          -2.2,
+          0,
+          0
+        ],
+        "max": [
+          2.2,
+          4.477,
+          6.215
+        ]
+      },
+      "tris": 4241,
+      "bytes": 254912,
+      "texture": 1024,
+      "mount": {
+        "anchor": "join",
+        "normal": "+Z",
+        "origin": "joining face at z = 0 (x centred, bottom y = 0 like the segment); muzzle points +Z"
+      },
+      "normaliseRot": "0,180,0",
+      "scale": {
+        "uniform": 6.3412,
+        "key": "joining flange width = 4.4 m (the railgunSegment -Z end flange)"
+      },
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e386-d421-7082-8856-58b19256095f",
+          "role": "concept; door concept as the style reference",
+          "resolution": "2K"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e387-f080-7ea3-9f87-b8031dfc5b74",
+          "face_limit": 5000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Muzzle end cap: bolted rear flange (4.4 x 4.48 m) at z = 0, armoured collar with vent slots, square dark bore on the front face, two rail tips protruding to z = 6.2. Place it at the +Z end of the last segment (z = +9.73 in segment space). The joining face carries a hallucinated decal (hidden when joined)."
+    },
+    "torpedoDoor": {
+      "file": "torpedoDoor.glb",
+      "size": [
+        2.89,
+        3,
+        1.26
+      ],
+      "bbox": {
+        "min": [
+          -1.447,
+          -1.5,
+          0
+        ],
+        "max": [
+          1.447,
+          1.5,
+          1.264
+        ]
+      },
+      "tris": 3836,
+      "bytes": 233284,
+      "texture": 1024,
+      "mount": {
+        "anchor": "back",
+        "normal": "+Z",
+        "origin": "centre of the back (mounting) face"
+      },
+      "normaliseRot": "0,-90,0",
+      "scale": {
+        "uniform": 3.0637,
+        "key": "height = 3 m"
+      },
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e386-d4d3-7351-a4be-b390f686b5a5",
+          "role": "concept; door concept as the style reference",
+          "resolution": "2K"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e387-f14a-7423-8213-d67b962a9a55",
+          "face_limit": 4000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Bow launch door: square chamfered armour frame (2.9 x 3 m), round domed door with centre boss, six locking lugs, two hinge blocks on -X. Tripo mirrored the door onto the back face (hidden when mounted), so the part is 1.26 m deep; sink it ~0.9 m into the hull (position.z = -0.9) so only the front ~0.35 m stands proud."
+    },
+    "bell": {
+      "file": "bell.glb",
+      "size": [
+        4.81,
+        5.26,
+        8.3
+      ],
+      "bbox": {
+        "min": [
+          -2.404,
+          -2.837,
+          -8.302
+        ],
+        "max": [
+          2.404,
+          2.426,
+          0
+        ]
+      },
+      "tris": 9387,
+      "bytes": 323096,
+      "texture": 1024,
+      "mount": {
+        "anchor": "exit",
+        "normal": "-Z",
+        "origin": "centre of the exit plane (z = 0); the bell axis runs along -Z, the body extends to z = -8.3 at r 2.2; aim -Z aft"
+      },
+      "normaliseRot": "0,-90,0",
+      "scale": {
+        "uniform": 8.4663,
+        "key": "inner wall radius at the exit = 2.2 m (outer lip 2.43 m)"
+      },
+      "variants": {
+        "r1.4": {
+          "scale": 0.636
+        },
+        "r2.2": {
+          "scale": 1
+        },
+        "r3.5": {
+          "scale": 1.591
+        },
+        "r7": {
+          "scale": 3.182
+        }
+      },
+      "engine": {
+        "unit": "metres at unit exit radius (inner wall at the exit = 1); multiply by the engine radius",
+        "depth": 1.437,
+        "throat": 0.173,
+        "wall": [
+          [
+            0.075,
+            1
+          ],
+          [
+            0.2,
+            0.991
+          ],
+          [
+            0.33,
+            0.98
+          ],
+          [
+            0.45,
+            0.969
+          ],
+          [
+            0.58,
+            0.958
+          ],
+          [
+            0.7,
+            0.945
+          ],
+          [
+            0.77,
+            0.938
+          ],
+          [
+            1.03,
+            0.909
+          ],
+          [
+            1.21,
+            0.864
+          ],
+          [
+            1.225,
+            0.8
+          ],
+          [
+            1.23,
+            0.5
+          ]
+        ],
+        "lipOuter": 1.105,
+        "length": 3.774,
+        "mouthOpen": true,
+        "interior": "nearly cylindrical bell wall (r 1.0 -> 0.86) down to a flat annular floor at depth 1.225 (r 0.86-0.5); from the floor a central collar rises to depth ~0.78 (r ~0.23-0.32) with a bore of r ~0.17-0.2 that ends on the throat plate at depth 1.437. The wall list stops at the floor; the collar cannot be expressed in a monotonic profile.",
+        "perVariant": {
+          "r1.4": {
+            "radius": 1.4,
+            "depth": 2.01,
+            "throat": 0.24
+          },
+          "r2.2": {
+            "radius": 2.2,
+            "depth": 3.16,
+            "throat": 0.38
+          },
+          "r3.5": {
+            "radius": 3.5,
+            "depth": 5.03,
+            "throat": 0.61
+          },
+          "r7": {
+            "radius": 7,
+            "depth": 10.06,
+            "throat": 1.21
+          }
+        }
+      },
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e386-d577-70c2-88d0-9ba0ebaa390f",
+          "role": "concept; door concept as the style reference",
+          "resolution": "2K"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e388-229f-7613-bfd8-8dd8be96f4b4",
+          "face_limit": 10000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Drive bell: dark heat-stained bell with reinforcing bands, gimbal ring, off-white combustion chamber and mounting flange, four gimbal actuators. Exit plane at z = 0, axis -Z; overall length 8.3 m at r 2.2 (3.77 exit radii). The mouth is open (Tripo did not cap it). A stray blob hangs under the bell at the exit (y down to -2.84, outside the lip): delete it in Blender. The interior is a cylinder + flat floor + raised throat collar, not a converging nozzle: for a real bell, delete the floor/collar and loft the wall to the throat."
+    },
+    "engineHousing": {
+      "file": "engineHousing.glb",
+      "size": [
+        12,
+        10.65,
+        11.49
+      ],
+      "bbox": {
+        "min": [
+          -6,
+          -5.328,
+          -11.489
+        ],
+        "max": [
+          6,
+          5.328,
+          0
+        ]
+      },
+      "tris": 4916,
+      "bytes": 305276,
+      "texture": 1024,
+      "mount": {
+        "anchor": "front",
+        "normal": "+Z",
+        "origin": "centre of the front (hull-side) face at z = 0; the block extends aft to -Z and the four bells face -Z"
+      },
+      "normaliseRot": "0,0,0",
+      "scale": {
+        "uniform": 12.1576,
+        "key": "width = 12 m"
+      },
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e386-d630-7de0-83a7-8974a061f63a",
+          "role": "concept; door concept as the style reference",
+          "resolution": "2K"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e388-234d-70d2-bfae-b9c9c4eec476",
+          "face_limit": 6000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Armoured engine block 12 x 10.66 x 11.5 m: chamfered plates, access hatch and handles on the flanks, four short bells in a 2 x 2 grid on the -Z face (exit r ~2.2 m, protruding only ~0.6 m, cups ~1 m deep, centres ~+-2.9 m in x/y). For deep bells replace them with bell.glb r 2.2 at the same centres."
+    },
+    "radiator": {
+      "file": "radiator.glb",
+      "size": [
+        10,
+        6.17,
+        1.38
+      ],
+      "bbox": {
+        "min": [
+          -5,
+          0,
+          -0.691
+        ],
+        "max": [
+          5,
+          6.166,
+          0.691
+        ]
+      },
+      "tris": 4419,
+      "bytes": 367156,
+      "texture": 1024,
+      "mount": {
+        "anchor": "base",
+        "normal": "+Y",
+        "origin": "centre of the root hinge beam at y = 0; panel spans x, fins face +-Z"
+      },
+      "normaliseRot": "0,-90,0",
+      "scale": {
+        "uniform": 10.1965,
+        "key": "width = 10 m"
+      },
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e386-d6e5-7792-9589-26adda9fc59e",
+          "role": "concept; door concept as the style reference",
+          "resolution": "2K"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e388-23fa-7813-845a-fb2ff4ab851b",
+          "face_limit": 6000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Radiator panel on a gunmetal root hinge beam with two knuckles, chamfered frame, vertical fins between top and bottom manifold pipes; fins on both faces (Tripo mirrored). Uniform scale keeps the generated 1.6:1 ratio, so it is 10 x 6.17 m, not 10 x 4; for 4 m, cut the panel height in Blender (the fins are uniform) rather than squashing."
+    },
+    "sensorArray": {
+      "file": "sensorArray.glb",
+      "size": [
+        4,
+        3.23,
+        0.96
+      ],
+      "bbox": {
+        "min": [
+          -2,
+          -1.613,
+          0
+        ],
+        "max": [
+          2,
+          1.613,
+          0.959
+        ]
+      },
+      "tris": 2714,
+      "bytes": 232112,
+      "texture": 1024,
+      "mount": {
+        "anchor": "back",
+        "normal": "+Z",
+        "origin": "centre of the back (mounting) face"
+      },
+      "normaliseRot": "0,-90,0",
+      "scale": {
+        "uniform": 4.0761,
+        "key": "width = 4 m"
+      },
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e386-d799-73f0-8ba0-f1882afa6a71",
+          "role": "concept; door concept as the style reference",
+          "resolution": "2K"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e388-24aa-7f32-b88a-efb0eb8f9099",
+          "face_limit": 4000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Phased-array panel 4 x 3.23 m: chamfered off-white frame, 4 x 3 grid of dark emitter tiles, junction box at the bottom edge. Mirrored onto the back by Tripo, so 0.96 m deep; sink it ~0.6 m (position.z = -0.6). The tile faces are dented/wavy: flatten them in Blender."
+    },
+    "dockingClamp": {
+      "file": "dockingClamp.glb",
+      "size": [
+        2.33,
+        3,
+        2.38
+      ],
+      "bbox": {
+        "min": [
+          -1.171,
+          0,
+          -0.991
+        ],
+        "max": [
+          1.163,
+          3,
+          1.394
+        ]
+      },
+      "tris": 5326,
+      "bytes": 306364,
+      "texture": 1024,
+      "mount": {
+        "anchor": "foot",
+        "normal": "+Y",
+        "origin": "centre of the base plate at y = 0 (orient +Y along the hull normal)"
+      },
+      "normaliseRot": "0,-90,0",
+      "scale": {
+        "uniform": 3.0629,
+        "key": "height = 3 m"
+      },
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e386-d8a2-7520-878a-24edaf952f2b",
+          "role": "concept; door concept as the style reference",
+          "resolution": "2K"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e388-2554-72a1-8429-85f3572e765b",
+          "face_limit": 6000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Docking clamp: 2 x 2 m bolted base plate, two opposing jaw arms (one gunmetal, one off-white) closing over a round padded socket, driven by two hydraulic cylinders; 2.34 x 3 x 2.39 m."
+    }
+  },
+  "parts2": {
+    "about": "Weapons, engines and large components added by the second kit pass (same pipeline: nano-banana-pro/edit with the door concept as the style reference, Tripo H3.1 image-to-3D, normalize2.mjs).",
+    "scaling": "UNIFORM scaling only: one factor per part, chosen from the key dimension in scale.key; size[] is the true resulting bbox, which may differ from the brief on the other axes (noted per part).",
+    "mounts": "back = +Z mount normal as in frame; foot = stands at y = 0 centred on its base/barbette axis (not the bbox), normal +Y; seg = railgun section centred on z, bottom y = 0; join = joining face at z = 0, extends +Z; front = hull-side face at z = 0, body extends to -Z; exit = bell exit-plane centre at the origin, axis -Z.",
+    "pipeline": "tripo GLB -> flatten, rotate (normaliseRot, R = Rz*Ry*Rx), uniform scale to the key dimension, anchor -> dedup, prune, weld -> WebP 1024 -> meshopt (scratchpad v7/parts2/normalize2.mjs).",
+    "cost": {
+      "images": 12,
+      "imageUsd": 1.8,
+      "meshes": 12,
+      "meshUsdEach": 0.6,
+      "retries": 0,
+      "totalUsd": 9
     }
   }
 }
