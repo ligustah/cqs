@@ -4,11 +4,13 @@ import * as THREE from 'three';
 import { normalizeShip, CLASSES } from '../lib/scale.js';
 import { ShipBuilder, geo } from '../lib/kit.js';
 import { loadGLB, buildGLBShip } from '../lib/glbship.js';
+import { loadParts, composeParts } from '../lib/compose.js';
 
 export const ORDER = ['fighter', 'corvette', 'freighter', 'destroyer', 'carrier'];
 export const SHIPS = {};
 export const LOAD_ERRORS = {};
 const GLTFS = {};
+const PARTS = {}; // parts kit GLBs by part name (assets/parts)
 let CONTEXT = { library: {} };
 
 /** Shared build context (e.g. the PATINA material library). */
@@ -24,6 +26,9 @@ export async function loadShips(only = ORDER) {
       if (mod.asset) {
         GLTFS[cls] = await loadGLB(mod.asset.glb);
         for (const [v, a] of Object.entries(mod.variants || {})) if (a.glb) GLTFS[`${cls}:${v}`] = await loadGLB(a.glb);
+        // parts kit instances the module places on its hull (and its variants')
+        const placements = [mod.asset, ...Object.values(mod.variants || {})].flatMap((a) => a.parts || []);
+        if (placements.length) Object.assign(PARTS, await loadParts(placements));
       }
       SHIPS[cls] = mod;
     } catch (e) {
@@ -52,6 +57,7 @@ function buildFresh(cls, palette, opts) {
       const cfg = { name: cls, ...mod.asset, ...(v || {}) };
       if (CONTEXT.livery) cfg.livery = CONTEXT.livery === 'none' ? null : CONTEXT.livery; // ?livery= override for look-dev
       group = buildGLBShip(GLTFS[v?.glb ? `${cls}:${opts.variant}` : cls], cfg, { palette, library: CONTEXT.library });
+      if (cfg.parts?.length) group.userData.ship.parts = composeParts(group, cfg.parts, PARTS, { livery: cfg.livery });
     } else {
       group = mod.build(palette, opts);
     }
