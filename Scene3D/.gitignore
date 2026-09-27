@@ -3,3 +3,4 @@ shots/
 dist/
 .glbtmp/
 assets/ships/raw/
+__pycache__/
