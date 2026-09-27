@@ -31,8 +31,19 @@ function throatTexture() {
   return throatTex;
 }
 
+// Artifact hosting does not serve .glb, so tools/build-artifact.mjs ships each GLB as
+// base64 text (<name>.glb.b64.txt) and sets window.__glbB64; decode it here.
+async function loadB64(url) {
+  const r = await fetch(`${url}.b64.txt`);
+  if (!r.ok) throw new Error(`${r.status} ${url}.b64.txt`);
+  const bin = atob((await r.text()).trim());
+  const buf = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  return loader.parseAsync(buf.buffer, '');
+}
+
 export function loadGLB(url) {
-  if (!cache.has(url)) cache.set(url, loader.loadAsync(url));
+  if (!cache.has(url)) cache.set(url, globalThis.__glbB64 ? loadB64(url) : loader.loadAsync(url));
   return cache.get(url);
 }
 

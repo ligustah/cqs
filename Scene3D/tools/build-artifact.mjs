@@ -3,7 +3,7 @@
 // (GLBs, concept art, PATINA maps; not assets/ships/raw) as supporting files.
 //   node tools/build-artifact.mjs  -> dist/orbital-fleet.html + dist/files.json
 import { readFile, writeFile, mkdir, readdir, stat } from 'node:fs/promises';
-import { join, relative } from 'node:path';
+import { join, relative, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
@@ -15,6 +15,8 @@ html = html
   .replace(/<body>\s*/i, '').replace(/<\/body>\s*/i, '')
   .replace(/<meta charset[^>]*>\s*/i, '').replace(/<meta name="viewport"[^>]*>\s*/i, '');
 await mkdir(join(ROOT, 'dist'), { recursive: true });
+// GLBs go out as base64 text (artifact hosting does not serve model/gltf-binary)
+html = '<script>window.__glbB64 = true;</script>\n' + html;
 await writeFile(join(ROOT, 'dist/orbital-fleet.html'), html);
 
 const files = {};
@@ -31,6 +33,16 @@ async function walk(dir, keep) {
     const size = (await stat(p)).size;
     if (size > MAX) throw new Error(`${rel} is ${(size / 1e6).toFixed(1)} MB (> 15 MB artifact limit)`);
     bytes += size;
+    if (ext === '.glb') {
+      const out = join(ROOT, 'dist', `${rel}.b64.txt`);
+      await mkdir(dirname(out), { recursive: true });
+      await writeFile(out, (await readFile(p)).toString('base64'));
+      const b = (await stat(out)).size;
+      if (b > MAX) throw new Error(`${rel} base64 is ${(b / 1e6).toFixed(1)} MB (> 15 MB)`);
+      bytes += b - size;
+      files[`${rel}.b64.txt`] = { from: relative(ROOT, out).split('\\').join('/'), contentType: 'text/plain' };
+      continue;
+    }
     files[rel] = TYPES[ext] ? { from: rel, contentType: TYPES[ext] } : rel;
   }
 }
