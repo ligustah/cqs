@@ -226,5 +226,9 @@
     },
     "measured": "bridge panes 0.5-0.8 m, ports 0.65-0.95 m, rails 1-1.8 m, hull numbers 2.2-2.3 m (carrier 15 m); still over target: some crew doors 3-4 m (destroyer flank boat hatch 5 x 9.5 m), civil containers ~1.5x ISO.",
     "cost_usd": 15.7
+  },
+  "v6_repair": {
+    "what": "Texture-only repair of details the image model would not shrink: oversized crew doors repainted as plating + a 1.0 x 2.0 m door (fal-ai/nano-banana-pro door and boat-hatch decals, projected texel -> world -> view with a depth test); civil container stacks baked with two fal-ai/patina/material container tiles at true ISO size; corvette bridge emblem that read like a national flag painted out; opt-in magenta livery band for the civil ships.",
+    "cost_usd": 0.7
   }
 }

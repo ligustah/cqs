@@ -137,7 +137,8 @@ turnaround sheets) ≈ $10.70, 6 Tripo P2 models $7.20 (superseded), 11 Tripo
 H3.1 models $6.60, 3 Hunyuan3D 3.1 Pro models ≈ $1.90, 11 PATINA sets ≈ $1.20 —
 about $27.50 for the first build. The fleet-scale re-draw (v4) added about $10.50 and
 the true-scale detail round (v5: targeted detail edits, new turnarounds, 5 Tripo H3.1
-meshes, 3 PATINA detail tiles for the carrier) about $15.70: about **$54** in total.
+meshes, 3 PATINA detail tiles for the carrier) about $15.70, and the door and container
+repair (v6) about $0.70: about **$55** in total.
 
 ## Scale model
 
@@ -194,9 +195,15 @@ apart, rails about 1-1.8 m, hull numbers 2.2-2.3 m (carrier 15 m). The image mod
 would not draw the carrier's ports small enough at 900 m, so its hull carries fal
 PATINA tiles (flank ports, island ribbon panes, 2.7 m plating) sized from measured
 pixels and baked into an 8K base-colour and normal texture by a texel-to-world lookup
-(the hangar cavity and the drive bells are left as generated). Still over the target:
-the image model kept some crew doors at 3-4 m (a 5 x 9.5 m boat hatch on the
-destroyer's flank), and the civil ships' containers are about 1.5x ISO size.
+(the hangar cavity and the drive bells are left as generated). A texture-repair pass
+(v6) then fixed what the image model would not shrink: every oversized crew door is
+repainted as plating plus a 1.0 x 2.0 m door cut from a fal door image (the destroyer's
+5.6 x 10.4 m flank opening became a framed boat hatch with a personnel door in its leaf),
+the civil ships' container stacks carry fal PATINA container faces at true ISO size
+(2.59 m rows, 2.44 m door ends, 6.06 m long sides), and an opt-in livery band removes
+the lilac cast of their generated paint. Where the old door shapes are modelled into
+the mesh (a recess on the fighter, raised panels on the corvette) their relief still
+shows at close range.
 
 The carrier is warp-capable, so never carried itself. In the fleet its bay holds a
 legal load (two destroyers and two civil ships nose to tail across the frames, two
