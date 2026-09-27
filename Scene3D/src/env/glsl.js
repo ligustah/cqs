@@ -1,5 +1,6 @@
 // Shared GLSL chunks for the orbital environment (noise, ray/sphere, atmosphere).
 // Everything here is procedural: no textures are sampled anywhere in src/env.
+import * as THREE from 'three';
 
 // 3D simplex noise, after Ashima Arts / Stefan Gustavson (MIT licence). Range ~[-1, 1].
 export const NOISE = /* glsl */`
@@ -74,7 +75,44 @@ vec2 raySphere(vec3 ro, vec3 rd, float r) {
 
 // Pushes a vertex that would be clipped by the far plane back inside it. The
 // environment never writes or tests depth, so this only keeps huge shells
-// (planet, atmosphere) from being cut when the camera zooms far out.
+// (the sky dome and star field) from being cut when the camera zooms far out.
 export const FAR_CLAMP = /* glsl */`
   if (gl_Position.w > 0.0) gl_Position.z = min(gl_Position.z, gl_Position.w * 0.999999);
+`;
+
+// Per-pixel view ray from gl_FragCoord and the camera. The planet and its atmosphere are
+// drawn as full-screen quads that ray-cast their spheres (SCREEN_VERT): a true-scale globe
+// as a tessellated sphere has triangles crossing the near plane behind the camera, and
+// their per-triangle clipping is not watertight (a dotted crack of missing samples along
+// shared edges on software rasterisers).
+export const VIEW_RAY = /* glsl */`
+uniform vec4 uProj; // projection P00, P11, P20, P21
+uniform vec2 uRes;  // size of the target being drawn (px)
+vec3 viewRay() {
+  vec2 ndc = gl_FragCoord.xy / uRes * 2.0 - 1.0;
+  vec3 v = vec3((ndc.x + uProj.z) / uProj.x, (ndc.y + uProj.w) / uProj.y, -1.0);
+  return normalize(v * mat3(viewMatrix)); // inverse view rotation (transpose) applied to v
+}
+// angle subtended by one pixel (rad)
+float pixelAngle() { return 2.0 / (uProj.y * uRes.y); }
+`;
+export function viewRayUniforms() {
+  return { uProj: { value: new THREE.Vector4(1, 1, 0, 0) }, uRes: { value: new THREE.Vector2(1, 1) } };
+}
+const _px = new THREE.Vector2();
+/** onBeforeRender hook: feeds VIEW_RAY the camera projection and the current target size. */
+export function bindViewRay(mesh, uniforms) {
+  mesh.onBeforeRender = (renderer, _scene, camera) => {
+    const rt = renderer.getRenderTarget();
+    if (rt) _px.set(rt.width, rt.height); else renderer.getDrawingBufferSize(_px);
+    const e = camera.projectionMatrix.elements; // column-major
+    uniforms.uProj.value.set(e[0], e[5], e[8], e[9]);
+    uniforms.uRes.value.copy(_px);
+  };
+}
+
+// Full-screen quad (PlaneGeometry(2, 2)) just in front of the far plane; the environment
+// never tests or writes depth.
+export const SCREEN_VERT = /* glsl */`
+void main() { gl_Position = vec4(position.xy, 0.999, 1.0); }
 `;

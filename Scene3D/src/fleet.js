@@ -4,17 +4,29 @@
 // a 900 m carrier. The group is laid out at that true scale, with the escorts
 // close enough to read against the carrier:
 //   - the carrier at the origin (bow +Z), its hangar stocked by lib/park.js
-//     (16 fighters, 2 corvettes, a destroyer and a cargo ship on the deck,
+//     (21 fighters, 2 corvettes, a destroyer and a cargo ship on the deck,
 //     visible through the open flank bays and lit by the hangar floodlights);
-//   - two destroyers a few hundred metres off the bows, four corvettes screening
-//     ahead and abeam, the logistics convoy trailing astern to port and below;
+//   - two destroyers (off the port bow and the starboard bow), four
+//     corvettes screening ahead, abeam and astern above the drive axis, the logistics convoy
+//     trailing astern to port;
 //   - fighter patrols in vic formation on loops within ~1 km of the group, and a
-//     launch cycle: fighters taxi along the clear lane on the hangar's centreline
-//     and accelerate out of the bow mouth.
+//     launch and recovery cycle (lib/launch.js): a deck lift in the enclosed bow section
+//     raises each fighter onto the centreline lane, the deck catapults it out of the bow
+//     mouth, it lights its drive clear of the bow, climbs away, flies a wide loop and
+//     glides back in to the recovery lift. It is only ever hidden below the deck.
 import * as THREE from 'three';
-import { parkInHangar } from './lib/park.js';
+import { parkInHangar, DEFAULT_LOADOUT, LAUNCH_CYCLE_FIGHTERS } from './lib/park.js';
+import { launchCycle } from './lib/launch.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
+
+// The group's hangar (lib/park.js DEFAULT_LOADOUT, the same load the studio and the scale chart
+// park): 21 fighters three abreast in one row per bay side, 2 corvettes, a destroyer and a cargo
+// ship on the deck. The 3 fighters of the launch and recovery cycle below belong to the same
+// carrier (they are recovered into it and wait below the deck between sorties), so the carrier
+// carries 21 + 3 = 24 fighters: 24 + 10 + 12 + 4 = 50 slots, exactly its legal load
+// (UnitEnum CARRIER spaceTransport = 50).
+const HANGAR_LOADOUT = DEFAULT_LOADOUT;
 
 export function buildFleet({ palette, buildShip, attachEffects }) {
   const root = new THREE.Group();
@@ -43,22 +55,24 @@ export function buildFleet({ palette, buildShip, attachEffects }) {
   // --- carrier and its hangar -------------------------------------------------
   const carrier = place('carrier', V(0, 0, 0), { bob: 0.4 });
   const cs = carrier.group.userData.ship;
-  const parked = parkInHangar(carrier.ship, { buildShip, palette, attachEffects });
+  const parked = parkInHangar(carrier.ship, { buildShip, palette, attachEffects, loadout: HANGAR_LOADOUT });
   effects.push(...parked.effects);
 
   // --- escorts (metres, carrier frame: port +X, dorsal +Y, bow +Z) ---------------
-  // destroyers: one off the port bow quarter (the hero shot's foreground ship), one to starboard
-  place('destroyer', V(520, -10, 330), { yaw: -2, roll: -2 });
+  // destroyers: one off the port bow, 440 m out (the hero shot's foreground escort), one off the
+  // starboard bow. The port one is yawed 22 degrees toward the sun (port-high, a touch aft), so
+  // the bow block's chamfers and the spinal rail channel are raked instead of end-on in shadow.
+  place('destroyer', V(571, 72, 478), { yaw: 22, roll: -2 });
   place('destroyer', V(-360, 60, 520), { yaw: 3 });
   // corvette screen: ahead, and abeam of the hangar bays
   place('corvette', V(160, 150, 980), { yaw: 1, roll: -3 });
   place('corvette', V(-190, -170, 860), { yaw: -2, roll: 3 });
-  place('corvette', V(470, 190, -160), { yaw: -3, roll: -4 });
+  place('corvette', V(76, 140, -880), { yaw: -3, roll: -4 }); // astern, above the drive axis: the stern shot's near escort
   place('corvette', V(-480, -110, -60), { yaw: 4, roll: 3 });
-  // logistics convoy trailing astern, to port and below the carrier's drive axis (clear of the plumes)
-  place('freighter', V(420, -130, -980), { yaw: 3, variant: 'cargo' });
-  place('freighter', V(500, -100, -1100), { yaw: 3, variant: 'troops' });
-  place('freighter', V(390, -160, -1220), { yaw: 2, variant: 'cargo' });
+  // logistics convoy trailing 300-460 m astern, well to port of the drive axis (clear of the plumes)
+  place('freighter', V(354, 4, -775), { yaw: 3, variant: 'cargo' });
+  place('freighter', V(409, 38, -868), { yaw: 3, variant: 'troops' });
+  place('freighter', V(304, 42, -907), { yaw: 2, variant: 'cargo' });
 
   // --- fighters ---------------------------------------------------------------
   const fighters = [];
@@ -74,6 +88,7 @@ export function buildFleet({ palette, buildShip, attachEffects }) {
     const entry = { group: holder, cls: 'fighter' };
     ships.push(entry);
     fighters.push(entry);
+    holder.userData.model = g; // the fighter itself (holder = its pose)
     return holder;
   };
 
@@ -94,11 +109,12 @@ export function buildFleet({ palette, buildShip, attachEffects }) {
       return V(Math.cos(a) * p.rx, p.y + Math.sin(a * 2) * 30 + Math.sin(a) * p.tilt * p.rx, Math.sin(a) * p.rz);
     };
     movers.push((t) => {
-      const pos = pathPos(t), ahead = pathPos(t + 0.35 * Math.sign(p.speed));
+      // time always runs forward; the loop's direction is already in p.speed
+      const pos = pathPos(t), ahead = pathPos(t + 0.35);
       const fwd = ahead.clone().sub(pos).normalize();
       const q = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(ahead, pos, V(0, 1, 0)));
       // bank into the turn
-      const prev = pathPos(t - 0.35 * Math.sign(p.speed));
+      const prev = pathPos(t - 0.35);
       const turn = fwd.clone().cross(pos.clone().sub(prev).normalize()).y;
       const bank = new THREE.Quaternion().setFromAxisAngle(V(0, 0, 1), THREE.MathUtils.clamp(turn * 18, -0.9, 0.9));
       q.multiply(bank);
@@ -109,30 +125,27 @@ export function buildFleet({ palette, buildShip, attachEffects }) {
     });
   }
 
-  // launch cycle: fighters taxi along the hangar's centreline lane (clear of the parked
-  // rows, above the frame sills) and accelerate out of the bow mouth. They are children
-  // of the carrier, so they share its frame (and its slow bob).
-  const mouth = cs.anchors.hangarMouth;
-  const lane = cs.anchors.hangarDeck?.lane;
-  if (mouth) {
-    const dir = (mouth.dir ? mouth.dir.clone() : V(0, 0, 1)).normalize();
-    const laneX = lane ? (lane[0] + lane[1]) / 2 : mouth.p.x;
-    const start = V(laneX, mouth.p.y - 12, 60); // on the lane, mid-hangar, 12 m below the mouth centre
-    const toMouth = mouth.p.z - start.z;
-    const period = 16;
-    for (let i = 0; i < 3; i++) {
+  // launch and recovery cycle (lib/launch.js): three fighters on one closed track, staggered by
+  // a third of its period. They are children of the carrier, so they share its frame (and its
+  // slow bob). The drive is lit only in flight: plume power and the glow in the bells follow the
+  // track's throttle (the bell glow materials are cloned per fighter so each can dim its own).
+  const cycle = launchCycle(cs, fE);
+  if (cycle) {
+    for (let i = 0; i < LAUNCH_CYCLE_FIGHTERS; i++) {
       const h = addFighter(carrier.ship);
-      const offset = i * (period / 3);
+      const g = h.userData.model;
+      const plumes = g.children.filter((c) => c.name === 'plume').map((c) => c.material.uniforms.uPower);
+      const bells = g.children.filter((c) => c.name === 'nozzle-glow' || c.name === 'nozzle-lining');
+      for (const b of bells) { b.material = b.material.clone(); b.userData.color = b.material.color.clone(); }
+      // in the ?t=5 stills the first fighter is just leaving the bow mouth
+      const offset = 5 + i * (cycle.period / 3);
       movers.push((t) => {
-        const k = ((t + offset) % period) / period; // 0..1
-        const d = 90 * k + 2400 * k ** 3;         // taxi, then accelerate out of the bay
-        const out = Math.max(0, d - toMouth);     // metres past the mouth
-        // once clear of the mouth each fighter breaks away: one climbs, one dives, the
-        // outer ones turn to either side (slopes per metre flown)
-        const sx = out > 0 ? 0.16 * (i - 1) : 0, sy = out > 0 ? 0.1 * (i % 2 ? 1 : -0.7) : 0;
-        h.position.copy(start).addScaledVector(dir, d).add(V(out * sx, out * sy, 0));
-        h.quaternion.setFromUnitVectors(V(0, 0, 1), V(sx, sy, 1).normalize());
-        h.visible = out < 1600;
+        const st = cycle.at(t + offset);
+        h.visible = st.visible;
+        h.position.copy(st.position);
+        h.quaternion.copy(st.quaternion);
+        for (const u of plumes) u.value = st.power;
+        for (const b of bells) { b.visible = st.power > 0.005; b.material.color.copy(b.userData.color).multiplyScalar(st.power); }
       });
     }
   }
@@ -140,16 +153,29 @@ export function buildFleet({ palette, buildShip, attachEffects }) {
   const shadowBox = new THREE.Box3();
   for (const s of ships) if (s.cls !== 'fighter') shadowBox.expandByObject(s.group);
 
-  // camera shots (world = carrier frame)
+  // camera shots (world = carrier frame). The planet is true scale (planet.js): the fleet is
+  // 400 km up, so its horizon sits 3.5-36 degrees below the fleet's horizontal depending on the
+  // bearing (lowest ahead, highest astern to starboard), and the ground below is 400+ km away.
+  // fov: the shot's lens (vertical, deg); horizon: the most tilt the horizon may keep (deg; the
+  // planet sits 16 deg off the fleet's nadir, so an unrolled camera sees it tilted 12-18 deg).
   const shots = {
-    // port bow quarter, 13 degrees above the hangar: into the sunlit open bays and the parked
-    // ships, the port destroyer in the foreground, the planet beyond
-    hero: { pos: V(700, 110, 470), target: V(40, -70, 90) },
-    // the whole group from high over the port bow: destroyers, screen, convoy astern
-    high: { pos: V(1400, 1250, 900), target: V(60, -100, -150) },
-    // astern, above the port quarter: the carrier's six drive bells and sunlit port flank,
-    // the logistics convoy trailing below
-    stern: { pos: V(560, 200, -1900), target: V(140, -150, -700) },
+    // port bow quarter, 44 degrees off the bow and 12 degrees up, ~1 km out on a 34 degree lens:
+    // the sun (95 deg az, 32 deg el) is 51 degrees off the lens axis, behind the left shoulder,
+    // so it rakes the flank: the frames' forward faces fall into deep shadow and throw theirs
+    // across the sunlit deck inside the bays. The whole bow (mouth and the CV-50 stencil) at the
+    // left, the six open bays with their parked rows across the middle (0.6-0.85 m per pixel:
+    // inside what the hull bake resolves), the island against black space, the horizon behind
+    // the hull (5 degrees below the fleet's horizontal on this bearing), the port destroyer in
+    // the foreground over the planet, lower right. The drive cluster is at the far right.
+    hero: { pos: V(700, 188, 724), target: V(20, -20, 20), fov: 34, horizon: 5 },
+    // above and behind the port quarter, 44 degrees down from 2.9 km: the whole group (screen,
+    // destroyers, convoy astern) over the ground 400 km below, the limb across the top corner
+    // (its 15 degree tilt kept: it reads as the curve of the planet under a banking camera)
+    high: { pos: V(505, 1895, -2174), target: V(0, -120, -150) },
+    // astern and above the port quarter, 23 degrees down: the carrier's six drive bells, the
+    // logistics convoy trailing in the foreground against the planet, the trailing corvette's
+    // own bells to starboard, the limb across the lower third
+    stern: { pos: V(330, 300, -1250), target: V(110, -70, -400), horizon: 5 },
   };
 
   return {

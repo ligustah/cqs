@@ -20,11 +20,12 @@ for (let i = 0; i < args.length; i += 2) {
   const t0 = Date.now();
   const still = ui ? '' : `&still=1&w=${w}&h=${h}`;
   try {
-    await pg.goto(`${b.base}index.html?${q}${still}`);
+    await pg.goto(`${b.base}index.html?${q}${still}`, { timeout });
     await pg.waitForFunction(() => window.__ready === true, null, { timeout, polling: 250 });
     if (ui) await pg.waitForTimeout(parseInt(opt('settle', '4000')));
     await mkdir(dirname(out), { recursive: true });
-    await pg.screenshot({ path: out });
+    // a fleet frame in software WebGL can take ~40 s, past Playwright's 30 s default
+    await pg.screenshot({ path: out, timeout });
     console.log(`ok   ${out}  (${((Date.now() - t0) / 1000).toFixed(1)}s)`);
   } catch (e) {
     failed = true;

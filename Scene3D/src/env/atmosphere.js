@@ -5,15 +5,19 @@
 //
 // All lengths are in planet radii (planet centre at the origin, surface r = 1).
 import * as THREE from 'three';
-import { RAY, FAR_CLAMP } from './glsl.js';
+import { RAY, VIEW_RAY, SCREEN_VERT, viewRayUniforms, bindViewRay } from './glsl.js';
+import { PLANET_RADIUS } from './lighting.js';
 
-// Physical set-up (Earth-like column optical depths, scale heights slightly
-// exaggerated so the limb reads at fleet-camera distances).
+// Physical set-up for an Earth-sized world (planet.js builds it at true scale): Earth's
+// scale heights and column optical depths, so the limb is the thin bright band an orbital
+// photograph shows (a few km of glow in ~2,300 km of grazing path) and the disc keeps its
+// deep-blue Rayleigh veil.
+const KM = 1000 / PLANET_RADIUS; // one kilometre in planet radii (lighting.js sets the world's size)
 export const ATMO = {
-  HR: 0.0021,       // Rayleigh scale height  (≈ 13 km on an Earth-sized world)
-  HM: 0.00045,      // Mie (haze) scale height
-  top: 1.0 + 0.0021 * 12.0,
-  cloud: 0.0022,    // cloud deck altitude
+  HR: 8.0 * KM,           // Rayleigh scale height
+  HM: 1.2 * KM,           // Mie (haze) scale height
+  top: 1.0 + 8.0 * KM * 12.0, // ~96 km
+  cloud: 2.5 * KM,        // cloud deck altitude (cumulus / stratocumulus tops)
 };
 
 export const ATMO_GLSL = /* glsl */`
@@ -21,9 +25,13 @@ ${RAY}
 const float HR = ${ATMO.HR.toFixed(6)};
 const float HM = ${ATMO.HM.toFixed(6)};
 const float R_TOP = ${ATMO.top.toFixed(6)};
-// scattering coefficients per planet radius; vertical optical depth ≈ Earth's
-const vec3 BETA_R = vec3(0.0300, 0.0700, 0.1720) / HR; // ~0.65x Earth: clearer disc, limb stays opaque
-const float BETA_M = 0.020 / HM;
+// scattering coefficients per planet radius, set by their vertical optical depths:
+// Rayleigh ~0.8x Earth's at 680 / 550 / 440 nm, a typical aerosol load (the whitish haze
+// band along the horizon), and ozone
+// (Chappuis band: absorbs green-orange, so the limb's upper layers stay blue)
+const vec3 BETA_R = vec3(0.037, 0.086, 0.200) / HR;
+const vec3 BETA_O = vec3(0.010, 0.028, 0.0015) / HR; // absorption only, Rayleigh profile
+const float BETA_M = 0.07 / HM;
 const float BETA_ME = BETA_M * 1.11;
 const float MIE_G = 0.76;
 
@@ -42,7 +50,7 @@ float odepth(float r, float mu, float H) {
   return H * (2.0 * exp(-h0) * chapmanC(max(r0, 1.0) / H, 0.0) - exp(-h) * chapmanC(r / H, -mu));
 }
 vec3 transmittance(float r, float mu) {
-  return exp(-(BETA_R * odepth(r, mu, HR) + BETA_ME * odepth(r, mu, HM)));
+  return exp(-((BETA_R + BETA_O) * odepth(r, mu, HR) + BETA_ME * odepth(r, mu, HM)));
 }
 // soft planet shadow for a point at p (|p| >= 1) toward the sun
 float sunShadow(vec3 p, vec3 L) {
@@ -94,7 +102,7 @@ vec4 inscatter(vec3 ro, vec3 rd, vec3 L, out float hitPlanet) {
       float h = max(r - 1.0, 0.0);
       float dR = exp(-h / HR) * ds, dM = exp(-h / HM) * ds;
       float muS = dot(p, L) / r, muV = -dot(p, rd) / r;
-      vec3 tau = BETA_R * (odepth(r, muS, HR) + odepth(r, muV, HR)) + BETA_ME * (odepth(r, muS, HM) + odepth(r, muV, HM));
+      vec3 tau = (BETA_R + BETA_O) * (odepth(r, muS, HR) + odepth(r, muV, HR)) + BETA_ME * (odepth(r, muS, HM) + odepth(r, muV, HM));
       vec3 T = exp(-tau) * sunShadow(p, L);
       sR += dR * T; sM += dM * T;
     }
@@ -109,7 +117,7 @@ vec4 inscatter(vec3 ro, vec3 rd, vec3 L, out float hitPlanet) {
 }
 `;
 
-export function createAtmosphereShell({ radius, center, sunDir, sunE, segments = 160 }) {
+export function createAtmosphereShell({ radius, center, sunDir, sunE }) {
   const mat = new THREE.ShaderMaterial({
     uniforms: {
       uCenter: { value: center },
@@ -117,33 +125,23 @@ export function createAtmosphereShell({ radius, center, sunDir, sunE, segments =
       uSun: { value: sunDir },
       uSunE: { value: sunE },
       uBoost: { value: 1.0 },
+      ...viewRayUniforms(),
     },
-    vertexShader: /* glsl */`
-      varying vec3 vRel;
-      void main() {
-        vec4 w = modelMatrix * vec4(position, 1.0);
-        vRel = w.xyz - cameraPosition;
-        gl_Position = projectionMatrix * viewMatrix * w;
-        ${FAR_CLAMP}
-      }`,
+    vertexShader: SCREEN_VERT,
     fragmentShader: /* glsl */`
       uniform vec3 uCenter; uniform float uR; uniform vec3 uSun; uniform float uSunE; uniform float uBoost;
-      varying vec3 vRel;
+      ${VIEW_RAY}
       ${ATMO_GLSL}
       ${INSCATTER_GLSL}
       void main() {
         vec3 ro = (cameraPosition - uCenter) / uR;
-        vec3 rd = normalize(vRel);
-        // draw front faces from outside, back faces from inside the shell
-        bool inside = dot(ro, ro) < R_TOP * R_TOP;
-        if (inside == gl_FrontFacing) discard;
+        vec3 rd = viewRay();
         float hit;
         vec4 s = inscatter(ro, rd, uSun, hit);
         vec3 col = s.rgb * uSunE * uBoost;
         // premultiplied: rgb added, background scaled by grey transmittance
         gl_FragColor = vec4(col, 1.0 - s.a);
       }`,
-    side: THREE.DoubleSide,
     transparent: false,
     depthTest: false,
     depthWrite: false,
@@ -152,8 +150,10 @@ export function createAtmosphereShell({ radius, center, sunDir, sunE, segments =
     blendSrc: THREE.OneFactor,
     blendDst: THREE.OneMinusSrcAlphaFactor,
   });
-  const mesh = new THREE.Mesh(new THREE.SphereGeometry(radius * ATMO.top, segments, segments / 2), mat);
+  // a full-screen quad: inscatter() ray-casts the shell (rays that miss it add nothing)
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat);
   mesh.name = 'atmosphere';
   mesh.frustumCulled = false;
+  bindViewRay(mesh, mat.uniforms);
   return mesh;
 }

@@ -57,16 +57,21 @@ export function fitCount(hangar, env, clearance = CLEARANCE) {
   return Math.max(0, tiers) * perTier;
 }
 
-/** Check each legal full load against the carrier hangar size (Vector3, metres). */
+/**
+ * Check each legal full load against the carrier hangar size (Vector3, metres). envelopes is
+ * keyed by class, or 'class:variant' for a variant with its own envelope (the civil ship's
+ * troop transport: same 4 slots, different shape).
+ */
 export function carrierLoads(hangarSize, envelopes) {
   const cap = CLASSES.carrier.capacity;
   const rows = [];
-  for (const cls of ['fighter', 'corvette', 'destroyer', 'freighter']) {
-    const env = envelopes[cls];
+  for (const key of ['fighter', 'corvette', 'destroyer', 'freighter', 'freighter:troops']) {
+    const env = envelopes[key];
     if (!env) continue;
+    const [cls, variant] = key.split(':');
     const need = Math.floor(cap / CLASSES[cls].size);
     const fits = fitCount(hangarSize, env);
-    rows.push({ cls, need, fits, ok: fits >= need });
+    rows.push({ cls, variant: variant || null, key, need, fits, ok: fits >= need });
   }
   return rows;
 }

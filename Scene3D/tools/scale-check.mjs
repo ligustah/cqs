@@ -24,17 +24,17 @@ let ok = true;
 for (const [cls, err] of Object.entries(report.errors || {})) { console.log(`ERROR in ${cls}.js: ${err.split('\n').slice(0, 3).join(' | ')}`); ok = false; }
 const pad = (s, n) => String(s).padEnd(n);
 console.log(`slot volume: ${report.slotVolume} m^3\n`);
-console.log(pad('class', 11) + pad('size', 6) + pad('L x B x H (m)', 26) + pad('volume', 10) + pad('slots', 8) + pad('design scale', 14) + pad('tris', 9) + 'draws');
+console.log(pad('class', 18) + pad('size', 6) + pad('L x B x H (m)', 26) + pad('volume', 10) + pad('slots', 8) + pad('design scale', 14) + pad('tris', 9) + 'draws');
 for (const r of report.rows) {
   const flags = [];
   if (r.size && Math.abs(r.slots - r.size) > 0.01) { flags.push('SLOT MISMATCH'); ok = false; }
   if (Math.abs(r.scaleCorrection - 1) > 0.08) { flags.push(`built ${((1 / r.scaleCorrection - 1) * 100).toFixed(0)}% off target size`); }
-  console.log(pad(r.cls, 11) + pad(r.size ?? '-', 6) + pad(`${r.L} x ${r.B} x ${r.H}`, 26) + pad(r.volume, 10) + pad(r.slots ?? '-', 8) + pad(r.scaleCorrection, 14) + pad(r.triangles, 9) + r.drawCalls + (flags.length ? '   <- ' + flags.join(', ') : ''));
+  console.log(pad(r.cls, 18) + pad(r.size ?? '-', 6) + pad(`${r.L} x ${r.B} x ${r.H}`, 26) + pad(r.volume, 10) + pad(r.slots ?? '-', 8) + pad(r.scaleCorrection, 14) + pad(r.triangles, 9) + r.drawCalls + (flags.length ? '   <- ' + flags.join(', ') : ''));
 }
 if (report.hangar) {
   console.log(`\ncarrier hangar (clear, L x B x H): ${report.hangar[2]} x ${report.hangar[0]} x ${report.hangar[1]} m`);
   for (const l of report.loads) {
-    console.log(`  ${pad(l.cls, 10)} need ${pad(l.need, 3)} fits ${pad(l.fits, 4)} ${l.ok ? 'OK' : 'FAIL'}`);
+    console.log(`  ${pad(l.key, 17)} need ${pad(l.need, 3)} fits ${pad(l.fits, 4)} ${l.ok ? 'OK' : 'FAIL'}`);
     if (!l.ok) ok = false;
   }
   if (report.hangarInside) {
@@ -51,11 +51,16 @@ if (report.hangar) {
   if (carrierRow) {
     const env = Object.fromEntries(report.rows.filter((r) => r.size).map((r) => [r.cls, { x: r.B, y: r.H, z: r.L }]));
     const fitsAt = (k) => carrierLoads({ x: report.hangar[0] * k, y: report.hangar[1] * k, z: report.hangar[2] * k }, env).every((l) => l.ok);
+    // shrink in 0.1 % steps down to 10 % of the design (the limit is ~38 %, so the search never stops early)
+    const STEP = 0.001, K_MIN = 0.1;
     let k = 1;
-    if (fitsAt(1)) { while (k > 0.5 && fitsAt(k - 0.005)) k -= 0.005; }
-    const tight = carrierLoads({ x: report.hangar[0] * k, y: report.hangar[1] * k, z: report.hangar[2] * k }, env).filter((l) => l.fits === l.need).map((l) => l.cls);
-    console.log(`  capacity ${CLASSES.carrier.capacity} slots (UnitEnum.CARRIER spaceTransport); loads: ${report.loads.map((l) => `${l.need} ${l.cls} x ${CLASSES[l.cls].size}`).join(', ')}`);
-    if (fitsAt(1)) console.log(`  smallest carrier whose hangar would still fit every load: ${(carrierRow.L * k).toFixed(1)} m (binding: ${tight.join(', ') || '-'}); built: ${carrierRow.L} m (design length)`);
+    if (fitsAt(1)) { while (k - STEP >= K_MIN && fitsAt(k - STEP)) k -= STEP; }
+    // binding load(s): the ones that stop fitting at the next step down
+    const below = carrierLoads({ x: report.hangar[0] * (k - STEP), y: report.hangar[1] * (k - STEP), z: report.hangar[2] * (k - STEP) }, env);
+    const tight = below.filter((l) => !l.ok).map((l) => `${l.key}, ${l.fits} of ${l.need} fit 0.1 % smaller`);
+    console.log(`  capacity ${CLASSES.carrier.capacity} slots (UnitEnum.CARRIER spaceTransport); loads: ${report.loads.map((l) => `${l.need} ${l.key} x ${CLASSES[l.cls].size}`).join(', ')}`);
+    if (fitsAt(1) && k - STEP < K_MIN) console.log(`  every load still fits at ${(K_MIN * 100).toFixed(0)} % of the design (${(carrierRow.L * k).toFixed(1)} m); built: ${carrierRow.L} m (design length)`);
+    else if (fitsAt(1)) console.log(`  smallest carrier whose hangar would still fit every load: ${(carrierRow.L * k).toFixed(1)} m (${(k * 100).toFixed(1)} % of the design; binding load: ${tight.join('; ') || '-'}); built: ${carrierRow.L} m (design length)`);
     else console.log(`  the hangar does not fit every legal load at ${carrierRow.L} m`);
   }
   const carrier = report.rows.find((r) => r.cls === 'carrier');

@@ -26,7 +26,10 @@ export async function openBrowser({ net = false } = {}) {
         await route.fulfill({ body, contentType: 'text/javascript' });
       } catch { await route.abort(); }
     });
-    if (!net) await pg.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
+    // offline: answer the Google Fonts requests with an empty stylesheet / font (the page falls
+    // back to its system fonts) instead of aborting them, so real console errors are not buried
+    // under a 'Failed to load resource' line on every shot
+    if (!net) await pg.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.fulfill({ status: 200, contentType: /googleapis/.test(r.request().url()) ? 'text/css' : 'font/woff2', body: '' }));
     const logs = [];
     pg.on('console', (m) => { if (['error', 'warning'].includes(m.type())) logs.push(`[${m.type()}] ${m.text()}`); });
     pg.on('pageerror', (e) => logs.push(`[pageerror] ${e.message}`));

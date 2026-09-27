@@ -19,6 +19,9 @@ export const meta = {
   name: 'Warden-class corvette', designation: 'K-214', crew: 'about 25',
   blurb: 'Armoured escort corvette: a chamfered bow with four torpedo doors, a stepped bridge, two twin-barrel dorsal turrets and a sensor mast, four fusion bells in the stern frame and two outrigger drive pods on pylons.',
 };
+const MAIN_BELL = { depth: 1.04, throat: 0.34, wall: [[0.34, 0.61], [0.68, 0.54], [0.85, 0.5]] };
+const POD_BELL = { depth: 1.74, throat: 0.49, wall: [[0.6, 1.07], [0.9, 1.0], [1.2, 0.63]] };
+
 export const asset = {
   glb: './assets/ships/corvette.glb', generator: 'tripo3d/h3.1/multiview-to-3d',
   concept: './assets/concepts/corvette.webp', beauty: './assets/concepts/corvette-beauty.webp',
@@ -28,14 +31,16 @@ export const asset = {
   crease: 35, // flat armour panels shade flat; bells, barrels and the mast pole stay smooth
   detail: { set: 'hull', tile: 6, normalStrength: 1.0, roughAmount: 0.5, cavity: 0.4 },
   engines: [
-    // main hull: upper pair (port, starboard), lower pair
-    { p: [3.748, -2.796, -18.25], radius: 0.68 },
-    { p: [-3.677, -2.807, -18.25], radius: 0.68 },
-    { p: [3.720, -6.200, -18.25], radius: 0.68 },
-    { p: [-3.673, -6.180, -18.25], radius: 0.68 },
+    // main hull: upper pair (port, starboard), lower pair. depth / throat / wall: ray-cast on the
+    // GLB: the main bells converge steadily to a 0.5 r throat 1.53 r inside the lip; the pod bells
+    // step in from 0.84 r to 0.53 r about 0.95 r deep, throat plate at 1.45 r
+    { p: [3.748, -2.796, -18.25], radius: 0.68, ...MAIN_BELL },
+    { p: [-3.677, -2.807, -18.25], radius: 0.68, ...MAIN_BELL },
+    { p: [3.720, -6.200, -18.25], radius: 0.68, ...MAIN_BELL },
+    { p: [-3.673, -6.180, -18.25], radius: 0.68, ...MAIN_BELL },
     // outrigger drive pods
-    { p: [10.018, -6.439, -10.64], radius: 1.2 },
-    { p: [-9.969, -6.436, -10.64], radius: 1.2 },
+    { p: [10.018, -6.439, -10.64], radius: 1.2, ...POD_BELL },
+    { p: [-9.969, -6.436, -10.64], radius: 1.2, ...POD_BELL },
   ],
   lights: [
     // steady sidelights on the outboard face of each pod (the beam extremity), on the flat

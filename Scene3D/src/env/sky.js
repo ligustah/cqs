@@ -1,7 +1,7 @@
 // Background sky at infinity, as a camera exposed for sunlit hulls records it:
 // near-black, a very faint galactic band with dust lanes and only a trace of
 // emission nebula, a magnitude-distributed star field with black-body tints
-// (faint: AgX's long toe lifts even m 7.6 stars), and the local star
+// (capped at ~21 sRGB: at this exposure only a sparse field of faint points shows), and the local star
 // at SUN_DIR. The group follows the camera and draws first (renderOrder -10)
 // with depth test/write off, so everything else paints over it.
 import * as THREE from 'three';
@@ -32,6 +32,8 @@ function starColor(kelvin) {
   return c.multiplyScalar(1 / Math.max(lum, 1e-3));
 }
 
+const STAR_CAP = 0.0046; // ~21 sRGB after PBR Neutral at the default exposure 1.7 (main.js)
+
 function buildStars(count, radius, seed) {
   const rnd = mulberry32(seed);
   const gauss = () => Math.sqrt(-2 * Math.log(Math.max(rnd(), 1e-9))) * Math.cos(2 * Math.PI * rnd());
@@ -58,8 +60,13 @@ function buildStars(count, radius, seed) {
     if (m < 2.0) K = u < 0.45 ? 9000 + rnd() * 16000 : u < 0.75 ? 5800 + rnd() * 3000 : 3500 + rnd() * 1500;
     else K = u < 0.14 ? 8500 + rnd() * 12000 : u < 0.45 ? 5600 + rnd() * 2400 : 3300 + rnd() * 2300;
     const c = starColor(K).lerp(new THREE.Color(1, 1, 1), 0.35);
-    // peak radiance of the PSF; compressed dynamic range (0.3 of true flux ratio)
-    const peak = 0.0055 * Math.pow(10, -0.4 * 0.62 * (m - mHi)); // brightest ~0.9: below the bloom threshold
+    // peak radiance of the PSF. A camera exposed for sunlit hulls and a sunlit planet records
+    // almost no stars, so the field is capped for that exposure: the flux ratio is compressed
+    // (0.62 of true in magnitudes), then soft-limited at STAR_CAP (~0.0046 scene-linear, ~21 sRGB
+    // after PBR Neutral at exposure 1.7). Naked-eye stars (m < 3) all sit near the cap, m 5-6 at a few
+    // sRGB levels, the faint population below one. They scale with ?exposure like everything else.
+    const raw = 0.0055 * Math.pow(10, -0.4 * 0.62 * (m - mHi));
+    const peak = STAR_CAP * (1 - Math.exp(-raw / 0.05));
     col[i * 3] = c.r * peak; col[i * 3 + 1] = c.g * peak; col[i * 3 + 2] = c.b * peak;
     size[i] = m < 1.5 ? 15 : m < 3.5 ? 6 : 4;
   }

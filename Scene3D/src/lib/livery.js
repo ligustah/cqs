@@ -9,17 +9,23 @@
 //     own weathering and panel-to-panel variation (compressed, not flattened);
 //   - saturated markings (orange bands, cobalt IDs, civilian containers) keep
 //     their hue but are dimmed to low-visibility tones;
-//   - roughness is pushed toward matte so there are no glossy highlights, and
-//     metalness is scaled down: the hull is paint (a dielectric), not bare metal.
+//   - copper and gold texels (conduits, coils, MLI foil: hue 15-45 degrees, darker than the
+//     orange paint bands) keep part of their hue (copperSat), so they still read as a
+//     different material from the grey armour;
+//   - dark, blue-tinted, unsaturated texels are glass (canopies, bridge windows): smooth
+//     (roughness 0.08), dielectric and darker, so they catch the planet and the sun;
+//   - roughness is pushed toward matte (matte 0.35: a broad, dim sheen only at grazing angles,
+//     never a glossy highlight), and metalness is scaled down: the hull is paint (a
+//     dielectric), not bare metal.
 import * as THREE from 'three';
 
 export const LIVERIES = {
   // linear-space albedo: off-white paint (~0.6) -> ~0.055 (sRGB ~66), mid texel (~0.22) -> ~0.03,
   // dark metal (~0.08) -> ~0.02. Markings: low-visibility, a slightly lighter
   // grey that keeps only a hint of their hue (markSat) at about the hull's value.
-  dark: { base: 0.016, gain: 0.065, tint: '#e3e7eb', mark: 0.11, markSat: 0.05, sat0: 0.22, sat1: 0.5, matte: 0.55, metal: 0.25 },
-  // civilian hulls: same grey, markings and cargo colours a little brighter
-  civil: { base: 0.018, gain: 0.07, tint: '#e8ebee', mark: 0.5, markSat: 0.7, sat0: 0.22, sat1: 0.45, matte: 0.3, metal: 1 },
+  dark: { base: 0.016, gain: 0.065, tint: '#e3e7eb', mark: 0.11, markSat: 0.05, copperSat: 0.5, sat0: 0.22, sat1: 0.5, matte: 0.35, metal: 0.25 },
+  // civilian hulls: same grey; cargo colours are weathered saturated paint (darker, richer)
+  civil: { base: 0.018, gain: 0.07, tint: '#e8ebee', mark: 0.4, markSat: 0.9, copperSat: 0.9, sat0: 0.22, sat1: 0.45, matte: 0.3, metal: 1 },
 };
 
 /** Repaint a MeshStandard/Physical material in place. opts: a LIVERIES key or an object. */
@@ -28,7 +34,7 @@ export function applyLivery(material, opts = 'dark') {
   const uniforms = {
     uLivBase: { value: o.base }, uLivGain: { value: o.gain }, uLivTint: { value: new THREE.Color(o.tint) },
     uLivMark: { value: o.mark }, uLivSat: { value: new THREE.Vector2(o.sat0, o.sat1) }, uLivMatte: { value: o.matte },
-    uLivMarkSat: { value: o.markSat ?? 0.7 }, uLivMetal: { value: o.metal ?? 1 },
+    uLivMarkSat: { value: o.markSat ?? 0.7 }, uLivMetal: { value: o.metal ?? 1 }, uLivCopperSat: { value: o.copperSat ?? o.markSat ?? 0.7 },
   };
   material.userData.livery = uniforms;
   const prev = material.onBeforeCompile;
@@ -36,19 +42,32 @@ export function applyLivery(material, opts = 'dark') {
     prev?.call(material, shader, renderer);
     Object.assign(shader.uniforms, uniforms);
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform float uLivBase, uLivGain, uLivMark, uLivMatte, uLivMarkSat, uLivMetal; uniform vec3 uLivTint; uniform vec2 uLivSat;')
+      .replace('#include <common>', '#include <common>\nuniform float uLivBase, uLivGain, uLivMark, uLivMatte, uLivMarkSat, uLivMetal, uLivCopperSat; uniform vec3 uLivTint; uniform vec2 uLivSat; float livGlass;')
       .replace('#include <map_fragment>', `#include <map_fragment>
         {
           vec3 c = diffuseColor.rgb;
           float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
           float mx = max(c.r, max(c.g, c.b)), mn = min(c.r, min(c.g, c.b));
           float sat = (mx - mn) / max(mx, 1e-4);
+          // hue (degrees) of saturated texels: copper / gold conduits, coils and foil sit at 15-45,
+          // darker than the orange paint bands (which stay low-visibility grey)
+          float hue = 0.0;
+          if (mx - mn > 1e-4) {
+            if (mx == c.r) hue = mod((c.g - c.b) / (mx - mn), 6.0);
+            else if (mx == c.g) hue = (c.b - c.r) / (mx - mn) + 2.0;
+            else hue = (c.r - c.g) / (mx - mn) + 4.0;
+            hue *= 60.0;
+          }
+          float copper = smoothstep(10.0, 18.0, hue) * (1.0 - smoothstep(42.0, 52.0, hue)) * (1.0 - smoothstep(0.42, 0.62, mx));
           vec3 grey = (uLivBase + uLivGain * l) * uLivTint;
-          vec3 mark = mix(vec3(l), c, uLivMarkSat) * uLivMark; // dimmed, desaturated low-visibility markings
+          vec3 mark = mix(vec3(l), c, mix(uLivMarkSat, max(uLivMarkSat, uLivCopperSat), copper)) * uLivMark; // dimmed low-visibility markings; copper keeps some hue
           diffuseColor.rgb = mix(grey, mark, smoothstep(uLivSat.x, uLivSat.y, sat));
+          // glass: dark, blue-tinted, not strongly saturated (cobalt paint is)
+          livGlass = smoothstep(1.12, 1.4, c.b / max(c.r, 1e-3)) * (1.0 - smoothstep(0.05, 0.12, l)) * (1.0 - smoothstep(0.55, 0.75, sat));
+          diffuseColor.rgb *= mix(1.0, 0.4, livGlass);
         }`)
-      .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, 1.0, uLivMatte);')
-      .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor *= uLivMetal;');
+      .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(mix(roughnessFactor, 1.0, uLivMatte), 0.08, livGlass);')
+      .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor *= uLivMetal * (1.0 - livGlass);');
   };
   const prevKey = material.customProgramCacheKey.bind(material);
   material.customProgramCacheKey = () => `livery|${prevKey()}`;

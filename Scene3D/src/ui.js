@@ -2,14 +2,16 @@
 import { SLOT_VOLUME, carrierLoads } from './lib/scale.js';
 import * as THREE from 'three';
 
-export function createUI({ mode, still, world, classes, order, onMode, onFocus, onToggle }) {
+export function createUI({ mode, still, world, classes, order, envelopes = {}, onMode, onFocus, onToggle }) {
   const root = document.getElementById('ui');
   if (!root || still) { if (root) root.hidden = true; return { select() {} }; }
 
   const byCls = {};
   for (const s of world.ships) if (!byCls[s.cls]) byCls[s.cls] = s.group.userData.ship;
-  const env = {};
-  for (const c of order) if (byCls[c]) env[c] = byCls[c].envelope.size;
+  // hangar-load envelopes: every class main.js loaded (not only the ships this view shows), so the
+  // carrier's table is complete in the ship studio too; fall back to the ships in the view
+  const env = { ...envelopes };
+  for (const c of order) if (!env[c] && byCls[c]) env[c] = byCls[c].envelope.size;
 
   const fmt = (v, d = 1) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 
@@ -56,11 +58,11 @@ export function createUI({ mode, still, world, classes, order, onMode, onFocus, 
         <h3>Hangar bay</h3>
         <p class="dims">${fmt(hz.z, 0)} × ${fmt(hz.x, 0)} × ${fmt(hz.y, 0)} m clear</p>
         <table class="loads"><thead><tr><th>Full load</th><th>Needs</th><th>Fits</th></tr></thead><tbody>
-        ${rows.map((r) => `<tr class="${r.ok ? 'ok' : 'bad'}"><td>${classes[r.cls].label}</td><td>${r.need}</td><td>${r.fits} ${r.ok ? '✓' : '✗'}</td></tr>`).join('')}
+        ${rows.map((r) => `<tr class="${r.ok ? 'ok' : 'bad'}"><td>${classes[r.cls].label}${r.variant ? ` (${r.variant})` : ''}</td><td>${r.need}</td><td>${r.fits} ${r.ok ? '✓' : '✗'}</td></tr>`).join('')}
         </tbody></table>`;
     }
     sheet.innerHTML = `
-      <p class="eyebrow">${spec.gameId} · ${spec.size ? `${spec.size} hangar slot${spec.size > 1 ? 's' : ''}` : `carries ${spec.capacity} slots`}</p>
+      <p class="eyebrow">${s.source?.gameId || spec.gameId} · ${spec.size ? `${spec.size} hangar slot${spec.size > 1 ? 's' : ''}` : `carries ${spec.capacity} slots`}</p>
       <h2>${s.meta?.name ?? spec.label}</h2>
       <p class="role">${s.meta?.blurb || spec.role}</p>
       <dl class="specs">
@@ -90,7 +92,21 @@ export function createUI({ mode, still, world, classes, order, onMode, onFocus, 
     el.addEventListener('change', () => onToggle(el.dataset.toggle, el.checked));
   });
   const hangarToggle = root.querySelector('[data-toggle="hangar"]');
-  if (hangarToggle) hangarToggle.closest('label').hidden = mode !== 'lineup';
+  if (hangarToggle) {
+    hangarToggle.closest('label').hidden = mode !== 'lineup';
+    const hq = new URLSearchParams(location.search).get('hangar');
+    if (hq !== null && hq !== '0') hangarToggle.checked = true;
+  }
+  // lineup: switch between the whole chart and the close-up of the small ships (?lineup=small)
+  const detail = root.querySelector('#lineup-detail');
+  if (detail) {
+    detail.hidden = mode !== 'lineup';
+    const q = new URLSearchParams(location.search);
+    if (world.lineupSmall) q.delete('lineup'); else q.set('lineup', 'small');
+    const qs = q.toString();
+    detail.href = `${qs ? `?${qs}` : location.pathname}${q.get('mode') ? '' : '#lineup'}`;
+    detail.textContent = world.lineupSmall ? 'Whole chart' : 'Close-up: small ships';
+  }
 
   return { select };
 }

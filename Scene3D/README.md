@@ -24,16 +24,30 @@ node tools/serve.mjs 8080      # any static server works
 
 | View | URL | What it shows |
 | --- | --- | --- |
-| Fleet in orbit | `#fleet` (default), `?mode=fleet&shot=hero\|high\|stern` | Carrier group above the planet: parked ships in the carrier's open bays, launches from the hangar mouth, escorts, fighter patrols, the logistics convoy |
-| Scale lineup | `#lineup` | Scale chart: sterns aligned on a metre ruler, one row per class, a 1-slot reference cube, a 1.8 m crew member, and an optional 50-fighter hangar load |
+| Fleet in orbit | `#fleet` (default), `?mode=fleet&shot=hero\|high\|stern` | Carrier group above the planet: parked ships in the carrier's open bays, a launch and recovery cycle through the bow mouth, escorts, fighter patrols, the logistics convoy |
+| Scale lineup | `#lineup`, close-up `?lineup=small#lineup` | Scale chart: sterns aligned on a metre ruler (ticks every 10 m to 100 m, then every 100 m), one row per class labelled by callouts on the stern side, a 1-slot reference cube, a 1.8 m crew member, a neutral 10 m / 100 m grid, and an optional 50-fighter hangar load (`hangar=1`). The default view frames the whole 900 m chart; `lineup=small` frames only the small ships, the cube and the crew member, like the enlarged inset of a technical drawing (also linked from the toggles bar) |
 | Ship studio | `?mode=ship&ship=carrier&az=35&el=18&dist=1` | One ship, framed for inspection (`fighter`, `corvette`, `freighter`, `destroyer`, `carrier`; `variant=troops`; `parked=1` fills the carrier's hangar; `debug=1` shows axes, a metre grid, engine/light anchors and the hangar box) |
 | Check | `?mode=check` | Builds every ship and reports envelopes, slots and hangar fits (used by `tools/scale-check.mjs`) |
 
 Controls: drag to orbit, scroll to zoom, double-click a ship to fly to it and
 follow it. The spec sheet shows each ship's dimensions, crew, hangar loads and
-its fal concept art (in-orbit concept and the image-to-3D input).
+its fal concept art (in-orbit concept and the image-to-3D input). In the interactive
+fleet view the lens is shifted (an off-axis projection, the camera pose is unchanged) so
+the named shot's composition sits centred in the area left clear by the title, the class
+list, the spec sheet and the toggles; stills use the plain lens.
 
-Look-dev overrides: `?livery=none|dark|civil`, `?exposure=`, `?fov=`, `&t=` (freeze time).
+Look-dev overrides: `?livery=none|dark|civil`, `?exposure=`, `?fov=`, `&t=` (freeze time),
+`?cam=x,y,z&target=x,y,z` (fleet: a free camera in the carrier's frame, metres), `?level=deg`
+(fleet: the most horizon tilt a shot keeps; each named shot sets its own lens and tilt),
+`?planetss=1..3` (planet supersampling; stills default to 2), `?envhide=surface,clouds,atmosphere`.
+
+The launch cycle (`src/lib/launch.js`) is one closed track flown by three fighters, a
+third of its 105 s period apart: a deck lift in the enclosed bow section raises the
+fighter onto the starboard half of the centreline lane, the deck's linear catapult
+throws it out of the bow mouth with its drive cold, it lights the drive ~140 m clear of
+the bow, climbs away to starboard, flies a 700 m-radius teardrop (about 3 g) and glides
+back in, unpowered, along the port half of the lane to the recovery lift. Fighters are
+only ever hidden while they are below the deck, so nothing appears or vanishes in view.
 
 ## Asset pipeline (fal.ai)
 
@@ -70,7 +84,10 @@ Each stage ran as a small multi-agent workflow: generators, independent judges
      stern and belly instead of hallucinated ones.
    - The carrier's bays were made see-through in its turnaround views so the
      reconstruction keeps them open; the destroyer's hull number was
-     re-projected onto its texture.
+     re-projected onto its texture, and so was the carrier's: both flanks now
+     carry the same stencil "CV-50" (the reconstruction had put a different,
+     rounded number on the starboard flank and an offset relief of one under
+     the port paint; the relief was flattened, since paint has none).
 3. **Optimise** — `tools/ingest-fal.mjs` downloads results; meshes go through
    `tools/optimize-glb.mjs` (weld, simplify to the class budget, WebP textures,
    meshopt). Raw GLBs stay in `assets/ships/raw/` (gitignored).
@@ -78,13 +95,31 @@ Each stage ran as a small multi-agent workflow: generators, independent judges
    hull, orange, armor, ceramic, foil, deck, radiator in `assets/materials/`
    with `manifest.json`. On the generated hulls PATINA is a tri-planar detail
    layer (normal, roughness, cavity) at one absolute plating size (6 m per
-   repeat) on every ship; the full sets texture scene-built parts.
+   repeat) on every ship; inside the carrier's hangar the `deck` set takes over
+   (tread plates, deep seams, plate-to-plate tone, and the same set 7.3x larger for
+   deck-panel tone that still reads from a kilometre away); the full sets texture
+   scene-built parts.
 5. **Assemble, light, render** — `src/lib/glbship.js` orients and sizes each
    GLB, repaints it in the dark matte operational livery (`src/lib/livery.js`;
    the generation images stay light because light paint reconstructs better),
    adds the PATINA layer, nozzle glows, nav lights and anchors. One hard sun,
    an environment map of black space plus the planet, bloom only on the sun,
-   drive bells and lights; drives are a glowing bell with a short soft plume.
+   drive bells and lights; drives are a glowing bell with a short soft plume. The star
+   field is capped for an exposure set on sunlit hulls (about 21 sRGB at most), so only a
+   sparse scatter of faint points shows, as in a real photograph.
+   The planet (`src/env/planet.js`, `atmosphere.js`) is procedural and at true scale: an
+   Earth-sized globe with the fleet 400 km up, so the ground reads hundreds of km below
+   and a camera move of a kilometre changes nothing on it. Terrain (with a 3-10 km drainage
+   network and coastal shelves of varying width), ocean glint (Cox-Munk roughness: calm water
+   and surfactant slicks glint silver-bright) and a cloud deck (weather systems, mottled decks
+   with soft closed cells, fair-weather cumulus fields casting their shadows on the ground)
+   are one ray-cast shader whose noise octaves fade out below the pixel; a
+   single-scattering atmosphere with Earth's scale heights draws the thin bright limb.
+   The fleet shots are lit by the sun 50-62 degrees off the lens axis (never from behind the
+   camera), so it rakes the hulls and leaves deep shadows.
+   The carrier's hangar floodlights (neutral white, ~5,800 K) cast no shadow maps, so they are light-linked
+   to the hangar volume on its own hull (`interiorLightGate`): they light the deck
+   and the parked ships, never the hull outside or under the deck.
 
 Costs (fal list prices): about 58 nano-banana-pro images (13 of them 4K
 turnaround sheets) ≈ $10.70, 6 Tripo P2 models $7.20 (superseded), 11 Tripo
@@ -123,6 +158,27 @@ this against the geometry that is actually rendered, including a ray-cast test
 that the hangar box lies inside the hull:
 
 <!-- scale-table -->
+```
+class      size  L x B x H (m)             volume    slots
+fighter    1     25.45 x 17.16 x 7.33      3200      1
+corvette   5     36.6 x 24.19 x 18.07      16000     5
+freighter  4     48.39 x 18.95 x 13.96     12800     4
+destroyer  12    71.68 x 22.04 x 24.31     38400     12
+carrier    -     900 x 405.55 x 319.3      116541493 -
+
+carrier hangar (clear, L x B x H): 670 x 155.8 x 84.4 m
+  fighter    need 50  fits 1536 OK
+  corvette   need 10  fits 340  OK
+  destroyer  need 4   fits 162  OK
+  freighter  need 12  fits 465  OK
+  hangar box inside hull: 100.0% of 384 samples OK
+  smallest carrier whose hangar would still fit every load: 341.1 m (37.9 % of the
+  design; binding load: freighter, 11 of 12 fit 0.1 % smaller); built: 900 m
+```
+
+The 900 m length is a design choice, not a hangar requirement: the game data alone
+would allow a carrier of about 341 m, where twelve civil ships are the load that
+stops fitting first.
 
 ## Layout
 
@@ -141,6 +197,8 @@ Scene3D/
   src/lib/livery.js     dark matte operational repaint of the generated textures
   src/lib/patina.js     PATINA library, full materials and the tri-planar detail layer
   src/lib/park.js       parks real ships on the carrier's hangar deck
+  src/lib/launch.js     launch and recovery cycle through the bow mouth (deck lifts, catapult, teardrop)
+  src/lib/chart.js      scale-chart annotation: callouts with leader lines, ruler, camera framing
   src/lib/hangar.js     ray-cast hangar containment test
   src/lib/effects.js    drive glow / short plumes and navigation lights
   src/lib/scale.js      game-derived scale model and hangar-fit check

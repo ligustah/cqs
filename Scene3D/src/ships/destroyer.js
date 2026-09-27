@@ -25,6 +25,7 @@ export const meta = {
 };
 
 const STROBE = { period: 1.3, duty: 0.1 };
+const CORNER_BELL = { depth: 1.43, throat: 0.96, wall: [[0.74, 1.4], [1.11, 1.36], [1.4, 1.34]] };
 
 export const asset = {
   glb: './assets/ships/destroyer.glb', generator: 'tripo3d/h3.1/multiview-to-3d',
@@ -34,12 +35,18 @@ export const asset = {
   livery: 'dark',
   crease: 35, // chamfered armour blocks and the tower shade flat; bells, pipes and the dome stay smooth
   detail: { set: 'hull', tile: 6, normalStrength: 1.0, roughAmount: 0.5, cavity: 0.4 },
+  // the exposed rail channel (ray-cast: the rails run at x 0, y -0.9 between raised walls at
+  // x +-3 from the command tower to the bow block, open to the flanks at z +11..+20) keeps a
+  // muted version of the concept's copper coils and conduits instead of the grey repaint, at
+  // about the hull's value, so the spinal gun reads as its own machinery
+  liveryKeep: { box: [[-3.4, -6, -4], [3.4, 0.4, 22]], gain: 0.15, saturation: 0.45, feather: 0.6 },
   engines: [
     // corner bells, upper and lower pair; exit plane at the lip's aft face (z -35.85 .. -35.75)
-    { p: [5.595, -3.32, -35.75], radius: 1.48, mirrorX: true },
-    { p: [5.595, -7.805, -35.75], radius: 1.48, mirrorX: true },
+    // (depth = the flat throat plate, ray-cast at 0.97 r; the hot throat is its inner 0.65 r)
+    { p: [5.595, -3.32, -35.75], radius: 1.48, mirrorX: true, ...CORNER_BELL },
+    { p: [5.595, -7.805, -35.75], radius: 1.48, mirrorX: true, ...CORNER_BELL },
     // centre bell, set 3 m forward between the corner bells
-    { p: [0, -5.64, -32.85], radius: 2.05 },
+    { p: [0, -5.64, -32.85], radius: 2.05, depth: 1.2, throat: 1.4, wall: [[0.5, 2.0], [1.0, 1.98], [1.18, 1.96]] },
   ],
   lights: [
     // steady sidelights on the flat flank band of the engine section (beam extremity, plate at

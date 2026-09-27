@@ -9,9 +9,12 @@
 // ship's, so at exactly 4 slots it comes out shorter: 48.4 m (cargo) versus
 // 42.9 m (troops). Every anchor below is in these real metres (bow +Z, dorsal
 // +Y, port +X), measured on the GLB after rotate -> scale -> centre.
+// Troop capacity from game data: UnitEnum TRANSPORTER groundTransport = 750, counted in the
+// game's ground-unit size units (UnitMap.getGroundUnitSize: infantry 1, vehicles 3, aircraft 4),
+// not people.
 export const meta = {
-  name: 'Drover-class civil transport', designation: 'CT-4 / CT-7', crew: 'about 10 (troop variant: + about 600 troops)',
-  blurb: 'Civil workhorse: a forward crew module and an aft reactor block with two fusion bells and radiator panels, joined by a truss keel that carries twenty-foot containers (CT-4) or pressurised habitat cylinders for about 600 troops (CT-7).',
+  name: 'Drover-class civil transport', designation: 'CT-4 / CT-7', crew: 'about 10 (troop variant: ground-unit capacity 750; infantry 1, vehicles 3, aircraft 4)',
+  blurb: 'Civil workhorse: a forward crew module and an aft reactor block with two fusion bells and radiator panels, joined by a truss keel that carries twenty-foot containers (CT-4) or pressurised habitat cylinders (CT-7 troop transport: ground-unit capacity 750, the game\'s groundTransport).',
 };
 
 const STROBE = { period: 1.3, duty: 0.1 };
@@ -26,7 +29,8 @@ export const asset = {
   detail: { set: 'hull', tile: 6, normalStrength: 0.9, roughAmount: 0.5, cavity: 0.4 },
   // two main bells, exit rim at z -24.2, inner lip r 2.01 (outer 2.16)
   engines: [
-    { p: [2.826, -0.486, -24.15], radius: 2.0, mirrorX: true },
+    // depth / throat / wall ray-cast on the GLB: throat plate ~1.05 r in, 0.5 r throat
+    { p: [2.826, -0.486, -24.15], radius: 2.0, mirrorX: true, depth: 2.05, throat: 1.0, wall: [[1.0, 1.78], [1.5, 1.64]] },
   ],
   lights: [
     // port / starboard: forward edge frame of the outboard radiator face (the beam extremity), near its top
@@ -44,13 +48,14 @@ export const asset = {
 export const variants = {
   cargo: {},
   troops: {
+    gameId: 'TRANSPORTER', // UnitEnum TRANSPORTER (the cargo ship is FREIGHTER)
     glb: './assets/ships/freighter-troops.glb',
     concept: './assets/concepts/freighter-troops.webp', beauty: './assets/concepts/freighter-troops-beauty.webp',
     rotate: [0, -90, 0],
     length: 42.9, // 42.9 x 19.04 x 15.71 m = 12,836 m^3: 4 slots like the cargo ship, correction 0.9991 (built 42.86 m)
     // exit rim at z -21.45, inner lip r 1.55 (outer 1.76)
     engines: [
-      { p: [2.72, -1.65, -21.40], radius: 1.52, mirrorX: true },
+      { p: [2.72, -1.65, -21.40], radius: 1.52, mirrorX: true, depth: 1.8, throat: 0.68, wall: [[0.76, 1.42], [1.0, 1.36], [1.52, 0.72]] },
     ],
     lights: [ // same placement rules as the cargo ship, measured on this hull
       { p: [9.547, -0.8, -9.6], color: 'red', size: 0.4 },

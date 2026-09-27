@@ -9,15 +9,21 @@
 //     (IBL is unshadowed, so a sun in it would leak light into every shadow).
 import * as THREE from 'three';
 
-// Key from starboard-high (az ~95 deg, el ~32 deg in the ship frame, bow +Z):
+// Key from port-high (+X, az ~95 deg, el ~32 deg in the ship frame, bow +Z, port +X):
 // 3/4 modelling in bow and quarter views, raking light across the stern, and a
-// true shadow side from port. The ground under the fleet stays in daylight (cos ~0.6).
+// true shadow side to starboard. The ground under the fleet stays in daylight (cos ~0.6).
 export const SUN_DIR = new THREE.Vector3(0.845, 0.53, -0.074).normalize();
 export const PLANET_DIR = new THREE.Vector3(-0.15, -1, -0.25).normalize();
-// Irradiance of the key light (the planet shaders use the same value, planet.js SUN_E).
+// Irradiance of the key light (planet.js and atmosphere.js import it, so the planet, its
+// clouds and its air are lit by exactly the same star as the hulls).
 export const SUN_E = 4.2;
-// Planet as seen from the fleet: half-angle in degrees (planet.js angularRadius default).
-export const PLANET_HALF_ANGLE = 71;
+// The home world is Earth-sized and the fleet holds a 400 km orbit (ISS altitude). Both are
+// in scene metres: planet.js builds the globe at true scale, so camera moves of a few km
+// cause no parallax and the ground reads hundreds of km below.
+export const PLANET_RADIUS = 6371e3;
+export const ORBIT_ALTITUDE = 400e3;
+// Planet as seen from the fleet: half-angle in degrees (~70.2), used by planet.js and the env map.
+export const PLANET_HALF_ANGLE = THREE.MathUtils.radToDeg(Math.asin(PLANET_RADIUS / (PLANET_RADIUS + ORBIT_ALTITUDE)));
 // Mean albedo of the planet's visible day side (ocean ~0.06, land ~0.2, cloud ~0.6;
 // Earth's Bond albedo ~0.3), tinted by Rayleigh scattering. Sets the planet-shine.
 export const PLANET_ALBEDO = 0.3;

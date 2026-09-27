@@ -55,18 +55,25 @@ function plumeMaterial(color, seed) {
         float rho = length(q) * uBound;              // closest distance to the axis (bell radii)
         float s = -(o.z + t * d.z) / uAspect;        // 0 at the exit plane, 1 at the end of the bound
         float z = clamp(s, 0.0, 1.0) * uLen;         // distance behind the exit (bell radii)
-        // nothing upstream of the exit plane (the bell interior is the throat glow)
-        float gate = smoothstep(-0.02, 0.05, s) * (1.0 - smoothstep(0.55, 1.0, s));
         float wc = 0.30 * (1.0 + 0.6 * z);           // hot core: narrow, gone within ~0.4 r
         float wg = 0.62 * (1.0 + 0.35 * z);          // soft glow: fills the exit, gone within ~1.5 r
         float core = exp(-rho * rho / (wc * wc)) * exp(-z / 0.35);
         float glow = exp(-rho * rho / (wg * wg)) * exp(-z / 0.7);
+        // nothing upstream of the exit plane (the bell interior is the throat glow). The profiles
+        // are evaluated where the ray passes closest to the axis, but an oblique ray crosses each
+        // Gaussian over an axial stretch ~ width * (axial / radial travel): gate by the fraction of
+        // that stretch that lies downstream of the exit (a smooth CDF, not a hard cut, which would
+        // draw a straight edge across the dark bell mouth)
+        float slope = abs(d.z) / (sqrt(dxy2) * uAspect);   // axial per radial travel (real units)
+        float gc = smoothstep(-1.0, 1.0, s / max(0.02, 1.2 * wc * slope / uLen));
+        float gg = smoothstep(-1.0, 1.0, s / max(0.02, 1.2 * wg * slope / uLen));
+        float tail = 1.0 - smoothstep(0.55, 1.0, s);
         float path = min(inversesqrt(dxy2), 2.0);    // a little denser when looking along the jet
         float flick = 0.96 + 0.04 * sin(uTime * 61.0 + uSeed * 9.0) * sin(uTime * 23.0 + uSeed);
-        vec3 col = vec3(0.93, 0.95, 1.0) * core * 0.9 + uSheath * glow * 0.16;
+        vec3 col = vec3(0.93, 0.95, 1.0) * core * 0.9 * gc + uSheath * glow * 0.16 * gg;
         // seen end-on the plume is optically thin: fade it so only the bell glow remains
         float axial = abs(normalize(vObj - vCam).z);
-        col *= gate * path * flick * uPower * mix(1.0, 0.1, smoothstep(0.5, 0.95, axial));
+        col *= tail * path * flick * uPower * mix(1.0, 0.1, smoothstep(0.5, 0.95, axial));
         gl_FragColor = vec4(col, 1.0);
       }`,
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.BackSide,
@@ -76,38 +83,49 @@ function plumeMaterial(color, seed) {
 const lightVS = /* glsl */`
   attribute vec3 color; attribute float size; attribute vec3 blink; // period, duty, phase
   uniform float uTime; uniform float uScale; uniform float uMinPx;
-  varying vec3 vColor; varying float vOn;
+  varying vec3 vColor; varying float vOn; varying float vSize;
   void main() {
     vColor = color;
     float on = 1.0;
     if (blink.x > 0.0) { float t = fract(uTime / blink.x + blink.z); on = step(t, blink.y); }
     vOn = on;
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = max(uMinPx, size * uScale / -mv.z) * on;
+    float px = max(uMinPx, size * uScale / -mv.z);
+    vSize = px;
+    gl_PointSize = px * on;
     gl_Position = projectionMatrix * mv;
   }`;
+// The core burns toward white only when the light is drawn large enough to show a halo around
+// it: at the 2-3 px minimum (carrier and fleet distances) red and green stay saturated. Lit
+// windows (dim warm colours) keep their colour at any size.
 const lightFS = /* glsl */`
-  varying vec3 vColor; varying float vOn;
+  varying vec3 vColor; varying float vOn; varying float vSize;
   void main() {
     vec2 d = gl_PointCoord - 0.5; float r = length(d) * 2.0;
     float core = smoothstep(0.35, 0.0, r);
     float halo = pow(max(0.0, 1.0 - r), 3.0) * 0.6;
     float a = (core + halo) * vOn;
     if (a < 0.01) discard;
-    gl_FragColor = vec4(mix(vColor, vec3(1.0), core * 0.7) * a * 4.0, a);
+    // (dim sources such as lit ports never burn white: only lamps, max channel >= ~0.5, do)
+    float lamp = smoothstep(0.25, 0.5, max(vColor.r, max(vColor.g, vColor.b)));
+    gl_FragColor = vec4(mix(vColor, vec3(1.0), core * 0.7 * lamp * smoothstep(2.0, 6.0, vSize)) * a * 4.0, a);
   }`;
 
 /**
  * Attach plumes + lights to a ship group. Returns { update(t) }.
- * opts.power: 0..1 engine throttle multiplier; opts.plumeScale lengthens plumes;
+ * opts.power: 0..1 engine throttle multiplier. power <= 0 means engines off: no plume
+ *   meshes are created and the throat glow in each bell (glbship.js) is hidden, so a
+ *   parked ship costs nothing but its nav lights; opts.plumeScale lengthens plumes;
  * opts.spill: false skips the stern spill light (small or distant ships in a fleet).
  */
 export function attachEffects(group, { power = 1, plumeScale = 1, spill = true } = {}) {
   const info = group.userData.ship;
   const updaters = [];
   const plumes = [];
+  const enginesOn = power > 0;
+  if (!enginesOn) for (const c of group.children) if (c.name === 'nozzle-glow' || c.name === 'nozzle-lining') c.visible = false;
   let seed = 1;
-  for (const e of info.engines) {
+  for (const e of enginesOn ? info.engines : []) {
     const m = plumeMaterial(e.color ?? '#8ea6ff', seed++ * 1.37);
     const bound = e.radius * PLUME_BOUND;
     const lenR = Math.min(e.length / e.radius, PLUME_MAX) * plumeScale; // short: a few bell radii at most
@@ -159,7 +177,7 @@ export function attachEffects(group, { power = 1, plumeScale = 1, spill = true }
     g.setAttribute('size', new THREE.BufferAttribute(size, 1));
     g.setAttribute('blink', new THREE.BufferAttribute(blink, 3));
     const m = new THREE.ShaderMaterial({
-      uniforms: { uTime: { value: 0 }, uScale: { value: 800 }, uMinPx: { value: 2.0 } },
+      uniforms: { uTime: { value: 0 }, uScale: { value: 1160 }, uMinPx: { value: 2.0 } },
       vertexShader: lightVS, fragmentShader: lightFS,
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     });
@@ -168,7 +186,9 @@ export function attachEffects(group, { power = 1, plumeScale = 1, spill = true }
     pts.renderOrder = 11;
     pts.name = 'navlights';
     group.add(pts);
-    updaters.push((t, viewportH) => { m.uniforms.uTime.value = t; if (viewportH) m.uniforms.uScale.value = viewportH * 1.2; });
+    // sprite size = the light's true projected size on this lens: pixels per metre at 1 m is
+    // viewportH / 2 * P[1][1] (P[1][1] = 1 / tan(fov/2), view offsets included)
+    updaters.push((t, viewportH, projY) => { m.uniforms.uTime.value = t; if (viewportH) m.uniforms.uScale.value = viewportH * 0.5 * (projY || 2.9); });
   }
-  return { update: (t, viewportH) => updaters.forEach((u) => u(t, viewportH)) };
+  return { update: (t, viewportH, projY) => updaters.forEach((u) => u(t, viewportH, projY)) };
 }

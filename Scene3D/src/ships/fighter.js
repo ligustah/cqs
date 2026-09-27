@@ -31,9 +31,11 @@ export const asset = {
   materials: { '*': { envMapIntensity: 1.0 } },
   engines: [
     // twin fusion bells, exit plane at the aft face of the lip (z = -12.725)
-    { p: [2.333, -0.043, -12.72], radius: 1.479, mirrorX: true },
+    // depth / throat / wall: ray-cast on the GLB (throat plate 1.3 r inside the lip, the bell
+    // converges from 0.93 r at 0.75 r deep to a 0.48 r throat)
+    { p: [2.333, -0.043, -12.72], radius: 1.479, mirrorX: true, depth: 1.92, throat: 0.7, wall: [[0.74, 1.43], [1.11, 1.37], [1.48, 0.86]] },
     // secondary drive bells at the aft end of each flank sponson (exit rim z = -6.36)
-    { p: [7.481, -0.978, -6.355], radius: 0.585, mirrorX: true },
+    { p: [7.481, -0.978, -6.355], radius: 0.585, mirrorX: true, depth: 0.7, throat: 0.4, wall: [[0.29, 0.545], [0.44, 0.5]] },
   ],
   lights: [
     // steady sidelights on the raised panel of each sponson's outboard face (beam extremity, x = +-8.58)

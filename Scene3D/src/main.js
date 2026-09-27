@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
-import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 
 import { createPalette } from './lib/materials.js';
 import { attachEffects } from './lib/effects.js';
@@ -19,11 +19,14 @@ import { panelSet } from './lib/textures.js';
 import { createLighting } from './env/lighting.js';
 import { createSky } from './env/sky.js';
 import { createPlanet } from './env/planet.js';
+import { ENV } from './env/state.js';
 import { buildFleet } from './fleet.js';
 import { parkInHangar } from './lib/park.js';
 import { createUI } from './ui.js';
+import { createChartOverlay, frameView } from './lib/chart.js';
 
 const params = new URLSearchParams(location.search);
+const EXPOSURE = 1.7; // default tone-mapping exposure (see start())
 const hash = location.hash.replace('#', '');
 const HASH_MODES = ['fleet', 'lineup'];
 const mode = params.get('mode') || (HASH_MODES.includes(hash) ? hash : (ORDER.includes(hash) ? 'ship' : 'fleet'));
@@ -39,9 +42,11 @@ const library = await loadPatinaLibrary();
 if (!Object.keys(library).length && params.has('standin')) library.hull = proceduralStandIn(panelSet({ seed: 7, style: 'hull' }));
 setShipContext({ library, livery: params.get('livery') || null });
 const studioShip = params.get('ship') || (ORDER.includes(hash) ? hash : 'fighter');
-// ?parked=1 fills the studio carrier's hangar with real ships, so every class is needed
-const studioParked = mode === 'ship' && params.has('parked') && params.get('parked') !== '0';
-const onlyShip = mode === 'ship' && !studioParked ? [studioShip] : ORDER;
+// The studio carrier's open bays show parked ships by default (?parked=0 empties the hangar,
+// ?parked=1 also aims the camera at it), so every class is needed; the carrier's spec sheet also
+// checks its hangar against every class's envelope
+const studioParked = mode === 'ship' && studioShip === 'carrier' ? params.get('parked') !== '0' : false;
+const onlyShip = mode === 'ship' && !studioParked && studioShip !== 'carrier' ? [studioShip] : ORDER;
 await loadShips(onlyShip);
 
 // ---------------------------------------------------------------------------
@@ -51,18 +56,20 @@ if (mode === 'check') {
   const rows = [];
   const env = {};
   let hangar = null, hangarInside = null;
-  for (const cls of ORDER) {
+  // every class, plus the civil ship's troop variant (4 slots like the cargo ship, own envelope)
+  for (const [cls, variant] of [...ORDER.map((c) => [c]), ['freighter', 'troops']]) {
     const t0 = performance.now();
-    const g = buildShip(cls, palette);
+    const g = buildShip(cls, palette, variant ? { variant } : {});
     const s = g.userData.ship;
-    env[cls] = s.envelope.size.clone();
+    const key = variant ? `${cls}:${variant}` : cls;
+    env[key] = s.envelope.size.clone();
     if (cls === 'carrier' && s.anchors.hangar) {
       hangar = new THREE.Vector3(...s.anchors.hangar.size).multiplyScalar(s.scaleCorrection);
       const r = hangarInsideFraction(g, s.anchors.hangar);
       hangarInside = { fraction: +r.fraction.toFixed(3), samples: r.samples, misses: r.misses };
     }
     rows.push({
-      cls, name: s.meta?.name, size: CLASSES[cls].size,
+      cls: key, name: s.meta?.name, size: CLASSES[cls].size,
       L: +s.envelope.size.z.toFixed(2), B: +s.envelope.size.x.toFixed(2), H: +s.envelope.size.y.toFixed(2),
       volume: Math.round(s.envelopeVolume), slots: CLASSES[cls].size ? +(s.envelopeVolume / SLOT_VOLUME).toFixed(3) : null,
       scaleCorrection: +s.scaleCorrection.toFixed(4), triangles: s.triangles, drawCalls: s.drawCalls,
@@ -85,8 +92,15 @@ function start() {
   renderer.setPixelRatio(still ? 1 : Math.min(devicePixelRatio, 2));
   renderer.setSize(w, h);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.AgXToneMapping;
-  renderer.toneMappingExposure = parseFloat(params.get('exposure') || '1.0');
+  // Exposed like a camera metered for sunlit subjects: Khronos PBR Neutral keeps the scene's
+  // contrast up to ~0.8 and only rolls off the top, so a sunlit 0.055-albedo hull lands at a
+  // median of ~70-80 sRGB while sunlit cloud tops sit just under clipping (~225-240) and stay
+  // near-white. (AgX compressed the clouds to ~180 grey.) Exposure scales scene-linear
+  // radiance, so the bloom threshold (applied before it) is unchanged.
+  // Look-dev: ?tonemap=agx|neutral, ?exposure=
+  const TONEMAPS = { agx: THREE.AgXToneMapping, neutral: THREE.NeutralToneMapping };
+  renderer.toneMapping = TONEMAPS[params.get('tonemap')] ?? THREE.NeutralToneMapping;
+  renderer.toneMappingExposure = parseFloat(params.get('exposure') || String(EXPOSURE));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
   container.appendChild(renderer.domElement);
@@ -122,29 +136,53 @@ function start() {
   bloom.compositeMaterial.uniforms.bloomFactors.value = [1.0, 0.45, 0.18, 0.06, 0.02];
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
-  // +-0.5 LSB dither after the sRGB encode: smooth sun glare and planet limb gradients band otherwise
-  composer.addPass(new ShaderPass({
-    uniforms: { tDiffuse: { value: null } },
+  // The camera's own imperfections, after the sRGB encode: a gentle corner falloff (lens
+  // vignetting, ~6 % in the corners on the encoded value, ~12 % in light) and luminance-dependent
+  // sensor grain (sigma ~1.5/255 in the shadows falling to ~0.5/255 in the highlights; it also
+  // dithers the smooth sun glare and planet limb gradients, which band otherwise). Stills use a
+  // fixed grain pattern; the interactive page re-seeds it every frame like video.
+  const grainPass = new ShaderPass({
+    uniforms: { tDiffuse: { value: null }, uSeed: { value: 0 }, uAspect: { value: w / h } },
     vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-    fragmentShader: `uniform sampler2D tDiffuse; varying vec2 vUv;
+    fragmentShader: `uniform sampler2D tDiffuse; uniform float uSeed, uAspect; varying vec2 vUv;
       float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
-      void main(){ vec4 c = texture2D(tDiffuse, vUv); float n = h(gl_FragCoord.xy) + h(gl_FragCoord.yx + 17.0) - 1.0; gl_FragColor = vec4(c.rgb + n / 255.0, c.a); }`,
-  }));
+      void main(){
+        vec4 c = texture2D(tDiffuse, vUv);
+        vec2 q = (vUv - 0.5) * vec2(uAspect, 1.0);
+        float r2 = dot(q, q) / dot(vec2(0.5 * uAspect, 0.5), vec2(0.5 * uAspect, 0.5)); // 1 in the corners
+        c.rgb *= 1.0 - 0.06 * r2 * r2;
+        vec2 p = gl_FragCoord.xy + uSeed * vec2(37.0, 17.0);
+        float n = (h(p) + h(p.yx + 17.0) + h(p + 91.7) - 1.5) * 2.0; // ~unit-variance, zero mean
+        float luma = dot(c.rgb, vec3(0.2126, 0.7152, 0.0722));
+        float sigma = mix(1.5, 0.5, smoothstep(0.08, 0.7, luma));
+        gl_FragColor = vec4(c.rgb + n * sigma / 255.0, c.a);
+      }`,
+  });
+  composer.addPass(grainPass);
 
   const effects = [];
   const tickers = [];
+  const overlays = []; // screen-space annotation, laid out after the camera has moved
   let world = null; // { ships:[{group, cls}], focus(cls) , bounds }
 
   if (mode === 'ship') world = setupShipStudio();
   else if (mode === 'lineup') world = setupLineup();
   else world = setupFleet();
 
+  // hangar-load envelopes for the carrier's spec sheet: every loaded class (and the troop
+  // variant), whatever this view happens to show
+  const envelopes = {};
+  if (!still) {
+    for (const cls of onlyShip) envelopes[cls] = buildShip(cls, palette).userData.ship.envelope.size.clone();
+    if (onlyShip.includes('freighter')) envelopes['freighter:troops'] = buildShip('freighter', palette, { variant: 'troops' }).userData.ship.envelope.size.clone();
+  }
   const ui = createUI({
-    mode, still, world, classes: CLASSES, order: ORDER,
+    mode, still, world, classes: CLASSES, order: ORDER, envelopes,
     onMode: (m) => { location.hash = m; location.reload(); },
     onFocus: (cls) => world.focus?.(cls),
     onToggle: (key, on) => { if (key === 'orbit') { controls.autoRotate = on; controls.autoRotateSpeed = 0.35; } else world.toggle?.(key, on); },
   });
+  world.reframe?.(); // the overlay panels are filled now: frame the view clear of them
 
   // --- ship studio: one ship, framed for inspection / screenshots ----------
   function setupShipStudio() {
@@ -157,14 +195,24 @@ function start() {
     if (studioParked && s.anchors.hangarDeck) effects.push(...parkInHangar(g, { buildShip, palette, attachEffects }).effects);
     const box = new THREE.Box3().setFromObject(g);
     lighting.fitShadow(box);
-    const diag = s.envelope.size.length();
     const az = THREE.MathUtils.degToRad(parseFloat(params.get('az') ?? '35'));
     const el = THREE.MathUtils.degToRad(parseFloat(params.get('el') ?? '18'));
-    const dist = diag * 1.15 * parseFloat(params.get('dist') ?? '1');
-    // parked=1 frames the hangar (the parked ships), otherwise the whole ship
-    const focus = studioParked && s.anchors.hangar ? s.anchors.hangar.p.clone().multiplyScalar(s.scaleCorrection).sub(s.envelope.center) : new THREE.Vector3();
-    camera.position.set(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(dist).add(focus);
-    controls.target.copy(focus);
+    const dir = new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
+    const k = parseFloat(params.get('dist') ?? '1');
+    if (params.get('parked') === '1' && s.anchors.hangar) {
+      // ?parked=1 frames the hangar (the parked ships)
+      const focus = s.anchors.hangar.p.clone().multiplyScalar(s.scaleCorrection).sub(s.envelope.center);
+      camera.position.copy(dir).multiplyScalar(s.envelope.size.length() * 1.15 * k).add(focus);
+      controls.target.copy(focus);
+    } else {
+      // fit the whole envelope in the frame from this direction (its 8 corners, projected), with a
+      // margin, then ?dist scales the camera distance
+      const e = s.envelope, pts = [];
+      for (let i = 0; i < 8; i++) pts.push(new THREE.Vector3(i & 1 ? e.max.x : e.min.x, i & 2 ? e.max.y : e.min.y, i & 4 ? e.max.z : e.min.z).sub(e.center));
+      const target = frameView(camera, pts, dir, { l: 64, r: 64, t: 56, b: 56 }, w, h);
+      camera.position.sub(target).multiplyScalar(k).add(target);
+      controls.target.copy(target);
+    }
     if (params.has('planet')) createPlanet(scene);
     if (params.has('debug')) g.add(debugOverlay(s));
     return { ships: [{ group: g, cls }], selected: cls, focus: () => {} };
@@ -201,18 +249,27 @@ function start() {
   }
 
   // --- lineup: scale chart. Sterns aligned at x = 0 on a shared metre ruler,
-  // one row per class (smallest in front), bows toward +X.
+  // one row per class (smallest in front), bows toward +X. The annotation (callouts with
+  // leader lines on the stern side, the ruler) is screen-space (lib/chart.js), so it stays
+  // legible at any zoom. ?lineup=small frames only the small ships, the slot cube and the
+  // crew member, like the enlarged inset of a technical drawing.
   function setupLineup() {
+    const small = params.get('lineup') === 'small';
     camera.fov = parseFloat(params.get('fov') || '24');
     camera.updateProjectionMatrix();
     const ships = [];
-    const gap = 16;
-    const built = ORDER.map((cls) => buildShip(cls, palette));
+    const gap = 24;
+    // one row per class, plus the civil ship's troop variant (4 slots like the cargo ship, its own shape)
+    const rows = ORDER.flatMap((cls) => (cls === 'freighter' ? [{ cls }, { cls, variant: 'troops' }] : [{ cls }]));
+    const built = rows.map(({ cls, variant }) => buildShip(cls, palette, variant ? { variant } : {}));
     const side = Math.cbrt(SLOT_VOLUME);
+    const chart = createChartOverlay(container);
+    overlays.push((cam) => chart.update(cam, renderer.domElement.clientWidth || w, renderer.domElement.clientHeight || h));
     let z = side / 2 + gap; // row 0 is the slot cube at z = 0
     let maxL = 0;
     built.forEach((g, i) => {
-      const s = g.userData.ship;
+      const { cls, variant } = rows[i];
+      const s = g.userData.ship, spec = CLASSES[cls];
       const L = s.envelope.size.z, B = s.envelope.size.x, H = s.envelope.size.y;
       g.rotation.y = Math.PI / 2; // bow -> +X
       const rowZ = -(z + B / 2);
@@ -222,21 +279,20 @@ function start() {
       g.position.set(-s.envelope.min.z, -s.envelope.min.y, rowZ + s.envelope.center.x);
       scene.add(g);
       effects.push(attachEffects(g, { power: 0.6 }));
-      ships.push({ group: g, cls: ORDER[i], center: new THREE.Vector3(L / 2, H / 2, rowZ), length: L, beam: B });
-      const label = document.createElement('div');
-      label.className = 'ship-label row';
-      label.innerHTML = `<b>${CLASSES[ORDER[i]].label}</b><span>${L.toFixed(1)} m · ${CLASSES[ORDER[i]].size ? CLASSES[ORDER[i]].size + ' slot' + (CLASSES[ORDER[i]].size > 1 ? 's' : '') : 'hangar ' + CLASSES[ORDER[i]].capacity + ' slots'}</span>`;
-      const lo = new CSS2DObject(label);
-      lo.center.set(0, 0.5);
-      lo.position.set(L + 8, H / 2, rowZ);
-      scene.add(lo);
+      // the carrier's open bays show its hangar load, as everywhere else
+      if (cls === 'carrier' && s.anchors.hangarDeck) effects.push(...parkInHangar(g, { buildShip, palette, attachEffects }).effects);
+      ships.push({ group: g, cls, variant, center: new THREE.Vector3(L / 2, H / 2, rowZ), length: L, beam: B, height: H });
+      const slots = spec.size ? `${spec.size} slot${spec.size > 1 ? 's' : ''}` : `carries ${spec.capacity} slots`;
+      chart.callout(new THREE.Vector3(-1, H / 2, rowZ), variant === 'troops' ? `${spec.label} (troops)` : spec.label, `${L.toFixed(1)} m · ${slots}`);
     });
-    // reference cube: one hangar slot (800 m^3) in the front row
-    const cube = new THREE.Mesh(new THREE.BoxGeometry(side, side, side), new THREE.MeshBasicMaterial({ color: '#ff5a14', transparent: true, opacity: 0.2, depthWrite: false }));
-    cube.add(new THREE.LineSegments(new THREE.EdgesGeometry(cube.geometry), new THREE.LineBasicMaterial({ color: '#ff8a4c' })));
+    // reference cube: one hangar slot (3,200 m^3) in the front row, stern face on the zero line
+    const cube = new THREE.Mesh(new THREE.BoxGeometry(side, side, side), new THREE.MeshBasicMaterial({ color: '#d9dde3', transparent: true, opacity: 0.07, depthWrite: false }));
+    cube.add(new THREE.LineSegments(new THREE.EdgesGeometry(cube.geometry), new THREE.LineBasicMaterial({ color: '#c3c8d0', transparent: true, opacity: 0.75 })));
     cube.position.set(side / 2, side / 2, 0);
     scene.add(cube);
-    // a 1.8 m crew member beside the cube: the same human scale every hull is detailed to
+    chart.callout(new THREE.Vector3(0, side * 0.7, 0), '1 hangar slot', `${side.toFixed(2)} m cube · ${SLOT_VOLUME.toLocaleString('en-US')} m³`);
+    // a 1.8 m crew member standing on the zero line in front of the cube: the same human
+    // scale every hull is detailed to
     const person = new THREE.Group();
     const suit = new THREE.MeshStandardMaterial({ color: '#c9ccd2', roughness: 0.7 });
     const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 1.05, 4, 12), suit);
@@ -244,49 +300,68 @@ function start() {
     const head = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 12), suit);
     head.position.y = 1.62;
     person.add(body, head);
-    person.position.set(side + 2.5, 0, 0);
+    person.traverse((o) => { o.castShadow = true; });
+    const personAt = new THREE.Vector3(0.6, 0, side / 2 + 2.5);
+    person.position.copy(personAt);
     scene.add(person);
-    const personLabel = document.createElement('div');
-    personLabel.className = 'ship-label row';
-    personLabel.innerHTML = '<b>crew member</b><span>1.8 m</span>';
-    const pl = new CSS2DObject(personLabel);
-    pl.center.set(0.5, 1);
-    pl.position.set(side + 2.5, 2.4, 0);
-    scene.add(pl);
-    const cubeLabel = document.createElement('div');
-    cubeLabel.className = 'ship-label row';
-    cubeLabel.innerHTML = `<b>1 hangar slot</b><span>${side.toFixed(2)} m cube = ${SLOT_VOLUME} m³ of parking envelope</span>`;
-    const cl = new CSS2DObject(cubeLabel);
-    cl.center.set(0, 0.5);
-    cl.position.set(side + 8, side / 2, 0);
-    scene.add(cl);
-    // grid + ruler
-    const depth = z + 40, width = maxL + 140;
+    chart.callout(personAt.clone().setY(1.8), 'Crew member', '1.8 m');
+    // metre ruler along the front edge: a tick every 10 m up to 100 m, then every 100 m
+    const zR = side / 2 + 8;
+    const rulerEnd = Math.ceil(maxL / 100) * 100;
+    const marks = [];
+    for (let m = 0; m <= 100; m += 10) marks.push({ m, size: m % 100 === 0 ? 2 : m % 50 === 0 ? 1 : 0, label: `${m}${m === 0 ? ' m' : ''}`, priority: m % 100 === 0 ? 3 : m % 50 === 0 ? 2 : 1, group: m % 50 ? 'fine' : undefined });
+    for (let m = 200; m <= rulerEnd; m += 100) marks.push({ m, size: 2, label: `${m}`, priority: 3 });
+    chart.ruler({ origin: new THREE.Vector3(0, 0, zR), axis: new THREE.Vector3(1, 0, 0), toward: new THREE.Vector3(0, 0, 1), length: rulerEnd, marks });
+    // measuring grid under the chart: 10 m / 100 m lines, starting on the zero line
+    const depth = z + zR + 20, width = rulerEnd + 60;
     const grid = measuringGrid(width, depth);
-    grid.position.set(width / 2 - 40, 0, -depth / 2 + side / 2 + 24);
+    grid.position.set(width / 2 - 20, 0, zR + 10 - depth / 2);
     scene.add(grid);
-    for (let m = 0; m <= maxL + 1; m += 25) {
-      const tick = document.createElement('div');
-      tick.className = 'ruler-tick';
-      tick.textContent = `${m} m`;
-      const to = new CSS2DObject(tick);
-      to.center.set(0, 0);
-      to.position.set(m, 0, side / 2 + 10);
-      scene.add(to);
-    }
     const box = new THREE.Box3();
     ships.forEach((s) => box.expandByObject(s.group));
     lighting.fitShadow(box);
-    box.expandByObject(cube);
-    const center = box.getCenter(new THREE.Vector3());
-    const span = Math.max(box.max.x - box.min.x, box.max.z - box.min.z);
-    controls.target.copy(center).add(new THREE.Vector3(span * 0.06, 0, 0));
-    camera.position.copy(center).add(new THREE.Vector3(-span * 0.55, span * 1.35, span * 1.9));
-    // ghost hangar with the 50-fighter load
+    // default: the whole chart; ?lineup=small: the small ships, the slot cube and the crew member.
+    // Pixel margins keep room for the callout column (stern side) and the ruler labels, and in the
+    // interactive page clear of the overlay panels (measured once they are filled: reframe()).
+    const framed = small ? ships.filter((s) => s.cls !== 'carrier') : ships;
+    // frame the hulls' silhouettes (a few hundred vertices per ship), not their bounding boxes:
+    // the carrier's box corners reach far above its deck line
+    const pts = [];
+    scene.updateMatrixWorld(true);
+    for (const s of framed) s.group.traverse((o) => {
+      if (!o.isMesh || !o.userData.hull) return;
+      const pos = o.geometry.attributes.position, step = Math.max(1, Math.floor(pos.count / 400));
+      for (let k = 0; k < pos.count; k += step) pts.push(new THREE.Vector3().fromBufferAttribute(pos, k).applyMatrix4(o.matrixWorld));
+    });
+    pts.push(new THREE.Vector3(0, 0, zR), new THREE.Vector3(small ? 100 : rulerEnd, 0, zR), new THREE.Vector3(side, side, -side / 2));
+    const dir = small ? new THREE.Vector3(-0.42, 0.62, 1).normalize() : new THREE.Vector3(-0.3, 1.3, 1).normalize();
+    const reframe = () => {
+      const W = renderer.domElement.clientWidth || w, Hh = renderer.domElement.clientHeight || h;
+      const col = Math.min(225, W * 0.3); // callout column
+      const margins = { l: col, r: 36, t: 24, b: 40 };
+      const rect = (sel) => { const e = document.querySelector(sel); if (!e || e.hidden || !e.offsetParent) return null; const r = e.getBoundingClientRect(); return r.width && r.height ? r : null; };
+      if (!still) {
+        const head = rect('#ui header'), reg = rect('#registry-wrap'), sheet = rect('#sheet'), tog = rect('#ui .toggles');
+        if (head) margins.t = Math.max(margins.t, head.bottom + 16);
+        if (W > 860) {
+          if (sheet) margins.r = Math.max(margins.r, W - sheet.left + 16);
+          if (reg) margins.b = Math.max(margins.b, Hh - reg.top + 16);
+          if (tog) margins.b = Math.max(margins.b, Hh - tog.top + 24);
+        } else {
+          const low = Math.min(reg?.top ?? Hh, sheet?.top ?? Hh);
+          margins.b = Math.max(margins.b, Hh - low + 12);
+        }
+      }
+      controls.target.copy(frameView(camera, pts, dir, margins, W, Hh));
+      chart.bounds({ t: still ? 0 : margins.t - 16, b: still ? 0 : margins.b - 16 });
+    };
+    reframe();
+    // ghost hangar with the 50-fighter load (toggle, or ?hangar=1)
     const carrierShip = ships.find((s) => s.cls === 'carrier');
     const hangarViz = carrierShip ? hangarLoadViz(carrierShip.group, built[0].userData.ship.envelope.size) : null;
+    if (hangarViz && params.has('hangar') && params.get('hangar') !== '0') hangarViz.visible = true;
     return {
-      ships, selected: 'carrier',
+      ships, selected: small ? 'fighter' : 'carrier', lineupSmall: small, reframe,
       focus(cls) {
         const s = ships.find((q) => q.cls === cls);
         if (!s) return;
@@ -307,9 +382,49 @@ function start() {
     lighting.fitShadow(fleet.shadowBox);
     const shots = fleet.shots;
     const shot = shots[params.get('shot') || 'hero'] || shots.hero;
-    camera.position.copy(shot.pos);
-    controls.target.copy(shot.target);
+    // ?cam=x,y,z&target=x,y,z (carrier frame, metres) overrides the named shot for look-dev
+    const vec = (k) => { const v = (params.get(k) || '').split(',').map(Number); return v.length === 3 && v.every(Number.isFinite) ? new THREE.Vector3(...v) : null; };
+    camera.position.copy(vec('cam') || shot.pos);
+    controls.target.copy(vec('target') || shot.target);
+    // a shot may choose its lens (?fov= still wins)
+    if (shot.fov && !params.get('fov')) { camera.fov = shot.fov; camera.updateProjectionMatrix(); }
+    // ?level=deg overrides the shot's horizon tilt (see levelHorizon)
+    const level = params.has('level') ? parseFloat(params.get('level')) : shot.horizon;
+    // The interactive page lays its panels over the frame (title, ship classes lower left, spec
+    // sheet on the right, toggles bottom centre), right where a still keeps its counterweights
+    // (the foreground escort, the limb). Measure the clear area the way the lineup does and shift
+    // the lens (setViewOffset: an off-axis projection, the pose is unchanged) so the still's
+    // frame is centred in it, scaled so its central 80 % fits (never below 0.55, a wide shot
+    // rather than a thumbnail). The rest of the canvas shows more of the same scene. Stills keep
+    // the plain lens; re-applied on resize.
+    const reframe = () => {
+      if (still) return;
+      const W = renderer.domElement.clientWidth || w, Hh = renderer.domElement.clientHeight || h;
+      const rect = (sel) => { const e = document.querySelector(sel); if (!e || e.hidden || !e.offsetParent) return null; const r = e.getBoundingClientRect(); return r.width && r.height ? r : null; };
+      const head = rect('#ui header'), reg = rect('#registry-wrap'), sheet = rect('#sheet'), tog = rect('#ui .toggles');
+      const top = head ? head.bottom + 8 : 0;
+      const areas = [];
+      if (W > 860) {
+        const right = sheet ? sheet.left - 8 : W, bottom = tog ? tog.top - 8 : Hh;
+        areas.push({ l: reg ? reg.right + 8 : 0, t: top, r: right, b: bottom }); // beside the class list
+        areas.push({ l: 0, t: top, r: right, b: reg ? Math.min(reg.top - 8, bottom) : bottom }); // above it
+      } else {
+        areas.push({ l: 0, t: top, r: W, b: Math.min(reg?.top ?? Hh, sheet?.top ?? Hh) - 8 });
+      }
+      let best = null;
+      for (const a of areas) {
+        const fit = Math.min((a.r - a.l) / W, (a.b - a.t) / Hh);
+        if (fit > 0 && (!best || fit > best.fit)) best = { ...a, fit };
+      }
+      if (!best) { camera.clearViewOffset(); return; }
+      const k = THREE.MathUtils.clamp(best.fit / 0.8, 0.55, 1);
+      const cx = (best.l + best.r) / 2, cy = (best.t + best.b) / 2;
+      camera.setViewOffset(W, Hh, W / 2 - cx / k, Hh / 2 - cy / k, W / k, Hh / k);
+      camera.updateProjectionMatrix();
+    };
     return {
+      horizon: Number.isFinite(level) ? level : null,
+      reframe, lensReframe: true, // only the lens moves: safe during flights and follows
       ships: fleet.ships, selected: 'carrier',
       focus(cls) {
         const s = fleet.ships.find((q) => q.cls === cls);
@@ -332,25 +447,30 @@ function start() {
     };
   }
 
+  // Neutral measuring grid: 10 m minor lines that fade out once they are closer than ~10 px
+  // on screen, 100 m major lines, soft edges. Low-contrast grey so it reads as a drawing
+  // sheet under the ships, not as a display.
   function measuringGrid(width, depth) {
     const g = new THREE.PlaneGeometry(width, depth);
     g.rotateX(-Math.PI / 2);
     const m = new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, side: THREE.DoubleSide,
-      uniforms: { uSize: { value: new THREE.Vector2(width, depth) } },
       vertexShader: `varying vec2 vP; varying vec2 vUv; void main(){ vUv = uv; vP = (modelMatrix * vec4(position, 1.0)).xz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
       fragmentShader: `
-        varying vec2 vP; varying vec2 vUv; uniform vec2 uSize;
+        varying vec2 vP; varying vec2 vUv;
         float line(vec2 p, float s, float w){ vec2 g = abs(fract(p / s - 0.5) - 0.5) * s / fwidth(p); return 1.0 - clamp(min(g.x, g.y) - w, 0.0, 1.0); }
         void main(){
-          float minor = line(vP, 10.0, 0.0), major = line(vP, 50.0, 0.5);
-          vec2 e = min(vUv, 1.0 - vUv); float fade = smoothstep(0.0, 0.12, min(e.x, e.y));
-          vec3 c = mix(vec3(0.35, 0.55, 1.0), vec3(1.0, 0.45, 0.15), major);
-          float a = max(minor * 0.18, major * 0.45) * fade;
-          gl_FragColor = vec4(c * 1.4, a);
+          float px = max(fwidth(vP).x, fwidth(vP).y);          // metres per pixel here
+          float minorFade = smoothstep(4.0, 12.0, 10.0 / px);   // 10 m lines only when >= ~10 px apart
+          float minor = line(vP, 10.0, 0.0) * minorFade, major = line(vP, 100.0, 0.0);
+          vec2 e = min(vUv, 1.0 - vUv); float fade = smoothstep(0.0, 0.06, min(e.x, e.y));
+          float a = max(minor * 0.045, major * 0.11) * fade;
+          gl_FragColor = vec4(vec3(0.62, 0.64, 0.67), a);
         }`,
     });
-    return new THREE.Mesh(g, m);
+    const mesh = new THREE.Mesh(g, m);
+    mesh.renderOrder = -1;
+    return mesh;
   }
 
   function hangarLoadViz(carrierGroup, fighterEnv) {
@@ -361,7 +481,7 @@ function start() {
     const size = new THREE.Vector3(...h.size).multiplyScalar(1);
     const group = new THREE.Group();
     group.visible = false;
-    const shell = new THREE.Mesh(new THREE.BoxGeometry(size.x, size.y, size.z), new THREE.MeshBasicMaterial({ color: '#ff5a14', wireframe: true, transparent: true, opacity: 0.35 }));
+    const shell = new THREE.Mesh(new THREE.BoxGeometry(size.x, size.y, size.z), new THREE.MeshBasicMaterial({ color: '#b4bac3', wireframe: true, transparent: true, opacity: 0.35 }));
     group.add(shell);
     // lay out 50 fighter envelopes in two tiers
     const fe = fighterEnv.clone().divideScalar(sc);
@@ -369,7 +489,7 @@ function start() {
     const cols = Math.floor((size.x - clear) / (fe.x + clear));
     const rows = Math.floor((size.z - clear) / (fe.z + clear));
     const boxGeo = new THREE.BoxGeometry(fe.x, fe.y, fe.z);
-    const inst = new THREE.InstancedMesh(boxGeo, new THREE.MeshBasicMaterial({ color: '#62dcff', transparent: true, opacity: 0.35, depthWrite: false }), 50);
+    const inst = new THREE.InstancedMesh(boxGeo, new THREE.MeshBasicMaterial({ color: '#dfe3e9', transparent: true, opacity: 0.3, depthWrite: false }), 50);
     const m = new THREE.Matrix4();
     let n = 0;
     for (let tier = 0; tier < 2 && n < 50; tier++) for (let r = 0; r < rows && n < 50; r++) for (let c = 0; c < cols && n < 50; c++) {
@@ -407,10 +527,25 @@ function start() {
     if (params.get('w')) return;
     const W = container.clientWidth || innerWidth, H = container.clientHeight || innerHeight;
     renderer.setSize(W, H); composer.setSize(W, H); labelRenderer.setSize(W, H);
+    grainPass.uniforms.uAspect.value = W / H;
     bloom.setSize(W, H);
     camera.aspect = W / H; camera.updateProjectionMatrix();
+    if (world.lensReframe || (!flight && !world.followTarget)) world.reframe?.();
   }
   addEventListener('resize', resize);
+
+  // Roll the camera about its view axis so the planet's up direction (and so the horizon near
+  // the frame centre) leans at most maxTilt degrees; k blends the correction in and out.
+  let levelOn = true, levelK = 1;
+  const _up = new THREE.Vector3(), _q = new THREE.Quaternion();
+  function levelHorizon(maxTilt, k) {
+    camera.updateMatrixWorld();
+    _up.copy(camera.position).sub(ENV.planet.center).normalize();
+    _up.applyQuaternion(_q.copy(camera.quaternion).invert()); // camera space
+    const tilt = Math.atan2(_up.x, _up.y); // lean of "up" to the right of vertical
+    const keep = Math.sign(tilt) * Math.min(Math.abs(tilt), THREE.MathUtils.degToRad(maxTilt));
+    camera.rotateZ(-(tilt - keep) * k);
+  }
 
   const timer = new THREE.Timer();
   let frames = 0;
@@ -443,19 +578,31 @@ function start() {
       controls.target.add(delta); camera.position.add(delta);
     }
     controls.update();
+    // horizon levelling (fleet shots): the planet sits 16 deg off the fleet's nadir, so a camera
+    // rolled only by the carrier's up vector sees the horizon tilted 12-18 deg. A shot can ask for
+    // at most `horizon` degrees of tilt: the camera is rolled about its view axis after the
+    // controls placed it. It holds until the viewer first drags, then eases out.
+    if (world.horizon != null && ENV.planet) {
+      if (!levelOn) levelK = Math.max(0, levelK - dt / 0.6);
+      if (levelK > 0) levelHorizon(world.horizon, levelK);
+    }
     const dist = camera.position.distanceTo(controls.target);
     camera.near = THREE.MathUtils.clamp(dist * 0.01, 0.05, 20);
     camera.updateProjectionMatrix();
+    camera.updateMatrixWorld();
+    for (const o of overlays) o(camera);
     sky.update(simT, camera, renderer);
-    for (const e of effects) e.update(simT, renderer.domElement.height);
+    for (const e of effects) e.update(simT, renderer.domElement.height, camera.projectionMatrix.elements[5]);
+    if (!still) grainPass.uniforms.uSeed.value = frames % 61;
     composer.render();
     labelRenderer.render(scene, camera);
     frames++;
     if (frames === 2) { const l = document.getElementById('loading'); if (l) { if (still) l.hidden = true; else l.classList.add('done'); } }
-    if (still && frames === 3) { window.__ready = true; document.body.dataset.ready = '1'; return; }
+    // ready after the third frame (stills stop there; the interactive page keeps animating)
+    if (frames === 3) { window.__ready = true; document.body.dataset.ready = '1'; if (still) return; }
     requestAnimationFrame(frame);
   }
-  renderer.domElement.addEventListener('pointerdown', () => { world.followTarget = null; flight = null; });
+  renderer.domElement.addEventListener('pointerdown', () => { world.followTarget = null; flight = null; levelOn = false; });
   window.__scene = { scene, camera, renderer, world, controls };
   frame();
 }

@@ -78,16 +78,23 @@ function openingTest(pts, o, margin = 3) {
 }
 
 /**
- * Default loadout: 16 fighters, 2 corvettes, 1 destroyer, 1 cargo ship.
+ * Default loadout (the fleet, the ship studio and the scale chart all park this one): a
+ * destroyer, 2 corvettes, a cargo ship and 21 fighters parked three abreast in one row per bay
+ * side, centred between the frames (a single file along the sill would hide behind the sill and
+ * the frames from any elevated view; a row abreast shows the inboard two in plan). With the 3
+ * fighters of the launch and recovery cycle (lib/launch.js, always somewhere on the carrier's
+ * track) that is 12 + 10 + 4 + 24 = 50 slots: exactly the carrier's legal load
+ * (UnitEnum CARRIER spaceTransport = 50), never more.
  * Items: { cls, variant?, count = 1, zones: [name...], side: 'port'|'starboard'|'both', perSide?, perRow? }
  *  perSide: at most this many ships of the item per zone side (spreads a class over several bays);
  *  perRow: at most this many ships abreast (1 = a single file along the outboard edge).
  */
+export const LAUNCH_CYCLE_FIGHTERS = 3;
 export const DEFAULT_LOADOUT = [
   { cls: 'destroyer', zones: ['bow'], side: 'starboard' },
   { cls: 'corvette', count: 2, zones: ['bay1'], side: 'both', perSide: 1 },
   { cls: 'freighter', variant: 'cargo', zones: ['aft'], side: 'starboard' },
-  { cls: 'fighter', count: 16, zones: ['bay2', 'bay3', 'bay4', 'bay5'], side: 'both', perSide: 2, perRow: 1 },
+  { cls: 'fighter', count: 24 - LAUNCH_CYCLE_FIGHTERS, zones: ['bay2', 'bay3', 'bay4', 'bay5'], side: 'both', perSide: 3, perRow: 3 },
 ];
 
 /**
@@ -168,14 +175,8 @@ export function parkInHangar(carrierGroup, { buildShip, palette, attachEffects, 
           g.position.set(at[0] - e.center.x, s.y * k + gap - e.min.y, at[1] - e.center.z).divideScalar(k);
           g.name = `parked-${item.cls}`;
           carrierGroup.add(g);
-          if (attachEffects) {
-            out.effects.push(attachEffects(g, { power: 0, spill: false }));
-            // engines off: no plume volume, no glow in the bells
-            for (const c of [...g.children]) {
-              if (c.name === 'plume') g.remove(c);
-              else if (c.name === 'nozzle-glow' || c.name === 'nozzle-lining') c.visible = false;
-            }
-          }
+          // engines off (power 0): nav lights only, no plume and no glow in the bells
+          if (attachEffects) out.effects.push(attachEffects(g, { power: 0, spill: false }));
           s.count[key] = (s.count[key] || 0) + 1;
           out.ships.push({ group: g, cls: item.cls, variant: item.variant, zone, side: sd });
           placed++;
