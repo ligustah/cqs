@@ -1,0 +1,548 @@
+{
+  "about": "CQS Orbital Fleet parts kit: small hull components, each designed once with fal (nano-banana-pro, then /edit with the door concept as the style reference), reconstructed on its own with Tripo H3.1 image-to-3D and normalised to true metres, so every ship composed from them shares the same door, window and rail sizes.",
+  "frame": "Metres. +Z = out of the hull (surface normal), +Y = up along the part height, +X = along the width. Parts with mount.normal \"+Z\" have their back (mounting) face at z = 0, centred on x/y (ladder: foot at y = 0). Parts with mount.normal \"+Y\" (rail, antenna, container) stand on their foot/base at y = 0, centred on x/z: orient their +Y along the hull normal.",
+  "paint": "Light off-white weathered paint with dark blue-grey glass, as generated; the runtime livery (src/lib/livery.js applyLivery) repaints it dark matte grey and turns the glass texels into glossy glass.",
+  "pipeline": "tripo GLB -> flatten, rotate (normaliseRot, degrees, R = Rz*Ry*Rx), scale to size (per-axis where the table fixes all three dims), anchor -> dedup, prune, weld -> WebP textures (512 or 1024) -> meshopt (tools: scratchpad v7/parts/normalize.mjs, same steps as tools/optimize-glb.mjs).",
+  "sizeSource": "Target sizes from the v7 parts brief; size[] is the final bbox [w, h, d].",
+  "cost": {
+    "images": 14,
+    "imageUsd": 2.1,
+    "meshes": 14,
+    "meshUsdEach": 0.6,
+    "meshUsdEachNote": "Tripo H3.1 price as recorded in the README (fal bills Tripo in credits)",
+    "totalUsd": 10.5
+  },
+  "parts": {
+    "door": {
+      "file": "door.glb",
+      "size": [
+        1.4,
+        2.4,
+        0.3
+      ],
+      "bbox": {
+        "min": [
+          -0.7,
+          -1.2,
+          0
+        ],
+        "max": [
+          0.7,
+          1.2,
+          0.3
+        ]
+      },
+      "tris": 3544,
+      "bytes": 219880,
+      "texture": 1024,
+      "mount": {
+        "anchor": "back",
+        "normal": "+Z",
+        "origin": "centre of the back (mounting) face"
+      },
+      "normaliseRot": "0,-90,0",
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro",
+          "id": "01a0e36f-73cb-75d0-b2a2-0fff3160c31a",
+          "role": "concept (style reference for every other part)"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e36f-ef13-7201-a576-fdb69316943c",
+          "face_limit": 4000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Crew door: 1.0 x 2.0 m hinged leaf (hinges on the -X side, grab handle and lever on +X, small viewport at eye height) recessed in a 1.4 x 2.4 x 0.3 m chamfered frame. Frame back at z = 0, front face at z = 0.3; to sit ~0.1 m proud as specified, sink it 0.2 m into the hull (position.z = -0.2 along the normal). The reconstruction mirrored the door onto the back face (hidden when mounted). Depth squashed ~0.45x relative to width to reach 0.3 m."
+    },
+    "airlock": {
+      "file": "airlock.glb",
+      "size": [
+        1.8,
+        2.6,
+        0.8
+      ],
+      "bbox": {
+        "min": [
+          -0.9,
+          -1.3,
+          0
+        ],
+        "max": [
+          0.9,
+          1.3,
+          0.8
+        ]
+      },
+      "tris": 4272,
+      "bytes": 201420,
+      "texture": 1024,
+      "mount": {
+        "anchor": "back",
+        "normal": "+Z",
+        "origin": "centre of the back (mounting) face"
+      },
+      "normaliseRot": "0,-90,0",
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e370-d5f7-7743-9a21-f6d25d56b131"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e372-6d17-7950-bef2-c9b58988d9fe",
+          "face_limit": 5000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Crew airlock: flat 1.8 x 2.6 m back flange at z = 0, protruding pressure collar with locking lugs, hatch with a round viewport and a handwheel; collar face at z = 0.8."
+    },
+    "port": {
+      "file": "port.glb",
+      "size": [
+        1.3,
+        1.3,
+        0.3
+      ],
+      "bbox": {
+        "min": [
+          -0.65,
+          -0.65,
+          0
+        ],
+        "max": [
+          0.65,
+          0.65,
+          0.3
+        ]
+      },
+      "tris": 2601,
+      "bytes": 109852,
+      "texture": 512,
+      "mount": {
+        "anchor": "back",
+        "normal": "+Z",
+        "origin": "centre of the back (mounting) face"
+      },
+      "normaliseRot": "0,-90,0",
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e370-d6b4-7ba1-8769-07a0ed1865e2",
+          "rejected": "transparent glass: the mesh came back with a hole instead of a pane"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e372-9d15-7373-a84c-15d802be0746",
+          "face_limit": 3000,
+          "rejected": "glass reconstructed as an open hole with a stray wedge",
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        },
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e37b-0791-7303-9554-d71a64e67ce1",
+          "role": "retry: opaque dark armour-glass slab"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e37c-493f-7452-9dc2-be6155ad9f3a",
+          "face_limit": 3000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Single 1.0 x 1.0 m round-cornered window aperture in a thick 1.3 x 1.3 x 0.3 m chamfered, bolted frame (frame is crisp). Back at z = 0; sink 0.2 m into the hull for the ~0.1 m proud look. KNOWN ISSUE: both reconstructions (transparent and opaque-glass concepts) left the glazing out, so the aperture is open through the part; mounted flush, the hull behind it shows through. Back it with a dark glass material at composition time or regenerate the port (e.g. H3.1 multiview) in a later round."
+    },
+    "pane": {
+      "file": "pane.glb",
+      "size": [
+        1.2,
+        1.4,
+        0.3
+      ],
+      "bbox": {
+        "min": [
+          -0.6,
+          -0.7,
+          0
+        ],
+        "max": [
+          0.6,
+          0.7,
+          0.3
+        ]
+      },
+      "tris": 1334,
+      "bytes": 96976,
+      "texture": 512,
+      "mount": {
+        "anchor": "back",
+        "normal": "+Z",
+        "origin": "centre of the back (mounting) face"
+      },
+      "normaliseRot": "0,-90,0",
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e370-d774-7d72-95dc-b7d38ca2824a",
+          "rejected": "transparent glass"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e372-9dc6-7a91-85fe-918dec5d903c",
+          "face_limit": 2000,
+          "rejected": "glass reconstructed as an open hole with a stray wedge",
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        },
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e377-7245-7131-9705-63e53b04cf59",
+          "role": "retry: opaque dark armour-glass slab"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e378-44b2-7f42-ad24-90d8b2f6290c",
+          "face_limit": 2000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Bridge glazing module 1.2 x 1.4 x 0.3 m (1.0 x 1.2 m glass), square outer sides: tile at a 1.2 m pitch along X. Back at z = 0. Frame edges are soft/pillowy (reconstruction rounded the square mullions); reads fine at bridge-band distance but is the least crisp part."
+    },
+    "cargoHatch": {
+      "file": "cargoHatch.glb",
+      "size": [
+        6,
+        4,
+        0.4
+      ],
+      "bbox": {
+        "min": [
+          -3,
+          -2,
+          0
+        ],
+        "max": [
+          3,
+          2,
+          0.4
+        ]
+      },
+      "tris": 4151,
+      "bytes": 262228,
+      "texture": 1024,
+      "mount": {
+        "anchor": "back",
+        "normal": "+Z",
+        "origin": "centre of the back (mounting) face"
+      },
+      "normaliseRot": "0,-90,0",
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e370-d836-7b20-93d7-2e32e5a164a3"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e372-9ea4-7572-8c49-525bb3795b37",
+          "face_limit": 5000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Framed 6 x 4 m double-leaf cargo hatch (hinge blocks along the top, locking bolts on the centre seam), 0.4 m deep, back at z = 0."
+    },
+    "rail": {
+      "file": "rail.glb",
+      "size": [
+        1,
+        1.1,
+        0.202
+      ],
+      "bbox": {
+        "min": [
+          -0.5,
+          0,
+          -0.101
+        ],
+        "max": [
+          0.5,
+          1.1,
+          0.101
+        ]
+      },
+      "tris": 2389,
+      "bytes": 116120,
+      "texture": 512,
+      "mount": {
+        "anchor": "base",
+        "normal": "+Y",
+        "origin": "centre of the foot/base, y = 0"
+      },
+      "normaliseRot": "0,-107.5,0",
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e370-d8f8-78a2-9ec4-e31660d066d4"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e372-ddfc-7cf2-8673-aecff1525e3a",
+          "face_limit": 2500,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Handrail segment, 1.0 m long (X) x 1.1 m high (Y): two posts on bolted foot plates, top rail and mid rail. Mounts by its feet: origin at the centre of the foot line, feet at y = 0, the deck normal is +Y (place with +Y along the hull normal and X along the run). Tile end to end at a 1.0 m pitch (bbox includes the top-rail overhangs; posts at about x = +-0.33). Tubes read ~80-90 mm, thicker than the 50 mm spec. Reconstruction was skewed 17.5 deg in plan and was straightened."
+    },
+    "ladder": {
+      "file": "ladder.glb",
+      "size": [
+        0.5,
+        3,
+        0.183
+      ],
+      "bbox": {
+        "min": [
+          -0.25,
+          0,
+          0
+        ],
+        "max": [
+          0.25,
+          3,
+          0.183
+        ]
+      },
+      "tris": 2548,
+      "bytes": 126412,
+      "texture": 512,
+      "mount": {
+        "anchor": "backbase",
+        "normal": "+Z",
+        "origin": "bottom centre of the back face"
+      },
+      "normaliseRot": "0,0,0",
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e370-d9bd-7ca0-8af1-c583cdd1957b"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e372-deb3-74c3-9e56-4550b94eab8f",
+          "face_limit": 3000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Wall rung ladder 0.5 m wide x 3.0 m tall, 11 rungs (~0.28 m pitch), standoff brackets at top and bottom. Origin at the bottom centre of the back (bracket) face: foot at y = 0, back at z = 0, +Z out of the hull. The concept was drawn ~1:3.3, so Y is stretched ~3x relative to X; rungs read slightly oval."
+    },
+    "rcs": {
+      "file": "rcs.glb",
+      "size": [
+        1,
+        1,
+        0.6
+      ],
+      "bbox": {
+        "min": [
+          -0.5,
+          -0.5,
+          0
+        ],
+        "max": [
+          0.5,
+          0.5,
+          0.6
+        ]
+      },
+      "tris": 3434,
+      "bytes": 115976,
+      "texture": 512,
+      "mount": {
+        "anchor": "back",
+        "normal": "+Z",
+        "origin": "centre of the back (mounting) face"
+      },
+      "normaliseRot": "0,-90,0",
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e370-da7f-7651-8171-fecabc22831d"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e372-df6a-72a3-a34e-3f39df5e87a9",
+          "face_limit": 4000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "RCS quad: 1.0 x 1.0 m back plate at z = 0, chamfered block, four nozzles pointing +Y, -Y, +X, -X (nozzle exits roughly 0.35 m out from the part centre along each axis, at z ~0.3)."
+    },
+    "antenna": {
+      "file": "antenna.glb",
+      "size": [
+        0.427,
+        6,
+        0.355
+      ],
+      "bbox": {
+        "min": [
+          -0.213,
+          0,
+          -0.177
+        ],
+        "max": [
+          0.213,
+          6,
+          0.177
+        ]
+      },
+      "tris": 1884,
+      "bytes": 139940,
+      "texture": 512,
+      "mount": {
+        "anchor": "base",
+        "normal": "+Y",
+        "origin": "centre of the foot/base, y = 0"
+      },
+      "normaliseRot": "0,-93.86,0",
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e370-db3c-78b3-a88f-0f88dbf0aae6"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e373-11a6-72a3-8569-af5faa525737",
+          "face_limit": 2000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Mast 6.0 m tall (Y) on a 0.3 m square base box, three dipole pairs (0.43 m span) and a tip. Mounts by its base: origin at the base centre, base at y = 0, the hull normal is +Y. X/Z were scaled 0.375x relative to Y so the base is 0.3 m."
+    },
+    "dome": {
+      "file": "dome.glb",
+      "size": [
+        2.5,
+        2.5,
+        2.364
+      ],
+      "bbox": {
+        "min": [
+          -1.25,
+          -1.25,
+          0
+        ],
+        "max": [
+          1.25,
+          1.25,
+          2.364
+        ]
+      },
+      "tris": 2883,
+      "bytes": 150088,
+      "texture": 1024,
+      "mount": {
+        "anchor": "back",
+        "normal": "+Z",
+        "origin": "centre of the back (mounting) face"
+      },
+      "normaliseRot": "90,0,0",
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e370-dbf5-7b81-9e70-6476b03fa324"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e373-1274-7092-b234-da94035842af",
+          "face_limit": 3000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Sensor radome ~2.46 m diameter (near-spherical, with a seam band) on a short bolted octagonal ring; flange 2.5 m at z = 0, top at z = 2.36. Axis is +Z (hull normal)."
+    },
+    "floodlight": {
+      "file": "floodlight.glb",
+      "size": [
+        0.6,
+        0.491,
+        0.698
+      ],
+      "bbox": {
+        "min": [
+          -0.3,
+          -0.246,
+          0
+        ],
+        "max": [
+          0.3,
+          0.246,
+          0.698
+        ]
+      },
+      "tris": 2444,
+      "bytes": 106796,
+      "texture": 512,
+      "mount": {
+        "anchor": "back",
+        "normal": "+Z",
+        "origin": "centre of the back (mounting) face"
+      },
+      "normaliseRot": "90,0,90",
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e370-dcb7-7b92-ac00-1bae09ddf9c2"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e373-135e-7462-86fd-a6d7b24f69ec",
+          "face_limit": 3000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "Floodlight: 0.6 m lamp housing on a U yoke, base plate at z = 0 on the hull, lamp centre ~0.4 m out. The lens aims +Y (along the hull); rotate about Z to aim it. Lens texel is blue-grey glass (livery glass); add a SpotLight at the lens centre if it should throw light."
+    },
+    "container": {
+      "file": "container.glb",
+      "size": [
+        6.06,
+        2.59,
+        2.44
+      ],
+      "bbox": {
+        "min": [
+          -3.03,
+          0,
+          -1.22
+        ],
+        "max": [
+          3.03,
+          2.59,
+          1.22
+        ]
+      },
+      "tris": 2297,
+      "bytes": 240604,
+      "texture": 1024,
+      "mount": {
+        "anchor": "base",
+        "normal": "+Y",
+        "origin": "centre of the foot/base, y = 0"
+      },
+      "normaliseRot": "0,0,0",
+      "fal": [
+        {
+          "model": "fal-ai/nano-banana-pro/edit",
+          "id": "01a0e370-dd7d-7913-b07d-a5f11cb69840"
+        },
+        {
+          "model": "tripo3d/h3.1/image-to-3d",
+          "id": "01a0e373-144c-75c0-a056-17581a583cf6",
+          "face_limit": 3000,
+          "params": "texture, pbr, texture_quality detailed, geometry_quality detailed"
+        }
+      ],
+      "notes": "20-ft ISO container 6.06 (X) x 2.59 (Y) x 2.44 (Z) m, doors at +X, bottom at y = 0 (deck normal +Y), origin at the bottom centre. Corrugated side walls reconstructed soft/wavy: reads as a container at hangar distances, not crisp up close."
+    }
+  }
+}
