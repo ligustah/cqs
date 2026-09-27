@@ -135,7 +135,9 @@ Each stage ran as a small multi-agent workflow: generators, independent judges
 Costs (fal list prices): about 58 nano-banana-pro images (13 of them 4K
 turnaround sheets) ≈ $10.70, 6 Tripo P2 models $7.20 (superseded), 11 Tripo
 H3.1 models $6.60, 3 Hunyuan3D 3.1 Pro models ≈ $1.90, 11 PATINA sets ≈ $1.20 —
-about **$27.50** in total.
+about $27.50 for the first build. The fleet-scale re-draw (v4) added about $10.50 and
+the true-scale detail round (v5: targeted detail edits, new turnarounds, 5 Tripo H3.1
+meshes, 3 PATINA detail tiles for the carrier) about $15.70: about **$54** in total.
 
 ## Scale model
 
@@ -158,9 +160,9 @@ axis-aligned bounding box, length × beam × height. A destroyer therefore takes
 carrier: its 900 m hull and the hangar bay measured inside it are fixed, and a slot
 is the largest volume at which every legal full load (50 fighters, 10 corvettes,
 4 destroyers or 12 civil ships, 2 m clearance) still fits that bay. That is
-70,000 m³: twelve troop transports exactly fill it, so the carrier's 50-slot
+70,000 m³: twelve civil ships exactly fill it, so the carrier's 50-slot
 capacity is what sizes its hangar (scale-check: the carrier could not be more than
-3 % shorter). `src/lib/scale.js` scales every ship uniformly so that its envelope
+2.4 % shorter). `src/lib/scale.js` scales every ship uniformly so that its envelope
 volume is exactly `size × 70,000 m³`; each module is authored at real size, so
 this correction is under 2 %. Both civil variants take 4 slots, so the bulkier
 two variants are sized independently.
@@ -168,8 +170,8 @@ two variants are sized independently.
 | Class | Length | Crew |
 | --- | --- | --- |
 | Fighter | 72 m | about 40 |
-| Corvette | 105 m | about 350 |
-| Civil ship (cargo / troops) | 132 m / 132 m | about 80 (troops: ground-unit capacity 750) |
+| Corvette | 107 m | about 350 |
+| Civil ship (cargo / troops) | 134 m / 129 m | about 80 (troops: ground-unit capacity 750) |
 | Destroyer | 204 m | about 2,000 |
 | Carrier | 900 m | about 20,000 |
 
@@ -183,6 +185,19 @@ windows (~1 m), hatches, handrails and containers (20-ft ISO) read at true size
 instead of being blown up 2.8x; the 0.4 m nav lights, the 6 m plating repeat and
 the 1.8 m crew member in the lineup are fixed in metres.
 
+A second detail round (v5) then tightened the small details so they read crisply:
+nano-banana-pro/edit passes aimed at the named elements (bridge glazing, ports, hatches,
+rails; crop-and-blend edits where a whole-image edit would not change them), new 4K
+turnarounds and Tripo H3.1 meshes, with fighter and corvette textures raised to 4096.
+Measured on the meshes: bridge panes 0.5-0.8 m, ports 0.65-0.95 m in rows one deck
+apart, rails about 1-1.8 m, hull numbers 2.2-2.3 m (carrier 15 m). The image model
+would not draw the carrier's ports small enough at 900 m, so its hull carries fal
+PATINA tiles (flank ports, island ribbon panes, 2.7 m plating) sized from measured
+pixels and baked into an 8K base-colour and normal texture by a texel-to-world lookup
+(the hangar cavity and the drive bells are left as generated). Still over the target:
+the image model kept some crew doors at 3-4 m (a 5 x 9.5 m boat hatch on the
+destroyer's flank), and the civil ships' containers are about 1.5x ISO size.
+
 The carrier is warp-capable, so never carried itself. In the fleet its bay holds a
 legal load (two destroyers and two civil ships nose to tail across the frames, two
 fighters in the bow section, three fighters on the launch and recovery cycle: 37
@@ -195,22 +210,22 @@ lies inside the hull:
 slot volume: 70000 m^3
 
 class             size  L x B x H (m)             volume    slots   design scale  tris     draws
-fighter           1     71.71 x 44.67 x 21.85     70000     1       1             75973    1
-corvette          5     105.46 x 65.71 x 50.51    350000    5       1             95074    1
-freighter         4     132.16 x 51.45 x 41.18    280000    4       1             113463   1
-destroyer         12    204.21 x 56.05 x 73.4     840000    12      1             144170   1
+fighter           1     71.54 x 46.8 x 20.91      70000     1       0.9975        73479    1
+corvette          5     107.11 x 68.81 x 47.49    350000    5       1.0001        91060    1
+freighter         4     134.15 x 54.7 x 38.16     280000    4       1.0002        110779   1
+destroyer         12    202.68 x 56.1 x 73.88     840000    12      0.9925        145130   1
 carrier           -     900 x 405.55 x 319.3      116541493 -       1             231273   1
-freighter:troops  4     131.81 x 51.91 x 40.92    280000    4       1             109306   1
+freighter:troops  4     128.82 x 57.73 x 37.65    280000    4       0.9998        109004   1
 
 carrier hangar (clear, L x B x H): 670 x 155.8 x 84.4 m
-  fighter           need 50  fits 84   OK
+  fighter           need 50  fits 81   OK
   corvette          need 10  fits 12   OK
   destroyer         need 4   fits 6    OK
-  freighter         need 12  fits 12   OK
-  freighter:troops  need 12  fits 12   OK
+  freighter         need 12  fits 22   OK
+  freighter:troops  need 12  fits 22   OK
   hangar box inside hull: 100.0% of 384 samples OK
   capacity 50 slots (UnitEnum.CARRIER spaceTransport); loads: 50 fighter x 1, 10 corvette x 5, 4 destroyer x 12, 12 freighter x 4, 12 freighter:troops x 4
-  smallest carrier whose hangar would still fit every load: 872.1 m (96.9 % of the design; binding load: freighter:troops, 11 of 12 fit 0.1 % smaller); built: 900 m (design length)
+  smallest carrier whose hangar would still fit every load: 878.4 m (97.6 % of the design; binding load: freighter, 11 of 12 fit 0.1 % smaller); built: 900 m (design length)
 
 SCALE CHECK PASSED
 ```

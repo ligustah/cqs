@@ -178,7 +178,8 @@
         "corvette": 4096,
         "freighter": 4096,
         "destroyer": 4096,
-        "carrier": 4096
+        "carrier": 4096,
+        "carrier_note": "carrier.glb base colour and normal were re-baked at 8192 in v5 (see v5_detail); re-ingesting would drop them to 4096"
       }
     },
     "D_materials": {
@@ -208,5 +209,22 @@
       "use": "hull/orange/armor as tri-planar detail layers on the generated meshes; all sets as full materials for scene-built parts (hangar deck, engine bells, scale-lineup props)"
     }
   },
-  "realism": "Futuristic but physically believable, never a cheap video-game look: real aerospace/naval engineering proportions and function, physically based materials (weathered white thermal paint, brushed and anodised aluminium, titanium, carbon composite, gold and silver MLI blankets, ceramic tiles), fine wear and grime, no neon trim, no glowing panel lines, no toy/cartoon/stylised shapes. Propulsion is fusion torch drives: large magnetic-nozzle engine bells whose exhaust is an intensely bright, long, blue-white plasma plume with faint shock diamonds; the plume is rendered in-scene, so 3D-reconstruction images show the engines unlit. Lighting reads like real photography: one hard sun, deep shadows, planet-shine, bloom only from genuinely bright sources."
+  "realism": "Futuristic but physically believable, never a cheap video-game look: real aerospace/naval engineering proportions and function, physically based materials (weathered white thermal paint, brushed and anodised aluminium, titanium, carbon composite, gold and silver MLI blankets, ceramic tiles), fine wear and grime, no neon trim, no glowing panel lines, no toy/cartoon/stylised shapes. Propulsion is fusion torch drives: large magnetic-nozzle engine bells whose exhaust is an intensely bright, long, blue-white plasma plume with faint shock diamonds; the plume is rendered in-scene, so 3D-reconstruction images show the engines unlit. Lighting reads like real photography: one hard sun, deep shadows, planet-shine, bloom only from genuinely bright sources.",
+  "v5_detail": {
+    "why": "Small details must be crisp and at true human scale for the ships' size to read: crew doors 2 x 1 m, ~1 m windows in rows one ~3 m deck apart, 1 m rails, 20-ft ISO containers.",
+    "method": {
+      "fighter/corvette/destroyer/freighter family": "fal-ai/nano-banana-pro/edit of the approved v4 concept (4K, prompts name each oversized element; the fighter needed 'remove the canopy, plate it over, add a strip of small windows'; civil ships used crop-and-blend edits of the crew module), then a 4K turnaround, tripo3d/h3.1/multiview-to-3d (detailed geometry and texture), ingest (fighter/corvette textures now 4096) and a hull-number re-projection where the mesh garbled it (DD-12, CT-7).",
+      "carrier": "nano-banana drew ~4 m windows at 900 m scale, so three fal-ai/patina/material tiles (flank ports, island ribbon panes, 2.7 m deck plating) sized from measured pixels are baked into an 8192 base-colour and normal texture by a texel-to-world lookup (dominant-axis projection per facet); geometry, UVs, hangar cavity and drive bells unchanged."
+    },
+    "lengths_m": {
+      "fighter": 71.54,
+      "corvette": 107.11,
+      "freighter": 134.15,
+      "freighter:troops": 128.82,
+      "destroyer": 202.68,
+      "carrier": 900
+    },
+    "measured": "bridge panes 0.5-0.8 m, ports 0.65-0.95 m, rails 1-1.8 m, hull numbers 2.2-2.3 m (carrier 15 m); still over target: some crew doors 3-4 m (destroyer flank boat hatch 5 x 9.5 m), civil containers ~1.5x ISO.",
+    "cost_usd": 15.7
+  }
 }
