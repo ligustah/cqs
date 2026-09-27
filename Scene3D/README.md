@@ -160,24 +160,28 @@ is the largest volume at which every legal full load (50 fighters, 10 corvettes,
 4 destroyers or 12 civil ships, 2 m clearance) still fits that bay. That is
 70,000 m³: twelve troop transports exactly fill it, so the carrier's 50-slot
 capacity is what sizes its hangar (scale-check: the carrier could not be more than
-0.8 % shorter). `src/lib/scale.js` scales every ship uniformly so that its envelope
+3 % shorter). `src/lib/scale.js` scales every ship uniformly so that its envelope
 volume is exactly `size × 70,000 m³`; each module is authored at real size, so
 this correction is under 2 %. Both civil variants take 4 slots, so the bulkier
-troop transport comes out shorter than the cargo ship.
+two variants are sized independently.
 
 | Class | Length | Crew |
 | --- | --- | --- |
-| Fighter | 71 m | about 40 |
-| Corvette | 102 m | about 350 |
-| Civil ship (cargo / troops) | 135 m / 120 m | about 80 (troops: ground-unit capacity 750) |
-| Destroyer | 200 m | about 2,000 |
+| Fighter | 72 m | about 40 |
+| Corvette | 105 m | about 350 |
+| Civil ship (cargo / troops) | 132 m / 132 m | about 80 (troops: ground-unit capacity 750) |
+| Destroyer | 204 m | about 2,000 |
 | Carrier | 900 m | about 20,000 |
 
 Crews are design estimates from each hull's volume; the game's chassis population
 cost (`crew`) is an abstract unit and is not used. The troop transport's 750 is the
 game's `groundTransport`, counted in ground-unit sizes (infantry 1, vehicles 3,
-aircraft 4), not people. Shared details stay at human scale on every hull (0.4 m
-nav lights, 6 m plating repeat, the 1.8 m crew member in the lineup).
+aircraft 4), not people. Shared details stay at human scale on every hull: after
+the rescale, the fighter, corvette, civil ships and destroyer were re-drawn at their
+new sizes (nano-banana-pro/edit, then new Tripo H3.1 multiview meshes) so their
+windows (~1 m), hatches, handrails and containers (20-ft ISO) read at true size
+instead of being blown up 2.8x; the 0.4 m nav lights, the 6 m plating repeat and
+the 1.8 m crew member in the lineup are fixed in metres.
 
 The carrier is warp-capable, so never carried itself. In the fleet its bay holds a
 legal load (two destroyers and two civil ships nose to tail across the frames, two
@@ -191,22 +195,22 @@ lies inside the hull:
 slot volume: 70000 m^3
 
 class             size  L x B x H (m)             volume    slots   design scale  tris     draws
-fighter           1     71.18 x 47.99 x 20.49     70000     1       1             76315    1
-corvette          5     102.37 x 67.65 x 50.54    350000    5       1.0001        89780    1
-freighter         4     135.34 x 52.99 x 39.04    280000    4       0.9998        111580   1
-destroyer         12    200.47 x 61.63 x 67.99    840000    12      0.9997        144726   1
+fighter           1     71.71 x 44.67 x 21.85     70000     1       1             75973    1
+corvette          5     105.46 x 65.71 x 50.51    350000    5       1             95074    1
+freighter         4     132.16 x 51.45 x 41.18    280000    4       1             113463   1
+destroyer         12    204.21 x 56.05 x 73.4     840000    12      1             144170   1
 carrier           -     900 x 405.55 x 319.3      116541493 -       1             231273   1
-freighter:troops  4     119.87 x 53.21 x 43.9     280000    4       0.9991        111567   1
+freighter:troops  4     131.81 x 51.91 x 40.92    280000    4       1             109306   1
 
 carrier hangar (clear, L x B x H): 670 x 155.8 x 84.4 m
-  fighter           need 50  fits 81   OK
+  fighter           need 50  fits 84   OK
   corvette          need 10  fits 12   OK
   destroyer         need 4   fits 6    OK
-  freighter         need 12  fits 24   OK
+  freighter         need 12  fits 12   OK
   freighter:troops  need 12  fits 12   OK
   hangar box inside hull: 100.0% of 384 samples OK
   capacity 50 slots (UnitEnum.CARRIER spaceTransport); loads: 50 fighter x 1, 10 corvette x 5, 4 destroyer x 12, 12 freighter x 4, 12 freighter:troops x 4
-  smallest carrier whose hangar would still fit every load: 892.8 m (99.2 % of the design; binding load: freighter:troops, 11 of 12 fit 0.1 % smaller); built: 900 m (design length)
+  smallest carrier whose hangar would still fit every load: 872.1 m (96.9 % of the design; binding load: freighter:troops, 11 of 12 fit 0.1 % smaller); built: 900 m (design length)
 
 SCALE CHECK PASSED
 ```
