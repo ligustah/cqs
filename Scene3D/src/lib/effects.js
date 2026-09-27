@@ -56,9 +56,11 @@ function plumeMaterial(color, seed) {
         float s = -(o.z + t * d.z) / uAspect;        // 0 at the exit plane, 1 at the end of the bound
         float z = clamp(s, 0.0, 1.0) * uLen;         // distance behind the exit (bell radii)
         float wc = 0.30 * (1.0 + 0.6 * z);           // hot core: narrow, gone within ~0.4 r
-        float wg = 0.62 * (1.0 + 0.35 * z);          // soft glow: fills the exit, gone within ~1.5 r
+        float wg = 0.45 * (1.0 + 0.5 * z);           // soft glow: a narrow tapered column, gone within ~3 r
         float core = exp(-rho * rho / (wc * wc)) * exp(-z / 0.35);
-        float glow = exp(-rho * rho / (wg * wg)) * exp(-z / 0.7);
+        // the column builds up over the first ~0.6 r behind the exit (the plasma detaches from the
+        // magnetic nozzle), so in stern quarter views it does not lie over the dark bell mouth
+        float glow = exp(-rho * rho / (wg * wg)) * exp(-z / 1.2) * (0.15 + 0.85 * smoothstep(0.0, 0.7, z));
         // nothing upstream of the exit plane (the bell interior is the throat glow). The profiles
         // are evaluated where the ray passes closest to the axis, but an oblique ray crosses each
         // Gaussian over an axial stretch ~ width * (axial / radial travel): gate by the fraction of
@@ -70,10 +72,15 @@ function plumeMaterial(color, seed) {
         float tail = 1.0 - smoothstep(0.55, 1.0, s);
         float path = min(inversesqrt(dxy2), 2.0);    // a little denser when looking along the jet
         float flick = 0.96 + 0.04 * sin(uTime * 61.0 + uSeed * 9.0) * sin(uTime * 23.0 + uSeed);
-        vec3 col = vec3(0.93, 0.95, 1.0) * core * 0.9 * gc + uSheath * glow * 0.16 * gg;
-        // seen end-on the plume is optically thin: fade it so only the bell glow remains
+        // seen end-on the plume is optically thin: the hot core (right at the exit plane, where it
+        // would lie over the bell mouth) fades almost away; the soft column keeps a hint
         float axial = abs(normalize(vObj - vCam).z);
-        col *= tail * path * flick * uPower * mix(1.0, 0.1, smoothstep(0.5, 0.95, axial));
+        // (from a stern quarter the column behind the exit projects over the bell mouth: the fade
+        // starts ~70 degrees off the axis, and only the thin core gets the longer path along the jet)
+        float endOn = smoothstep(0.3, 0.92, axial);
+        vec3 col = vec3(0.93, 0.95, 1.0) * core * 0.4 * gc * path * mix(1.0, 0.12, endOn)
+                 + uSheath * glow * 0.25 * gg * mix(1.0, 0.22, endOn);
+        col *= tail * flick * uPower;
         gl_FragColor = vec4(col, 1.0);
       }`,
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.BackSide,
@@ -126,7 +133,7 @@ export function attachEffects(group, { power = 1, plumeScale = 1, spill = true }
   if (!enginesOn) for (const c of group.children) if (c.name === 'nozzle-glow' || c.name === 'nozzle-lining') c.visible = false;
   let seed = 1;
   for (const e of enginesOn ? info.engines : []) {
-    const m = plumeMaterial(e.color ?? '#8ea6ff', seed++ * 1.37);
+    const m = plumeMaterial(e.color ?? '#a4b2e2', seed++ * 1.37); // pale blue-white, not periwinkle
     const bound = e.radius * PLUME_BOUND;
     const lenR = Math.min(e.length / e.radius, PLUME_MAX) * plumeScale; // short: a few bell radii at most
     m.uniforms.uPower.value = power;

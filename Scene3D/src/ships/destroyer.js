@@ -25,6 +25,7 @@ export const meta = {
 };
 
 const STROBE = { period: 1.3, duty: 0.1 };
+const MUZZLE_RIM = { color: '#b4c2dc', radiance: 0.07 };
 const CORNER_BELL = { depth: 1.43, throat: 0.96, wall: [[0.74, 1.4], [1.11, 1.36], [1.4, 1.34]] };
 
 export const asset = {
@@ -38,8 +39,31 @@ export const asset = {
   // the exposed rail channel (ray-cast: the rails run at x 0, y -0.9 between raised walls at
   // x +-3 from the command tower to the bow block, open to the flanks at z +11..+20) keeps a
   // muted version of the concept's copper coils and conduits instead of the grey repaint, at
-  // about the hull's value, so the spinal gun reads as its own machinery
-  liveryKeep: { box: [[-3.4, -6, -4], [3.4, 0.4, 22]], gain: 0.15, saturation: 0.45, feather: 0.6 },
+  // a little above the hull's value, so the copper coils and capacitor banks separate from the
+  // grey armour in sunlight and the spinal gun reads as its own machinery. A second box keeps the
+  // texture's steel inside the recessed muzzle shroud (ray-cast: the opening is ~3.5 m half-wide and
+  // 2.3-2.5 m high about y -5.4, the bow face stands at z 35.85 only a narrow frame around it and
+  // steps back to z ~32.5 beyond x ~4.5; the box stops short of the mouth plane so the bow face
+  // keeps the livery): its paler steel walls around the dark bore show the gun's business end
+  // whenever light reaches into the shroud
+  liveryKeep: [
+    { box: [[-3.4, -6, -4], [3.4, 0.4, 22]], gain: 0.3, saturation: 0.6, feather: 0.6 },
+    { box: [[-4.2, -8.2, 31.2], [4.2, -2.4, 35.75]], gain: 0.55, saturation: 0.2, feather: 0.25 },
+  ],
+  // Muzzle rim: a dim, cool field-coil band just inside the lip of the octagonal shroud (one
+  // strip per face, ray-cast: faces 3.5 m out at the sides, 2.5 m up, 2.3 m down, 3.2-3.5 m on the
+  // diagonals, about the bore axis at y -5.41), so the gun's mouth reads as an octagon even
+  // when the bow face is in shadow. Radiance 0.07: a faint glint in the shadow, not a lamp.
+  fixtures: [
+    { ...MUZZLE_RIM, p: [3.43, -5.233, 35.45], size: [2.32, 0.04, 0.12], rotZ: 1.5708 },
+    { ...MUZZLE_RIM, p: [2.905, -3.535, 35.45], size: [1.48, 0.04, 0.12], rotZ: 2.3562 },
+    { ...MUZZLE_RIM, p: [-0.007, -3.01, 35.45], size: [4.64, 0.04, 0.12], rotZ: 3.1416 },
+    { ...MUZZLE_RIM, p: [-2.917, -3.533, 35.45], size: [1.48, 0.04, 0.12], rotZ: -2.3562 },
+    { ...MUZZLE_RIM, p: [-3.44, -5.226, 35.45], size: [2.31, 0.04, 0.12], rotZ: -1.5708 },
+    { ...MUZZLE_RIM, p: [-2.838, -6.998, 35.45], size: [1.7, 0.04, 0.12], rotZ: -0.7854 },
+    { ...MUZZLE_RIM, p: [-0.0, -7.6, 35.45], size: [4.35, 0.04, 0.12], rotZ: -0.0 },
+    { ...MUZZLE_RIM, p: [2.833, -7.003, 35.45], size: [1.69, 0.04, 0.12], rotZ: 0.7854 },
+  ],
   engines: [
     // corner bells, upper and lower pair; exit plane at the lip's aft face (z -35.85 .. -35.75)
     // (depth = the flat throat plate, ray-cast at 0.97 r; the hot throat is its inner 0.65 r)

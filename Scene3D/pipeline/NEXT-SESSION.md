@@ -1,3 +1,5 @@
+> **Superseded.** This was the brief for the asset session; the scene has since moved on. Current scale: 1 slot = 3,200 m³, fighter 25.5 m (crew 3), carrier 900 m through-deck. See `Scene3D/README.md` (Scale model) and `tools/scale-check.mjs`.
+
 You're continuing work on the **CQS Orbital Fleet** 3D scene in the repo `ligustah/cqs`. Start from branch `claude/3d-orbital-ships-scene-u95ehb`: fetch it and base your work on it. The previous session may still push commits to it under `Scene3D/src/env/` (planet/sky), so fetch and merge it again before you finish.
 
 ## Goal
@@ -23,9 +25,9 @@ with three.js doing what Blender does in the usual pipeline: import, clean-up, m
   - bloom only from genuinely bright sources.
 - **Scale.** Scale comes from game data and is already implemented in `Scene3D/src/lib/scale.js`.
   - `UnitEnum.getSize()` gives each ship a number of hangar slots: fighter 1, civil ship 4, corvette 5, destroyer 12. The carrier carries 50.
-  - 1 slot = 800 m³ of parking envelope (the axis-aligned bounding box).
-  - Each ship is uniformly normalised to `size × 800 m³`. That puts the fighter at about 16 m, corvette ~31, freighter ~50 and destroyer ~67 m.
-  - The carrier is 240–280 m. Size it so that a hangar box able to hold every legal full load physically fits inside its hull: 50 fighters, or 10 corvettes, or 4 destroyers, or 12 freighters, all with 2 m clearance.
+  - 1 slot = 3,200 m³ of parking envelope (the axis-aligned bounding box). (This brief originally said 800 m³.)
+  - Each ship is uniformly normalised to `size × 3,200 m³`: fighter 25.5 m, corvette 36.6, freighter 48.4 (troops 42.9) and destroyer 71.7 m.
+  - The carrier is a 900 m design (originally 240–280 m). Size it so that a hangar box able to hold every legal full load physically fits inside its hull: 50 fighters, or 10 corvettes, or 4 destroyers, or 12 freighters, all with 2 m clearance.
   - `node tools/scale-check.mjs` must pass.
 
 ## fal access

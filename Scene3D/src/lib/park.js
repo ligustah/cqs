@@ -101,10 +101,11 @@ export const DEFAULT_LOADOUT = [
  * @param {THREE.Group} carrierGroup  built by buildShip('carrier'); ships are added as its children
  * @param {object} o  { buildShip, palette, attachEffects, loadout = DEFAULT_LOADOUT,
  *   clearance = 2 m, gap = deck to envelope bottom (m), center = centre rows along each zone,
- *   cull = draw a ship only while it can be seen through an opening }
+ *   cull = draw a ship only while it can be seen through an opening,
+ *   dress = add the hangar dressing: deck paint, containers, tractors (see dressHangar) }
  * @returns {{ ships: {group, cls, variant, zone, side}[], effects: {update}[], skipped: object[] }}
  */
-export function parkInHangar(carrierGroup, { buildShip, palette, attachEffects, loadout = DEFAULT_LOADOUT, clearance = CLEARANCE, gap = 0.3, center = true, cull = true } = {}) {
+export function parkInHangar(carrierGroup, { buildShip, palette, attachEffects, loadout = DEFAULT_LOADOUT, clearance = CLEARANCE, gap = 0.3, center = true, cull = true, dress = true } = {}) {
   const info = carrierGroup.userData.ship;
   const deck = info?.anchors?.hangarDeck;
   const out = { ships: [], effects: [], skipped: [] };
@@ -215,8 +216,103 @@ export function parkInHangar(carrierGroup, { buildShip, palette, attachEffects, 
       q.view = view;
     }
   }
+  if (dress) out.dressing = dressHangar(carrierGroup, out.ships, deck, { clearance, k });
   if (out.skipped.length) console.warn('[park] not everything fitted:', out.skipped);
   return out;
+}
+
+// Hangar dressing: human-scale deck equipment that holds no hangar slot. The legal load is 50
+// slots in a 670 m hangar, so most of the deck is bare; a real deck carries the kit that works
+// it. Everything is instanced boxes (three draw calls in all), on the deck plane of each zone:
+//   - painted parking boxes around every parked ship (worn yellow deck paint, 0.35 m lines,
+//     1.5 m outside its envelope) and the edges of the launch lane
+//   - stacks of 20-ft containers (6.06 x 2.44 x 2.59 m), two high, against the lane in the free
+//     deck fore or aft of each parked block (or in the middle of an empty zone side)
+//   - deck tractors (4.2 x 2.0 x 1.8 m) towing a train of two carts (2.8 x 1.4 x 1.1 m)
+// The launch lane and the parked ships' boxes stay clear (clearance to both).
+const CONTAINER = [2.44, 2.59, 6.06]; // x, y, z (m): containers lie along the hangar
+const PAINT = '#8f8158', CONTAINER_TONES = ['#5c4b3b', '#46505a', '#5e3d33', '#50544a', '#6a5b3e', '#4b4b4f'];
+const TRACTOR = [2.0, 1.8, 4.2], CART = [1.4, 1.1, 2.8];
+
+function dressHangar(carrierGroup, ships, deck, { clearance = 2, k = 1 } = {}) {
+  const lane = deck.lane || [0, 0];
+  const lines = [], boxes = [], vehicles = [];
+  const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+  const line = (x0, x1, z0, z1, y) => lines.push({ p: [(x0 + x1) / 2, y + 0.025, (z0 + z1) / 2], s: [Math.max(0.35, Math.abs(x1 - x0)), 0.05, Math.max(0.35, Math.abs(z1 - z0))] });
+  // footprints of the parked ships (carrier frame, metres)
+  const foot = ships.map((q) => {
+    const e = q.group.userData.ship.envelope, P = q.group.position.clone().multiplyScalar(k);
+    return { zone: q.zone, side: q.side, x0: P.x + e.min.x, x1: P.x + e.max.x, z0: P.z + e.min.z, z1: P.z + e.max.z };
+  });
+  for (const f of foot) {
+    const y = deck.zones[f.zone].y, m = 1.5;
+    const X0 = f.x0 - m, X1 = f.x1 + m, Z0 = f.z0 - m, Z1 = f.z1 + m;
+    line(X0, X1, Z0, Z0, y); line(X0, X1, Z1, Z1, y); line(X0, X0, Z0, Z1, y); line(X1, X1, Z0, Z1, y);
+  }
+  let n = 0;
+  for (const [name, z] of Object.entries(deck.zones)) {
+    // launch lane edges along the zone
+    line(lane[0], lane[0], z.z[0] + 1, z.z[1] - 1, z.y); line(lane[1], lane[1], z.z[0] + 1, z.z[1] - 1, z.y);
+    for (const side of ['port', 'starboard']) {
+      const port = side === 'port', dir = port ? 1 : -1;
+      const inner = (port ? lane[1] : lane[0]) + dir * clearance * 2; // first free x next to the lane
+      const outer = port ? z.x[1] - clearance : z.x[0] + clearance;
+      const mine = foot.filter((f) => f.zone === name && f.side === side);
+      // free z strips in this zone side: fore and aft of the parked block, or all of it
+      const zA = z.z[0] + clearance, zF = z.z[1] - clearance;
+      const strips = mine.length
+        ? [[zA, Math.min(...mine.map((f) => f.z0)) - clearance - 1.5], [Math.max(...mine.map((f) => f.z1)) + clearance + 1.5, zF]]
+        : [[zA, (zA + zF) / 2 - clearance], [(zA + zF) / 2 + clearance, zF]];
+      strips.forEach(([s0, s1], si) => {
+        const depth = s1 - s0;
+        if (depth < CONTAINER[2] + 1) return;
+        n++;
+        if (si === 0 || !mine.length) {
+          // a block of containers against the lane: 3 abreast, 1-2 deep, 2 high (the top row short)
+          const rows = depth > 2 * CONTAINER[2] + 4 ? 2 : 1;
+          for (let r = 0; r < rows; r++) for (let c = 0; c < 3; c++) for (let h = 0; h < 2; h++) {
+            if (h === 1 && hash(n * 31 + r * 7 + c) < 0.35) continue;
+            const x = inner + dir * (c * (CONTAINER[0] + 0.3) + CONTAINER[0] / 2);
+            const zc = (si === 0 ? s0 : s1) + (si === 0 ? 1 : -1) * (r * (CONTAINER[2] + 0.4) + CONTAINER[2] / 2);
+            boxes.push({ p: [x, z.y + h * CONTAINER[1] + CONTAINER[1] / 2, zc], s: CONTAINER, c: CONTAINER_TONES[Math.floor(hash(n * 13 + r * 5 + c * 3 + h) * CONTAINER_TONES.length)] });
+          }
+        }
+        if ((si === 1 || !mine.length) && depth >= 14) {
+          // a tractor and its two carts, parked along the zone, part-way out from the lane
+          const xv = inner + dir * (3 * (CONTAINER[0] + 0.3) + 6 + hash(n) * Math.max(0, Math.abs(outer - inner) - 30));
+          if (Math.abs(xv - inner) > Math.abs(outer - inner) - 3) return;
+          let zc = (s0 + s1) / 2 + 5.5;
+          const yaw = (hash(n * 3) - 0.5) * 0.25;
+          vehicles.push({ p: [xv, z.y + TRACTOR[1] / 2, zc], s: TRACTOR, c: '#6b6236', yaw });
+          for (let i = 0; i < 2; i++) { zc -= (i ? CART[2] : TRACTOR[2] / 2 + CART[2] / 2) + 0.9; vehicles.push({ p: [xv, z.y + CART[1] / 2 + 0.2, zc], s: CART, c: '#4d5053', yaw }); }
+        }
+      });
+    }
+  }
+  const unit = new THREE.BoxGeometry(1, 1, 1);
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), col = new THREE.Color(), up = new THREE.Vector3(0, 1, 0);
+  const build = (list, name, mat, { cast = true } = {}) => {
+    if (!list.length) return null;
+    const mesh = new THREE.InstancedMesh(unit, mat, list.length);
+    list.forEach((b, i) => {
+      q.setFromAxisAngle(up, b.yaw || 0);
+      m4.compose(new THREE.Vector3(...b.p).divideScalar(k), q, new THREE.Vector3(...b.s).divideScalar(k));
+      mesh.setMatrixAt(i, m4);
+      mesh.setColorAt(i, col.set(b.c || PAINT));
+    });
+    mesh.castShadow = cast; mesh.receiveShadow = true;
+    mesh.name = name;
+    carrierGroup.add(mesh);
+    return mesh;
+  };
+  const paint = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.9, metalness: 0, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+  const steel = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.8, metalness: 0.15 });
+  return {
+    lines: build(lines, 'hangar-deck-paint', paint, { cast: false }),
+    containers: build(boxes, 'hangar-containers', steel),
+    vehicles: build(vehicles, 'hangar-vehicles', steel),
+    counts: { lines: lines.length, containers: boxes.length, vehicles: vehicles.length },
+  };
 }
 
 /** Hide / show every parked ship of a carrier (e.g. a UI toggle). */

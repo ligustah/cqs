@@ -16,7 +16,7 @@ import { hangarInsideFraction } from './lib/hangar.js';
 import { buildShip, loadShips, setShipContext, LOAD_ERRORS, ORDER } from './ships/index.js';
 import { loadPatinaLibrary, proceduralStandIn } from './lib/patina.js';
 import { panelSet } from './lib/textures.js';
-import { createLighting } from './env/lighting.js';
+import { createLighting, SUN_DIR } from './env/lighting.js';
 import { createSky } from './env/sky.js';
 import { createPlanet } from './env/planet.js';
 import { ENV } from './env/state.js';
@@ -32,6 +32,19 @@ const HASH_MODES = ['fleet', 'lineup'];
 const mode = params.get('mode') || (HASH_MODES.includes(hash) ? hash : (ORDER.includes(hash) ? 'ship' : 'fleet'));
 const still = params.has('still');
 const fixedTime = params.has('t') ? parseFloat(params.get('t')) : null;
+
+// Studio key: in the ship studio the star is placed relative to the camera, not the ship, so the
+// key always rakes the view: ~85 deg round from the camera azimuth (slightly behind the subject's
+// visible flank) and 30 deg up. Every visible hull then splits into a lit plane and a shadowed
+// plane (the fleet's port-high SUN_DIR lit most of the default 35/18 view flat and left the 270
+// side views as silhouettes). SUN_DIR is shared by reference (env map, planet, sky, shadow fit),
+// so it is set here, before anything reads it. ?sunaz= / ?sunel= override (degrees, ship frame).
+if (mode === 'ship') {
+  const camAz = parseFloat(params.get('az') ?? '35');
+  const sAz = THREE.MathUtils.degToRad(parseFloat(params.get('sunaz') ?? String(camAz + 85)));
+  const sEl = THREE.MathUtils.degToRad(parseFloat(params.get('sunel') ?? '30'));
+  SUN_DIR.set(Math.sin(sAz) * Math.cos(sEl), Math.sin(sEl), Math.cos(sAz) * Math.cos(sEl)).normalize();
+}
 
 window.__report = null;
 window.__ready = false;
@@ -185,6 +198,20 @@ function start() {
   world.reframe?.(); // the overlay panels are filled now: frame the view clear of them
 
   // --- ship studio: one ship, framed for inspection / screenshots ----------
+  /** Up to ~`max` world-space vertices of a ship's hull meshes (strided), for framing. */
+  function hullPoints(g, max = 6000) {
+    g.updateMatrixWorld(true);
+    const meshes = [];
+    g.traverse((o) => { if (o.isMesh && o.userData.hull && o.geometry?.attributes.position) meshes.push(o); });
+    const total = meshes.reduce((n, m) => n + m.geometry.attributes.position.count, 0);
+    const stride = Math.max(1, Math.ceil(total / max));
+    const pts = [];
+    for (const m of meshes) {
+      const pos = m.geometry.attributes.position;
+      for (let i = 0; i < pos.count; i += stride) pts.push(new THREE.Vector3().fromBufferAttribute(pos, i).applyMatrix4(m.matrixWorld));
+    }
+    return pts;
+  }
   function setupShipStudio() {
     const cls = params.get('ship') || (ORDER.includes(hash) ? hash : 'fighter');
     const g = buildShip(cls, palette, { variant: params.get('variant') || undefined });
@@ -205,15 +232,23 @@ function start() {
       camera.position.copy(dir).multiplyScalar(s.envelope.size.length() * 1.15 * k).add(focus);
       controls.target.copy(focus);
     } else {
-      // fit the whole envelope in the frame from this direction (its 8 corners, projected), with a
-      // margin, then ?dist scales the camera distance
-      const e = s.envelope, pts = [];
-      for (let i = 0; i < 8; i++) pts.push(new THREE.Vector3(i & 1 ? e.max.x : e.min.x, i & 2 ? e.max.y : e.min.y, i & 4 ? e.max.z : e.min.z).sub(e.center));
+      // fit the hull's own silhouette in the frame from this direction (a sample of its mesh
+      // vertices, projected), with a margin, then ?dist scales the camera distance. The envelope's
+      // 8 corners would centre the box, not the ship: wedge and tapered hulls then sat high in
+      // the frame over an empty bottom third
+      let pts = hullPoints(g);
+      if (pts.length < 8) {
+        const e = s.envelope; pts = [];
+        for (let i = 0; i < 8; i++) pts.push(new THREE.Vector3(i & 1 ? e.max.x : e.min.x, i & 2 ? e.max.y : e.min.y, i & 4 ? e.max.z : e.min.z).sub(e.center));
+      }
       const target = frameView(camera, pts, dir, { l: 64, r: 64, t: 56, b: 56 }, w, h);
       camera.position.sub(target).multiplyScalar(k).add(target);
       controls.target.copy(target);
     }
-    if (params.has('planet')) createPlanet(scene);
+    // studio stills are shot in orbit, over the planet (?planet=0 for a black backdrop); the
+    // interactive studio stays on black unless ?planet is given (the planet costs frame time)
+    const studioPlanet = params.has('planet') ? params.get('planet') !== '0' : still && !params.has('debug');
+    if (studioPlanet) createPlanet(scene);
     if (params.has('debug')) g.add(debugOverlay(s));
     return { ships: [{ group: g, cls }], selected: cls, focus: () => {} };
   }
@@ -354,14 +389,44 @@ function start() {
       }
       controls.target.copy(frameView(camera, pts, dir, margins, W, Hh));
       chart.bounds({ t: still ? 0 : margins.t - 16, b: still ? 0 : margins.b - 16 });
+      if (inset) {
+        // the detail box sits in the empty grid between the carrier row and the ruler
+        const aw = W - margins.l - margins.r, ah = Hh - margins.t - margins.b;
+        const iw = Math.round(aw * 0.31), ih = Math.round(iw * 0.86);
+        inset.rect = { x: Math.round(margins.l + aw * 0.36), y: Math.round(margins.t + ah * 0.43), w: iw, h: ih };
+        inset.camera.aspect = iw / ih;
+        inset.camera.updateProjectionMatrix();
+        frameView(inset.camera, smallPts, smallDir, { l: 10, r: 10, t: 34, b: 10 }, iw, ih);
+        Object.assign(inset.el.style, { left: `${inset.rect.x}px`, top: `${inset.rect.y}px`, width: `${iw}px`, height: `${ih}px` });
+      }
     };
+    // Default view: a detail box (like the enlarged inset of a technical drawing) shows the
+    // lineup=small framing of the small ships, the slot cube and the crew member, which are only
+    // 20-40 px long at the full 900 m chart scale. A second render of the same scene into a
+    // corner viewport, drawn after the main frame (see frame()).
+    const smallPts = [];
+    let inset = null;
+    if (!small) {
+      for (const sh of ships) if (sh.cls !== 'carrier') sh.group.traverse((o) => {
+        if (!o.isMesh || !o.userData.hull) return;
+        const pos = o.geometry.attributes.position, step = Math.max(1, Math.floor(pos.count / 400));
+        for (let k = 0; k < pos.count; k += step) smallPts.push(new THREE.Vector3().fromBufferAttribute(pos, k).applyMatrix4(o.matrixWorld));
+      });
+      smallPts.push(new THREE.Vector3(0, 0, zR), new THREE.Vector3(side, side, -side / 2)); // (the ruler is an overlay: not in the inset)
+      const el = document.createElement('div');
+      el.className = 'lineup-inset';
+      el.innerHTML = '<span>Detail · small ships, 1 slot, crew (rows as in the chart) · <a href="?lineup=small#lineup">lineup=small</a></span>';
+      container.appendChild(el);
+      inset = { camera: new THREE.PerspectiveCamera(camera.fov, 1, 0.5, 250000), el, rect: null };
+    }
+    const smallDir = new THREE.Vector3(-0.7, 0.75, 1).normalize();
     reframe();
     // ghost hangar with the 50-fighter load (toggle, or ?hangar=1)
     const carrierShip = ships.find((s) => s.cls === 'carrier');
     const hangarViz = carrierShip ? hangarLoadViz(carrierShip.group, built[0].userData.ship.envelope.size) : null;
     if (hangarViz && params.has('hangar') && params.get('hangar') !== '0') hangarViz.visible = true;
     return {
-      ships, selected: small ? 'fighter' : 'carrier', lineupSmall: small, reframe,
+      ships, selected: small ? 'fighter' : 'carrier', lineupSmall: small, reframe, inset,
       focus(cls) {
         const s = ships.find((q) => q.cls === cls);
         if (!s) return;
@@ -466,6 +531,10 @@ function start() {
           vec2 e = min(vUv, 1.0 - vUv); float fade = smoothstep(0.0, 0.06, min(e.x, e.y));
           float a = max(minor * 0.045, major * 0.11) * fade;
           gl_FragColor = vec4(vec3(0.62, 0.64, 0.67), a);
+          // no-ops into the composer's linear targets; encode it when drawn straight to the canvas
+          // (the lineup's detail inset)
+          #include <tonemapping_fragment>
+          #include <colorspace_fragment>
         }`,
     });
     const mesh = new THREE.Mesh(g, m);
@@ -595,6 +664,16 @@ function start() {
     for (const e of effects) e.update(simT, renderer.domElement.height, camera.projectionMatrix.elements[5]);
     if (!still) grainPass.uniforms.uSeed.value = frames % 61;
     composer.render();
+    if (world.inset?.rect) {
+      // lineup detail box: the same scene through the inset camera, into its corner of the canvas
+      const r = world.inset.rect, H0 = renderer.domElement.clientHeight || h;
+      renderer.setScissorTest(true);
+      renderer.setScissor(r.x, H0 - r.y - r.h, r.w, r.h);
+      renderer.setViewport(r.x, H0 - r.y - r.h, r.w, r.h);
+      renderer.render(scene, world.inset.camera);
+      renderer.setScissorTest(false);
+      renderer.setViewport(0, 0, renderer.domElement.clientWidth || w, H0);
+    }
     labelRenderer.render(scene, camera);
     frames++;
     if (frames === 2) { const l = document.getElementById('loading'); if (l) { if (still) l.hidden = true; else l.classList.add('done'); } }

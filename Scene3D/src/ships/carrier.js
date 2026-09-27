@@ -89,8 +89,81 @@ const GALLERY = FRAME_FACES.flatMap(([z, s]) => [113, 119, 125, -111, -117, -123
 const BOW_WALL = Array.from({ length: 11 }, (_, i) => 285 + i * 12.5).flatMap((z) => [{ p: [95.17, -48, z], color: PORT, size: 1 }, { p: [-93.33, -48, z], color: PORT, size: 1 }]);
 const MOUTH_RIM = [-80, -40, 0, 40, 80].flatMap((x) => [{ p: [x, -2, 421.38], color: 'amber', size: 0.4 }, { p: [x, -98, 421.0], color: 'amber', size: 0.4 }]);
 
+// Human-scale emitters on the outer hull, so the 900 m hull reads at full-ship framings (its turrets,
+// island and baked panel lines are ship-sized, and the 6 m plating and 0.4 m lights vanish there):
+// - HULL_PORTS: one row of 1 m warm ports every 6 m along the upper flank band (y 6: the vertical
+//   band under the bays' eaves and the upper chamfer of the frames, bow and stern sections),
+//   ray-cast per station [z, x port, x starboard], set 0.3 m proud (point sprites are depth-tested
+//   at their centre)
+// - ISLAND_PORTS: 1 m ports every 6 m along the island's tiers (y 30 base, 50, 66, 86, 100), ray-cast
+//   the same way and kept only where the tier face is flat (within 1.5 m of the tier's median)
+// - EDGE_RUN: 0.4 m amber running lights every 25 m along the dorsal deck edge (ray-cast at y 20.3,
+//   the edge of the eave over the bays, the top of the chamfer elsewhere), between the white
+//   DECK_EDGE lights; SPONSON_RUN along the outer face of each stern gun sponson
+const HULL_PORTS = [
+  [-368, 108.2, -106.5], [-362, 108.2, -106.3], [-356, 115.4, -113.7], [-350, 115.5, -113.8], [-344, 115.9, -114.0], [-338, 115.9, -114.1],
+  [-332, 115.8, -114.0], [-326, 115.8, -114.0], [-320, 115.8, -114.0], [-314, 115.7, -113.9], [-308, 115.6, -113.9], [-302, 115.9, -114.0],
+  [-296, 115.8, -114.0], [-290, 115.6, -113.8], [-284, 115.5, -113.7], [-278, 113.4, -112.0], [-272, 108.3, -106.6], [-266, 108.5, -106.7],
+  [-260, 107.3, -105.5], [-254, 107.3, -105.5], [-248, 107.3, -105.6], [-242, 107.3, -105.6], [-236, 107.3, -105.7], [-230, 107.3, -105.8],
+  [-224, 107.3, -105.6], [-218, 107.3, -105.7], [-212, 107.4, -105.8], [-206, 107.3, -105.9], [-200, 107.3, -106.0], [-194, 107.4, -106.1],
+  [-188, 107.7, -106.4], [-182, 108.8, -106.7], [-176, 110.2, -108.5], [-170, 109.5, -107.9], [-164, 110.8, -108.6], [-158, 110.5, -108.7],
+  [-152, 110.5, -108.6], [-146, 110.5, -108.7], [-140, 110.5, -108.7], [-134, 110.5, -108.7], [-128, 110.4, -108.7], [-122, 110.4, -108.7],
+  [-116, 110.5, -108.7], [-110, 110.4, -108.7], [-104, 110.3, -108.5], [-98, 110.7, -108.7], [-92, 109.4, -107.8], [-86, 110.2, -108.4],
+  [-80, 110.1, -108.6], [-74, 110.7, -108.7], [-68, 110.4, -108.5], [-62, 110.2, -108.4], [-56, 110.2, -108.4], [-50, 110.2, -108.5],
+  [-44, 110.2, -108.6], [-38, 110.2, -108.5], [-32, 110.2, -108.4], [-26, 110.3, -108.3], [-20, 110.3, -108.3], [-14, 110.2, -108.3],
+  [-8, 110.2, -108.2], [-2, 110.1, -108.2], [4, 110.1, -108.5], [10, 110.2, -108.5], [16, 110.2, -108.0], [22, 110.5, -108.4],
+  [28, 110.3, -108.5], [34, 110.4, -108.4], [40, 110.3, -108.5], [46, 110.3, -108.4], [52, 110.2, -108.5], [58, 110.3, -108.5],
+  [64, 110.3, -108.5], [70, 110.3, -108.5], [76, 110.3, -108.5], [82, 110.3, -108.6], [88, 110.5, -108.7], [94, 110.2, -108.5],
+  [100, 110.2, -108.6], [106, 109.4, -107.8], [112, 110.3, -108.4], [118, 110.1, -108.2], [124, 110.0, -108.1], [130, 109.8, -108.1],
+  [136, 110.0, -108.1], [142, 110.0, -108.1], [148, 109.9, -108.1], [154, 109.9, -108.1], [160, 109.9, -108.1], [166, 109.9, -108.1],
+  [172, 110.0, -108.1], [178, 110.3, -108.4], [184, 109.6, -107.9], [190, 110.2, -108.4], [196, 110.0, -108.5], [202, 107.2, -105.3],
+  [208, 107.1, -105.4], [214, 107.1, -105.4], [220, 107.1, -105.3], [226, 107.1, -105.3], [232, 107, -105.2], [238, 106.9, -105.3],
+  [244, 107.0, -105.4], [250, 107.0, -105.4], [256, 106.9, -105.3], [262, 106.9, -105.3], [268, 107.0, -105.4], [274, 106.9, -105.3],
+  [280, 106.8, -105.2], [286, 108.1, -106.4], [292, 108.1, -106.3], [298, 108.1, -106.3], [304, 108.0, -106.3], [310, 108.0, -106.3],
+  [316, 108.1, -106.2], [322, 108.0, -106.2], [328, 107.9, -106.1], [334, 107.8, -106.0], [340, 107.7, -106.0], [346, 107.7, -105.8],
+  [352, 107.7, -105.9], [358, 107.7, -105.9], [364, 107.7, -105.9], [370, 107.6, -105.8], [376, 107.6, -105.8], [382, 107.5, -105.8],
+  [388, 107.5, -105.7], [394, 107.7, -105.8], [400, 107.8, -106.0], [406, 107.3, -105.5], [412, 107.3, -105.5],
+];
+const EDGE_RUN = [
+  [-356, 96.0, -93.9], [-329, 95.8, -94.0], [-305, 95.8, -93.9], [-281, 95.8, -93.8], [-230, 93.4, -92.2], [-206, 93.7, -92],
+  [-155, 122.8, -120.3], [-131, 122.8, -120.3], [-80, 93.3, -91.6], [-56, 122.5, -120.2], [-5, 122.0, -120.1], [19, 122.5, -120.1],
+  [70, 122.6, -120.3], [94, 93.3, -91.5], [145, 122.2, -120.0], [169, 122.2, -119.9], [220, 93.5, -91.8], [244, 93.7, -91.8],
+  [295, 93.2, -91.3], [319, 93.2, -91.2], [370, 93.3, -91.5], [394, 93.1, -91.3],
+];
+const ISLAND_PORTS = [
+  [30, [[-132, 47.1, -45.1], [-126, 47.2, -45.4], [-120, 47.4, -45.6], [-114, 47.6, -45.8], [-108, 47.8, -46.1], [-102, 48.0, -46.1], [-78, 47.9, -46.3], [-72, 48.0, -46.3], [-66, 48.0, -46.3], [-60, 48.0, -46.5], [-54, 48.1, -46.5], [-30, 48.5, -47.0]]],
+  [50, [[-162, 30.7, -28.7], [-156, 30.6, -28.8], [-126, 29.6, -27.7], [-120, 29.8, -28.0], [-114, 30.0, -28.0], [-108, 29.6, -27.8], [-102, 29.2, -27.8], [-96, 29.7, -27.7], [-90, 29.7, -27.5], [-84, 29.8, -27.8], [-78, 29.9, -27.9], [-72, 29.9, -28.0], [-66, 29.8, -28.1], [-60, 28.3, -26.2]]],
+  [66, [[-108, 24.9, -23.1], [-102, 24.8, -23.0], [-96, 24.7, -22.9], [-90, 24.7, -22.8], [-84, 24.8, -22.8], [-78, 24.8, -22.7], [-72, 24.8, -22.9], [-66, 23.8, -21.8]]],
+  [86, [[-114, 25.6, -23.4], [-108, 25.5, -23.2], [-102, 25.4, -23.1], [-96, 25.4, -22.9], [-90, 25.2, -23.2]]],
+  [100, [[-114, 22.2, -20.3], [-108, 21.9, -20.2], [-102, 22.1, -20.1], [-96, 22.1, -20.4]]],
+];
+const SPONSON_RUN = [[192.6, -49, -336], [192.5, -49, -312], [191.7, -49, -288]];
+const OUTER = [
+  ...HULL_PORTS.flatMap(([z, xp, xs]) => [{ p: [xp + 0.3, 6, z], color: PORT, size: 1 }, { p: [xs - 0.3, 6, z], color: PORT, size: 1 }]),
+  ...ISLAND_PORTS.flatMap(([y, pts]) => pts.flatMap(([z, xp, xs]) => [{ p: [xp + 0.3, y, z], color: PORT, size: 1 }, { p: [xs - 0.3, y, z], color: PORT, size: 1 }])),
+  ...EDGE_RUN.flatMap(([z, xp, xs]) => [{ p: [xp + 0.3, 20.6, z], color: 'amber', size: RUN }, { p: [xs - 0.3, 20.6, z], color: 'amber', size: RUN }]),
+  // starboard sponson mirrored about the mesh's centreline (x ~ +0.97)
+  ...SPONSON_RUN.flatMap(([x, y, z]) => [{ p: [x + 0.3, y, z], color: 'amber', size: RUN }, { p: [-(x - 1.94) - 0.3, y, z], color: 'amber', size: RUN }]),
+];
+
+// Hangar light strips (emissive fixtures, see glbship.js): three 150 m strips across each bay
+// ceiling (ray-cast ceilings: bays 2-5 y -0.55, aft bay -4.07, bay 1 -2.8, bow section -6.37),
+// and a 64 m vertical strip on every frame face that looks into a flank bay, on the flat inboard
+// part of the post (x 107..110 port, -105..-108 starboard, y -80..-15), 0.25 m off the face.
+// Radiance ~1.8 (ceiling) / 0.9 (posts): they read as lit fixtures without crossing the bloom threshold.
+const STRIP = { color: '#fff1e0', radiance: 1.8 };
+const POST_STRIP = { color: '#ffe9d2', radiance: 0.9 }; // the vertical post strips: dimmer, seen face-on from outside
+const BAY_CEILINGS = [[-255.5, -189, -4.07], [-164.6, -98.2, -0.55], [-73.4, -5.4, -0.55], [19.5, 87.1, -0.55], [111.8, 178.1, -0.55], [201.4, 275.8, -2.8], [276.8, 415, -6.37]];
+const STRIPS = [
+  ...BAY_CEILINGS.flatMap(([z0, z1, y]) => [1 / 6, 1 / 2, 5 / 6].map((f) => ({ ...STRIP, p: [0.9, y - 0.35, z0 + (z1 - z0) * f], size: [150, 0.3, 1.0] }))),
+  ...FRAME_FACES.flatMap(([z, s]) => [108.5, -106.5].map((x) => ({ ...POST_STRIP, p: [x, -47.5, z + s * 0.25], size: [0.45, 64, 0.1] }))),
+];
+
 // hangar floodlights: under the five frame rings (ceiling -5.7) and in the bow section (-6.4)
-const FLOOD = { kind: 'spot', color: '#fff3e8', intensity: 36000, distance: 230, angle: 58, penumbra: 0.15, fixture: 1.5 };
+// (a soft penumbra over the outer half of the cone gives each lamp a pool on the deck that falls
+// off toward the bay backs and the flank sills instead of a flat, even fill; the stronger centre
+// keeps the outboard rows at about the old irradiance)
+const FLOOD = { kind: 'spot', color: '#fff3e8', intensity: 52000, distance: 240, angle: 64, penumbra: 0.55, fixture: 1.5 };
 
 export const asset = {
   glb: './assets/ships/carrier.glb', generator: 'tripo3d/h3.1/multiview-to-3d',
@@ -101,11 +174,13 @@ export const asset = {
   crease: 35, // armour blocks, turrets and the island shade flat; bells and barrels stay smooth
   liveryKeep: { box: [[-100, -97.5, -277], [101, -0.3, 414]], gain: 0.2, saturation: 0.08, feather: 1.5 },
   // the hangar (liveryKeep box) takes the 'deck' PATINA set instead of the hull set: 6 m tiles of
-  // ~1.5 m tread plates with deep seams, tie-down cups and plate-to-plate tone, on the deck,
-  // walls and ceiling alike (tri-planar)
+  // ~1.5 m tread plates with seams, tie-down cups and plate-to-plate tone, on the deck, walls and
+  // ceiling alike (tri-planar). The tile-scale seams are held at half contrast (seam) and the
+  // low-frequency grime / tyre-scuff tone is boosted (grime), so the deck reads as worn steel,
+  // not a fine grid
   detail: {
     set: 'hull', tile: 6, normalStrength: 1.0, roughAmount: 0.5, cavity: 0.6,
-    interior: { set: 'deck', tile: 6, normalStrength: 1.1, roughAmount: 0.6, cavity: 0.5, albedo: 0.9, feather: 1.5 },
+    interior: { set: 'deck', tile: 6, normalStrength: 0.8, roughAmount: 0.6, cavity: 0.25, albedo: 0.9, seam: 0.5, grime: 1.6, feather: 1.5 },
   },
   engines: [
     { p: [58.36, -3.19, -449.9], radius: 18.3, ...BELL },
@@ -126,8 +201,9 @@ export const asset = {
     { p: [1, 9.99, -371.22], color: 'white', size: 0.4 },
     ...DECK_EDGE.map((p) => ({ p, color: 'white', size: RUN })),
     ...FLANK.map((p) => ({ p, color: 'amber', size: RUN })),
-    ...MOUTH_RIM, ...GALLERY, ...BOW_WALL,
+    ...MOUTH_RIM, ...GALLERY, ...BOW_WALL, ...OUTER,
   ],
+  fixtures: STRIPS,
   interiorLights: [-176.5, -86, 7, 99.4, 189.7].map((z) => ({ ...FLOOD, p: [0.9, -7.0, z], target: [0.9, -96, z] }))
     .concat([{ ...FLOOD, p: [0.9, -7.6, 350], target: [0.9, -91, 350] }]),
   // only the hangar's own surfaces receive the floodlights: back wall to just past the mouth lip

@@ -47,7 +47,20 @@
           "corvette (approved isolated image)"
         ]
       },
-      "beautyNote": "fighter beauty was regenerated once with an extra clause: only the two rear bells fire, straight aft as one collimated jet; nothing else glows."
+      "beautyNote": "fighter beauty was regenerated once with an extra clause: only the two rear bells fire, straight aft as one collimated jet; nothing else glows.",
+      "shipsNote": "The ships.* prompts below are the original concept prompts as sent (sizes from the superseded 800 m^3 slot). The final designs differ: see finalDesigns. Sizes in these prompts are not the scene's scale; the scene's scale comes from src/lib/scale.js (1 slot = 3,200 m^3) and is verified by tools/scale-check.mjs.",
+      "finalDesigns": {
+        "scale": "1 hangar slot = 3,200 m^3 of axis-aligned parking envelope (UnitEnum.getSize(): fighter 1, civil 4, corvette 5, destroyer 12; CARRIER spaceTransport 50). Every class is uniformly scaled so its envelope volume is size x 3,200 m^3; the carrier is a 900 m design length.",
+        "fighter": "F-402: 25.5 m, crew 3, wingless faceted pod with two stern bells and two flank railgun sponsons (redesigned after the originality panel flagged the first fighter; generated with the approved corvette as a family reference, see variantReferences).",
+        "corvette": "36.6 m armoured escort gunship.",
+        "freighter": "CT-4 cargo: 48.4 m truss-keel civil ship with twenty-foot containers.",
+        "freighter-troops": "CT-7 troop transport: 42.9 m, same family with pressurised habitat cylinders; game groundTransport 750 (ground-unit sizes, not people).",
+        "destroyer": "DD-12: 71.7 m, redesigned around a massive spinal railgun (user direction): a blunt, faceted, stepped octagonal bow shroud housing the muzzle, the rail channel with copper coil rings and conduits exposed between the bow block and the mid hull, five stern bells.",
+        "carrier": "CV-50: 900 m, redesigned from the 260 m bow-hangar carrier into a slab-sided box hull around one through-deck hangar that opens at the bow mouth and through six framed open bays along each flank, a stepped island, spine and sponson turrets, six stern bells.",
+        "redesignPrompts": "The verbatim edit prompts of the destroyer (spinal railgun) and carrier (through-deck, open flank bays) redesigns were not recorded in this file at the time; the design intent above is the record. Future regenerations should use nano-banana-pro/edit with the approved concept as the reference and state the final length explicitly.",
+        "scaleJudge": "After the multiview meshes were ingested, a scale-judge pass compared each ship against the game data: sizes are set only by scale.js, and human-scale details (0.4 m nav lights on every hull, 6 m PATINA plating, 1 m windows and 2 m hatches) are kept physically consistent across classes so bigger ships read bigger.",
+        "pendingRegeneration": "carrier-beauty.webp still shows swept-wing fighters (~30-90 m) parked in the hangar; it should be regenerated with nano-banana-pro/edit using the approved fighter.webp and corvette.webp as references: parked craft are the wingless 25 m F-402 pods (1/36 of the carrier) and 36.6 m corvettes. The carrier island (pagoda tiers) is flagged for an originality review; if regenerated, favour a lower slab-sided flight-control tower with sensor masts."
+      }
     },
     "B_mesh": {
       "primary": {

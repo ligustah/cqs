@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
-import { toCreasedNormals, mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+import { toCreasedNormals, mergeVertices, mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { addDetailLayer } from './patina.js';
 import { applyLivery } from './livery.js';
 
@@ -22,8 +22,10 @@ function throatTexture() {
   const c = document.createElement('canvas'); c.width = c.height = 128;
   const g = c.getContext('2d');
   const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
-  grd.addColorStop(0, '#ffffff'); grd.addColorStop(0.14, '#f6f7ff'); grd.addColorStop(0.25, '#aebbe6');
-  grd.addColorStop(0.42, '#5a6899'); grd.addColorStop(0.65, '#262e52'); grd.addColorStop(0.85, '#10142a'); grd.addColorStop(1, '#05060c');
+  // smooth, near-exponential fall-off past the core: no step anywhere that could draw a ring
+  grd.addColorStop(0, '#ffffff'); grd.addColorStop(0.1, '#eef1ff'); grd.addColorStop(0.2, '#aab5e0');
+  grd.addColorStop(0.3, '#6a76a8'); grd.addColorStop(0.42, '#3a4470'); grd.addColorStop(0.56, '#1f2645');
+  grd.addColorStop(0.72, '#10142a'); grd.addColorStop(0.88, '#070913'); grd.addColorStop(1, '#030409');
   g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
   throatTex = new THREE.CanvasTexture(c); throatTex.colorSpace = THREE.SRGBColorSpace;
   return throatTex;
@@ -51,34 +53,37 @@ class ShipSpotLight extends THREE.SpotLight {
  * map_fragment (before the livery block that follows it) and blended back in before
  * color_fragment. `toShip` maps the mesh's object space to the ship frame.
  */
-function keepInterior(material, keep, toShip) {
+function keepInterior(material, keep, toShip, k = 0) {
   const [min, max] = keep.box;
+  const K = `uKeep${k}`, V = `vKeepPos${k}`;
   const uniforms = {
-    uKeepM: { value: toShip.clone() },
-    uKeepMin: { value: new THREE.Vector3(...min) }, uKeepMax: { value: new THREE.Vector3(...max) },
-    uKeepFeather: { value: keep.feather ?? 1.5 }, uKeepGain: { value: keep.gain ?? 0.5 },
-    uKeepAmount: { value: keep.amount ?? 1 }, uKeepSat: { value: keep.saturation ?? 1 },
+    [`${K}M`]: { value: toShip.clone() },
+    [`${K}Min`]: { value: new THREE.Vector3(...min) }, [`${K}Max`]: { value: new THREE.Vector3(...max) },
+    [`${K}Feather`]: { value: keep.feather ?? 1.5 }, [`${K}Gain`]: { value: keep.gain ?? 0.5 },
+    [`${K}Amount`]: { value: keep.amount ?? 1 }, [`${K}Sat`]: { value: keep.saturation ?? 1 },
   };
   const prev = material.onBeforeCompile;
   material.onBeforeCompile = (shader, renderer) => {
     prev?.call(material, shader, renderer);
     Object.assign(shader.uniforms, uniforms);
     shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nuniform mat4 uKeepM; varying vec3 vKeepPos;')
-      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvKeepPos = (uKeepM * vec4(transformed, 1.0)).xyz;');
+      .replace('#include <common>', `#include <common>\nuniform mat4 ${K}M; varying vec3 ${V};`)
+      .replace('#include <begin_vertex>', `#include <begin_vertex>\n${V} = (${K}M * vec4(transformed, 1.0)).xyz;`);
+    // the texture paint is captured once, right after map_fragment (before the livery repaint)
+    const capture = shader.fragmentShader.includes('vec3 keepPaint =') ? '' : '\nvec3 keepPaint = diffuseColor.rgb;';
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform vec3 uKeepMin, uKeepMax; uniform float uKeepFeather, uKeepGain, uKeepAmount, uKeepSat; varying vec3 vKeepPos;')
-      .replace('#include <map_fragment>', '#include <map_fragment>\nvec3 keepPaint = diffuseColor.rgb;')
+      .replace('#include <common>', `#include <common>\nuniform vec3 ${K}Min, ${K}Max; uniform float ${K}Feather, ${K}Gain, ${K}Amount, ${K}Sat; varying vec3 ${V};`)
+      .replace('#include <map_fragment>', `#include <map_fragment>${capture}`)
       .replace('#include <color_fragment>', `{
-          vec3 kd = min(vKeepPos - uKeepMin, uKeepMax - vKeepPos);
-          vec3 km = smoothstep(vec3(0.0), vec3(uKeepFeather), kd);
-          vec3 kp = mix(vec3(dot(keepPaint, vec3(0.2126, 0.7152, 0.0722))), keepPaint, uKeepSat) * uKeepGain;
-          diffuseColor.rgb = mix(diffuseColor.rgb, kp, km.x * km.y * km.z * uKeepAmount);
+          vec3 kd = min(${V} - ${K}Min, ${K}Max - ${V});
+          vec3 km = smoothstep(vec3(0.0), vec3(${K}Feather), kd);
+          vec3 kp = mix(vec3(dot(keepPaint, vec3(0.2126, 0.7152, 0.0722))), keepPaint, ${K}Sat) * ${K}Gain;
+          diffuseColor.rgb = mix(diffuseColor.rgb, kp, km.x * km.y * km.z * ${K}Amount);
         }
         #include <color_fragment>`);
   };
   const prevKey = material.customProgramCacheKey.bind(material);
-  material.customProgramCacheKey = () => `keep-interior|${prevKey()}`;
+  material.customProgramCacheKey = () => `keep-interior${k}|${prevKey()}`;
   material.needsUpdate = true;
   return material;
 }
@@ -219,8 +224,10 @@ function interiorLight(spec) {
  *              outside the box receive no spot light (see gateInteriorLights)
  *   interiorBounce optional { box, color, irradiance, feather }: light the floodlit deck reflects
  *              onto the ceiling and walls inside the box (needs interiorLights + interiorLightGate)
- *   liveryKeep optional { box: [[x,y,z], [x,y,z]] (ship frame), gain, saturation, feather }: inside
- *              the box the texture keeps its own paint (scaled by gain) instead of the livery repaint
+ *   fixtures   optional [{ p: [x,y,z] (centre), size: [sx,sy,sz], rotZ (rad), color, radiance, mirrorX, mirrorOffset }]:
+ *              emissive light fixtures (hangar light strips), drawn as unlit boxes of that radiance
+ *   liveryKeep optional { box: [[x,y,z], [x,y,z]] (ship frame), gain, saturation, feather } or a list
+ *              of them: inside a box the texture keeps its own paint (scaled by gain) instead of the livery repaint
  */
 export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
   const model = gltf.scene.clone(true);
@@ -241,6 +248,8 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
   const upgraded = new Map();
   const creased = new Map();
   const detailSet = cfg.detail ? library[cfg.detail.set] : null;
+  // liveryKeep: one box or a list of boxes (the first is the interior box other features use)
+  const keeps = cfg.liveryKeep ? [].concat(cfg.liveryKeep) : [];
   let triangles = 0, meshes = 0;
   model.traverse((o) => {
     if (!o.isMesh) return;
@@ -271,14 +280,14 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
       if (over.color) mm.color = new THREE.Color(over.color);
       if (over.emissiveBoost && mm.emissiveMap) mm.emissiveIntensity = over.emissiveBoost;
       if (cfg.livery) applyLivery(mm, cfg.livery);
-      if (cfg.livery && cfg.liveryKeep) keepInterior(mm, cfg.liveryKeep, o.matrixWorld);
+      if (cfg.livery && cfg.liveryKeep) keeps.forEach((kp, k) => keepInterior(mm, kp, o.matrixWorld, k));
       if (gate) gateInteriorLights(mm, gate, o.matrixWorld, cfg.interiorBounce || null);
       if (detailSet) {
         // object-space units per metre: undo the model scale and any node scale
         const nodeScale = new THREE.Vector3(); o.getWorldScale(nodeScale);
         // an interior set (the hangar's deck plating) inside the interior box, if the ship has one
         const inner = cfg.detail.interior && library[cfg.detail.interior.set]
-          ? { ...cfg.detail.interior, set: library[cfg.detail.interior.set], box: cfg.detail.interior.box || cfg.liveryKeep?.box, toShip: o.matrixWorld } : null;
+          ? { ...cfg.detail.interior, set: library[cfg.detail.interior.set], box: cfg.detail.interior.box || keeps[0]?.box, toShip: o.matrixWorld } : null;
         addDetailLayer(mm, detailSet, { unitsPerMetre: 1 / nodeScale.x, ...cfg.detail, interior: inner?.box ? inner : null });
       }
       upgraded.set(keyOf(m), mm);
@@ -308,9 +317,11 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
   }));
   if (engines.length) {
     const disc = new THREE.CircleGeometry(1, 40);
-    const glow = new THREE.MeshBasicMaterial({ map: throatTexture(), color: new THREE.Color(1, 1, 1).multiplyScalar(cfg.throatGlow ?? 2.1), side: THREE.DoubleSide });
-    const liningMat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
-    const hot = new THREE.Color('#c4d0ff'), deep = new THREE.Color('#5d78d8');
+    const glow = new THREE.MeshBasicMaterial({ map: throatTexture(), color: new THREE.Color(1, 1, 1).multiplyScalar(cfg.throatGlow ?? 1.2), side: THREE.DoubleSide });
+    // FrontSide: the lathe below winds its front faces toward the axis, so only the inner wall
+    // seen through the mouth is drawn (DoubleSide added near and far walls and flooded the mouth)
+    const liningMat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.FrontSide, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
+    const hot = new THREE.Color('#d2d8f0'), deep = new THREE.Color('#5a6690'); // pale, not periwinkle
     const linings = new Map();
     // lining: a lathe through the lip (0.97 r), the measured wall points and the throat, in metres,
     // axis along +Z (z = 0 at the lip, -depth at the throat), vertex colours = the glow ramp
@@ -335,9 +346,12 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
       const pos = g.attributes.position;
       for (let i = 0; i < pos.count; i++) {
         const u = THREE.MathUtils.clamp(-pos.getZ(i) / e.depth, 0, 1); // 0 at the lip, 1 at the throat
-        // 0.42 at the throat, a third of that 0.75 of the way down, ~0 over the outer 40 %; the
-        // colour runs from white-blue at the throat to a deeper blue where the wall is dimmer
-        ramp.push(...deep.clone().lerp(hot, u * u).multiplyScalar(0.42 * u ** 4).toArray());
+        // 0.12 at the throat, a sixth of that 0.75 of the way down, dark over the outer 60 %: a
+        // graded glow near the throat only; white-blue at the throat, deeper blue where dimmer
+        // (the last 10 % fades back down: the steep converging end next to the throat is seen
+        // almost edge-on from a stern quarter and would draw a thin bright ring round the disc)
+        const endFade = 1 - 0.75 * THREE.MathUtils.smoothstep(u, 0.88, 1.0);
+        ramp.push(...deep.clone().lerp(hot, u * u).multiplyScalar(0.12 * u ** 6 * endFade).toArray());
       }
       g.setAttribute('color', new THREE.Float32BufferAttribute(ramp, 3));
       linings.set(key, g);
@@ -346,7 +360,7 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
     for (const e of engines) {
       const q = new THREE.Quaternion().setFromUnitVectors(new V3(0, 0, 1), e.dir);
       const m = new THREE.Mesh(disc, glow);
-      m.scale.setScalar(e.throat);
+      m.scale.setScalar(e.throat * 0.92); // the disc edge tucks behind the lining
       m.position.copy(e.p).addScaledVector(e.dir, -e.depth);
       m.quaternion.copy(q);
       m.name = 'nozzle-glow';
@@ -357,6 +371,27 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
       w.name = 'nozzle-lining';
       group.add(w);
     }
+  }
+  // light fixtures built into the hull (hangar light strips): emissive boxes, merged into one
+  // mesh per colour and radiance. They light nothing themselves (the floodlights and the bounce
+  // term do); they show where the light comes from
+  const fixtureGroups = new Map();
+  for (const f of cfg.fixtures || []) {
+    const list = f.mirrorX ? [f, { ...f, p: [-f.p[0] + (f.mirrorOffset ?? 0), f.p[1], f.p[2]] }] : [f];
+    for (const q of list) {
+      const key = `${q.color || '#fff4e6'}|${q.radiance ?? 2}`;
+      const g = new THREE.BoxGeometry(...q.size);
+      if (q.rotZ) g.rotateZ(q.rotZ);
+      g.translate(...q.p);
+      if (!fixtureGroups.has(key)) fixtureGroups.set(key, []);
+      fixtureGroups.get(key).push(g);
+    }
+  }
+  for (const [key, geoms] of fixtureGroups) {
+    const [color, radiance] = key.split('|');
+    const strip = new THREE.Mesh(mergeGeometries(geoms), new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(parseFloat(radiance)) }));
+    strip.name = 'light-strips';
+    group.add(strip);
   }
   const lights = (cfg.lights || []).flatMap((l) => {
     const one = { p: new V3(...l.p), color: l.color || 'white', size: l.size ?? 0.3, blink: l.blink || null };

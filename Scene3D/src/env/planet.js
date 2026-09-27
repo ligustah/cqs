@@ -202,7 +202,9 @@ vec3 oceanAlbedo(Terrain T) {
   float k = T.shelf;
   vec3 col = mix(DEEP, MID, smoothstep(-0.3, -0.06, T.h));
   col = mix(col, SHELF, smoothstep(-0.05 * k, -0.012 * k, T.h));
-  return mix(col, BANK, smoothstep(-0.018 * k, -0.002 * k, T.h) * smoothstep(0.55, 0.75, T.t) * smoothstep(0.6, 1.4, k));
+  col = mix(col, BANK, smoothstep(-0.018 * k, -0.002 * k, T.h) * smoothstep(0.55, 0.75, T.t) * smoothstep(0.6, 1.4, k));
+  // ~15 % darker and less saturated: navy open water, as ISS photos show it
+  return mix(vec3(dot(col, vec3(0.2126, 0.7152, 0.0722))), col, 0.85) * 0.85;
 }
 
 vec3 rotAxis(vec3 p, vec3 axis, float ang) {
@@ -472,6 +474,28 @@ void main() {
   float Rc = cloudRefl(tau);
   // multiple scattering evens out a cloud's lit and shaded faces: relief modulates about a third
   float lit = max(0.65 * muSc + 0.35 * dot(Ncb, L), 0.3 * muSc);
+  // self-shadowing: cloud a step toward the sun (~2.9 km along the sun's direction in the deck)
+  // that reflects more than the cloud here shades this side of it: the anti-sun flanks of cumulus
+  // and the lee sides of deck cells go grey, while a uniform deck (the same both ways) is
+  // unchanged. Plus billow lumps, where the pixel resolves them.
+  if (cd.x > 0.01) {
+    vec3 Lc = uWorldToCloud * L;
+    vec3 Lt = Lc - nc * dot(Lc, nc);
+    float lt = length(Lt);
+    if (lt > 1e-3) {
+      float cv0 = cView; cView = 0.0;
+      vec3 cs2 = cloudAt(normalize(nc + Lt / lt * 4.5e-4), fpc * 1.2, 8);
+      cView = cv0;
+      float dS = cs2.x * cloudRefl(cs2.y) - cd.x * cloudRefl(tau);
+      lit *= 1.0 - 0.6 * smoothstep(0.0, 0.3, dS);
+      // billows: cauliflower lumps (~1.3 km and ~0.5 km) shade the tops, most on thinner cloud and
+      // the rims; each octave only where the pixel resolves it
+      float thin = 1.0 - 0.6 * smoothstep(8.0, 30.0, tau);
+      float b1 = lodW(5000.0 * 1.3, fpc) * (0.5 + 0.5 * snoise(nc * 5000.0 + vec3(3.0, 1.0, 7.0)));
+      float b2 = lodW(12000.0 * 1.3, fpc) * (0.5 + 0.5 * snoise(nc * 12000.0 + vec3(9.0, 4.0, 2.0)));
+      lit *= 1.0 - thin * (0.2 * b1 + 0.14 * b2);
+    }
+  }
   // oblique views see the cells' sides too: broken fields close up toward the horizon
   cover = 1.0 - pow(1.0 - cover, mix(1.0, 3.0, pow(1.0 - muVc, 3.0)));
   float aC = cover * (1.0 - exp(-tau / muVc));

@@ -24,9 +24,9 @@ node tools/serve.mjs 8080      # any static server works
 
 | View | URL | What it shows |
 | --- | --- | --- |
-| Fleet in orbit | `#fleet` (default), `?mode=fleet&shot=hero\|high\|stern` | Carrier group above the planet: parked ships in the carrier's open bays, a launch and recovery cycle through the bow mouth, escorts, fighter patrols, the logistics convoy |
-| Scale lineup | `#lineup`, close-up `?lineup=small#lineup` | Scale chart: sterns aligned on a metre ruler (ticks every 10 m to 100 m, then every 100 m), one row per class labelled by callouts on the stern side, a 1-slot reference cube, a 1.8 m crew member, a neutral 10 m / 100 m grid, and an optional 50-fighter hangar load (`hangar=1`). The default view frames the whole 900 m chart; `lineup=small` frames only the small ships, the cube and the crew member, like the enlarged inset of a technical drawing (also linked from the toggles bar) |
-| Ship studio | `?mode=ship&ship=carrier&az=35&el=18&dist=1` | One ship, framed for inspection (`fighter`, `corvette`, `freighter`, `destroyer`, `carrier`; `variant=troops`; `parked=1` fills the carrier's hangar; `debug=1` shows axes, a metre grid, engine/light anchors and the hangar box) |
+| Fleet in orbit | `#fleet` (default), `?mode=fleet&shot=hero\|high\|stern` | Carrier group above the planet: parked ships in the carrier's open bays (21 fighters, 2 corvettes, a destroyer and a cargo ship; with the 3 fighters of the launch cycle that is exactly its 50-slot legal load), a launch and recovery cycle through the bow mouth, escorts, fighter patrols, the logistics convoy |
+| Scale lineup | `#lineup`, close-up `?lineup=small#lineup` | Scale chart: sterns aligned on a metre ruler (ticks every 10 m to 100 m, then every 100 m), one row per class labelled by callouts on the stern side, a 1-slot reference cube, a 1.8 m crew member, a neutral 10 m / 100 m grid, and an optional 50-fighter hangar load (`hangar=1`). The default view frames the whole 900 m chart, with a detail box in the empty grid that shows the `lineup=small` framing (a second render of the same scene); `lineup=small` frames only the small ships, the cube and the crew member, like the enlarged inset of a technical drawing (also linked from the toggles bar and the detail box) |
+| Ship studio | `?mode=ship&ship=carrier&az=35&el=18&dist=1` | One ship, framed for inspection (`fighter`, `corvette`, `freighter`, `destroyer`, `carrier`; `variant=troops`; the carrier's hangar is parked by default (`parked=0` empties it, `parked=1` aims the camera at it); `debug=1` shows axes, a metre grid, engine/light anchors and the hangar box). The camera fits the hull's own silhouette (sampled mesh vertices), not its bounding box. Stills are shot over the planet (`planet=0` for black; the interactive studio adds it with `planet`), and the studio key is placed relative to the camera, 85 degrees round from its azimuth and 30 degrees up, so every view splits into a lit and a shadowed plane (`sunaz=`/`sunel=` override, in degrees) |
 | Check | `?mode=check` | Builds every ship and reports envelopes, slots and hangar fits (used by `tools/scale-check.mjs`) |
 
 Controls: drag to orbit, scroll to zoom, double-click a ship to fly to it and
@@ -104,7 +104,11 @@ Each stage ran as a small multi-agent workflow: generators, independent judges
    the generation images stay light because light paint reconstructs better),
    adds the PATINA layer, nozzle glows, nav lights and anchors. One hard sun,
    an environment map of black space plus the planet, bloom only on the sun,
-   drive bells and lights; drives are a glowing bell with a short soft plume. The star
+   drive bells and lights; drives are a glowing bell with a short soft plume: a small
+   white-hot throat, a bell wall that stays dark except for a graded glow near the throat
+   (the lining is drawn on its inner face only), and a narrow tapered column 1.5-2.5 bell
+   radii long in profile that fades to a hint when seen end-on, so no view shows a lit disc
+   or a beam. The star
    field is capped for an exposure set on sunlit hulls (about 21 sRGB at most), so only a
    sparse scatter of faint points shows, as in a real photograph.
    The planet (`src/env/planet.js`, `atmosphere.js`) is procedural and at true scale: an
@@ -119,7 +123,14 @@ Each stage ran as a small multi-agent workflow: generators, independent judges
    camera), so it rakes the hulls and leaves deep shadows.
    The carrier's hangar floodlights (neutral white, ~5,800 K) cast no shadow maps, so they are light-linked
    to the hangar volume on its own hull (`interiorLightGate`): they light the deck
-   and the parked ships, never the hull outside or under the deck.
+   and the parked ships, never the hull outside or under the deck. Each lamp throws a pool
+   that falls off toward the bay backs; emissive light strips on the bay ceilings and the
+   frame posts show where the light comes from. The deck carries non-slot equipment at
+   human scale (`src/lib/park.js`): painted parking boxes round every parked ship and the
+   launch-lane edges, stacks of 20-ft containers and deck tractors with cart trains. Outside,
+   rows of 1 m lit ports every 6 m along the upper flank band and the island tiers, and
+   0.4 m amber running lights every 25 m along the deck edge and the sponsons, carry the
+   900 m scale into full-ship framings.
 
 Costs (fal list prices): about 58 nano-banana-pro images (13 of them 4K
 turnaround sheets) ≈ $10.70, 6 Tripo P2 models $7.20 (superseded), 11 Tripo
@@ -150,6 +161,12 @@ exactly `size × 3,200 m³`; each module is authored at real size, so this
 correction is under 2 %. Both civil variants take 4 slots, so the bulkier troop
 transport comes out shorter than the cargo ship.
 
+Crews (3 / 25 / 10 / 150 / ~9,000) are design estimates set from the fighter's
+crew of three and each hull's volume; the game's chassis population cost (`crew`)
+is an abstract unit and is not used for crews. The troop transport's 750 is the
+game's `groundTransport`, counted in ground-unit sizes (infantry 1, vehicles 3,
+aircraft 4), not people.
+
 The carrier is a 900 m, ~9,000-crew design (warp-capable, so never carried
 itself). Its hangar box is measured inside the generated hull's bay and must
 hold every legal full load — 50 fighters, 10 corvettes, 4 destroyers or 12
@@ -159,26 +176,28 @@ that the hangar box lies inside the hull:
 
 <!-- scale-table -->
 ```
-class      size  L x B x H (m)             volume    slots
-fighter    1     25.45 x 17.16 x 7.33      3200      1
-corvette   5     36.6 x 24.19 x 18.07      16000     5
-freighter  4     48.39 x 18.95 x 13.96     12800     4
-destroyer  12    71.68 x 22.04 x 24.31     38400     12
-carrier    -     900 x 405.55 x 319.3      116541493 -
+class             size  L x B x H (m)             volume    slots
+fighter           1     25.45 x 17.16 x 7.33      3200      1
+corvette          5     36.6 x 24.19 x 18.07      16000     5
+freighter         4     48.39 x 18.95 x 13.96     12800     4
+destroyer         12    71.68 x 22.04 x 24.31     38400     12
+carrier           -     900 x 405.55 x 319.3      116541493 -
+freighter:troops  4     42.86 x 19.03 x 15.7      12800     4
 
 carrier hangar (clear, L x B x H): 670 x 155.8 x 84.4 m
-  fighter    need 50  fits 1536 OK
-  corvette   need 10  fits 340  OK
-  destroyer  need 4   fits 162  OK
-  freighter  need 12  fits 465  OK
+  fighter           need 50  fits 1536 OK
+  corvette          need 10  fits 340  OK
+  destroyer         need 4   fits 162  OK
+  freighter         need 12  fits 465  OK
+  freighter:troops  need 12  fits 392  OK
   hangar box inside hull: 100.0% of 384 samples OK
-  smallest carrier whose hangar would still fit every load: 341.1 m (37.9 % of the
-  design; binding load: freighter, 11 of 12 fit 0.1 % smaller); built: 900 m
+  smallest carrier whose hangar would still fit every load: 342.0 m (38.0 % of the
+  design; binding load: freighter:troops, 11 of 12 fit 0.1 % smaller); built: 900 m
 ```
 
 The 900 m length is a design choice, not a hangar requirement: the game data alone
-would allow a carrier of about 341 m, where twelve civil ships are the load that
-stops fitting first.
+would allow a carrier of about 342 m, where twelve troop transports (the bulkier
+civil variant) are the load that stops fitting first.
 
 ## Layout
 

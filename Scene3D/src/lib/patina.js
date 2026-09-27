@@ -63,7 +63,7 @@ export function patinaMaterial(set, { color = '#ffffff', metalness = null, rough
  *  tile: metres per detail repeat
  *  interior: optional second set for an interior region (a hangar): { set, box: [[x,y,z],[x,y,z]]
  *    (ship frame), toShip (Matrix4: object -> ship frame), feather, tile, normalStrength,
- *    roughAmount, cavity, albedo }. Inside the box its normal, roughness and cavity replace the
+ *    roughAmount, cavity, albedo, seam, grime }. Inside the box its normal, roughness and cavity replace the
  *    hull set's, and its basecolor luminance modulates the albedo by `albedo` (the set's
  *    painted markings are desaturated: a plated deck, not a repeated decal).
  */
@@ -88,6 +88,7 @@ export function addDetailLayer(material, set, { unitsPerMetre = 1, tile = 4, nor
       uInBase: { value: im.basecolor || im.height },
       uInStrength: { value: inner.normalStrength ?? 1.6 }, uInRoughAmt: { value: im.roughness ? inner.roughAmount ?? 0.5 : 0 },
       uInCavity: { value: inner.cavity ?? 0.7 }, uInAlbedo: { value: im.basecolor ? inner.albedo ?? 0.5 : 0 },
+      uInSeam: { value: inner.seam ?? 1 }, uInGrime: { value: inner.grime ?? 1 },
       uInM: { value: inner.toShip.clone() },
       uInMin: { value: new THREE.Vector3(...inner.box[0]) }, uInMax: { value: new THREE.Vector3(...inner.box[1]) },
       uInFeather: { value: inner.feather ?? 1.5 },
@@ -107,7 +108,7 @@ export function addDetailLayer(material, set, { unitsPerMetre = 1, tile = 4, nor
       uniform sampler2D uDetNormal, uDetRough, uDetHeight;
       ${inner ? `
       varying vec3 vInPos;
-      uniform float uInScale, uInStrength, uInRoughAmt, uInCavity, uInAlbedo, uInFeather;
+      uniform float uInScale, uInStrength, uInRoughAmt, uInCavity, uInAlbedo, uInFeather, uInSeam, uInGrime;
       uniform vec3 uInMin, uInMax;
       uniform sampler2D uInNormal, uInRough, uInHeight, uInBase;
       float inMask() { vec3 d = min(vInPos - uInMin, uInMax - vInPos); vec3 m = smoothstep(vec3(0.0), vec3(uInFeather), d); return m.x * m.y * m.z; }
@@ -157,7 +158,9 @@ export function addDetailLayer(material, set, { unitsPerMetre = 1, tile = 4, nor
       // worn plates and grime in the seams at the tile scale, and the same set read 7.3x larger
       // for deck-panel tone, scuffed lanes and painted lines at the ~10-40 m scale that still
       // shows from a kilometre away (the 1.5 m plates average out there). Light lines are
-      // clamped: markings are scuffed grey paint, not a bright grid.
+      // clamped: markings are scuffed grey paint, not a bright grid. interior.seam scales the
+      // tile-scale contrast, interior.grime the amplitude of the large-scale tone (1 = the
+      // original 0.35 + 0.65 L mapping).
       frag = frag.replace('#include <color_fragment>', `#include <color_fragment>
         if (uInAlbedo > 0.0) {
           float mA = inMask();
@@ -165,7 +168,13 @@ export function addDetailLayer(material, set, { unitsPerMetre = 1, tile = 4, nor
           vec3 lw = vec3(0.2126, 0.7152, 0.0722);
           float l = dot(texture2D(uInBase, p.zy).rgb * w.x + texture2D(uInBase, p.xz).rgb * w.y + texture2D(uInBase, p.xy).rgb * w.z, lw);
           float L = dot(texture2D(uInBase, P.zy).rgb * w.x + texture2D(uInBase, P.xz).rgb * w.y + texture2D(uInBase, P.xy).rgb * w.z, lw);
-          float k = clamp(l / 0.17, 0.5, 1.2) * clamp(0.35 + 0.65 * L / 0.17, 0.55, 1.35);
+          // a third, much larger read of the same set (~0.2 km) for bay-to-bay grime and wear
+          vec3 Q = p * 0.041 + vec3(0.71, 0.43, 0.29);
+          float G = dot(texture2D(uInBase, Q.zy).rgb * w.x + texture2D(uInBase, Q.xz).rgb * w.y + texture2D(uInBase, Q.xy).rgb * w.z, lw);
+          float fine = mix(1.0, clamp(l / 0.17, 0.5, 1.2), uInSeam);           // tile-scale plate tone (seam contrast)
+          float big = clamp(1.0 + uInGrime * 0.65 * (L / 0.17 - 1.0), 0.4, 1.5); // tyre scuffs, lanes, grime (~10-40 m)
+          float huge = clamp(1.0 + uInGrime * 0.35 * (G / 0.17 - 1.0), 0.6, 1.3); // bay-scale wear
+          float k = fine * big * huge;
           diffuseColor.rgb *= mix(1.0, k, uInAlbedo * mA);
         }`);
     }
