@@ -176,13 +176,15 @@ that the hangar box lies inside the hull:
 
 <!-- scale-table -->
 ```
-class             size  L x B x H (m)             volume    slots
-fighter           1     25.45 x 17.16 x 7.33      3200      1
-corvette          5     36.6 x 24.19 x 18.07      16000     5
-freighter         4     48.39 x 18.95 x 13.96     12800     4
-destroyer         12    71.68 x 22.04 x 24.31     38400     12
-carrier           -     900 x 405.55 x 319.3      116541493 -
-freighter:troops  4     42.86 x 19.03 x 15.7      12800     4
+slot volume: 3200 m^3
+
+class             size  L x B x H (m)             volume    slots   design scale  tris     draws
+fighter           1     25.45 x 17.16 x 7.33      3200      1       1             76315    1
+corvette          5     36.6 x 24.19 x 18.07      16000     5       1.0001        89780    1
+freighter         4     48.39 x 18.95 x 13.96     12800     4       0.9998        111580   1
+destroyer         12    71.68 x 22.04 x 24.31     38400     12      0.9997        144726   1
+carrier           -     900 x 405.55 x 319.3      116541493 -       1             231273   1
+freighter:troops  4     42.86 x 19.03 x 15.7      12800     4       0.9991        111567   1
 
 carrier hangar (clear, L x B x H): 670 x 155.8 x 84.4 m
   fighter           need 50  fits 1536 OK
@@ -191,8 +193,10 @@ carrier hangar (clear, L x B x H): 670 x 155.8 x 84.4 m
   freighter         need 12  fits 465  OK
   freighter:troops  need 12  fits 392  OK
   hangar box inside hull: 100.0% of 384 samples OK
-  smallest carrier whose hangar would still fit every load: 342.0 m (38.0 % of the
-  design; binding load: freighter:troops, 11 of 12 fit 0.1 % smaller); built: 900 m
+  capacity 50 slots (UnitEnum.CARRIER spaceTransport); loads: 50 fighter x 1, 10 corvette x 5, 4 destroyer x 12, 12 freighter x 4, 12 freighter:troops x 4
+  smallest carrier whose hangar would still fit every load: 342.0 m (38.0 % of the design; binding load: freighter:troops, 11 of 12 fit 0.1 % smaller); built: 900 m (design length)
+
+SCALE CHECK PASSED
 ```
 
 The 900 m length is a design choice, not a hangar requirement: the game data alone

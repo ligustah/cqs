@@ -26,7 +26,9 @@ export const meta = {
 
 const STROBE = { period: 1.3, duty: 0.1 };
 const MUZZLE_RIM = { color: '#b4c2dc', radiance: 0.07 };
-const CORNER_BELL = { depth: 1.43, throat: 0.96, wall: [[0.74, 1.4], [1.11, 1.36], [1.4, 1.34]] };
+// the glow sits just aft of the central plug (not at the throat plate behind it), so the plug
+// does not show as a dark disc in the middle of the glow
+const CORNER_BELL = { depth: 0.55, throat: 1.2, wall: [[0.3, 1.42]] };
 
 export const asset = {
   glb: './assets/ships/destroyer.glb', generator: 'tripo3d/h3.1/multiview-to-3d',
