@@ -78,23 +78,24 @@ function openingTest(pts, o, margin = 3) {
 }
 
 /**
- * Default loadout (the fleet, the ship studio and the scale chart all park this one): a
- * destroyer, 2 corvettes, a cargo ship and 21 fighters parked three abreast in one row per bay
- * side, centred between the frames (a single file along the sill would hide behind the sill and
- * the frames from any elevated view; a row abreast shows the inboard two in plan). With the 3
- * fighters of the launch and recovery cycle (lib/launch.js, always somewhere on the carrier's
- * track) that is 12 + 10 + 4 + 24 = 50 slots: exactly the carrier's legal load
- * (UnitEnum CARRIER spaceTransport = 50), never more.
+ * Default loadout (the fleet, the ship studio and the scale chart all park this one). At fleet
+ * scale (1 slot = 70,000 m^3) the 900 m carrier's bay is sized by its capacity, so a legal load
+ * fills it: see DEFAULT_LOADOUT. Never more than the carrier's 50 slots (UnitEnum CARRIER
+ * spaceTransport = 50), counting the fighters of the launch and recovery cycle (lib/launch.js).
  * Items: { cls, variant?, count = 1, zones: [name...], side: 'port'|'starboard'|'both', perSide?, perRow? }
  *  perSide: at most this many ships of the item per zone side (spreads a class over several bays);
  *  perRow: at most this many ships abreast (1 = a single file along the outboard edge).
  */
 export const LAUNCH_CYCLE_FIGHTERS = 3;
 export const DEFAULT_LOADOUT = [
-  { cls: 'destroyer', zones: ['bow'], side: 'starboard' },
-  { cls: 'corvette', count: 2, zones: ['bay1'], side: 'both', perSide: 1 },
-  { cls: 'freighter', variant: 'cargo', zones: ['aft'], side: 'starboard' },
-  { cls: 'fighter', count: 24 - LAUNCH_CYCLE_FIGHTERS, zones: ['bay2', 'bay3', 'bay4', 'bay5'], side: 'both', perSide: 3, perRow: 3 },
+  // at fleet scale the bay is sized by the capacity, so a legal load fills the deck: a destroyer
+  // and a civil ship nose to tail on each side of the launch lane across bays 5-2, and 2 fighters
+  // in the bow section. With the 3 launch-cycle fighters: 24 + 8 + 2 + 3 = 37 of 50 slots. (The
+  // corvettes' 68 m beam is wider than a deck half beside the 46 m lane, so they fly escort.)
+  { cls: 'destroyer', count: 2, zones: ['long'], side: 'both', perSide: 1 },
+  { cls: 'freighter', variant: 'cargo', zones: ['long'], side: 'port' },
+  { cls: 'freighter', variant: 'troops', zones: ['long'], side: 'starboard' },
+  { cls: 'fighter', count: 2, zones: ['bow'], side: 'both', perSide: 1 },
 ];
 
 /**
@@ -217,7 +218,7 @@ export function parkInHangar(carrierGroup, { buildShip, palette, attachEffects, 
     }
   }
   if (dress) out.dressing = dressHangar(carrierGroup, out.ships, deck, { clearance, k });
-  if (out.skipped.length) console.warn('[park] not everything fitted:', out.skipped);
+  if (out.skipped.length) console.warn('[park] not everything fitted:', out.skipped.map((q) => `${q.cls}${q.variant ? ':' + q.variant : ''} ${q.placed}/${q.count ?? 1}`).join(', '));
   return out;
 }
 

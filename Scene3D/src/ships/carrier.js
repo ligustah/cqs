@@ -216,9 +216,12 @@ export const asset = {
     hangar: { p: [0.9, -48.7, 80], size: [155.8, 84.4, 670] },
     hangarMouth: { p: [0.9, -48.7, 418], dir: [0, 0, 1] },
     hangarDeck: {
-      lane: [-22.1, 23.9], // 46 m launch lane on the centreline, clear to the mouth
+      lane: [-24, 26], // 50 m launch lane on the centreline, clear to the mouth (a fleet-scale fighter is 48 m wide)
       zones: {
         aft: { x: [-92.6, 94.4], z: [-255.5, -189], y: -92.45 },
+        // bays 5-2 as one run of deck: the deck is continuous under the frame rings, so ships
+        // longer than one bay (destroyers, corvettes at fleet scale) park across the frames
+        long: { x: [-95.1, 96.4], z: [-164.6, 178.1], y: -96.35 },
         bay5: { x: [-95.1, 96.4], z: [-164.6, -98.2], y: -96.35 },
         bay4: { x: [-95.1, 96.4], z: [-73.4, -5.4], y: -96.36 },
         bay3: { x: [-95.1, 96.4], z: [19.5, 87.1], y: -96.36 },

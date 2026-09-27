@@ -154,54 +154,62 @@ cover the summed sizes of all non-warp ships:
 
 The scene reads *size* as a ship's parking envelope in a hangar: the
 axis-aligned bounding box, length × beam × height. A destroyer therefore takes
-12× a fighter's **volume**, not 12× its length. One slot is 3,200 m³, set from
-the smallest class: a fighter with a crew of three is about 25 m long.
-`src/lib/scale.js` scales every ship uniformly so that its envelope volume is
-exactly `size × 3,200 m³`; each module is authored at real size, so this
-correction is under 2 %. Both civil variants take 4 slots, so the bulkier troop
-transport comes out shorter than the cargo ship.
+12× a fighter's **volume**, not 12× its length. The slot volume is set by the
+carrier: its 900 m hull and the hangar bay measured inside it are fixed, and a slot
+is the largest volume at which every legal full load (50 fighters, 10 corvettes,
+4 destroyers or 12 civil ships, 2 m clearance) still fits that bay. That is
+70,000 m³: twelve troop transports exactly fill it, so the carrier's 50-slot
+capacity is what sizes its hangar (scale-check: the carrier could not be more than
+0.8 % shorter). `src/lib/scale.js` scales every ship uniformly so that its envelope
+volume is exactly `size × 70,000 m³`; each module is authored at real size, so
+this correction is under 2 %. Both civil variants take 4 slots, so the bulkier
+troop transport comes out shorter than the cargo ship.
 
-Crews (3 / 25 / 10 / 150 / ~9,000) are design estimates set from the fighter's
-crew of three and each hull's volume; the game's chassis population cost (`crew`)
-is an abstract unit and is not used for crews. The troop transport's 750 is the
+| Class | Length | Crew |
+| --- | --- | --- |
+| Fighter | 71 m | about 12 |
+| Corvette | 102 m | about 90 |
+| Civil ship (cargo / troops) | 135 m / 120 m | about 20 (troops: ground-unit capacity 750) |
+| Destroyer | 200 m | about 450 |
+| Carrier | 900 m | about 9,000 |
+
+Crews are design estimates from each hull's volume; the game's chassis population
+cost (`crew`) is an abstract unit and is not used. The troop transport's 750 is the
 game's `groundTransport`, counted in ground-unit sizes (infantry 1, vehicles 3,
-aircraft 4), not people.
+aircraft 4), not people. Shared details stay at human scale on every hull (0.4 m
+nav lights, 6 m plating repeat, the 1.8 m crew member in the lineup).
 
-The carrier is a 900 m, ~9,000-crew design (warp-capable, so never carried
-itself). Its hangar box is measured inside the generated hull's bay and must
-hold every legal full load — 50 fighters, 10 corvettes, 4 destroyers or 12
-civil ships, with 2 m clearance. `node tools/scale-check.mjs` verifies all of
-this against the geometry that is actually rendered, including a ray-cast test
-that the hangar box lies inside the hull:
+The carrier is warp-capable, so never carried itself. In the fleet its bay holds a
+legal load (two destroyers and two civil ships nose to tail across the frames, two
+fighters in the bow section, three fighters on the launch and recovery cycle: 37
+of 50 slots). `node tools/scale-check.mjs` verifies all of this against the
+geometry that is actually rendered, including a ray-cast test that the hangar box
+lies inside the hull:
 
 <!-- scale-table -->
 ```
-slot volume: 3200 m^3
+slot volume: 70000 m^3
 
 class             size  L x B x H (m)             volume    slots   design scale  tris     draws
-fighter           1     25.45 x 17.16 x 7.33      3200      1       1             76315    1
-corvette          5     36.6 x 24.19 x 18.07      16000     5       1.0001        89780    1
-freighter         4     48.39 x 18.95 x 13.96     12800     4       0.9998        111580   1
-destroyer         12    71.68 x 22.04 x 24.31     38400     12      0.9997        144726   1
+fighter           1     71.18 x 47.99 x 20.49     70000     1       1             76315    1
+corvette          5     102.37 x 67.65 x 50.54    350000    5       1.0001        89780    1
+freighter         4     135.34 x 52.99 x 39.04    280000    4       0.9998        111580   1
+destroyer         12    200.47 x 61.63 x 67.99    840000    12      0.9997        144726   1
 carrier           -     900 x 405.55 x 319.3      116541493 -       1             231273   1
-freighter:troops  4     42.86 x 19.03 x 15.7      12800     4       0.9991        111567   1
+freighter:troops  4     119.87 x 53.21 x 43.9     280000    4       0.9991        111567   1
 
 carrier hangar (clear, L x B x H): 670 x 155.8 x 84.4 m
-  fighter           need 50  fits 1536 OK
-  corvette          need 10  fits 340  OK
-  destroyer         need 4   fits 162  OK
-  freighter         need 12  fits 465  OK
-  freighter:troops  need 12  fits 392  OK
+  fighter           need 50  fits 81   OK
+  corvette          need 10  fits 12   OK
+  destroyer         need 4   fits 6    OK
+  freighter         need 12  fits 24   OK
+  freighter:troops  need 12  fits 12   OK
   hangar box inside hull: 100.0% of 384 samples OK
   capacity 50 slots (UnitEnum.CARRIER spaceTransport); loads: 50 fighter x 1, 10 corvette x 5, 4 destroyer x 12, 12 freighter x 4, 12 freighter:troops x 4
-  smallest carrier whose hangar would still fit every load: 342.0 m (38.0 % of the design; binding load: freighter:troops, 11 of 12 fit 0.1 % smaller); built: 900 m (design length)
+  smallest carrier whose hangar would still fit every load: 892.8 m (99.2 % of the design; binding load: freighter:troops, 11 of 12 fit 0.1 % smaller); built: 900 m (design length)
 
 SCALE CHECK PASSED
 ```
-
-The 900 m length is a design choice, not a hangar requirement: the game data alone
-would allow a carrier of about 342 m, where twelve troop transports (the bulkier
-civil variant) are the load that stops fitting first.
 
 ## Layout
 

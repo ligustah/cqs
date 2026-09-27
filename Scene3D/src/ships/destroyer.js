@@ -1,9 +1,9 @@
 // Destroyer DD-12 — generated with fal (Tripo H3.1 multiview, see pipeline/fal-pipeline.json).
 // Anchors were measured on the GLB in the centred ship frame (rotate -> length -> centre),
-// metres, bow +Z, dorsal +Y, port +X, fleet scale 1 slot = 3,200 m^3.
+// metres, bow +Z, dorsal +Y, port +X, fleet scale 1 slot = 70,000 m^3.
 // - rotate [0,-90,0] puts the bow block (railgun muzzle) at +Z and the command tower up; the
 //   hull number DD-12 reads on the port flank (+X) as in the concept's front-left view.
-// - length 71.7 m gives an envelope of 22.04 x 24.32 x 71.70 m = 38,430 m^3 (12 slots), so the
+// - length 200.5 m gives an envelope of 61.6 x 68.0 x 200.5 m = 840,000 m^3 (12 slots), so the
 //   class volume correction is 0.9997. The beam is set by the flank plates of the engine
 //   section (x = +-11.02), the height by the tower's antenna (y = +12.16) and the keel plate
 //   under the engine section (y = -12.04; the envelope bottom -12.16 is a keel fitting).
@@ -20,7 +20,7 @@
 //   is the centre of that bore opening. `mouth` is the shroud mouth on the same axis.
 // - Lights sit ~6 cm proud of the surface they are mounted on.
 export const meta = {
-  name: 'Bastion-class destroyer', designation: 'DD-12', crew: 'about 150',
+  name: 'Bastion-class destroyer', designation: 'DD-12', crew: 'about 450',
   blurb: 'Heavy line destroyer built around a massive spinal railgun: an armoured bow block with the recessed muzzle, an exposed rail channel with capacitor banks along the spine, a stepped command tower, two small turrets, radiator panels on the flanks of the engine section and five fusion bells in the stern.',
 };
 
@@ -28,13 +28,13 @@ const STROBE = { period: 1.3, duty: 0.1 };
 const MUZZLE_RIM = { color: '#b4c2dc', radiance: 0.07 };
 // the glow sits just aft of the central plug (not at the throat plate behind it), so the plug
 // does not show as a dark disc in the middle of the glow
-const CORNER_BELL = { depth: 0.55, throat: 1.2, wall: [[0.3, 1.42]] };
+const CORNER_BELL = { depth: 1.538, throat: 3.356, wall: [[0.839, 3.971]] };
 
 export const asset = {
   glb: './assets/ships/destroyer.glb', generator: 'tripo3d/h3.1/multiview-to-3d',
   concept: './assets/concepts/destroyer.webp', beauty: './assets/concepts/destroyer-beauty.webp',
   rotate: [0, -90, 0],
-  length: 71.7, // 71.7 x 22.0 x 24.3 m -> 38,430 m^3 = 12 slots
+  length: 200.525, // 200.5 x 61.6 x 68.0 m -> 840,000 m^3 = 12 slots
   livery: 'dark',
   crease: 35, // chamfered armour blocks and the tower shade flat; bells, pipes and the dome stay smooth
   detail: { set: 'hull', tile: 6, normalStrength: 1.0, roughAmount: 0.5, cavity: 0.4 },
@@ -57,36 +57,36 @@ export const asset = {
   // diagonals, about the bore axis at y -5.41), so the gun's mouth reads as an octagon even
   // when the bow face is in shadow. Radiance 0.07: a faint glint in the shadow, not a lamp.
   fixtures: [
-    { ...MUZZLE_RIM, p: [3.43, -5.233, 35.45], size: [2.32, 0.04, 0.12], rotZ: 1.5708 },
-    { ...MUZZLE_RIM, p: [2.905, -3.535, 35.45], size: [1.48, 0.04, 0.12], rotZ: 2.3562 },
-    { ...MUZZLE_RIM, p: [-0.007, -3.01, 35.45], size: [4.64, 0.04, 0.12], rotZ: 3.1416 },
-    { ...MUZZLE_RIM, p: [-2.917, -3.533, 35.45], size: [1.48, 0.04, 0.12], rotZ: -2.3562 },
-    { ...MUZZLE_RIM, p: [-3.44, -5.226, 35.45], size: [2.31, 0.04, 0.12], rotZ: -1.5708 },
-    { ...MUZZLE_RIM, p: [-2.838, -6.998, 35.45], size: [1.7, 0.04, 0.12], rotZ: -0.7854 },
-    { ...MUZZLE_RIM, p: [-0.0, -7.6, 35.45], size: [4.35, 0.04, 0.12], rotZ: -0.0 },
-    { ...MUZZLE_RIM, p: [2.833, -7.003, 35.45], size: [1.69, 0.04, 0.12], rotZ: 0.7854 },
+    { ...MUZZLE_RIM, p: [9.593, -14.635, 99.144], size: [2.32, 0.04, 0.12], rotZ: 1.5708 },
+    { ...MUZZLE_RIM, p: [8.124, -9.886, 99.144], size: [1.48, 0.04, 0.12], rotZ: 2.3562 },
+    { ...MUZZLE_RIM, p: [-0.02, -8.418, 99.144], size: [4.64, 0.04, 0.12], rotZ: 3.1416 },
+    { ...MUZZLE_RIM, p: [-8.158, -9.881, 99.144], size: [1.48, 0.04, 0.12], rotZ: -2.3562 },
+    { ...MUZZLE_RIM, p: [-9.621, -14.616, 99.144], size: [2.31, 0.04, 0.12], rotZ: -1.5708 },
+    { ...MUZZLE_RIM, p: [-7.937, -19.571, 99.144], size: [1.7, 0.04, 0.12], rotZ: -0.7854 },
+    { ...MUZZLE_RIM, p: [0, -21.255, 99.144], size: [4.35, 0.04, 0.12], rotZ: -0.0 },
+    { ...MUZZLE_RIM, p: [7.923, -19.585, 99.144], size: [1.69, 0.04, 0.12], rotZ: 0.7854 },
   ],
   engines: [
     // corner bells, upper and lower pair; exit plane at the lip's aft face (z -35.85 .. -35.75)
     // (depth = the flat throat plate, ray-cast at 0.97 r; the hot throat is its inner 0.65 r)
-    { p: [5.595, -3.32, -35.75], radius: 1.48, mirrorX: true, ...CORNER_BELL },
-    { p: [5.595, -7.805, -35.75], radius: 1.48, mirrorX: true, ...CORNER_BELL },
+    { p: [15.648, -9.285, -99.983], radius: 4.139, mirrorX: true, ...CORNER_BELL },
+    { p: [15.648, -21.828, -99.983], radius: 4.139, mirrorX: true, ...CORNER_BELL },
     // centre bell, set 3 m forward between the corner bells
-    { p: [0, -5.64, -32.85], radius: 2.05, depth: 1.2, throat: 1.4, wall: [[0.5, 2.0], [1.0, 1.98], [1.18, 1.96]] },
+    { p: [0, -15.774, -91.872], radius: 5.733, depth: 3.356, throat: 3.915, wall: [[1.398, 5.593], [2.797, 5.538], [3.3, 5.482]] },
   ],
   lights: [
     // steady sidelights on the flat flank band of the engine section (beam extremity, plate at
     // x = +-10.96), at its forward end so they read from ahead and abeam
-    { p: [11.02, -5.7, -16.0], color: 'red', size: 0.4 },
-    { p: [-11.02, -5.7, -16.0], color: 'green', size: 0.4 },
+    { p: [30.82, -15.941, -44.748], color: 'red', size: 0.4 },
+    { p: [-30.82, -15.941, -44.748], color: 'green', size: 0.4 },
     // anti-collision strobes, alternating: command tower roof ahead of the dome and masts
     // (roof y 6.11) and the keel plate under the engine section (y -12.04)
-    { p: [0, 6.17, -15.0], color: 'white', size: 0.4, blink: { ...STROBE } },
-    { p: [0, -12.10, -18.0], color: 'white', size: 0.4, blink: { ...STROBE, phase: 0.5 } },
+    { p: [0, 17.256, -41.951], color: 'white', size: 0.4, blink: { ...STROBE } },
+    { p: [0, -33.84, -50.341], color: 'white', size: 0.4, blink: { ...STROBE, phase: 0.5 } },
     // steady stern light on the stern plate above the centre bell (plate z -30.35)
-    { p: [0, -1.5, -30.41], color: 'white', size: 0.4 },
+    { p: [0, -4.195, -85.048], color: 'white', size: 0.4 },
   ],
   anchors: {
-    railgunMuzzle: { p: [0, -5.41, 32.85], dir: [0, 0, 1], radius: 0.95, mouth: [0, -5.41, 35.85] },
+    railgunMuzzle: { p: [0, -15.13, 91.872], dir: [0, 0, 1], radius: 2.657, mouth: [0, -5.41, 35.85] },
   },
 };

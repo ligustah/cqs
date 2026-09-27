@@ -24,7 +24,7 @@ const V = (x, y, z) => new THREE.Vector3(x, y, z);
 // park): 21 fighters three abreast in one row per bay side, 2 corvettes, a destroyer and a cargo
 // ship on the deck. The 3 fighters of the launch and recovery cycle below belong to the same
 // carrier (they are recovered into it and wait below the deck between sorties), so the carrier
-// carries 21 + 3 = 24 fighters: 24 + 10 + 12 + 4 = 50 slots, exactly its legal load
+// carries the park.js load: 24 + 8 + 2 + 3 launch-cycle fighters = 37 of its 50 slots
 // (UnitEnum CARRIER spaceTransport = 50).
 const HANGAR_LOADOUT = DEFAULT_LOADOUT;
 

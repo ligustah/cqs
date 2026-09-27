@@ -320,7 +320,7 @@ function start() {
       const slots = spec.size ? `${spec.size} slot${spec.size > 1 ? 's' : ''}` : `carries ${spec.capacity} slots`;
       chart.callout(new THREE.Vector3(-1, H / 2, rowZ), variant === 'troops' ? `${spec.label} (troops)` : spec.label, `${L.toFixed(1)} m · ${slots}`);
     });
-    // reference cube: one hangar slot (3,200 m^3) in the front row, stern face on the zero line
+    // reference cube: one hangar slot (SLOT_VOLUME m^3) in the front row, stern face on the zero line
     const cube = new THREE.Mesh(new THREE.BoxGeometry(side, side, side), new THREE.MeshBasicMaterial({ color: '#d9dde3', transparent: true, opacity: 0.07, depthWrite: false }));
     cube.add(new THREE.LineSegments(new THREE.EdgesGeometry(cube.geometry), new THREE.LineBasicMaterial({ color: '#c3c8d0', transparent: true, opacity: 0.75 })));
     cube.position.set(side / 2, side / 2, 0);

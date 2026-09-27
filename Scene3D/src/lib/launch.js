@@ -118,8 +118,10 @@ export function launchCycle(carrier, fighter, { period = 105 } = {}) {
   const bow = deck.zones.bow;
   const mid = (deck.lane[0] + deck.lane[1]) / 2, half = (deck.lane[1] - deck.lane[0]) / 2;
   // launch on the starboard half of the lane (the climb-out turns to starboard, away from the
-  // inbound flow), recover on the port half (wingtips ~6 m apart)
-  const xL = mid - half / 2, xR = mid + half / 2;
+  // inbound flow), recover on the port half; when a fighter is wider than half the lane (fleet
+  // scale: a 48 m beam in a 50 m lane) both use the centreline, one fighter at a time
+  const off = Math.max(0, Math.min(half / 2, half - fighter.x / 2 - 1));
+  const xL = mid - off, xR = mid + off;
   const yDeck = bow.y + 0.3 + fighter.y / 2;          // envelope centre, standing on the bow-section deck
   const zLift = bow.z[0] + 0.38 * (bow.z[1] - bow.z[0]); // ~330 m: the lifts sit in the enclosed bow section
   const zEdge = bow.z[1];                              // forward edge of the deck (the mouth lip is just ahead)
