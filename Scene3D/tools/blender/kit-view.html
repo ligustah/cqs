@@ -1,0 +1,245 @@
+<!doctype html>
+<!--
+  Parts-kit viewer / contact sheet (tools/blender/sheet.mjs drives it headless).
+    tools/blender/kit-view.html?files=door,turret-M&livery=dark&az=28&el=18&w=1600&h=900&human=1&labels=1
+  files   comma list of GLB names in dir (default assets/parts-blender), or "all" (parts.json order)
+  dir     GLB folder relative to Scene3D (default assets/parts-blender)
+  livery  dark | civil | none (the runtime repaint from src/lib/livery.js)
+  layout  row (true relative size, parts side by side on one ground line) | grid (each part framed
+          in its own cell, own scale; cols=)
+  Parts are shown in their mount frame: hull-top parts (+Z out = up) stand on the ground, wall parts
+  (door, port, ...) stand upright facing the camera, bells point their exhaust at the camera.
+  Sets window.__ready (or window.__error).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Parts Kit View</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #101216; font-family: 'DejaVu Sans', sans-serif; }
+  canvas { display: block; }
+  .lab { position: absolute; transform: translate(-50%, -100%); color: #d8dce2; font-size: 13px; white-space: nowrap; text-align: center; text-shadow: 0 1px 2px #000; }
+  .lab b { font-size: 14px; color: #fff; }
+  .lab i { font-style: normal; color: #9aa3ae; font-size: 11px; }
+  #title { position: absolute; left: 14px; top: 10px; color: #eef0f3; font-size: 18px; font-weight: 700; }
+  #sub { position: absolute; left: 14px; top: 34px; color: #9aa3ae; font-size: 13px; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="title"></div><div id="sub"></div>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { applyLivery } from '../../src/lib/livery.js';
+
+window.__ready = false; window.__error = null;
+addEventListener('error', (e) => { window.__error = String(e.message); });
+addEventListener('unhandledrejection', (e) => { window.__error = String(e.reason?.stack || e.reason); });
+const q = new URLSearchParams(location.search);
+const num = (k, d) => { const v = parseFloat(q.get(k)); return Number.isFinite(v) ? v : d; };
+const W = num('w', innerWidth), H = num('h', innerHeight);
+const DIR = q.get('dir') || 'assets/parts-blender';
+const LIVERY = q.get('livery') || 'dark';
+const LAYOUT = q.get('layout') || 'row';
+const AZ = num('az', 28) * Math.PI / 180, EL = num('el', 18) * Math.PI / 180;
+const DEG = Math.PI / 180;
+document.getElementById('title').textContent = q.get('title') || '';
+document.getElementById('sub').textContent = q.get('sub') || '';
+
+// how each family is displayed: 'roof' (+Z out of hull = up), 'wall' (+Z toward the viewer), 'bell'
+const WALL = new Set(['door', 'airlock', 'port', 'pane', 'cargoHatch', 'ladder', 'torpedoDoor', 'vent', 'navlight', 'radiator']);
+const BELL = new Set(['bell', 'engineHousing']);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H);
+renderer.toneMapping = THREE.AgXToneMapping; renderer.toneMappingExposure = num('exposure', LIVERY === 'none' ? 1.0 : 1.6);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(q.get('bg') || (LIVERY === 'none' ? '#c9ccd1' : '#15181d'));
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = num('env', LIVERY === 'none' ? 0.5 : 0.35);
+const sun = new THREE.DirectionalLight(0xfff4e8, num('sun', 3.2));
+sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096); sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.02;
+scene.add(sun, sun.target);
+scene.add(new THREE.HemisphereLight(0xb8c4d8, 0x303236, 0.25));
+
+function throatTexture() {
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d');
+  const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  grd.addColorStop(0, '#ffffff'); grd.addColorStop(0.1, '#eef1ff'); grd.addColorStop(0.2, '#aab5e0');
+  grd.addColorStop(0.3, '#6a76a8'); grd.addColorStop(0.42, '#3a4470'); grd.addColorStop(0.56, '#1f2645');
+  grd.addColorStop(0.72, '#10142a'); grd.addColorStop(0.88, '#070913'); grd.addColorStop(1, '#030409');
+  g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const glowMat = new THREE.MeshBasicMaterial({ map: throatTexture(), color: new THREE.Color(1.2, 1.2, 1.2), side: THREE.DoubleSide });
+const liningMat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.FrontSide, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
+function addGlow(root, e) {
+  const p = new THREE.Vector3(...e.p);
+  const m = new THREE.Mesh(new THREE.CircleGeometry(1, 40), glowMat);
+  m.scale.setScalar(e.throat * 0.92); m.position.copy(p).add(new THREE.Vector3(0, 0, e.depth)); m.rotation.y = Math.PI;
+  root.add(m);
+  const prof = [[0, e.radius * 0.95], ...e.wall.filter(([d]) => d > 0 && d < e.depth).map(([d, r]) => [d, r * 0.96]), [e.depth, e.throat]];
+  const pts = [];
+  for (let i = 0; i <= 24; i++) {
+    const d = (i / 24) * e.depth; let k = 1; while (k < prof.length - 1 && prof[k][0] < d) k++;
+    const [d0, r0] = prof[k - 1], [d1, r1] = prof[k];
+    pts.push(new THREE.Vector2(r0 + (r1 - r0) * THREE.MathUtils.clamp((d - d0) / Math.max(d1 - d0, 1e-6), 0, 1), -d));
+  }
+  const g = new THREE.LatheGeometry(pts, 40); g.rotateX(Math.PI / 2);
+  const hot = new THREE.Color('#d2d8f0'), deep = new THREE.Color('#5a6690'), ramp = [], pos = g.attributes.position;
+  for (let i = 0; i < pos.count; i++) {
+    const u = THREE.MathUtils.clamp(-pos.getZ(i) / e.depth, 0, 1), endFade = 1 - 0.75 * THREE.MathUtils.smoothstep(u, 0.88, 1.0);
+    ramp.push(...deep.clone().lerp(hot, u * u).multiplyScalar(0.12 * u ** 6 * endFade).toArray());
+  }
+  g.setAttribute('color', new THREE.Float32BufferAttribute(ramp, 3));
+  // the lathe has the throat at z = -depth; glbship turns it onto dir = -Z (a half turn), which puts
+  // the throat at +depth, as in the bell frame
+  const w = new THREE.Mesh(g, liningMat); w.position.copy(p);
+  w.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), new THREE.Vector3(...(e.dir || [0, 0, -1])));
+  root.add(w);
+}
+const loader = new GLTFLoader(); loader.setMeshoptDecoder(MeshoptDecoder);
+const man = await (await fetch(`../../${DIR}/parts.json`)).json();
+let files = (q.get('files') || 'all').split(',');
+if (files[0] === 'all') files = Object.keys(man.parts);
+
+const items = [];
+for (const f of files) {
+  const info = man.parts[f] || { part: f };
+  const gltf = await loader.loadAsync(`../../${DIR}/${f}.glb`);
+  const root = gltf.scene;
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    o.castShadow = o.receiveShadow = true;
+    if (LIVERY !== 'none') o.material = applyLivery(o.material.clone(), LIVERY);
+    for (const t of [o.material.map, o.material.normalMap, o.material.roughnessMap]) if (t) t.anisotropy = 8;
+  });
+  // drive bells: the runtime throat glow and lining (same construction as src/lib/glbship.js), at the
+  // manifest's depth / throat / wall, so the documented numbers can be checked against the mesh
+  if (q.get('glow') !== '0') for (const e of info.engines || (info.engine ? [info.engine] : [])) addGlow(root, e);
+  const holder = new THREE.Group();
+  holder.add(root);
+  const fam = info.part;
+  if (BELL.has(fam)) root.rotation.set(0, 150 * DEG, 0);      // exhaust (-Z) toward the camera side
+  else if (!WALL.has(fam)) root.rotation.set(-90 * DEG, 0, 0); // +Z (out of hull) -> up
+  holder.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(holder);
+  root.position.y -= box.min.y; // stand on the ground
+  root.position.x -= (box.min.x + box.max.x) / 2;
+  root.position.z -= (box.min.z + box.max.z) / 2;
+  holder.updateMatrixWorld(true);
+  const size = new THREE.Box3().setFromObject(holder).getSize(new THREE.Vector3());
+  items.push({ f, info, holder, size });
+}
+if (q.get('human') !== '0') {
+  // 1.8 m crew member: a plain grey box 0.5 x 1.8 x 0.3 m
+  const g = new THREE.Group();
+  const m = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.3), new THREE.MeshStandardMaterial({ color: '#c26a3a', roughness: 0.8 }));
+  m.position.y = 0.9; m.castShadow = m.receiveShadow = true; g.add(m);
+  items.push({ f: 'human 1.8 m', info: {}, holder: g, size: new THREE.Vector3(0.5, 1.8, 0.3), human: true });
+}
+
+let span = 0, maxH = 0, maxD = 0;
+const pos = [];
+if (LAYOUT === 'row') {
+  const gap = num('gap', 0.6);
+  const order = q.get('sort') === '0' ? items : [...items].sort((a, b) => a.size.x * a.size.y - b.size.x * b.size.y);
+  let x = 0;
+  for (const it of order) {
+    const sx = it.size.x;
+    it.holder.position.x = x + sx / 2;
+    x += sx + Math.max(gap, sx * 0.08);
+    maxH = Math.max(maxH, it.size.y); maxD = Math.max(maxD, it.size.z);
+    scene.add(it.holder);
+  }
+  span = x;
+  for (const it of order) it.holder.position.x -= span / 2;
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(span * 3, span * 3), new THREE.MeshStandardMaterial({ color: LIVERY === 'none' ? '#b9bcc1' : '#23262c', roughness: 0.95 }));
+  ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+  // metre ruler along the ground front edge
+  const tick = new THREE.MeshBasicMaterial({ color: '#8a9099' });
+  const step = span > 60 ? 5 : span > 15 ? 1 : 0.5;
+  for (let t = 0; t <= span; t += step) {
+    const b = new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.01, span / 1500), 0.002, (t % (step * 2) === 0 ? 0.06 : 0.03) * Math.max(1, span / 20)), tick);
+    b.position.set(-span / 2 + t, 0.001, maxD / 2 + 0.4 + span * 0.01); scene.add(b);
+  }
+  const camDir = new THREE.Vector3(Math.sin(AZ) * Math.cos(EL), Math.sin(EL), Math.cos(AZ) * Math.cos(EL));
+  const halfW = span / 2 * 1.04, halfH = halfW * H / W;
+  const cam = new THREE.OrthographicCamera(-halfW, halfW, halfH, -halfH, 0.1, span * 20);
+  const target = new THREE.Vector3(0, Math.min(maxH * 0.5, halfH * 0.9), 0);
+  cam.position.copy(target).addScaledVector(camDir, span * 4);
+  cam.lookAt(target);
+  // fit vertically: shift so the tallest part and the ground fit
+  cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+  window.__cam = cam;
+  sun.position.set(-span * 0.6, span * 1.1, span * 0.9); sun.target.position.set(0, 0, 0);
+  const sc = sun.shadow.camera; sc.left = -span * 0.8; sc.right = span * 0.8; sc.top = span; sc.bottom = -span; sc.near = 0.1; sc.far = span * 5; sc.updateProjectionMatrix();
+} else {
+  // grid: every part framed in its own viewport (own scale), rendered with scissor
+  window.__grid = true;
+}
+
+function label(it, cam, vw, vh, ox = 0, oy = 0) {
+  const top = new THREE.Box3().setFromObject(it.holder);
+  const p = new THREE.Vector3((top.min.x + top.max.x) / 2, top.max.y, (top.min.z + top.max.z) / 2).project(cam);
+  const d = document.createElement('div'); d.className = 'lab';
+  const i = it.info;
+  const dims = `${it.size.x.toFixed(2)} × ${it.size.y.toFixed(2)} × ${it.size.z.toFixed(2)} m`;
+  d.innerHTML = it.human ? '<b>crew 1.8 m</b>' : `<b>${it.f}</b><br><i>${i.tris ? i.tris.toLocaleString('en') + ' tris · ' : ''}${q.get('dims') === '0' ? '' : dims}</i>`;
+  d.style.left = `${ox + (p.x * 0.5 + 0.5) * vw}px`; d.style.top = `${oy + (-p.y * 0.5 + 0.5) * vh - 4}px`;
+  document.body.appendChild(d);
+}
+
+if (LAYOUT === 'row') {
+  renderer.render(scene, window.__cam);
+  if (q.get('labels') !== '0') for (const it of items) label(it, window.__cam, W, H);
+} else {
+  const cols = num('cols', 2), rows = Math.ceil(items.length / cols);
+  const cw = Math.floor(W / cols), ch = Math.floor((H - 60) / rows);
+  renderer.setScissorTest(true);
+  renderer.setClearColor(scene.background); renderer.clear();
+  items.forEach((it, k) => {
+    for (const o of items) o.holder.visible = o === it;
+    scene.add(it.holder);
+    it.holder.position.set(0, 0, 0);
+    const c = k % cols, r = Math.floor(k / cols);
+    const x0 = c * cw, y0 = 60 + r * ch;
+    const s = Math.max(it.size.x, it.size.y, it.size.z);
+    const cam = new THREE.PerspectiveCamera(num('fov', 22), cw / ch, s / 50, s * 50);
+    const dir = new THREE.Vector3(Math.sin(AZ) * Math.cos(EL), Math.sin(EL), Math.cos(AZ) * Math.cos(EL));
+    const target = new THREE.Vector3(0, it.size.y * 0.5, 0);
+    const R = Math.hypot(it.size.x, it.size.y, it.size.z) * 0.5;
+    const zf = Object.fromEntries((q.get('zooms') || '').split(',').filter(Boolean).map((t) => t.split(':')));
+    const dist = R / Math.sin(cam.fov * DEG / 2) * (zf[it.f] ? +zf[it.f] : num('zoom', 1.15));
+    cam.position.copy(target).addScaledVector(dir, dist); cam.lookAt(target);
+    sun.position.copy(target).add(new THREE.Vector3(-s * 1.2, s * 1.6, s * 1.4)); sun.target.position.copy(target); sun.target.updateMatrixWorld();
+    const sc = sun.shadow.camera; sc.left = sc.bottom = -s; sc.right = sc.top = s; sc.near = s / 100; sc.far = s * 6; sc.updateProjectionMatrix();
+    renderer.setViewport(x0, H - y0 - ch, cw, ch); renderer.setScissor(x0, H - y0 - ch, cw, ch);
+    renderer.render(scene, cam);
+    if (q.get('labels') !== '0') {
+      const d = document.createElement('div'); d.className = 'lab';
+      d.style.transform = 'none'; d.style.textAlign = 'left';
+      const i = it.info;
+      d.innerHTML = it.human ? '' : `<b>${it.f}</b> <i>${i.tris ? i.tris.toLocaleString('en') + ' tris · ' : ''}${it.size.x.toFixed(2)} × ${it.size.y.toFixed(2)} × ${it.size.z.toFixed(2)} m · livery ${LIVERY}</i>`;
+      d.style.left = `${x0 + 10}px`; d.style.top = `${y0 + 6}px`;
+      document.body.appendChild(d);
+    }
+  });
+}
+window.__ready = true;
+</script>
+</body>
+</html>

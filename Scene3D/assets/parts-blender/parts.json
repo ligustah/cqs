@@ -1,0 +1,1406 @@
+{
+ "generator": "tools/blender/kit.py (Blender 5.0.1, procedural)",
+ "frame": "metres; origin = centre of the mounting face; +Z out of the hull, +Y up, +X width (glTF axes). Bells / engineHousing: origin = centre of the exit plane, exhaust toward -Z, body at +Z.",
+ "parts": {
+  "airlock": {
+   "file": "airlock.glb",
+   "part": "airlock",
+   "size": null,
+   "tris": 3368,
+   "bbox": {
+    "min": [
+     -1.286,
+     -1.686,
+     0.0
+    ],
+    "max": [
+     1.286,
+     1.686,
+     0.91
+    ],
+    "size": [
+     2.572,
+     3.372,
+     0.91
+    ]
+   },
+   "tex": 1024,
+   "kb": 200,
+   "seconds": 42.4,
+   "seconds_build": 0.2,
+   "seconds_bake": 39.7,
+   "hatch": [
+    1.8,
+    2.6
+   ],
+   "collar": 0.8,
+   "about": "airlock hatch on a 0.8 m collar"
+  },
+  "antenna": {
+   "file": "antenna.glb",
+   "part": "antenna",
+   "size": null,
+   "tris": 1328,
+   "bbox": {
+    "min": [
+     -0.625,
+     -0.32,
+     0.0
+    ],
+    "max": [
+     0.625,
+     0.32,
+     6.015
+    ],
+    "size": [
+     1.25,
+     0.64,
+     6.015
+    ]
+   },
+   "tex": 512,
+   "kb": 87,
+   "seconds": 14.7,
+   "seconds_build": 0.1,
+   "seconds_bake": 13.4,
+   "height": 6.0,
+   "about": "mast along +Z, dipole yards at 4.2 m and 5.3 m"
+  },
+  "bell-L": {
+   "file": "bell-L.glb",
+   "part": "bell",
+   "size": "L",
+   "tris": 10804,
+   "bbox": {
+    "min": [
+     -3.868,
+     -3.868,
+     -0.042
+    ],
+    "max": [
+     3.868,
+     3.868,
+     8.12
+    ],
+    "size": [
+     7.736,
+     7.736,
+     8.162
+    ]
+   },
+   "tex": 2048,
+   "kb": 653,
+   "seconds": 168.5,
+   "seconds_build": 0.2,
+   "seconds_bake": 163.8,
+   "engine": {
+    "p": [
+     0,
+     0,
+     0
+    ],
+    "dir": [
+     0,
+     0,
+     -1
+    ],
+    "radius": 3.5,
+    "depth": 4.725,
+    "throat": 1.75,
+    "wall": [
+     [
+      0.675,
+      3.447
+     ],
+     [
+      1.35,
+      3.316
+     ],
+     [
+      2.025,
+      3.119
+     ],
+     [
+      2.7,
+      2.861
+     ],
+     [
+      3.375,
+      2.545
+     ],
+     [
+      4.05,
+      2.174
+     ]
+    ]
+   },
+   "plateDepth": 4.795,
+   "back": 8.12,
+   "segments": 120,
+   "about": "drive bell: exit plane at z = 0 (origin), exhaust toward -Z, mounting back at z = back; engine = the ship-module engine entry (radius, depth of the glow in front of the throat plate, throat, wall)"
+  },
+  "bell-M": {
+   "file": "bell-M.glb",
+   "part": "bell",
+   "size": "M",
+   "tris": 8932,
+   "bbox": {
+    "min": [
+     -2.431,
+     -2.431,
+     -0.026
+    ],
+    "max": [
+     2.431,
+     2.431,
+     5.104
+    ],
+    "size": [
+     4.862,
+     4.862,
+     5.13
+    ]
+   },
+   "tex": 1024,
+   "kb": 307,
+   "seconds": 71.7,
+   "seconds_build": 0.4,
+   "seconds_bake": 66.5,
+   "engine": {
+    "p": [
+     0,
+     0,
+     0
+    ],
+    "dir": [
+     0,
+     0,
+     -1
+    ],
+    "radius": 2.2,
+    "depth": 2.97,
+    "throat": 1.1,
+    "wall": [
+     [
+      0.424,
+      2.167
+     ],
+     [
+      0.849,
+      2.085
+     ],
+     [
+      1.273,
+      1.961
+     ],
+     [
+      1.697,
+      1.798
+     ],
+     [
+      2.121,
+      1.6
+     ],
+     [
+      2.546,
+      1.367
+     ]
+    ]
+   },
+   "plateDepth": 3.014,
+   "back": 5.104,
+   "segments": 96,
+   "about": "drive bell: exit plane at z = 0 (origin), exhaust toward -Z, mounting back at z = back; engine = the ship-module engine entry (radius, depth of the glow in front of the throat plate, throat, wall)"
+  },
+  "bell-S": {
+   "file": "bell-S.glb",
+   "part": "bell",
+   "size": "S",
+   "tris": 6636,
+   "bbox": {
+    "min": [
+     -1.547,
+     -1.547,
+     -0.017
+    ],
+    "max": [
+     1.547,
+     1.547,
+     3.248
+    ],
+    "size": [
+     3.094,
+     3.094,
+     3.265
+    ]
+   },
+   "tex": 1024,
+   "kb": 253,
+   "seconds": 62.2,
+   "seconds_build": 0.2,
+   "seconds_bake": 56.9,
+   "engine": {
+    "p": [
+     0,
+     0,
+     0
+    ],
+    "dir": [
+     0,
+     0,
+     -1
+    ],
+    "radius": 1.4,
+    "depth": 1.89,
+    "throat": 0.7,
+    "wall": [
+     [
+      0.27,
+      1.379
+     ],
+     [
+      0.54,
+      1.327
+     ],
+     [
+      0.81,
+      1.248
+     ],
+     [
+      1.08,
+      1.144
+     ],
+     [
+      1.35,
+      1.018
+     ],
+     [
+      1.62,
+      0.87
+     ]
+    ]
+   },
+   "plateDepth": 1.918,
+   "back": 3.248,
+   "segments": 64,
+   "about": "drive bell: exit plane at z = 0 (origin), exhaust toward -Z, mounting back at z = back; engine = the ship-module engine entry (radius, depth of the glow in front of the throat plate, throat, wall)"
+  },
+  "bell-XL": {
+   "file": "bell-XL.glb",
+   "part": "bell",
+   "size": "XL",
+   "tris": 12612,
+   "bbox": {
+    "min": [
+     -7.735,
+     -7.735,
+     -0.084
+    ],
+    "max": [
+     7.735,
+     7.735,
+     16.24
+    ],
+    "size": [
+     15.47,
+     15.47,
+     16.324
+    ]
+   },
+   "tex": 2048,
+   "kb": 713,
+   "seconds": 146.5,
+   "seconds_build": 0.2,
+   "seconds_bake": 142.4,
+   "engine": {
+    "p": [
+     0,
+     0,
+     0
+    ],
+    "dir": [
+     0,
+     0,
+     -1
+    ],
+    "radius": 7.0,
+    "depth": 9.45,
+    "throat": 3.5,
+    "wall": [
+     [
+      1.35,
+      6.895
+     ],
+     [
+      2.7,
+      6.633
+     ],
+     [
+      4.05,
+      6.238
+     ],
+     [
+      5.4,
+      5.722
+     ],
+     [
+      6.75,
+      5.09
+     ],
+     [
+      8.1,
+      4.348
+     ]
+    ]
+   },
+   "plateDepth": 9.59,
+   "back": 16.24,
+   "segments": 144,
+   "about": "drive bell: exit plane at z = 0 (origin), exhaust toward -Z, mounting back at z = back; engine = the ship-module engine entry (radius, depth of the glow in front of the throat plate, throat, wall)"
+  },
+  "cargoHatch": {
+   "file": "cargoHatch.glb",
+   "part": "cargoHatch",
+   "size": null,
+   "tris": 3088,
+   "bbox": {
+    "min": [
+     -3.9,
+     -2.443,
+     0.0
+    ],
+    "max": [
+     3.9,
+     2.443,
+     0.54
+    ],
+    "size": [
+     7.8,
+     4.886,
+     0.54
+    ]
+   },
+   "tex": 1024,
+   "kb": 183,
+   "seconds": 42.5,
+   "seconds_build": 0.2,
+   "seconds_bake": 35.1,
+   "opening": [
+    6.0,
+    4.0
+   ],
+   "frame": [
+    6.7,
+    4.7,
+    0.35
+   ],
+   "about": "bi-parting cargo hatch with a 1 x 2 m crew door"
+  },
+  "clamp": {
+   "file": "clamp.glb",
+   "part": "clamp",
+   "size": null,
+   "tris": 700,
+   "bbox": {
+    "min": [
+     -0.795,
+     -0.943,
+     0.0
+    ],
+    "max": [
+     0.795,
+     0.595,
+     1.762
+    ],
+    "size": [
+     1.59,
+     1.538,
+     1.762
+    ]
+   },
+   "tex": 512,
+   "kb": 50,
+   "seconds": 18.5,
+   "seconds_build": 0.1,
+   "seconds_bake": 14.6,
+   "about": "docking clamp; arm swings about X at (0, 0.25, 0.75), claw faces -Y"
+  },
+  "conduit": {
+   "file": "conduit.glb",
+   "part": "conduit",
+   "size": null,
+   "tris": 560,
+   "bbox": {
+    "min": [
+     -2.0,
+     -0.35,
+     0.0
+    ],
+    "max": [
+     2.0,
+     0.35,
+     0.298
+    ],
+    "size": [
+     4.0,
+     0.7,
+     0.298
+    ]
+   },
+   "tex": 512,
+   "kb": 43,
+   "seconds": 13.6,
+   "seconds_build": 0.1,
+   "seconds_bake": 12.6,
+   "pitch": 4.0,
+   "about": "covered cable conduit along X, tiles at 4 m pitch"
+  },
+  "container": {
+   "file": "container.glb",
+   "part": "container",
+   "size": null,
+   "tris": 2384,
+   "bbox": {
+    "min": [
+     -3.029,
+     -1.219,
+     0.0
+    ],
+    "max": [
+     3.084,
+     1.219,
+     2.591
+    ],
+    "size": [
+     6.113,
+     2.438,
+     2.591
+    ]
+   },
+   "tex": 1024,
+   "kb": 172,
+   "seconds": 51.4,
+   "seconds_build": 0.2,
+   "seconds_bake": 48.4,
+   "iso": "20ft",
+   "dims": [
+    6.058,
+    2.438,
+    2.591
+   ],
+   "about": "20-ft ISO container: length along X, height along +Z (deck normal), doors on +X"
+  },
+  "dome": {
+   "file": "dome.glb",
+   "part": "dome",
+   "size": null,
+   "tris": 2132,
+   "bbox": {
+    "min": [
+     -1.37,
+     -1.37,
+     0.0
+    ],
+    "max": [
+     1.37,
+     1.37,
+     1.495
+    ],
+    "size": [
+     2.74,
+     2.74,
+     1.495
+    ]
+   },
+   "tex": 512,
+   "kb": 78,
+   "seconds": 16.9,
+   "seconds_build": 0.1,
+   "seconds_bake": 12.3,
+   "diameter": 2.5,
+   "about": "sensor radome on a plinth"
+  },
+  "door": {
+   "file": "door.glb",
+   "part": "door",
+   "size": null,
+   "tris": 2988,
+   "bbox": {
+    "min": [
+     -0.698,
+     -1.198,
+     0.0
+    ],
+    "max": [
+     0.698,
+     1.198,
+     0.327
+    ],
+    "size": [
+     1.396,
+     2.396,
+     0.327
+    ]
+   },
+   "tex": 512,
+   "kb": 89,
+   "seconds": 13.5,
+   "seconds_build": 0.2,
+   "seconds_bake": 11.1,
+   "leaf": [
+    1.0,
+    2.0
+   ],
+   "frame": [
+    1.4,
+    2.4,
+    0.3
+   ],
+   "about": "crew door, hinges on -X, handle on +X"
+  },
+  "engineHousing": {
+   "file": "engineHousing.glb",
+   "part": "engineHousing",
+   "size": null,
+   "tris": 18364,
+   "bbox": {
+    "min": [
+     -6.87,
+     -6.781,
+     -0.026
+    ],
+    "max": [
+     6.87,
+     6.781,
+     7.684
+    ],
+    "size": [
+     13.74,
+     13.562,
+     7.71
+    ]
+   },
+   "tex": 2048,
+   "kb": 950,
+   "seconds": 135.6,
+   "seconds_build": 0.3,
+   "seconds_bake": 131.8,
+   "engines": [
+    {
+     "p": [
+      -2.95,
+      -2.95,
+      0
+     ],
+     "dir": [
+      0,
+      0,
+      -1
+     ],
+     "radius": 2.2,
+     "depth": 2.97,
+     "throat": 1.1,
+     "wall": [
+      [
+       0.424,
+       2.167
+      ],
+      [
+       0.849,
+       2.085
+      ],
+      [
+       1.273,
+       1.961
+      ],
+      [
+       1.697,
+       1.798
+      ],
+      [
+       2.121,
+       1.6
+      ],
+      [
+       2.546,
+       1.367
+      ]
+     ]
+    },
+    {
+     "p": [
+      -2.95,
+      2.95,
+      0
+     ],
+     "dir": [
+      0,
+      0,
+      -1
+     ],
+     "radius": 2.2,
+     "depth": 2.97,
+     "throat": 1.1,
+     "wall": [
+      [
+       0.424,
+       2.167
+      ],
+      [
+       0.849,
+       2.085
+      ],
+      [
+       1.273,
+       1.961
+      ],
+      [
+       1.697,
+       1.798
+      ],
+      [
+       2.121,
+       1.6
+      ],
+      [
+       2.546,
+       1.367
+      ]
+     ]
+    },
+    {
+     "p": [
+      2.95,
+      -2.95,
+      0
+     ],
+     "dir": [
+      0,
+      0,
+      -1
+     ],
+     "radius": 2.2,
+     "depth": 2.97,
+     "throat": 1.1,
+     "wall": [
+      [
+       0.424,
+       2.167
+      ],
+      [
+       0.849,
+       2.085
+      ],
+      [
+       1.273,
+       1.961
+      ],
+      [
+       1.697,
+       1.798
+      ],
+      [
+       2.121,
+       1.6
+      ],
+      [
+       2.546,
+       1.367
+      ]
+     ]
+    },
+    {
+     "p": [
+      2.95,
+      2.95,
+      0
+     ],
+     "dir": [
+      0,
+      0,
+      -1
+     ],
+     "radius": 2.2,
+     "depth": 2.97,
+     "throat": 1.1,
+     "wall": [
+      [
+       0.424,
+       2.167
+      ],
+      [
+       0.849,
+       2.085
+      ],
+      [
+       1.273,
+       1.961
+      ],
+      [
+       1.697,
+       1.798
+      ],
+      [
+       2.121,
+       1.6
+      ],
+      [
+       2.546,
+       1.367
+      ]
+     ]
+    }
+   ],
+   "aftFace": 1.98,
+   "back": 7.684,
+   "about": "engine housing with 2 x 2 M bells; exit planes at z = 0, exhaust toward -Z, mounting back at z = back"
+  },
+  "floodlight": {
+   "file": "floodlight.glb",
+   "part": "floodlight",
+   "size": null,
+   "tris": 644,
+   "bbox": {
+    "min": [
+     -0.28,
+     -0.19,
+     0.0
+    ],
+    "max": [
+     0.28,
+     0.167,
+     0.484
+    ],
+    "size": [
+     0.56,
+     0.357,
+     0.484
+    ]
+   },
+   "tex": 256,
+   "kb": 28,
+   "seconds": 8.6,
+   "seconds_build": 0.1,
+   "seconds_bake": 3.4,
+   "aim": "lamp faces +Y, pitched 25 degrees toward +Z",
+   "about": "floodlight on a yoke"
+  },
+  "ladder": {
+   "file": "ladder.glb",
+   "part": "ladder",
+   "size": null,
+   "tris": 720,
+   "bbox": {
+    "min": [
+     -0.31,
+     -1.5,
+     0.0
+    ],
+    "max": [
+     0.31,
+     1.5,
+     0.215
+    ],
+    "size": [
+     0.62,
+     3.0,
+     0.215
+    ]
+   },
+   "tex": 256,
+   "kb": 25,
+   "seconds": 2.3,
+   "seconds_build": 0.2,
+   "seconds_bake": 1.3,
+   "rungs": 10,
+   "pitch": 0.3,
+   "about": "ladder along Y, rungs every 0.3 m"
+  },
+  "missilePod": {
+   "file": "missilePod.glb",
+   "part": "missilePod",
+   "size": null,
+   "tris": 3024,
+   "bbox": {
+    "min": [
+     -1.594,
+     -2.794,
+     0.0
+    ],
+    "max": [
+     1.594,
+     2.794,
+     0.59
+    ],
+    "size": [
+     3.188,
+     5.588,
+     0.59
+    ]
+   },
+   "tex": 1024,
+   "kb": 237,
+   "seconds": 41.3,
+   "seconds_build": 0.2,
+   "seconds_bake": 35.7,
+   "cells": [
+    2,
+    4
+   ],
+   "pitch": 1.2,
+   "about": "VLS block, 2 x 4 cells at 1.2 m pitch (X by Y)"
+  },
+  "navlight": {
+   "file": "navlight.glb",
+   "part": "navlight",
+   "size": null,
+   "tris": 928,
+   "bbox": {
+    "min": [
+     -0.2,
+     -0.2,
+     0.0
+    ],
+    "max": [
+     0.2,
+     0.2,
+     0.268
+    ],
+    "size": [
+     0.4,
+     0.4,
+     0.268
+    ]
+   },
+   "tex": 256,
+   "kb": 30,
+   "seconds": 9.6,
+   "seconds_build": 0.1,
+   "seconds_bake": 3.0,
+   "lens": [
+    0,
+    0,
+    0.23
+   ],
+   "about": "nav light housing, 0.4 m; the runtime light sprite goes at `lens`"
+  },
+  "pane": {
+   "file": "pane.glb",
+   "part": "pane",
+   "size": null,
+   "tris": 524,
+   "bbox": {
+    "min": [
+     -0.56,
+     -0.66,
+     0.0
+    ],
+    "max": [
+     0.56,
+     0.66,
+     0.179
+    ],
+    "size": [
+     1.12,
+     1.32,
+     0.179
+    ]
+   },
+   "tex": 512,
+   "kb": 35,
+   "seconds": 13.9,
+   "seconds_build": 0.1,
+   "seconds_bake": 6.5,
+   "glass": [
+    1.0,
+    1.2
+   ],
+   "pitch": [
+    1.12,
+    1.3199999999999998
+   ],
+   "depth": 0.16,
+   "about": "bridge glazing module; tiles edge to edge at pitch (x, y)"
+  },
+  "pdc": {
+   "file": "pdc.glb",
+   "part": "pdc",
+   "size": null,
+   "tris": 2120,
+   "bbox": {
+    "min": [
+     -0.66,
+     -0.62,
+     0.0
+    ],
+    "max": [
+     0.62,
+     1.769,
+     1.739
+    ],
+    "size": [
+     1.28,
+     2.389,
+     1.739
+    ]
+   },
+   "tex": 512,
+   "kb": 90,
+   "seconds": 18.0,
+   "seconds_build": 0.2,
+   "seconds_bake": 13.6,
+   "trunnion": [
+    0,
+    0,
+    0.95
+   ],
+   "elevation": 22,
+   "about": "rotary point-defence mount, barrels along +Y elevated 22 degrees"
+  },
+  "pipes": {
+   "file": "pipes.glb",
+   "part": "pipes",
+   "size": null,
+   "tris": 1668,
+   "bbox": {
+    "min": [
+     -2.0,
+     -0.49,
+     0.0
+    ],
+    "max": [
+     2.0,
+     0.37,
+     0.474
+    ],
+    "size": [
+     4.0,
+     0.86,
+     0.474
+    ]
+   },
+   "tex": 512,
+   "kb": 69,
+   "seconds": 9.6,
+   "seconds_build": 0.2,
+   "seconds_bake": 9.0,
+   "pitch": 4.0,
+   "about": "three-pipe run along X (0.24 / 0.16 / 0.16 m), tiles at 4 m pitch"
+  },
+  "port": {
+   "file": "port.glb",
+   "part": "port",
+   "size": null,
+   "tris": 1160,
+   "bbox": {
+    "min": [
+     -0.697,
+     -0.697,
+     0.0
+    ],
+    "max": [
+     0.697,
+     0.698,
+     0.36
+    ],
+    "size": [
+     1.394,
+     1.395,
+     0.36
+    ]
+   },
+   "tex": 512,
+   "kb": 47,
+   "seconds": 7.1,
+   "seconds_build": 0.1,
+   "seconds_bake": 6.1,
+   "glass": [
+    1.0,
+    1.0
+   ],
+   "frame": [
+    1.4,
+    1.4,
+    0.2
+   ],
+   "about": "window port, 1.0 m glass, round corners"
+  },
+  "radiator": {
+   "file": "radiator.glb",
+   "part": "radiator",
+   "size": null,
+   "tris": 1292,
+   "bbox": {
+    "min": [
+     -5.0,
+     -2.04,
+     0.0
+    ],
+    "max": [
+     5.0,
+     2.04,
+     0.61
+    ],
+    "size": [
+     10.0,
+     4.08,
+     0.61
+    ]
+   },
+   "tex": 1024,
+   "kb": 136,
+   "seconds": 40.4,
+   "seconds_build": 0.1,
+   "seconds_bake": 38.1,
+   "pitch": 10.0,
+   "about": "radiator panel 10 x 4 m on standoffs, tiles along X at 10 m pitch; fins across X"
+  },
+  "rail": {
+   "file": "rail.glb",
+   "part": "rail",
+   "size": null,
+   "tris": 340,
+   "bbox": {
+    "min": [
+     -0.5,
+     -0.06,
+     0.0
+    ],
+    "max": [
+     0.5,
+     0.06,
+     1.133
+    ],
+    "size": [
+     1.0,
+     0.12,
+     1.133
+    ]
+   },
+   "tex": 256,
+   "kb": 19,
+   "seconds": 3.4,
+   "seconds_build": 0.2,
+   "seconds_bake": 2.7,
+   "pitch": 1.0,
+   "height": 1.1,
+   "about": "handrail segment along X, stanchion at x = 0; tiles at 1 m pitch"
+  },
+  "railgun-muzzle": {
+   "file": "railgun-muzzle.glb",
+   "part": "railgun",
+   "size": "muzzle",
+   "tris": 1248,
+   "bbox": {
+    "min": [
+     -3.06,
+     0.0,
+     -0.0
+    ],
+    "max": [
+     3.06,
+     4.0,
+     5.15
+    ],
+    "size": [
+     6.12,
+     4.0,
+     5.15
+    ]
+   },
+   "tex": 1024,
+   "kb": 157,
+   "seconds": 59.5,
+   "seconds_build": 0.2,
+   "seconds_bake": 50.1,
+   "axis": "+Y",
+   "joint": [
+    0,
+    0,
+    0
+   ],
+   "muzzle": [
+    0,
+    4.0,
+    3.0
+   ],
+   "bore": {
+    "centre": [
+     0,
+     0,
+     3.0
+    ],
+    "width": 2.4,
+    "height": 1.8
+   },
+   "about": "railgun muzzle cap; joint face at y = 0 (butts on a segment end), muzzle face at y = +4"
+  },
+  "railgun-segment": {
+   "file": "railgun-segment.glb",
+   "part": "railgun",
+   "size": "segment",
+   "tris": 5520,
+   "bbox": {
+    "min": [
+     -3.75,
+     -5.0,
+     -0.0
+    ],
+    "max": [
+     3.75,
+     5.0,
+     5.3
+    ],
+    "size": [
+     7.5,
+     10.0,
+     5.3
+    ]
+   },
+   "tex": 1024,
+   "kb": 328,
+   "seconds": 40.8,
+   "seconds_build": 0.2,
+   "seconds_bake": 38.4,
+   "pitch": 10.0,
+   "axis": "+Y",
+   "bore": {
+    "centre": [
+     0,
+     0,
+     3.0
+    ],
+    "width": 2.4,
+    "height": 1.8
+   },
+   "about": "spinal railgun barrel segment, y -5..+5, tiles end to end at 10 m pitch"
+  },
+  "rcs": {
+   "file": "rcs.glb",
+   "part": "rcs",
+   "size": null,
+   "tris": 2304,
+   "bbox": {
+    "min": [
+     -0.38,
+     -0.38,
+     0.0
+    ],
+    "max": [
+     0.38,
+     0.38,
+     0.51
+    ],
+    "size": [
+     0.76,
+     0.76,
+     0.51
+    ]
+   },
+   "tex": 512,
+   "kb": 92,
+   "seconds": 23.4,
+   "seconds_build": 0.3,
+   "seconds_bake": 19.5,
+   "nozzles": [
+    "+X",
+    "-X",
+    "+Y",
+    "-Y",
+    "+Z"
+   ],
+   "about": "RCS quad block with an outboard nozzle"
+  },
+  "torpedoDoor": {
+   "file": "torpedoDoor.glb",
+   "part": "torpedoDoor",
+   "size": null,
+   "tris": 2804,
+   "bbox": {
+    "min": [
+     -2.044,
+     -2.044,
+     0.0
+    ],
+    "max": [
+     2.044,
+     2.044,
+     0.468
+    ],
+    "size": [
+     4.088,
+     4.088,
+     0.468
+    ]
+   },
+   "tex": 512,
+   "kb": 105,
+   "seconds": 11.5,
+   "seconds_build": 0.2,
+   "seconds_bake": 9.2,
+   "diameter": 3.0,
+   "about": "bow launch door, two leaves split on x = 0"
+  },
+  "turret-L": {
+   "file": "turret-L.glb",
+   "part": "turret",
+   "size": "L",
+   "tris": 10004,
+   "bbox": {
+    "min": [
+     -7.84,
+     -9.219,
+     0.0
+    ],
+    "max": [
+     7.84,
+     32.82,
+     8.19
+    ],
+    "size": [
+     15.68,
+     42.039,
+     8.19
+    ]
+   },
+   "tex": 2048,
+   "kb": 698,
+   "seconds": 222.7,
+   "seconds_build": 0.3,
+   "seconds_bake": 217.3,
+   "base": 14.0,
+   "barrel": 24.0,
+   "barrelSpacing": 3.64,
+   "barrelRadius": 0.63,
+   "trunnion": [
+    0,
+    6.72,
+    3.948
+   ],
+   "muzzle": [
+    0,
+    32.82,
+    3.948
+   ],
+   "height": 6.72,
+   "about": "twin gun turret on a barbette, guns along +Y; 1 x 2 m access door on the +X wall"
+  },
+  "turret-M": {
+   "file": "turret-M.glb",
+   "part": "turret",
+   "size": "M",
+   "tris": 9016,
+   "bbox": {
+    "min": [
+     -4.48,
+     -5.319,
+     0.0
+    ],
+    "max": [
+     4.48,
+     19.04,
+     4.7
+    ],
+    "size": [
+     8.96,
+     24.359,
+     4.7
+    ]
+   },
+   "tex": 1024,
+   "kb": 334,
+   "seconds": 100.7,
+   "seconds_build": 0.3,
+   "seconds_bake": 94.4,
+   "base": 8.0,
+   "barrel": 14.0,
+   "barrelSpacing": 2.08,
+   "barrelRadius": 0.36,
+   "trunnion": [
+    0,
+    3.84,
+    2.265
+   ],
+   "muzzle": [
+    0,
+    19.04,
+    2.265
+   ],
+   "height": 3.86,
+   "about": "twin gun turret on a barbette, guns along +Y; 1 x 2 m access door on the +X wall"
+  },
+  "turret-S": {
+   "file": "turret-S.glb",
+   "part": "turret",
+   "size": "S",
+   "tris": 8428,
+   "bbox": {
+    "min": [
+     -2.24,
+     -2.719,
+     0.0
+    ],
+    "max": [
+     2.24,
+     8.52,
+     3.8
+    ],
+    "size": [
+     4.48,
+     11.239,
+     3.8
+    ]
+   },
+   "tex": 1024,
+   "kb": 301,
+   "seconds": 83.7,
+   "seconds_build": 0.2,
+   "seconds_bake": 78.8,
+   "base": 4.0,
+   "barrel": 6.0,
+   "barrelSpacing": 1.04,
+   "barrelRadius": 0.18,
+   "trunnion": [
+    0,
+    1.92,
+    1.785
+   ],
+   "muzzle": [
+    0,
+    8.52,
+    1.785
+   ],
+   "height": 3.38,
+   "about": "twin gun turret on a barbette, guns along +Y; 1 x 2 m access door on the +X wall"
+  },
+  "vent": {
+   "file": "vent.glb",
+   "part": "vent",
+   "size": null,
+   "tris": 496,
+   "bbox": {
+    "min": [
+     -0.697,
+     -0.497,
+     0.002
+    ],
+    "max": [
+     0.697,
+     0.497,
+     0.19
+    ],
+    "size": [
+     1.394,
+     0.994,
+     0.188
+    ]
+   },
+   "tex": 256,
+   "kb": 24,
+   "seconds": 19.8,
+   "seconds_build": 0.1,
+   "seconds_bake": 3.8,
+   "about": "louvred hull vent 1.2 x 0.8 m"
+  }
+ }
+}
