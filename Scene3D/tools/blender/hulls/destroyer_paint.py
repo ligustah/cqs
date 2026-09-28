@@ -370,11 +370,16 @@ def spec():
         {**HAZ, 'p': [20.9, -9.4, -45.0], 'n': [0.645, 0.764, 0], 'up': [-0.764, 0.645, 0], 'size': [10.4, 7.8, 1.2], 'border': 0.55},
         {**HAZ, 'p': [0.0, -17.0, 42.9], 'n': [0, 0, 1], 'size': [26.0, 26.0, 0.8], 'border': 0.6, 'mirrorX': False},
         {**HAZ, 'p': [0.0, -17.0, 54.9], 'n': [0, 0, -1], 'size': [26.0, 26.0, 0.8], 'border': 0.6, 'mirrorX': False},
+        # v8: VLS coaming tops (armoured cell bays) framed in hazard stripes, so the launch bays read as weapons
+        {**HAZ, 'p': [8.0, -6.4 + 0.62, 70.8], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [4.4, 23.9, 1.4], 'border': 0.5, 'wear': 0.3},
+        {**HAZ, 'p': [7.4, -9.718 + 0.62, 31.0], 'n': [0, 0.99, 0.1404], 'up': [0, -0.1404, 0.99], 'size': [4.4, 18.2, 1.4], 'border': 0.5, 'wear': 0.3},
+        {**HAZ, 'p': [10.4, -4.3 + 0.62, -72.5], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [7.7, 18.2, 1.4], 'border': 0.5, 'wear': 0.3},
         # walkway edge lines in the gun gap (safety yellow) and on the spine
         {'kind': 'fill', 'p': [10.9, -26.3, 48.9], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [0.2, 12.0, 0.6], 'mirrorX': True, 'color': [0.85, 0.62, 0.15], 'wear': 0.4},
         {'kind': 'fill', 'p': [4.0, -5.5, 30.0], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [0.18, 62.0, 0.6], 'mirrorX': True, 'color': [0.85, 0.62, 0.15], 'wear': 0.4},
-        # deck markings: turret arcs as bands, landing cross on the aft deck
-        {'kind': 'fill', 'p': [0.0, -4.3, -60.8], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [10.0, 0.5, 0.6], 'color': [0.85, 0.62, 0.15], 'wear': 0.4},
+        # deck markings: safety walk lines outboard of the aft VLS bays (v8; the v7 turret-arc band sat
+        # where the command block and the X barbette now stand)
+        {'kind': 'fill', 'p': [14.6, -4.3, -72.5], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [0.18, 18.0, 0.6], 'mirrorX': True, 'color': [0.85, 0.62, 0.15], 'wear': 0.4},
         # muzzle mouth: dark heat-stained metal on the lip
         {'kind': 'fill', 'p': [0.0, -18.55, 101.2], 'n': [0, 0, 1], 'size': [24.0, 18.0, 0.6], 'color': [0.33, 0.32, 0.31], 'wear': 0.5, 'rough': 0.5},
     ]
