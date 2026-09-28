@@ -1,0 +1,769 @@
+{
+ "about": "Drover-class cargo ship CT-4, v3 REMODEL: the hull is clean hard-surface geometry built by tools/blender/hulls/freighter.py (--variant cargo) from measurements of the fal/Tripo H3.1 blueprint (ship frame, metres, bow +Z, dorsal +Y, port +X; not re-centred), textured by paint.py with freighter_paint.py; this spec places the Blender parts kit on it. Container stacks (cargo) and the port lites are added after assembly by freighter_extras.py. Bells are kit bells scaled to the blueprint exit radius.",
+ "hull": {
+  "glb": "HULL_GLB_FROM_COMMAND_LINE",
+  "rotate": [
+   0,
+   0,
+   0
+  ],
+  "scale": 1.0,
+  "centre": false
+ },
+ "partsDir": "../../../assets/parts-blender",
+ "partDefaults": {
+  "door": {
+   "sink": 0.0
+  },
+  "airlock": {
+   "sink": 0.0
+  },
+  "pane": {
+   "sink": 0.04
+  },
+  "rcs": {
+   "sink": 0.04
+  },
+  "floodlight": {
+   "sink": 0.02
+  },
+  "navlight": {
+   "sink": 0.0
+  },
+  "rail": {
+   "sink": 0.0,
+   "xAlong": true,
+   "scale": [
+    3,
+    1,
+    1
+   ]
+  },
+  "ladder": {
+   "sink": 0.0,
+   "lift": 0.03
+  },
+  "antenna": {
+   "sink": 0.05
+  },
+  "dome": {
+   "sink": 0.05
+  },
+  "vent": {
+   "sink": 0.03
+  }
+ },
+ "fixes": {
+  "pane": {
+   "decimate": 0.4
+  },
+  "door": {
+   "decimate": 0.3
+  },
+  "airlock": {
+   "decimate": 0.45
+  },
+  "rail": {
+   "decimate": 1.0
+  },
+  "rcs": {
+   "decimate": 0.35
+  },
+  "navlight": {
+   "decimate": 0.35
+  },
+  "floodlight": {
+   "decimate": 0.3
+  },
+  "ladder": {
+   "decimate": 0.45
+  },
+  "bell-L": {
+   "decimate": 0.35
+  },
+  "antenna": {
+   "decimate": 0.45
+  },
+  "dome": {
+   "decimate": 0.6
+  },
+  "vent": {
+   "decimate": 0.5
+  }
+ },
+ "seat": {
+  "maxGap": 0.15,
+  "maxBury": 0.4,
+  "drop": true
+ },
+ "bake": {
+  "ao": true,
+  "res": 2048,
+  "distance": 0.35,
+  "samples": 16,
+  "aa": 4,
+  "strength": 0.6
+ },
+ "placements": [
+  {
+   "id": "main bells: bell-L x1.3571 (r 4.75)",
+   "part": "bell-L",
+   "p": [
+    7.74,
+    0.1,
+    -67.003
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "scale": 1.3571,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "crew door bay u 4.6",
+   "part": "door",
+   "p": [
+    10.3,
+    -8.8,
+    38.6
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "floodlight",
+   "p": [
+    10.3,
+    -7.050000000000001,
+    38.6
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "rot": 180,
+   "mirrorX": true
+  },
+  {
+   "id": "crew door bay u 17.2",
+   "part": "door",
+   "p": [
+    10.3,
+    -8.8,
+    51.2
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "floodlight",
+   "p": [
+    10.3,
+    -7.050000000000001,
+    51.2
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "rot": 180,
+   "mirrorX": true
+  },
+  {
+   "id": "reactor block doors",
+   "part": "door",
+   "p": [
+    13.4,
+    -8.0,
+    -24.7
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "floodlight",
+   "p": [
+    13.4,
+    -6.25,
+    -24.7
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "rot": 180,
+   "mirrorX": true
+  },
+  {
+   "id": "collar airlocks",
+   "part": "airlock",
+   "p": [
+    11.0,
+    -2.2,
+    29.75
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "floodlight",
+   "p": [
+    11.0,
+    0.55,
+    29.75
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "rot": 180,
+   "mirrorX": true
+  },
+  {
+   "id": "bridge glazing panes",
+   "part": "pane",
+   "row": {
+    "from": [
+     9.178,
+     1.7,
+     56.909
+    ],
+    "to": [
+     8.558,
+     1.7,
+     58.699
+    ],
+    "pitch": 1.12
+   },
+   "n": [
+    0.945,
+    0,
+    0.327
+   ],
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "pane",
+   "row": {
+    "from": [
+     8.14,
+     1.7,
+     59.909
+    ],
+    "to": [
+     7.52,
+     1.7,
+     61.699
+    ],
+    "pitch": 1.12
+   },
+   "n": [
+    0.945,
+    0,
+    0.327
+   ],
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "pane",
+   "row": {
+    "from": [
+     7.102,
+     1.7,
+     62.909
+    ],
+    "to": [
+     6.21,
+     1.7,
+     65.484
+    ],
+    "pitch": 1.12
+   },
+   "n": [
+    0.945,
+    0,
+    0.327
+   ],
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "pane",
+   "row": {
+    "from": [
+     4.862,
+     1.7,
+     66.46
+    ],
+    "to": [
+     0.64,
+     1.7,
+     66.46
+    ],
+    "pitch": 1.12
+   },
+   "n": [
+    0.0,
+    0,
+    1.0
+   ],
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "pane",
+   "row": {
+    "from": [
+     -2.6,
+     -1.6,
+     66.36
+    ],
+    "to": [
+     2.6,
+     -1.6,
+     66.36
+    ],
+    "pitch": 1.12
+   },
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "seat": {
+    "check": false
+   },
+   "id": "observation deck panes (bow face, lower band)"
+  },
+  {
+   "id": "cab panes (sloped aft glazing)",
+   "part": "pane",
+   "row": {
+    "from": [
+     -3.4,
+     9.2,
+     26.8
+    ],
+    "to": [
+     3.4,
+     9.2,
+     26.8
+    ],
+    "pitch": 1.12
+   },
+   "n": [
+    0,
+    0.5735,
+    -0.8192
+   ],
+   "up": [
+    0,
+    0.8192,
+    0.5735
+   ],
+   "normal": "hit"
+  },
+  {
+   "id": "ledge walkway rails",
+   "part": "rail",
+   "row": {
+    "from": [
+     10.15,
+     4.6,
+     35.8
+    ],
+    "to": [
+     10.15,
+     4.6,
+     54.4
+    ],
+    "pitch": 3.0
+   },
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "roof edge rails",
+   "part": "rail",
+   "row": {
+    "from": [
+     7.1000000000000005,
+     9.8,
+     35.8
+    ],
+    "to": [
+     7.1000000000000005,
+     9.8,
+     54.4
+    ],
+    "pitch": 3.0
+   },
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "crew-module flank ladders",
+   "part": "ladder",
+   "p": [
+    10.3,
+    -6.4,
+    40.4
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "rows": {
+    "count": 4,
+    "step": [
+     0,
+     3.0,
+     0
+    ]
+   },
+   "mirrorX": true
+  },
+  {
+   "id": "reactor block ladders",
+   "part": "ladder",
+   "p": [
+    13.4,
+    -4.6,
+    -26.7
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "rows": {
+    "count": 4,
+    "step": [
+     0,
+     3.0,
+     0
+    ]
+   },
+   "mirrorX": true
+  },
+  {
+   "part": "rcs",
+   "p": [
+    7.13,
+    -3.8,
+    64.66
+   ],
+   "n": [
+    0.945,
+    0.0,
+    0.327
+   ],
+   "normal": "hit",
+   "mirrorX": true
+  },
+  {
+   "part": "rcs",
+   "p": [
+    7.13,
+    -7.0,
+    64.66
+   ],
+   "n": [
+    0.945,
+    0.0,
+    0.327
+   ],
+   "normal": "hit",
+   "mirrorX": true
+  },
+  {
+   "part": "rcs",
+   "p": [
+    13.4,
+    7.4,
+    -32.7
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "normal": "hit",
+   "mirrorX": true
+  },
+  {
+   "part": "rcs",
+   "p": [
+    13.4,
+    -8.0,
+    -32.7
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "normal": "hit",
+   "mirrorX": true
+  },
+  {
+   "part": "rcs",
+   "p": [
+    26.64,
+    -11.0,
+    -60.1
+   ],
+   "n": [
+    0,
+    -1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "normal": "hit",
+   "mirrorX": true
+  },
+  {
+   "id": "nav lights: radiator sidelights",
+   "part": "navlight",
+   "p": [
+    26.99,
+    3.1,
+    -29.85
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "navlight",
+   "p": [
+    1.1,
+    13.35,
+    -26.7
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "snap": false
+  },
+  {
+   "part": "navlight",
+   "p": [
+    0,
+    -12.8,
+    -40.0
+   ],
+   "n": [
+    0,
+    -1,
+    0
+   ]
+  },
+  {
+   "part": "navlight",
+   "p": [
+    0,
+    6.0,
+    -55.783
+   ],
+   "n": [
+    0,
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "mast whip x0.961: tip at y 19.08",
+   "part": "antenna",
+   "p": [
+    0,
+    13.35,
+    -25.8
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 0.9609,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "antenna",
+   "p": [
+    1.3,
+    13.35,
+    -25.2
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 0.55,
+   "mirrorX": true,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "crew-module whips",
+   "part": "antenna",
+   "p": [
+    3.6,
+    10.5,
+    48.5
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 0.8
+  },
+  {
+   "part": "antenna",
+   "p": [
+    -3.4,
+    10.5,
+    44.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 0.62
+  },
+  {
+   "id": "radome",
+   "part": "dome",
+   "p": [
+    -3.0,
+    10.7,
+    54.4
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 0.85,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "reactor vents",
+   "part": "vent",
+   "row": {
+    "from": [
+     13.4,
+     6.2,
+     -25.25
+    ],
+    "to": [
+     13.4,
+     6.2,
+     -31.25
+    ],
+    "pitch": 2.0
+   },
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  }
+ ]
+}
