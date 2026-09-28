@@ -1,0 +1,598 @@
+{
+ "about": "Petrel-class fighter F-402, v3 REMODEL: the hull is clean hard-surface geometry built by tools/blender/hulls/fighter.py from measurements of the fal/Tripo H3.1 blueprint (ship frame, metres, bow +Z, dorsal +Y, port +X; not re-centred), textured by fighter_paint.py over paint.py; this spec places the Blender parts kit (assets/parts-blender, +Z mounts) on it. Bells are kit bells scaled to the blueprint radii; the module's engines use the kit's documented depth / throat / wall times the same scale.",
+ "hull": {
+  "glb": "HULL_GLB_FROM_COMMAND_LINE",
+  "rotate": [
+   0,
+   0,
+   0
+  ],
+  "scale": 1.0,
+  "centre": false
+ },
+ "partsDir": "../../../assets/parts-blender",
+ "kits": {
+  "fal": "../../../assets/parts"
+ },
+ "partDefaults": {
+  "door": {
+   "sink": 0.0
+  },
+  "port": {
+   "sink": 0.03,
+   "normal": "hit"
+  },
+  "pane": {
+   "sink": 0.04
+  },
+  "rcs": {
+   "sink": 0.04
+  },
+  "floodlight": {
+   "sink": 0.02
+  },
+  "navlight": {
+   "sink": 0.0
+  },
+  "antenna": {
+   "sink": 0.05
+  },
+  "dome": {
+   "sink": 0.05
+  }
+ },
+ "fixes": {
+  "port": {
+   "decimate": 0.3
+  },
+  "pane": {
+   "decimate": 0.4
+  },
+  "door": {
+   "decimate": 0.35
+  },
+  "rcs": {
+   "decimate": 0.5
+  },
+  "navlight": {
+   "decimate": 0.35
+  },
+  "floodlight": {
+   "decimate": 0.3
+  },
+  "bell-L": {
+   "decimate": 0.35
+  },
+  "bell-S": {
+   "decimate": 0.35
+  },
+  "antenna": {
+   "decimate": 0.45
+  },
+  "dome": {
+   "decimate": 0.6
+  }
+ },
+ "seat": {
+  "maxGap": 0.15,
+  "maxBury": 0.4,
+  "drop": true
+ },
+ "bake": {
+  "ao": true,
+  "res": 2048,
+  "distance": 0.3,
+  "samples": 16,
+  "aa": 4,
+  "strength": 0.6
+ },
+ "placements": [
+  {
+   "id": "main bells: bell-L x1.0143 (r 3.55)",
+   "part": "bell-L",
+   "p": [
+    5.9,
+    0.0,
+    -35.856
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "scale": 1.0143,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "sponson bells: bell-S x0.9786 (r 1.37)",
+   "part": "bell-S",
+   "p": [
+    20.05,
+    -3.3,
+    -16.64
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "scale": 0.9786,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "crew doors in the flank bays (on the bay floor)",
+   "part": "door",
+   "p": [
+    12.048,
+    -3.7,
+    8.554
+   ],
+   "n": [
+    0.9896,
+    0.0,
+    0.1438
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "mirrorX": true
+  },
+  {
+   "part": "floodlight",
+   "p": [
+    12.365,
+    -1.65,
+    8.6
+   ],
+   "n": [
+    0.9896,
+    0.0,
+    0.1438
+   ],
+   "rot": 180,
+   "mirrorX": true
+  },
+  {
+   "part": "door",
+   "p": [
+    12.643,
+    -2.6,
+    -16.298
+   ],
+   "n": [
+    1.0,
+    0.0,
+    -0.0059
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "mirrorX": true
+  },
+  {
+   "part": "floodlight",
+   "p": [
+    12.963,
+    -0.55,
+    -16.3
+   ],
+   "n": [
+    1.0,
+    0.0,
+    -0.0059
+   ],
+   "rot": 180,
+   "mirrorX": true
+  },
+  {
+   "id": "flank ports (kit port x0.55), forward flank",
+   "part": "port",
+   "p": [
+    11.987,
+    -1.919,
+    11.2
+   ],
+   "n": [
+    0.9896,
+    0.0,
+    0.1438
+   ],
+   "scale": 0.55,
+   "mirrorX": true
+  },
+  {
+   "part": "port",
+   "p": [
+    11.661,
+    -2.345,
+    13.45
+   ],
+   "n": [
+    0.9896,
+    0.0,
+    0.1438
+   ],
+   "scale": 0.55,
+   "mirrorX": true
+  },
+  {
+   "part": "port",
+   "p": [
+    10.706,
+    -2.566,
+    15.7
+   ],
+   "n": [
+    0.9766,
+    0.0,
+    0.2149
+   ],
+   "scale": 0.55,
+   "mirrorX": true
+  },
+  {
+   "part": "port",
+   "p": [
+    10.211,
+    -2.521,
+    17.95
+   ],
+   "n": [
+    0.977,
+    0.0,
+    0.2135
+   ],
+   "scale": 0.55,
+   "mirrorX": true
+  },
+  {
+   "part": "port",
+   "p": [
+    9.725,
+    -2.52,
+    20.2
+   ],
+   "n": [
+    0.9775,
+    0.0,
+    0.2111
+   ],
+   "scale": 0.55,
+   "mirrorX": true
+  },
+  {
+   "part": "port",
+   "p": [
+    9.276,
+    -2.696,
+    22.45
+   ],
+   "n": [
+    0.9811,
+    0.0,
+    0.1933
+   ],
+   "scale": 0.55,
+   "mirrorX": true
+  },
+  {
+   "part": "port",
+   "p": [
+    8.833,
+    -2.898,
+    24.7
+   ],
+   "n": [
+    0.9811,
+    0.0,
+    0.1933
+   ],
+   "scale": 0.55,
+   "mirrorX": true
+  },
+  {
+   "part": "port",
+   "p": [
+    8.389,
+    -3.101,
+    26.95
+   ],
+   "n": [
+    0.9811,
+    0.0,
+    0.1933
+   ],
+   "scale": 0.55,
+   "mirrorX": true
+  },
+  {
+   "part": "port",
+   "p": [
+    7.946,
+    -3.303,
+    29.2
+   ],
+   "n": [
+    0.9811,
+    0.0,
+    0.1933
+   ],
+   "scale": 0.55,
+   "mirrorX": true
+  },
+  {
+   "id": "flank ports, aft upper chamfer",
+   "part": "port",
+   "row": {
+    "from": [
+     12.33,
+     1.1,
+     -17.4
+    ],
+    "to": [
+     12.33,
+     1.1,
+     -1.4
+    ],
+    "pitch": 2.0
+   },
+   "n": [
+    0.8,
+    0.6,
+    0.0
+   ],
+   "scale": 0.55,
+   "mirrorX": true
+  },
+  {
+   "id": "bridge glazing panes x0.7 (front recess, two rows)",
+   "part": "pane",
+   "row": {
+    "from": [
+     -2.352,
+     3.654,
+     16.078
+    ],
+    "to": [
+     2.352,
+     3.654,
+     16.078
+    ],
+    "pitch": 0.784
+   },
+   "n": [
+    0.0,
+    0.6097,
+    0.7926
+   ],
+   "up": [
+    0.0,
+    0.7926,
+    -0.6097
+   ],
+   "scale": 0.7,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "pane",
+   "row": {
+    "from": [
+     -2.352,
+     4.386,
+     15.515
+    ],
+    "to": [
+     2.352,
+     4.386,
+     15.515
+    ],
+    "pitch": 0.784
+   },
+   "n": [
+    0.0,
+    0.6097,
+    0.7926
+   ],
+   "up": [
+    0.0,
+    0.7926,
+    -0.6097
+   ],
+   "scale": 0.7,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "bridge side panes x0.58",
+   "part": "pane",
+   "row": {
+    "from": [
+     3.218,
+     5.57,
+     10.251
+    ],
+    "to": [
+     3.218,
+     5.57,
+     12.849
+    ],
+    "pitch": 0.6496
+   },
+   "n": [
+    0.9929,
+    0.1192,
+    0.0
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "scale": 0.58,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "nav lights: sponson outboard sidelights",
+   "part": "navlight",
+   "p": [
+    23.150000000000002,
+    -3.35,
+    -6.8
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "navlight",
+   "p": [
+    0,
+    6.98,
+    -16.7
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ]
+  },
+  {
+   "part": "navlight",
+   "p": [
+    0,
+    -10.07,
+    -1.0
+   ],
+   "n": [
+    0,
+    -1,
+    0
+   ]
+  },
+  {
+   "part": "navlight",
+   "p": [
+    0,
+    4.0,
+    -26.05
+   ],
+   "n": [
+    0,
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "dorsal whip (sets the height, y 10.48)",
+   "part": "antenna",
+   "p": [
+    0,
+    6.98,
+    -17.5
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 0.585
+  },
+  {
+   "id": "stern corner whips",
+   "part": "antenna",
+   "p": [
+    7.1,
+    5.42,
+    -24.1
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 0.42,
+   "mirrorX": true
+  },
+  {
+   "id": "forward whips beside the bridge",
+   "part": "antenna",
+   "p": [
+    5.2,
+    5.49,
+    5.5
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 0.45,
+   "mirrorX": true
+  },
+  {
+   "id": "sensor domes on the aft deck",
+   "part": "dome",
+   "p": [
+    6.8,
+    5.28,
+    -20.2
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 0.72,
+   "mirrorX": true
+  }
+ ]
+}
