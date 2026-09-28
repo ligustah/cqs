@@ -253,5 +253,15 @@
   "v6_repair": {
     "what": "Texture-only repair of details the image model would not shrink: oversized crew doors repainted as plating + a 1.0 x 2.0 m door (fal-ai/nano-banana-pro door and boat-hatch decals, projected texel -> world -> view with a depth test); civil container stacks baked with two fal-ai/patina/material container tiles at true ISO size; corvette bridge emblem that read like a national flag painted out; opt-in magenta livery band for the civil ships.",
     "cost_usd": 0.7
+  },
+  "v7_remodel": {
+    "what": "Every hull rebuilt as clean parametric hard-surface geometry in headless Blender (bpy 5.0) with the fal/Tripo mesh as the blueprint; small parts from two kits (assets/parts: fal nano-banana-pro + Tripo H3.1, 24 parts; assets/parts-blender: procedural, 31 parts) assembled by tools/blender/assemble.py. See README 'Remodel (v7)' and tools/blender/hulls/README*.md.",
+    "fal_cost_usd": {
+      "parts_kit_small": 10.5,
+      "parts_kit_weapons_engines": 9.0,
+      "corvette_clean_blueprint": 3.0,
+      "worn_finish_patina": 0.35
+    },
+    "total_usd_all_rounds": 78
   }
 }

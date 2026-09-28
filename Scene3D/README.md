@@ -138,7 +138,43 @@ H3.1 models $6.60, 3 Hunyuan3D 3.1 Pro models ≈ $1.90, 11 PATINA sets ≈ $1.2
 about $27.50 for the first build. The fleet-scale re-draw (v4) added about $10.50 and
 the true-scale detail round (v5: targeted detail edits, new turnarounds, 5 Tripo H3.1
 meshes, 3 PATINA detail tiles for the carrier) about $15.70, and the door and container
-repair (v6) about $0.70: about **$55** in total.
+repair (v6) about $0.70: about $55. The remodel (v7, below) added two fal parts kits
+(24 parts, about $19.50), a clean corvette blueprint (about $3) and three worn-finish
+PATINA sets (about $0.35): about **$78** in total.
+
+## Remodel (v7): hard-surface hulls in Blender
+
+Image-to-3D reconstructions average fine detail into soft lumps, so every hull was
+rebuilt as clean hard-surface geometry in headless Blender (the `bpy` 5.0 module), with
+the fal mesh, concept and turnaround used only as the blueprint:
+
+1. `tools/blender/hulls/measure.py` puts the Tripo mesh in the ship frame and slices it
+   (sections, height maps, silhouettes); `compare.py` scores the model against it (IoU).
+2. `<ship>.py` builds the hull parametrically: lofted stations, planar facets, exact
+   boolean recesses (glazing, door bays, the carrier's hangar), 4-10 cm bevels with
+   weighted normals. `<ship>_paint.py` paints it in texture space: light base paint for the
+   runtime livery, plating seams, panel tone, AO grime, edge wear, crisp hull-number stencils.
+3. Parts come from two kits, designed once and reused at the same metric size on every
+   ship: `assets/parts-blender/` (procedural, `tools/blender/kit.py`: doors 1 x 2 m, 1 m
+   ports and panes, rails, ladders, RCS, S/M/L turrets, drive bells S-XL with exact throat
+   depths, railgun segments, containers) and `assets/parts/` (fal: nano-banana-pro concept,
+   Tripo H3.1 image-to-3D; antennas, domes, PDC, missile pods, clamps).
+   `tools/blender/assemble.py` snaps them onto the hull from a placement spec
+   (`tools/blender/specs/<ship>-v3.json`) and exports one GLB with a `hull` node and
+   `parts_*` nodes (`hullNodes` in the module, so the hangar test ignores the parts).
+4. `<ship>_module.py` re-measures engines, lights and anchors on the result.
+
+One command per ship: `tools/blender/hulls/build.sh <ship> <workdir>` (see
+`tools/blender/hulls/README*.md`). Every envelope stayed within 0.5 % of the previous
+one, so the scale model and the hangar loads are unchanged. Shading: a worn finish
+(`src/lib/finish.js`, fal PATINA `hullWear`/`hullGrit`/`sootStreak`: two-scale plate tone,
+roughness breakup, micro grit, drive soot) and screen-space AO contact shadows are on by
+default (`?finish=off`, `?ao=0`).
+
+Phones: the full scene holds ~2 GB of GPU textures, which mobile browsers kill. A lite
+tier (`src/lib/device.js`, automatic on touch / low-memory devices, `?lite=1|0` to force)
+loads copies with textures capped at 1024 px (carrier 2048, PATINA 512), a lower pixel
+ratio and shadow map, no AO, and widens the lens on portrait screens.
 
 ## Scale model
 
@@ -171,9 +207,9 @@ two variants are sized independently.
 | Class | Length | Crew |
 | --- | --- | --- |
 | Fighter | 72 m | about 40 |
-| Corvette | 107 m | about 350 |
+| Corvette | 108 m | about 350 |
 | Civil ship (cargo / troops) | 134 m / 129 m | about 80 (troops: ground-unit capacity 750) |
-| Destroyer | 204 m | about 2,000 |
+| Destroyer | 203 m | about 2,000 |
 | Carrier | 900 m | about 20,000 |
 
 Crews are design estimates from each hull's volume; the game's chassis population
@@ -217,12 +253,12 @@ lies inside the hull:
 slot volume: 70000 m^3
 
 class             size  L x B x H (m)             volume    slots   design scale  tris     draws
-fighter           1     71.54 x 46.8 x 20.91      70000     1       0.9975        73479    1
-corvette          5     107.11 x 68.81 x 47.49    350000    5       1.0001        91060    1
-freighter         4     134.15 x 54.7 x 38.16     280000    4       1.0002        110779   1
-destroyer         12    202.68 x 56.1 x 73.88     840000    12      0.9925        145130   1
-carrier           -     900 x 405.55 x 319.3      116541493 -       1             231273   1
-freighter:troops  4     128.82 x 57.73 x 37.65    280000    4       0.9998        109004   1
+fighter           1     71.71 x 46.87 x 20.83     70000     1       0.9994        78068    10
+corvette          5     108.04 x 69.41 x 46.67    350000    5       0.9992        129852   17
+freighter         4     134.14 x 54.69 x 38.17    280000    4       1.0001        95927    22
+destroyer         12    202.87 x 55.95 x 74.01    840000    12      1.0008        163581   14
+carrier           -     900 x 406.04 x 319.33     116695859 -       1             314854   17
+freighter:troops  4     128.82 x 57.73 x 37.65    280000    4       0.9998        126827   16
 
 carrier hangar (clear, L x B x H): 670 x 155.8 x 84.4 m
   fighter           need 50  fits 81   OK
@@ -260,6 +296,10 @@ Scene3D/
   src/lib/effects.js    drive glow / short plumes and navigation lights
   src/lib/scale.js      game-derived scale model and hangar-fit check
   src/env/*.js          lighting rig, sky, sun, planet
+  src/lib/finish.js     worn hull finish and screen-space AO
+  src/lib/device.js     phone (lite) tier
+  assets/parts*/        parts kits (fal and procedural Blender)
+  tools/blender/        Blender pipeline: kit.py, hulls/ (remodel per ship), assemble.py, straighten.py
   tools/                server, stills, GLB inspection, scale check, fal ingest/optimise, artifact packaging
 ```
 
@@ -271,7 +311,8 @@ node tools/scale-check.mjs      # envelope vs. game size for every ship + hangar
 node tools/shoot.mjs "mode=ship&ship=destroyer&az=35&el=18" shots/destroyer.png
 node tools/render-glb.mjs any/where/ship.glb shots/ship --rot 0,-90,0   # GLB inspection stills + contact sheet + mesh info
 node tools/ingest-fal.mjs results.json   # download fal outputs: concepts, meshes (optimised), PATINA maps
-node tools/build-artifact.mjs   # single-page package for sharing
+node tools/build-artifact.mjs   # single-page package for sharing (+ lite copies for phones)
+PY=<venv>/bin/python tools/blender/hulls/build.sh corvette /tmp/work   # rebuild a hull (bpy 5.0)
 ```
 
 `shoot.mjs` renders with headless Chromium and software WebGL, and serves
