@@ -15,7 +15,8 @@ hull's bbox, so the old anchors, engines and lights stay valid; the report flags
 that would grow the bbox).
 
 Spec (JSON; paths relative to the spec file):
-  hull:        { glb, rotate: [x,y,z] deg, length: m | scale: k }
+  hull:        { glb, rotate: [x,y,z] deg, length: m | scale: k, centre?: false (keep the GLB origin:
+               a hull modelled in the ship frame by tools/blender/hulls/) }
   partsDir:    folder with <part>.glb and parts.json (mount conventions)
   partDefaults:{ <part>: { sink, lift, ... } }   defaults merged into every placement
   fixes:       { <part>: {...} }                 overrides of assemble_parts.DEFAULT_FIXES
@@ -266,7 +267,7 @@ def main():
     F.reset()
     hs = spec['hull']
     hull, hinfo = F.load_hull(rel(hs['glb']), rotate=hs.get('rotate', [0, 0, 0]), length=hs.get('length'),
-                              scale=hs.get('scale'), tmpdir=tmp)
+                              scale=hs.get('scale'), tmpdir=tmp, centre=hs.get('centre', True))
     report['hull'] = hinfo
     report['cut_faces'] = cut_hull(hull, spec.get('cuts'))
     report['flatten'] = flatten_hull(hull, [f for f in spec.get('features', []) if f.get('flatten')])

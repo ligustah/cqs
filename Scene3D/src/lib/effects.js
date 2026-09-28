@@ -146,6 +146,15 @@ export function attachEffects(group, { power = 1, plumeScale = 1, spill = true }
     mesh.renderOrder = 10;
     mesh.frustumCulled = false;
     mesh.name = 'plume';
+    // Draw the proxy's near faces: its far faces lie behind the bell body, whose depth clipped
+    // the glow along straight lines (a C-shaped rim) from a stern quarter. Only with the camera
+    // inside the proxy are the far faces the visible ones. The ray metric is the same either way.
+    const inv = new THREE.Matrix4(), cam = new THREE.Vector3();
+    mesh.onBeforeRender = (_r, _s, camera) => {
+      cam.setFromMatrixPosition(camera.matrixWorld).applyMatrix4(inv.copy(mesh.matrixWorld).invert());
+      const inside = cam.x * cam.x + cam.y * cam.y < 1.05 && cam.z < 0.05 && cam.z > -1.05;
+      m.side = inside ? THREE.BackSide : THREE.FrontSide;
+    };
     group.add(mesh);
     plumes.push(m);
   }

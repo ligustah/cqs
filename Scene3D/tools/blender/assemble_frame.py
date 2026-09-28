@@ -117,10 +117,11 @@ def vert_box(obj):
     return Vector(ship.min(0)), Vector(ship.max(0))
 
 
-def load_hull(path, rotate=(0, 0, 0), length=None, scale=None, tmpdir='/tmp'):
+def load_hull(path, rotate=(0, 0, 0), length=None, scale=None, tmpdir='/tmp', centre=True):
     """Import the hull GLB into the ship frame exactly as glbship.js does:
     rotate (three.js XYZ Euler, degrees) -> uniform scale so the bbox Z is `length` (or `scale`)
-    -> centre on the bbox. Returns (hull object, info)."""
+    -> centre on the bbox. centre=False keeps the GLB's own origin (a hull modelled in the ship
+    frame, tools/blender/hulls/: its kit parts complete the bbox). Returns (hull object, info)."""
     src = decode([(path, 'hull-src')], tmpdir)['hull-src']
     meshes, new = import_glb(src)
     R = three_euler_matrix(rotate)
@@ -128,7 +129,7 @@ def load_hull(path, rotate=(0, 0, 0), length=None, scale=None, tmpdir='/tmp'):
     s = scale if scale is not None else (length / (hi.z - lo.z) if length else 1.0)
     S = Matrix.Scale(s, 4)
     lo2, hi2 = loose_box(meshes, S @ R)
-    c = (lo2 + hi2) / 2
+    c = (lo2 + hi2) / 2 if centre else Vector((0, 0, 0))
     M = Matrix.Translation(-c) @ S @ R  # glTF frame
     for o in meshes:
         o.matrix_world = b_mat(M) @ o.matrix_world

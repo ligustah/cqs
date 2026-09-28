@@ -14,6 +14,10 @@
 //     different material from the grey armour;
 //   - dark, blue-tinted, unsaturated texels are glass (canopies, bridge windows): smooth
 //     (roughness 0.08), dielectric and darker, so they catch the planet and the sun;
+//   - opt-in (glassGlow, off by default so every other ship shades exactly as before): glass
+//     texels also get a dim, warm interior light (lit cabins behind the ports and bridge panes), its
+//     level varying smoothly between compartments (value noise on ~7 m cells in object space), so
+//     kit windows read as glass rather than flat dark plates when they reflect only black space;
 //   - roughness is pushed toward matte (matte 0.35: a broad, dim sheen only at grazing angles,
 //     never a glossy highlight), and metalness is scaled down: the hull is paint (a
 //     dielectric), not bare metal.
@@ -30,7 +34,9 @@ export const LIVERIES = {
   civil: { base: 0.018, gain: 0.07, tint: '#e8ebee', mark: 0.34, markSat: 0.7, cyanSat: 0.15, copperSat: 0.9, sat0: 0.22, sat1: 0.45, matte: 0.3, metal: 1 },
 };
 
-/** Repaint a MeshStandard/Physical material in place. opts: a LIVERIES key or an object. */
+/** Repaint a MeshStandard/Physical material in place. opts: a LIVERIES key or an object
+ *  (merged over 'dark'); glassGlow: [r, g, b] linear radiance of lit interiors behind glass
+ *  texels (opt-in), glassLit: share of compartments lit (default 0.6). */
 export function applyLivery(material, opts = 'dark') {
   const o = { ...LIVERIES.dark, ...(typeof opts === 'string' ? LIVERIES[opts] : opts) };
   const uniforms = {
@@ -43,6 +49,8 @@ export function applyLivery(material, opts = 'dark') {
     uLivMagSat: { value: new THREE.Vector2(...(o.magentaSat || [o.sat0, o.sat1])) }, uLivMagMarkSat: { value: o.magentaMarkSat ?? o.markSat ?? 0.7 },
     uLivMarkSat: { value: o.markSat ?? 0.7 }, uLivCyanSat: { value: o.cyanSat ?? o.markSat ?? 0.7 }, uLivMetal: { value: o.metal ?? 1 }, uLivCopperSat: { value: o.copperSat ?? o.markSat ?? 0.7 },
   };
+  const glow = o.glassGlow ? new THREE.Vector3(...o.glassGlow) : null;
+  if (glow) Object.assign(uniforms, { uLivGlassGlow: { value: glow }, uLivGlassLit: { value: o.glassLit ?? 0.6 } });
   material.userData.livery = uniforms;
   const prev = material.onBeforeCompile;
   material.onBeforeCompile = (shader, renderer) => {
@@ -82,9 +90,29 @@ export function applyLivery(material, opts = 'dark') {
         }`)
       .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(mix(roughnessFactor, 1.0, uLivMatte), 0.08, livGlass);')
       .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor *= uLivMetal * (1.0 - livGlass);');
+    if (glow) {
+      shader.vertexShader = shader.vertexShader
+        .replace('#include <common>', '#include <common>\nvarying vec3 vLivPos;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvLivPos = position;');
+      shader.fragmentShader = shader.fragmentShader
+        .replace('#include <common>', `#include <common>
+          varying vec3 vLivPos; uniform vec3 uLivGlassGlow; uniform float uLivGlassLit;
+          float livHash(vec3 p) { return fract(sin(dot(p, vec3(12.9898, 78.233, 45.164))) * 43758.5453); }
+          float livNoise(vec3 p) {
+            vec3 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+            return mix(mix(mix(livHash(i), livHash(i + vec3(1, 0, 0)), f.x), mix(livHash(i + vec3(0, 1, 0)), livHash(i + vec3(1, 1, 0)), f.x), f.y),
+                       mix(mix(livHash(i + vec3(0, 0, 1)), livHash(i + vec3(1, 0, 1)), f.x), mix(livHash(i + vec3(0, 1, 1)), livHash(i + vec3(1, 1, 1)), f.x), f.y), f.z);
+          }`)
+        .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+          {
+            float n = livNoise(vLivPos / 7.0);
+            float lit = smoothstep(1.0 - uLivGlassLit - 0.12, 1.0 - uLivGlassLit + 0.12, n);
+            totalEmissiveRadiance += uLivGlassGlow * livGlass * (0.12 + 0.88 * lit);
+          }`);
+    }
   };
   const prevKey = material.customProgramCacheKey.bind(material);
-  material.customProgramCacheKey = () => `livery|${prevKey()}`;
+  material.customProgramCacheKey = () => `livery${glow ? '-glow' : ''}|${prevKey()}`;
   material.needsUpdate = true;
   return material;
 }

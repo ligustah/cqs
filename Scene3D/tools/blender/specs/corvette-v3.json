@@ -1,0 +1,1209 @@
+{
+ "about": "Warden-class corvette K-214, v3 REMODEL: the hull is clean hard-surface geometry built by tools/blender/hulls/corvette.py from measurements of the fal/Tripo v7 blueprint (ship frame, metres, bow +Z, dorsal +Y, port +X; not re-centred), textured by tools/blender/hulls/paint.py; this spec places the Blender parts kit (assets/parts-blender, +Z mounts) and one fal-kit antenna on it. Bells are kit bells scaled to the blueprint radii; the module's engines use the kit's documented depth / throat / wall times the same scale.",
+ "hull": {
+  "glb": "HULL_GLB_FROM_COMMAND_LINE",
+  "rotate": [
+   0,
+   0,
+   0
+  ],
+  "scale": 1.0,
+  "centre": false
+ },
+ "partsDir": "../../../assets/parts-blender",
+ "kits": {
+  "fal": "../../../assets/parts"
+ },
+ "partDefaults": {
+  "door": {
+   "sink": 0.0
+  },
+  "airlock": {
+   "sink": 0.0
+  },
+  "port": {
+   "sink": 0.03,
+   "normal": "hit"
+  },
+  "pane": {
+   "sink": 0.04
+  },
+  "rcs": {
+   "sink": 0.04
+  },
+  "floodlight": {
+   "sink": 0.02
+  },
+  "navlight": {
+   "sink": 0.0
+  },
+  "rail": {
+   "sink": 0.0,
+   "xAlong": true,
+   "scale": [
+    3,
+    1,
+    1
+   ]
+  },
+  "ladder": {
+   "sink": 0.0,
+   "lift": 0.03
+  },
+  "antenna": {
+   "sink": 0.05
+  },
+  "fal:antenna": {
+   "sink": 0.05
+  },
+  "dome": {
+   "sink": 0.05
+  }
+ },
+ "fixes": {
+  "port": {
+   "decimate": 0.3
+  },
+  "pane": {
+   "decimate": 0.4
+  },
+  "door": {
+   "decimate": 0.35
+  },
+  "airlock": {
+   "decimate": 0.5
+  },
+  "rail": {
+   "decimate": 1.0
+  },
+  "rcs": {
+   "decimate": 0.5
+  },
+  "navlight": {
+   "decimate": 0.35
+  },
+  "floodlight": {
+   "decimate": 0.3
+  },
+  "ladder": {
+   "decimate": 0.45
+  },
+  "turret-M": {
+   "decimate": 0.5
+  },
+  "bell-M": {
+   "decimate": 0.3
+  },
+  "bell-L": {
+   "decimate": 0.3
+  },
+  "antenna": {
+   "decimate": 0.45
+  },
+  "dome": {
+   "decimate": 0.6
+  },
+  "torpedoDoor": {
+   "decimate": 0.25
+  }
+ },
+ "seat": {
+  "maxGap": 0.15,
+  "maxBury": 0.4,
+  "drop": true
+ },
+ "bake": {
+  "ao": true,
+  "res": 2048,
+  "distance": 0.35,
+  "samples": 16,
+  "aa": 4,
+  "strength": 0.6
+ },
+ "placements": [
+  {
+   "id": "centre bell: bell-L x1.463 (r 5.12)",
+   "part": "bell-L",
+   "p": [
+    0,
+    -10.0,
+    -52.6
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "scale": 1.4629,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "upper bells: bell-M x1.1136 (r 2.45)",
+   "part": "bell-M",
+   "p": [
+    9.85,
+    -5.44,
+    -53.7
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "scale": 1.1136,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "lower bells: bell-M x1.0636 (r 2.34)",
+   "part": "bell-M",
+   "p": [
+    9.8,
+    -14.08,
+    -54.05
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "scale": 1.0636,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "pod bells: bell-L (r 3.5)",
+   "part": "bell-L",
+   "p": [
+    29.55,
+    -14.95,
+    -34.6
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "fore turret: kit turret-M x1.15 on the roof (guns forward)",
+   "part": "turret-M",
+   "p": [
+    0,
+    3.45,
+    3.5
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 1.15,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "aft turret (guns aft)",
+   "part": "turret-M",
+   "p": [
+    0,
+    3.45,
+    -25.4
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    -1
+   ],
+   "scale": 1.15,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "torpedo doors x1.1 on the bow plate (z 52.75)",
+   "part": "torpedoDoor",
+   "p": [
+    2.3,
+    -9.6,
+    52.75
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "scale": 1.1,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "torpedoDoor",
+   "p": [
+    2.3,
+    -14.2,
+    52.75
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "scale": 1.1,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "crew door bay z 1.5",
+   "part": "door",
+   "p": [
+    16.37,
+    -13.6,
+    1.5
+   ],
+   "n": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "floodlight",
+   "p": [
+    16.15,
+    -10.9,
+    1.5
+   ],
+   "n": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "rot": 180,
+   "mirrorX": true
+  },
+  {
+   "id": "crew door bay z 9.9",
+   "part": "door",
+   "p": [
+    16.37,
+    -13.6,
+    9.9
+   ],
+   "n": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "floodlight",
+   "p": [
+    16.15,
+    -10.9,
+    9.9
+   ],
+   "n": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "rot": 180,
+   "mirrorX": true
+  },
+  {
+   "id": "crew door bay z -39.5",
+   "part": "door",
+   "p": [
+    15.895,
+    -13.6,
+    -39.5
+   ],
+   "n": [
+    0.9998,
+    0.0,
+    -0.0184
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "floodlight",
+   "p": [
+    15.675,
+    -10.9,
+    -39.5
+   ],
+   "n": [
+    0.9998,
+    0.0,
+    -0.0184
+   ],
+   "rot": 180,
+   "mirrorX": true
+  },
+  {
+   "id": "airlocks, bow flank",
+   "part": "airlock",
+   "p": [
+    14.88,
+    -13.45,
+    24.65
+   ],
+   "n": [
+    0.9753,
+    0.0,
+    0.2209
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "floodlight",
+   "p": [
+    14.87,
+    -10.6,
+    24.65
+   ],
+   "n": [
+    0.9753,
+    0.0,
+    0.2209
+   ],
+   "rot": 180,
+   "mirrorX": true
+  },
+  {
+   "id": "ports, flank fore, y -6.8",
+   "part": "port",
+   "row": {
+    "from": [
+     16.15,
+     -6.8,
+     1.0
+    ],
+    "to": [
+     16.15,
+     -6.8,
+     18.5
+    ],
+    "pitch": 2.5
+   },
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "ports, flank aft, y -6.8",
+   "part": "port",
+   "row": {
+    "from": [
+     15.8,
+     -6.8,
+     -27.5
+    ],
+    "to": [
+     15.8,
+     -6.8,
+     -43.0
+    ],
+    "pitch": 2.5
+   },
+   "n": [
+    0.9998,
+    0.0,
+    -0.0184
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "ports, flank fore, y -9.8",
+   "part": "port",
+   "row": {
+    "from": [
+     16.15,
+     -9.8,
+     1.0
+    ],
+    "to": [
+     16.15,
+     -9.8,
+     18.5
+    ],
+    "pitch": 2.5
+   },
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "ports, flank aft, y -9.8",
+   "part": "port",
+   "row": {
+    "from": [
+     15.8,
+     -9.8,
+     -27.5
+    ],
+    "to": [
+     15.8,
+     -9.8,
+     -43.0
+    ],
+    "pitch": 2.5
+   },
+   "n": [
+    0.9998,
+    0.0,
+    -0.0184
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "port",
+   "p": [
+    9.5,
+    0.9,
+    -29.0
+   ],
+   "n": [
+    0.8907,
+    0.4546,
+    0
+   ],
+   "mirrorX": true,
+   "normal": "hit",
+   "id": "deckhouse side ports"
+  },
+  {
+   "part": "port",
+   "p": [
+    9.5,
+    0.9,
+    -26.0
+   ],
+   "n": [
+    0.8907,
+    0.4546,
+    0
+   ],
+   "mirrorX": true,
+   "normal": "hit"
+  },
+  {
+   "part": "port",
+   "p": [
+    9.5,
+    0.9,
+    -15.5
+   ],
+   "n": [
+    0.8907,
+    0.4546,
+    0
+   ],
+   "mirrorX": true,
+   "normal": "hit"
+  },
+  {
+   "part": "port",
+   "p": [
+    9.5,
+    0.9,
+    -9.5
+   ],
+   "n": [
+    0.8907,
+    0.4546,
+    0
+   ],
+   "mirrorX": true,
+   "normal": "hit"
+  },
+  {
+   "part": "port",
+   "p": [
+    9.5,
+    0.9,
+    -3.5
+   ],
+   "n": [
+    0.8907,
+    0.4546,
+    0
+   ],
+   "mirrorX": true,
+   "normal": "hit"
+  },
+  {
+   "part": "port",
+   "p": [
+    9.5,
+    0.9,
+    3.5
+   ],
+   "n": [
+    0.8907,
+    0.4546,
+    0
+   ],
+   "mirrorX": true,
+   "normal": "hit"
+  },
+  {
+   "part": "port",
+   "p": [
+    9.5,
+    0.9,
+    6.5
+   ],
+   "n": [
+    0.8907,
+    0.4546,
+    0
+   ],
+   "mirrorX": true,
+   "normal": "hit"
+  },
+  {
+   "id": "bridge glazing panes (recess back wall)",
+   "part": "pane",
+   "row": {
+    "from": [
+     7.71,
+     1.35,
+     11.62
+    ],
+    "to": [
+     7.71,
+     1.35,
+     15.077
+    ],
+    "pitch": 1.12
+   },
+   "n": [
+    1.0,
+    0,
+    -0.0
+   ],
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "pane",
+   "row": {
+    "from": [
+     7.57,
+     1.35,
+     16.301
+    ],
+    "to": [
+     6.936,
+     1.35,
+     19.026
+    ],
+    "pitch": 1.12
+   },
+   "n": [
+    0.974,
+    0,
+    0.2264
+   ],
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "pane",
+   "row": {
+    "from": [
+     6.381,
+     1.35,
+     20.09
+    ],
+    "to": [
+     4.228,
+     1.35,
+     22.476
+    ],
+    "pitch": 1.12
+   },
+   "n": [
+    0.7425,
+    0,
+    0.6699
+   ],
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "pane",
+   "row": {
+    "from": [
+     3.213,
+     1.35,
+     23.091
+    ],
+    "to": [
+     0.6,
+     1.35,
+     23.766
+    ],
+    "pitch": 1.12
+   },
+   "n": [
+    0.2499,
+    0,
+    0.9683
+   ],
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "tower panes, front (leaning, faces forward and down)",
+   "part": "pane",
+   "row": {
+    "from": [
+     -4.6,
+     11.52,
+     -5.3
+    ],
+    "to": [
+     4.6,
+     11.52,
+     -5.3
+    ],
+    "pitch": 1.12
+   },
+   "n": [
+    0,
+    -0.603,
+    0.798
+   ],
+   "up": [
+    0,
+    0.798,
+    0.603
+   ],
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "tower panes, sides",
+   "part": "pane",
+   "row": {
+    "from": [
+     6.4,
+     11.52,
+     -6.9
+    ],
+    "to": [
+     6.4,
+     11.52,
+     -14.5
+    ],
+    "pitch": 1.12
+   },
+   "n": [
+    0.798,
+    -0.603,
+    0
+   ],
+   "up": [
+    0.603,
+    0.798,
+    0
+   ],
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "walkway deck-edge rails (3 m bays)",
+   "part": "rail",
+   "row": {
+    "from": [
+     12.85,
+     -1.46,
+     -29.0
+    ],
+    "to": [
+     13.2,
+     -1.46,
+     17.0
+    ],
+    "pitch": 3.0
+   },
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "tower platform rails, front",
+   "part": "rail",
+   "row": {
+    "from": [
+     -4.5,
+     12.85,
+     -4.55
+    ],
+    "to": [
+     4.5,
+     12.85,
+     -4.55
+    ],
+    "pitch": 3.0
+   },
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "tower platform rails, sides",
+   "part": "rail",
+   "row": {
+    "from": [
+     7.2,
+     12.85,
+     -7.27
+    ],
+    "to": [
+     7.2,
+     12.85,
+     -13.27
+    ],
+    "pitch": 3.0
+   },
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "mirrorX": true,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "tower platform rails, aft",
+   "part": "rail",
+   "row": {
+    "from": [
+     -4.5,
+     12.85,
+     -15.95
+    ],
+    "to": [
+     4.5,
+     12.85,
+     -15.95
+    ],
+    "pitch": 3.0
+   },
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "tower platform rails, corners",
+   "part": "rail",
+   "p": [
+    6.54,
+    12.85,
+    -5.24
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "along": [
+    0.7071,
+    0,
+    -0.7071
+   ],
+   "scale": [
+    2.2,
+    1,
+    1
+   ],
+   "mirrorX": true,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "rail",
+   "p": [
+    6.54,
+    12.85,
+    -15.25
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "along": [
+    0.7071,
+    0,
+    0.7071
+   ],
+   "scale": [
+    2.2,
+    1,
+    1
+   ],
+   "mirrorX": true,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "deckhouse ladders",
+   "part": "ladder",
+   "p": [
+    10.0,
+    -0.25,
+    -21.5
+   ],
+   "n": [
+    0.8907,
+    0.4546,
+    0
+   ],
+   "up": [
+    -0.4546,
+    0.8907,
+    0
+   ],
+   "rows": {
+    "count": 2,
+    "step": [
+     -1.23,
+     2.4,
+     0
+    ]
+   },
+   "mirrorX": true
+  },
+  {
+   "part": "ladder",
+   "p": [
+    10.0,
+    -0.25,
+    0.8
+   ],
+   "n": [
+    0.8907,
+    0.4546,
+    0
+   ],
+   "up": [
+    -0.4546,
+    0.8907,
+    0
+   ],
+   "rows": {
+    "count": 2,
+    "step": [
+     -1.23,
+     2.4,
+     0
+    ]
+   },
+   "mirrorX": true
+  },
+  {
+   "id": "rcs",
+   "part": "rcs",
+   "p": [
+    9.999,
+    -7.0,
+    46.2
+   ],
+   "n": [
+    0.9753,
+    0.0,
+    0.2209
+   ],
+   "mirrorX": true,
+   "normal": "hit"
+  },
+  {
+   "id": "rcs",
+   "part": "rcs",
+   "p": [
+    9.999,
+    -14.0,
+    46.2
+   ],
+   "n": [
+    0.9753,
+    0.0,
+    0.2209
+   ],
+   "mirrorX": true,
+   "normal": "hit"
+  },
+  {
+   "id": "rcs",
+   "part": "rcs",
+   "p": [
+    15.751,
+    -7.0,
+    -47.3
+   ],
+   "n": [
+    0.9998,
+    0.0,
+    -0.0184
+   ],
+   "mirrorX": true,
+   "normal": "hit"
+  },
+  {
+   "id": "rcs",
+   "part": "rcs",
+   "p": [
+    15.751,
+    -14.0,
+    -47.3
+   ],
+   "n": [
+    0.9998,
+    0.0,
+    -0.0184
+   ],
+   "mirrorX": true,
+   "normal": "hit"
+  },
+  {
+   "id": "nav lights: pod outboard sidelights",
+   "part": "navlight",
+   "p": [
+    34.45,
+    -14.95,
+    -7.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "navlight",
+   "p": [
+    0,
+    -23.25,
+    0.0
+   ],
+   "n": [
+    0,
+    -1,
+    0
+   ],
+   "sink": 0.15
+  },
+  {
+   "part": "navlight",
+   "p": [
+    0,
+    23.07,
+    -11.5
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ]
+  },
+  {
+   "part": "navlight",
+   "p": [
+    0,
+    -3.1,
+    -49.25
+   ],
+   "n": [
+    0,
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "yardarm whips",
+   "part": "antenna",
+   "p": [
+    7.4,
+    15.95,
+    -13.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 0.5,
+   "mirrorX": true
+  },
+  {
+   "id": "deckhouse aft whips",
+   "part": "antenna",
+   "p": [
+    4.0,
+    3.45,
+    -33.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 0.55,
+   "mirrorX": true
+  },
+  {
+   "id": "fal antenna on the director",
+   "part": "fal:antenna",
+   "p": [
+    0.0,
+    5.05,
+    21.2
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 0.55
+  },
+  {
+   "id": "radome on its plinth",
+   "part": "dome",
+   "p": [
+    0,
+    14.4,
+    -7.3
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 1.1,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  }
+ ]
+}
