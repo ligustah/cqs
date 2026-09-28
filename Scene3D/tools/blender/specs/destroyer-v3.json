@@ -1,0 +1,1007 @@
+{
+ "about": "Bastion-class destroyer DD-12, v3 REMODEL: the hull is clean hard-surface geometry built by tools/blender/hulls/destroyer.py from measurements of the fal/Tripo H3.1 blueprint (ship frame at the rendered size, metres, bow +Z, dorsal +Y, port +X; not re-centred), painted by tools/blender/hulls/destroyer_paint.py; this spec places the Blender parts kit (assets/parts-blender, +Z mounts) on it. Bells are kit bells scaled to the blueprint radii; the module's engines use the kit's documented depth / throat / wall times the same scale.",
+ "hull": {
+  "glb": "HULL_GLB_FROM_COMMAND_LINE",
+  "rotate": [
+   0,
+   0,
+   0
+  ],
+  "scale": 1.0,
+  "centre": false
+ },
+ "partsDir": "../../../assets/parts-blender",
+ "partDefaults": {
+  "door": {
+   "sink": 0.0
+  },
+  "rcs": {
+   "sink": 0.04
+  },
+  "floodlight": {
+   "sink": 0.02
+  },
+  "navlight": {
+   "sink": 0.0
+  },
+  "pdc": {
+   "sink": 0.05
+  },
+  "rail": {
+   "sink": 0.0,
+   "xAlong": true,
+   "scale": [
+    3,
+    1,
+    1
+   ]
+  },
+  "ladder": {
+   "sink": 0.0,
+   "lift": 0.03
+  },
+  "antenna": {
+   "sink": 0.05
+  },
+  "dome": {
+   "sink": 0.05
+  }
+ },
+ "fixes": {
+  "door": {
+   "decimate": 0.3
+  },
+  "missilePod": {
+   "decimate": 0.3
+  },
+  "rail": {
+   "decimate": 1.0
+  },
+  "rcs": {
+   "decimate": 0.3
+  },
+  "navlight": {
+   "decimate": 0.35
+  },
+  "floodlight": {
+   "decimate": 0.3
+  },
+  "ladder": {
+   "decimate": 0.45
+  },
+  "turret-M": {
+   "decimate": 0.35
+  },
+  "bell-L": {
+   "decimate": 0.22
+  },
+  "bell-XL": {
+   "decimate": 0.3
+  },
+  "antenna": {
+   "decimate": 0.45
+  },
+  "dome": {
+   "decimate": 0.6
+  },
+  "pdc": {
+   "decimate": 0.35
+  }
+ },
+ "seat": {
+  "maxGap": 0.15,
+  "maxBury": 0.4,
+  "drop": true
+ },
+ "bake": {
+  "ao": true,
+  "res": 2048,
+  "distance": 0.5,
+  "samples": 16,
+  "aa": 4,
+  "strength": 0.6
+ },
+ "placements": [
+  {
+   "id": "corner bells, upper pair: bell-L x1.237 (r 4.33)",
+   "part": "bell-L",
+   "p": [
+    13.45,
+    -13.71,
+    -101.32
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "scale": 1.237,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "corner bells, lower pair: bell-L x1.237 (r 4.33)",
+   "part": "bell-L",
+   "p": [
+    13.45,
+    -25.45,
+    -101.32
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "scale": 1.237,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "centre dish: bell-XL x1.106 (r 7.74), lip 10.7 m forward of the corner lips",
+   "part": "bell-XL",
+   "p": [
+    0,
+    -19.94,
+    -90.6
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "scale": 1.106,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "bow dorsal turret: turret-M x1.15 on its barbette (guns forward)",
+   "part": "turret-M",
+   "p": [
+    0,
+    -5.9,
+    69.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 1.15,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "bow ventral turret: turret-M x1.1 (guns forward)",
+   "part": "turret-M",
+   "p": [
+    0,
+    -30.9,
+    72.0
+   ],
+   "n": [
+    0,
+    -1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 1.1,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "aft dorsal turret: turret-M x1.15 (guns aft)",
+   "part": "turret-M",
+   "p": [
+    0,
+    -3.95,
+    -72.5
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    -1
+   ],
+   "scale": 1.15,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "flank sponson guns: turret-M x0.8 on the sponson faces (guns forward)",
+   "part": "turret-M",
+   "p": [
+    19.7,
+    -20.2,
+    14.2
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 0.8,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "pdc",
+   "p": [
+    17.534,
+    -6.44,
+    -38.6
+   ],
+   "n": [
+    0.6452,
+    0.764,
+    0.0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true,
+   "id": "point-defence mounts: engine shoulders, mid and bow shoulders, keel, tower roof"
+  },
+  {
+   "part": "pdc",
+   "p": [
+    17.534,
+    -6.44,
+    -80.4
+   ],
+   "n": [
+    0.6452,
+    0.764,
+    0.0
+   ],
+   "up": [
+    0,
+    0,
+    -1
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "pdc",
+   "p": [
+    14.0,
+    -10.4,
+    -11.5
+   ],
+   "n": [
+    0.8137,
+    0.5812,
+    0.0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "pdc",
+   "p": [
+    14.445,
+    -10.36,
+    79.0
+   ],
+   "n": [
+    0.7735,
+    0.6338,
+    0.0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "pdc",
+   "p": [
+    19.753,
+    -31.848,
+    -40.2
+   ],
+   "n": [
+    0.6315,
+    -0.7754,
+    0.0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "pdc",
+   "p": [
+    7.0,
+    -30.4,
+    60.0
+   ],
+   "n": [
+    0,
+    -1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "pdc",
+   "p": [
+    7.4,
+    26.0,
+    -35.6
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "VLS blocks, engine deck",
+   "part": "missilePod",
+   "p": [
+    10.6,
+    -4.3,
+    -65.8
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "missilePod",
+   "p": [
+    10.6,
+    -4.3,
+    -79.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "VLS blocks, bow deck",
+   "part": "missilePod",
+   "p": [
+    7.6,
+    -6.4,
+    78.5
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "boat hatch personnel door (1 x 2 m) in the aft leaf",
+   "part": "door",
+   "p": [
+    17.14,
+    -21.99,
+    -20.5
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "gun-gap doors, mid-hull front face",
+   "part": "door",
+   "p": [
+    7.0,
+    -25.080000000000002,
+    42.9
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "gun-gap doors, bow block rear face",
+   "part": "door",
+   "p": [
+    7.0,
+    -25.080000000000002,
+    54.9
+   ],
+   "n": [
+    0,
+    0,
+    -1
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "deckhouse side doors",
+   "part": "door",
+   "p": [
+    9.5,
+    -7.08,
+    -21.95
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "tower base aft doors",
+   "part": "door",
+   "p": [
+    4.0,
+    -3.08,
+    -61.5
+   ],
+   "n": [
+    0,
+    0,
+    -1
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "gun-gap ladders, walkway to the upper rail level",
+   "part": "ladder",
+   "p": [
+    9.95,
+    -24.8,
+    42.9
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "rows": {
+    "count": 4,
+    "step": [
+     0,
+     3.0,
+     0
+    ]
+   },
+   "mirrorX": true
+  },
+  {
+   "id": "spine ladders",
+   "part": "ladder",
+   "p": [
+    4.4,
+    -7.75,
+    25.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "tower base ladders",
+   "part": "ladder",
+   "p": [
+    12.0,
+    -2.75,
+    -56.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "gun-gap walkway rails",
+   "part": "rail",
+   "row": {
+    "from": [
+     11.0,
+     -26.3,
+     44.9
+    ],
+    "to": [
+     11.0,
+     -26.3,
+     53.0
+    ],
+    "pitch": 3.0
+   },
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "mirrorX": true,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "spine catwalk rails",
+   "part": "rail",
+   "row": {
+    "from": [
+     4.1,
+     -5.5,
+     21.5
+    ],
+    "to": [
+     4.1,
+     -5.5,
+     59.0
+    ],
+    "pitch": 3.0
+   },
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "mirrorX": true,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "balcony rails y 10.6, outer edge",
+   "part": "rail",
+   "row": {
+    "from": [
+     11.0,
+     10.6,
+     -50.6
+    ],
+    "to": [
+     11.0,
+     10.6,
+     -61.4
+    ],
+    "pitch": 3.0
+   },
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "mirrorX": true,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "rail",
+   "p": [
+    9.3,
+    10.6,
+    -62.1
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "along": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "balcony rails y 16.6, outer edge",
+   "part": "rail",
+   "row": {
+    "from": [
+     11.0,
+     16.6,
+     -50.6
+    ],
+    "to": [
+     11.0,
+     16.6,
+     -61.4
+    ],
+    "pitch": 3.0
+   },
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "mirrorX": true,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "rail",
+   "p": [
+    9.3,
+    16.6,
+    -62.1
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "along": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "rcs",
+   "p": [
+    15.558,
+    -15.6,
+    88.0
+   ],
+   "n": [
+    0.9331,
+    0.0,
+    0.3597
+   ],
+   "mirrorX": true,
+   "normal": "hit",
+   "id": "rcs, bow nose flank"
+  },
+  {
+   "part": "rcs",
+   "p": [
+    15.558,
+    -21.0,
+    88.0
+   ],
+   "n": [
+    0.9331,
+    0.0,
+    0.3597
+   ],
+   "mirrorX": true,
+   "normal": "hit"
+  },
+  {
+   "part": "rcs",
+   "p": [
+    25.896,
+    -13.502,
+    -81.0
+   ],
+   "n": [
+    0.6452,
+    0.764,
+    0.0
+   ],
+   "mirrorX": true,
+   "normal": "hit"
+  },
+  {
+   "part": "rcs",
+   "p": [
+    16.688,
+    -34.344,
+    -81.0
+   ],
+   "n": [
+    0.6315,
+    -0.7754,
+    0.0
+   ],
+   "mirrorX": true,
+   "normal": "hit"
+  },
+  {
+   "id": "nav lights: engine-block flank sidelights (red port, green starboard)",
+   "part": "navlight",
+   "p": [
+    27.67,
+    -19.7,
+    -50.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "navlight",
+   "p": [
+    0,
+    26.0,
+    -34.3
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ]
+  },
+  {
+   "part": "navlight",
+   "p": [
+    0,
+    -36.9,
+    -50.0
+   ],
+   "n": [
+    0,
+    -1,
+    0
+   ],
+   "sink": 0.1
+  },
+  {
+   "part": "navlight",
+   "p": [
+    0,
+    -7.8,
+    -85.0
+   ],
+   "n": [
+    0,
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "floodlights",
+   "part": "floodlight",
+   "p": [
+    17.5,
+    -15.45,
+    -19.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "rot": 180,
+   "mirrorX": true
+  },
+  {
+   "part": "floodlight",
+   "p": [
+    7.0,
+    -23.35,
+    42.9
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "rot": 180,
+   "mirrorX": true
+  },
+  {
+   "part": "floodlight",
+   "p": [
+    7.0,
+    -23.35,
+    54.9
+   ],
+   "n": [
+    0,
+    0,
+    -1
+   ],
+   "rot": 180,
+   "mirrorX": true
+  },
+  {
+   "id": "bow block whip",
+   "part": "antenna",
+   "p": [
+    6.2,
+    -6.4,
+    59.5
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "deckhouse whip",
+   "part": "antenna",
+   "p": [
+    6.0,
+    2.2,
+    -16.5
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "masthead: antenna x1.15 on the mast pylon (envelope top y 36.9)",
+   "part": "antenna",
+   "p": [
+    0,
+    30.0,
+    -60.3
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 1.15,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "radome x2.3 on its plinth",
+   "part": "dome",
+   "p": [
+    0,
+    29.6,
+    -54.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 2.3,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  }
+ ]
+}
