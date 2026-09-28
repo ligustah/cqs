@@ -74,6 +74,119 @@
         "height"
       ],
       "prompt": "Spacecraft radiator panel, dense parallel cooling fins, dark anodised metal with faint blue heat discolouration, seamless"
+    },
+    "hullWear": {
+      "maps": [
+        "basecolor",
+        "normal",
+        "roughness",
+        "metalness",
+        "height"
+      ],
+      "prompt": "Top-down orthographic photo scan of a large area of worn matte dark grey spacecraft hull paint, flat even diffuse lighting with no shadows and no lighting gradient. Broad soft irregular patches of subtly different grey tone from panel to panel, faint warm and cool thermal discoloration, soft faded streaks and light scuffs, sparse tiny micrometeoroid pits, gentle sun-bleached areas. Realistic, understated and low contrast, not grungy, no rust, no seams, no bolts, no text, no markings, seamless tileable texture",
+      "request_id": "01a0e55a-dddc-76a0-9f9d-8f6004437755",
+      "load": "finish",
+      "runtimeMaps": [
+        "pack"
+      ],
+      "pack": "lum,chroma,lumSoft (z-normalised: 128 + 40 z)",
+      "stats": {
+        "lum": [
+          0.502,
+          0.1569
+        ],
+        "rough": [
+          0.502,
+          0.1569
+        ],
+        "height": [
+          0.502,
+          0.1569
+        ],
+        "raw8": {
+          "lum": [
+            87.3421,
+            3.2923
+          ],
+          "chroma": [
+            1.1902,
+            0.9155
+          ],
+          "lumSoft": [
+            87.3421,
+            3.2572
+          ]
+        }
+      },
+      "use": "macro tone and roughness breakup (~32 m and ~170 m tiles)"
+    },
+    "sootStreak": {
+      "maps": [
+        "basecolor",
+        "normal",
+        "roughness",
+        "metalness",
+        "height"
+      ],
+      "prompt": "Top-down orthographic photo scan of dark grey painted metal with soft soot and exhaust staining, flat even diffuse lighting with no shadows. Faint smoky dark streaks and diffuse carbon deposits running in one direction, subtle bronze and straw-blue heat tint in patches, matte, realistic and understated, no seams, no bolts, no text, seamless tileable texture",
+      "request_id": "01a0e55a-dfaa-7b30-a731-217c838f7423",
+      "load": "finish",
+      "runtimeMaps": [
+        "pack"
+      ],
+      "pack": "lum,chroma,lumSoft (z-normalised: 128 + 40 z)",
+      "stats": {
+        "lum": [
+          0.502,
+          0.1569
+        ],
+        "rough": [
+          0.502,
+          0.1569
+        ],
+        "height": [
+          0.502,
+          0.1569
+        ],
+        "raw8": {
+          "lum": [
+            84.061,
+            3.1773
+          ],
+          "chroma": [
+            5.4786,
+            4.0661
+          ],
+          "lumSoft": [
+            84.061,
+            3.1208
+          ]
+        }
+      },
+      "use": "drive soot breakup near the bell lips (~5.5 m tile)"
+    },
+    "hullGrit": {
+      "maps": [
+        "basecolor",
+        "normal",
+        "roughness",
+        "metalness",
+        "height"
+      ],
+      "prompt": "Top-down orthographic macro photo scan of fine industrial spray paint micro-surface, uniform neutral grey, flat even diffuse lighting with no shadows. Fine sand-blasted orange-peel texture, tiny even bumps and microscopic pits, very subtle random fine scratches. Uniform density everywhere, no large features, no seams, no stains, no text, seamless tileable texture",
+      "request_id": "01a0e55a-ded9-7eb1-a16e-feb5c6badf8b",
+      "load": "finish",
+      "runtimeMaps": [
+        "pack"
+      ],
+      "pack": "nx,ny,rough",
+      "stats": {
+        "rough": [
+          0.412,
+          0.0581
+        ]
+      },
+      "use": "micro normal and roughness (0.8 m tile)"
     }
   }
 }

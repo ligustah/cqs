@@ -18,6 +18,7 @@ import { loadPatinaLibrary, proceduralStandIn } from './lib/patina.js';
 import { panelSet } from './lib/textures.js';
 import { createLighting, SUN_DIR } from './env/lighting.js';
 import { TIER } from './lib/device.js';
+import { AO_REQUESTED, createScreenAO } from './lib/finish.js';
 import { createSky } from './env/sky.js';
 import { createPlanet } from './env/planet.js';
 import { ENV } from './env/state.js';
@@ -184,6 +185,9 @@ function start() {
       }`,
   });
   composer.addPass(grainPass);
+
+  // opt-in screen-space contact shadows (?ao=1, desktop tier only; src/lib/finish.js)
+  const screenAO = AO_REQUESTED && TIER.ao ? createScreenAO(renderer, scene, camera) : null;
 
   const effects = [];
   const tickers = [];
@@ -675,6 +679,7 @@ function start() {
     sky.update(simT, camera, renderer);
     for (const e of effects) e.update(simT, renderer.domElement.height, camera.projectionMatrix.elements[5]);
     if (!still) grainPass.uniforms.uSeed.value = frames % 61;
+    if (screenAO) screenAO.render(dist);
     composer.render();
     if (world.inset?.rect) {
       // lineup detail box: the same scene through the inset camera, into its corner of the canvas
@@ -682,7 +687,9 @@ function start() {
       renderer.setScissorTest(true);
       renderer.setScissor(r.x, H0 - r.y - r.h, r.w, r.h);
       renderer.setViewport(r.x, H0 - r.y - r.h, r.w, r.h);
+      if (screenAO) screenAO.enabled = false; // the AO texture belongs to the main view
       renderer.render(scene, world.inset.camera);
+      if (screenAO) screenAO.enabled = true;
       renderer.setScissorTest(false);
       renderer.setViewport(0, 0, renderer.domElement.clientWidth || w, H0);
     }
@@ -694,6 +701,6 @@ function start() {
     requestAnimationFrame(frame);
   }
   renderer.domElement.addEventListener('pointerdown', () => { world.followTarget = null; flight = null; levelOn = false; });
-  window.__scene = { scene, camera, renderer, world, controls };
+  window.__scene = { scene, camera, renderer, world, controls, composer, screenAO };
   frame();
 }

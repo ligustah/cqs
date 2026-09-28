@@ -207,6 +207,29 @@
         "radiator": "Spacecraft radiator panel, dense parallel cooling fins, dark anodised metal with faint blue heat discolouration, seamless"
       },
       "use": "hull/orange/armor as tri-planar detail layers on the generated meshes; all sets as full materials for scene-built parts (hangar deck, engine bells, scale-lineup props)"
+    },
+    "D_materials_v2": {
+      "model": "fal-ai/patina/material",
+      "params": "same as D_materials (square_hd, all five maps, upscale_factor 2, tiling_mode both, png)",
+      "why": "v8 look-dev: the hulls read as clean CG (uniform albedo, one dull matte sheen on every plate, no micro-surface, parts without contact shadow). Opt-in behind ?finish=worn (src/lib/finish.js) and ?ao=1 until the defaults are flipped.",
+      "sets": {
+        "hullWear": {
+          "request_id": "01a0e55a-dddc-76a0-9f9d-8f6004437755",
+          "use": "macro albedo tone (+-7.5 % per scale at one sigma, clamped +-20 %) and roughness breakup (0.55-0.95, mean 0.78) read tri-planar in the ship frame at ~46 m and ~190 m tiles (axes swapped between scales)"
+        },
+        "hullGrit": {
+          "request_id": "01a0e55a-ded9-7eb1-a16e-feb5c6badf8b",
+          "use": "0.8 m micro-surface: normal faded in only where a tile spans >= 40-220 px (no aliasing), roughness breakup at every distance"
+        },
+        "sootStreak": {
+          "request_id": "01a0e55a-dfaa-7b30-a731-217c838f7423",
+          "use": "breakup of the drive soot stain round each bell lip (engines from the ship module)"
+        }
+      },
+      "runtime": "each set ships a packed pack.webp (hullWear/sootStreak: z-normalised luminance, warm-cool chroma, soft luminance; hullGrit: normal xy + roughness) listed as runtimeMaps; manifest load:'finish' keeps them from loading unless the finish is on. The sets are deliberately low-contrast and PATINA's roughness/height for them came back flat (height a synthetic dither grid), so roughness is driven from the chroma and soft-luminance fields instead.",
+      "screenAO": "three GTAOPass computed before the main render (lit opaque meshes only) and applied inside MeshStandard/Physical materials: indirect light fully, direct light 45 %; radius 2.5 % of the camera distance (1.5-14 m); off on the phone tier.",
+      "lighting": "reviewed, unchanged: one hard sun, PMREM planet-shine at albedo 0.3 (shadow sides ~40 % of the lit side in sRGB, as in orbital photography with a sunlit planet below), exposure 1.7.",
+      "cost": "3 PATINA jobs, about $0.35 (list price $0.01 per megapixel; the first build's 11 sets were about $1.20)"
     }
   },
   "realism": "Futuristic but physically believable, never a cheap video-game look: real aerospace/naval engineering proportions and function, physically based materials (weathered white thermal paint, brushed and anodised aluminium, titanium, carbon composite, gold and silver MLI blankets, ceramic tiles), fine wear and grime, no neon trim, no glowing panel lines, no toy/cartoon/stylised shapes. Propulsion is fusion torch drives: large magnetic-nozzle engine bells whose exhaust is an intensely bright, long, blue-white plasma plume with faint shock diamonds; the plume is rendered in-scene, so 3D-reconstruction images show the engines unlit. Lighting reads like real photography: one hard sun, deep shadows, planet-shine, bloom only from genuinely bright sources.",

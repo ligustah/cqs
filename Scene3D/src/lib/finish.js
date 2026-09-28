@@ -1,0 +1,283 @@
+// Look-dev v8 (opt-in): a "worn finish" for the hulls and screen-space contact shadows.
+//
+// Everything here is behind query flags so the default look is unchanged:
+//   ?finish=worn  worn-paint finish on every GLB ship (hull and kit parts), see addWornFinish()
+//   ?ao=1         screen-space ambient occlusion (GTAO) applied inside the lit materials, see createScreenAO()
+// (lighting was reviewed and left as is: no ?light=v2; see the v8 note in pipeline/fal-pipeline.json)
+// FINISH_DEFAULT / AO_DEFAULT below are the switches to flip once the look is approved;
+// ?finish=off / ?ao=0 then turn each back off.
+//
+// Worn finish, in the ship frame (metres, so the pattern is continuous across hull and parts and
+// has the same absolute size on every class):
+//   - macro albedo tone: the fal PATINA 'hullWear' set's luminance, read at two scales (~24 m and
+//     ~110 m, axes swapped between them so the repeats never line up), as a luminance-normalised
+//     z-score: about +-6 % / +-8 % per scale at one sigma, clamped to +-20 %. Hue is untouched;
+//   - optional plate tone (plateTone: true): the 'hull' set's base colour at the detail layer's tile.
+//     Off: its 6 m grid read as a checkerboard that ignores a remodelled hull's own plate seams;
+//   - roughness breakup: after the livery's matte push the hull's roughness is re-derived from the
+//     wear set (two scales) and the plate tone: ~0.6-0.95, mean ~0.8, with worn (lighter) patches
+//     slightly glossier, so the sun's broad sheen and the planet's reflection vary across plates;
+//   - micro-surface: the 'hullGrit' set (0.8 m tile) perturbs the normal only where a tile spans
+//     enough pixels (faded by the screen-space footprint, so it never aliases or shimmers); its
+//     roughness (mip-filtered, safe at any distance) always adds a fine breakup, and the lost
+//     normal variance of the faded grit is folded back into roughness;
+//   - drive soot: near each drive bell's lip (userData.ship.engines / cfg.engines) the paint is
+//     stained darker and rougher (the 'sootStreak' set breaks it up).
+// Glass (the livery's livGlass), saturated markings and container colours (reduced strength), and
+// the carrier's hangar interior (excluded box) are respected. Kit parts get it at lower strength.
+import * as THREE from 'three';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+
+const params = new URLSearchParams(globalThis.location?.search || '');
+// ---- defaults to flip ------------------------------------------------------------------------
+export const FINISH_DEFAULT = true;  // true: worn finish everywhere unless ?finish=off
+export const AO_DEFAULT = true;      // true: screen-space AO (desktop tier only) unless ?ao=0
+// -------------------------------------------------------------------------------------------------
+const fq = params.get('finish');
+export const FINISH = fq ? (fq === 'worn' ? 'worn' : null) : (FINISH_DEFAULT ? 'worn' : null);
+const aq = params.get('ao');
+export const AO_REQUESTED = aq ? aq === '1' : AO_DEFAULT;
+
+// luminance stats of the 'hull' set's base colour (green channel, linear), measured offline
+const PLATE_STAT = [0.7125, 0.0285];
+
+/**
+ * Chain the worn finish onto a MeshStandard/Physical material that may already carry the livery
+ * (applyLivery) and the PATINA detail layer (addDetailLayer). Apply it LAST.
+ *   lib        PATINA library (needs hullWear; hullGrit, sootStreak and hull are optional)
+ *   toShip     Matrix4: the mesh's object space -> ship frame (metres)
+ *   strength   0..1 overall (kit parts ~0.6)
+ *   engines    [{ p: [x,y,z] | Vector3, dir, radius }] in the ship frame
+ *   exclude    optional { box: [[x,y,z],[x,y,z]], feather }: no finish inside (a hangar interior)
+ */
+export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, engines = [], exclude = null, plateTone = false } = {}) {
+  const wear = lib.hullWear?.maps?.pack;
+  if (!wear) return material;
+  const wearStat = lib.hullWear.meta.stats;
+  const grit = lib.hullGrit?.maps?.pack || null;
+  const gritStat = lib.hullGrit?.meta.stats;
+  const soot = lib.sootStreak?.maps?.pack || null;
+  const sootStat = lib.sootStreak?.meta.stats;
+  // plate tone from the 'hull' set (off by default: its 6 m grid does not follow a remodelled hull's own seams)
+  const plate = plateTone && material.userData.detail && lib.hull?.maps?.basecolor ? lib.hull.maps.basecolor : null;
+  const hasLiv = !!material.userData.livery;
+  const V3 = THREE.Vector3;
+  const eng = engines.slice().sort((a, b) => b.radius - a.radius).slice(0, 8);
+  const engP = Array.from({ length: 8 }, (_, i) => (eng[i] ? new THREE.Vector4(...new V3().copy(eng[i].p).toArray(), eng[i].radius) : new THREE.Vector4(0, 0, 0, 0)));
+  const engD = Array.from({ length: 8 }, (_, i) => (eng[i] ? new V3().copy(eng[i].dir || new V3(0, 0, -1)).normalize() : new V3(0, 0, -1)));
+  const uniforms = {
+    uFinM: { value: toShip.clone() },
+    uFinAmt: { value: strength },
+    uFinWear: { value: wear },
+    uFinWearStat: { value: new THREE.Vector4(wearStat.lum[0], wearStat.lum[1], wearStat.rough[0], wearStat.rough[1]) },
+    uFinScale: { value: new THREE.Vector2(1 / 24, 1 / 110) },
+    uFinTone: { value: new THREE.Vector2(0.06, 0.08).multiplyScalar(tone) }, // per scale, at one sigma
+    uFinRough: { value: new THREE.Vector3(0.78, 0.55, 0.95) }, // mean, min, max of the re-derived roughness
+    uFinGrit: { value: grit },
+    uFinGritOn: { value: grit ? 1 : 0 },
+    uFinGritScale: { value: 1 / 0.8 },
+    uFinGritStat: { value: new THREE.Vector2(...(gritStat?.rough || [0.5, 0.1])) },
+    uFinGritNrm: { value: 0.55 },
+    uFinPlate: { value: plate },
+    uFinPlateOn: { value: plate ? 1 : 0 },
+    uFinPlateStat: { value: new THREE.Vector2(...PLATE_STAT) },
+    uFinSoot: { value: soot || wear },
+    uFinSootStat: { value: new THREE.Vector2(...(sootStat?.lum || wearStat.lum)) },
+    uFinEngN: { value: eng.length },
+    uFinEngP: { value: engP },
+    uFinEngD: { value: engD },
+    uFinExOn: { value: exclude ? 1 : 0 },
+    uFinExMin: { value: new V3(...(exclude?.box[0] || [0, 0, 0])) },
+    uFinExMax: { value: new V3(...(exclude?.box[1] || [0, 0, 0])) },
+    uFinExFeather: { value: exclude?.feather ?? 2 },
+  };
+  material.userData.finish = uniforms;
+  const prev = material.onBeforeCompile;
+  material.onBeforeCompile = (shader, renderer) => {
+    prev?.call(material, shader, renderer);
+    Object.assign(shader.uniforms, uniforms);
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nuniform mat4 uFinM; varying vec3 vFinP; varying vec3 vFinN;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvFinP = (uFinM * vec4(transformed, 1.0)).xyz;\nvFinN = mat3(uFinM) * objectNormal;');
+    const fns = /* glsl */`
+      varying vec3 vFinP; varying vec3 vFinN;
+      uniform float uFinAmt, uFinGritOn, uFinGritScale, uFinGritNrm, uFinPlateOn, uFinExOn, uFinExFeather;
+      uniform int uFinEngN;
+      uniform vec4 uFinWearStat; uniform vec2 uFinTone, uFinScale, uFinGritStat, uFinPlateStat, uFinSootStat; uniform vec3 uFinRough;
+      uniform sampler2D uFinWear, uFinGrit, uFinPlate, uFinSoot;
+      uniform vec4 uFinEngP[8]; uniform vec3 uFinEngD[8];
+      uniform vec3 uFinExMin, uFinExMax;
+      float finMask, finSootK, finGritVis, finMark, finPlateZ; vec4 finA1, finA2, finGx, finGy, finGz; vec3 finDpx, finDpy;
+      vec3 finW() { vec3 w = pow(abs(normalize(vFinN)), vec3(4.0)); return w / (w.x + w.y + w.z); }
+      vec4 finTri(sampler2D t, vec3 p, vec3 w) { return texture2D(t, p.zy) * w.x + texture2D(t, p.xz) * w.y + texture2D(t, p.xy) * w.z; }
+      // the second (large) scale reads the same set with its axes swapped and offset: no aligned repeats
+      vec4 finTri2(sampler2D t, vec3 p, vec3 w) { return texture2D(t, p.yz + 0.37) * w.x + texture2D(t, p.zx + 0.61) * w.y + texture2D(t, p.yx + 0.19) * w.z; }
+      float finExclude() {
+        if (uFinExOn < 0.5) return 1.0;
+        vec3 d = min(vFinP - uFinExMin, uFinExMax - vFinP); vec3 m = smoothstep(vec3(0.0), vec3(uFinExFeather), d);
+        return 1.0 - m.x * m.y * m.z;
+      }
+      // drive soot: stained paint around each bell lip and on the structure just forward of it
+      float finSoot() {
+        float s = 0.0;
+        for (int i = 0; i < 8; i++) {
+          if (i >= uFinEngN) break;
+          vec3 d = vFinP - uFinEngP[i].xyz; float r = uFinEngP[i].w;
+          float ax = dot(d, uFinEngD[i]); float rad = length(d - uFinEngD[i] * ax);
+          float along = smoothstep(-3.2 * r, -0.2 * r, ax) * (1.0 - smoothstep(0.1 * r, 0.6 * r, ax));
+          float ring = exp(-pow(max(rad - 0.85 * r, 0.0) / (0.9 * r), 2.0));
+          s = max(s, along * ring);
+        }
+        return s;
+      }
+      // cotangent frame from screen derivatives taken in uniform control flow (see the normal block)
+      mat3 finTBN(vec3 q0, vec3 q1, vec3 n, vec2 s0, vec2 s1) {
+        vec3 q1p = cross(q1, n), q0p = cross(n, q0);
+        vec3 T = q1p * s0.x + q0p * s1.x; vec3 B = q1p * s0.y + q0p * s1.y;
+        float det = max(dot(T, T), dot(B, B)); float sc = (det == 0.0) ? 0.0 : inversesqrt(det);
+        return mat3(T * sc, B * sc, n);
+      }`;
+    const liv = hasLiv ? 'livGlass' : '0.0';
+    // albedo (before color_fragment, after the livery repaint and any interior keep)
+    const albedo = /* glsl */`{
+        finMask = uFinAmt * finExclude() * (1.0 - ${liv});
+        vec3 c = diffuseColor.rgb; float mx = max(c.r, max(c.g, c.b)), mn = min(c.r, min(c.g, c.b));
+        finMark = smoothstep(0.18, 0.4, (mx - mn) / max(mx, 1e-4)); // markings / container colours
+        vec3 w = finW();
+        finA1 = finTri(uFinWear, vFinP * uFinScale.x, w); finA2 = finTri2(uFinWear, vFinP * uFinScale.y, w);
+        float tone = uFinTone.x * clamp((finA1.r - uFinWearStat.x) / uFinWearStat.y, -2.0, 2.0) + uFinTone.y * clamp((finA2.b - uFinWearStat.x) / uFinWearStat.y, -2.0, 2.0);
+        finPlateZ = 0.0;
+        ${plate ? 'finPlateZ = clamp((detTriS(uFinPlate, uDetScale) - uFinPlateStat.x) / uFinPlateStat.y, -2.0, 2.0) * uFinPlateOn;' : ''}
+        tone += 0.025 * finPlateZ;
+        tone = clamp(tone, -0.2, 0.2) * mix(1.0, 0.5, finMark);
+        finSootK = finSoot();
+        // soot breakup: the soot set's streaks where the drive stains the paint (uniform branch: ships
+        // without drives skip the fetches; they stay out of per-pixel branches so their mips are defined)
+        float sootAmt = 0.0;
+        if (uFinEngN > 0) { float sootTex = finTri(uFinSoot, vFinP * 0.18, w).r; sootAmt = finSootK * clamp(0.75 + 0.5 * (uFinSootStat.x - sootTex) / max(uFinSootStat.y, 1e-3), 0.3, 1.2); }
+        diffuseColor.rgb *= mix(1.0, (1.0 + tone) * (1.0 - 0.6 * sootAmt), finMask);
+      }`;
+    // roughness (after the livery's matte push and the detail layer)
+    const rough = /* glsl */`{
+        vec3 w = finW();
+        // pack: r = luminance, g = warm/cool chroma, b = soft luminance (all z-normalised). The chroma
+        // (discoloured patches) and the large-scale soft tone drive roughness: related to the tone, not a copy
+        float zr = clamp((finA1.g - uFinWearStat.z) / uFinWearStat.w, -1.5, 1.5) * 0.55 + clamp((finA2.b - uFinWearStat.z) / uFinWearStat.w, -2.0, 2.0) * 0.45;
+        float worn = clamp((finA1.r - uFinWearStat.x) / uFinWearStat.y, 0.0, 2.0); // lighter, worn patches: a little glossier
+        float r = uFinRough.x + 0.1 * zr - 0.04 * worn + 0.04 * finPlateZ;
+        // grit: footprint of one grit tile on screen -> visibility of its normals (1 = >= 100 px per tile, 0 below 20;
+        // the mip chain already flattens the normals in between, so they cannot shimmer)
+        vec3 pg = vFinP * uFinGritScale;
+        finDpx = dFdx(pg); finDpy = dFdy(pg);
+        float fw = max(length(finDpx), length(finDpy));
+        finGritVis = uFinGritOn * (1.0 - smoothstep(1.0 / 100.0, 1.0 / 20.0, fw));
+        if (uFinGritOn > 0.5) {
+          finGx = texture2D(uFinGrit, pg.zy); finGy = texture2D(uFinGrit, pg.xz); finGz = texture2D(uFinGrit, pg.xy);
+          float gr = finGx.b * w.x + finGy.b * w.y + finGz.b * w.z;
+          r += 0.05 * clamp((gr - uFinGritStat.x) / uFinGritStat.y, -2.0, 2.0) + 0.03 * (1.0 - finGritVis);
+        }
+        r += 0.12 * finSootK;
+        r = clamp(r, uFinRough.y, uFinRough.z);
+        // only paint takes it: glass and the deliberately glossy texels keep their own roughness
+        float k = finMask * smoothstep(0.35, 0.55, roughnessFactor);
+        roughnessFactor = mix(roughnessFactor, r, k);
+      }`;
+    const nrm = /* glsl */`
+      if (uFinGritOn > 0.5) { // uniform branch
+        vec3 q0 = dFdx(-vViewPosition), q1 = dFdy(-vViewPosition); // derivatives outside the per-pixel branch below
+        if (finGritVis * finMask > 0.001) {
+          vec3 w = finW();
+          // the grit samples fetched for its roughness (same coordinates) carry the normal in rg
+          vec3 nx = vec3((finGx.rg * 2.0 - 1.0) * uFinGritNrm, 1.0);
+          vec3 ny = vec3((finGy.rg * 2.0 - 1.0) * uFinGritNrm, 1.0);
+          vec3 nz = vec3((finGz.rg * 2.0 - 1.0) * uFinGritNrm, 1.0);
+          vec3 g = normalize(finTBN(q0, q1, normal, finDpx.zy, finDpy.zy) * nx * w.x + finTBN(q0, q1, normal, finDpx.xz, finDpy.xz) * ny * w.y + finTBN(q0, q1, normal, finDpx.xy, finDpy.xy) * nz * w.z);
+          normal = normalize(mix(normal, g, finGritVis * finMask));
+        }
+      }`;
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\n' + fns)
+      .replace('#include <color_fragment>', albedo + '\n#include <color_fragment>')
+      .replace('#include <metalnessmap_fragment>', rough + '\n#include <metalnessmap_fragment>')
+      .replace('#include <emissivemap_fragment>', nrm + '\n#include <emissivemap_fragment>');
+  };
+  const prevKey = material.customProgramCacheKey.bind(material);
+  material.customProgramCacheKey = () => `worn${plate ? '-p' : ''}${hasLiv ? '-l' : ''}|${prevKey()}`;
+  material.needsUpdate = true;
+  return material;
+}
+
+/**
+ * Screen-space ambient occlusion (three's GTAO) applied INSIDE the lit materials, before the
+ * main render: a normal/depth pre-pass of the lit meshes, GTAO + its Poisson denoise into a
+ * texture, then every MeshStandard/Physical material samples it at its own pixel and darkens its
+ * indirect light (planet-shine and its reflections) fully and its direct light by `direct` only
+ * (a hint of contact shadow where parts meet the hull; the sun's own shadow map does the rest).
+ * Unlit meshes (glows, plumes, the planet, the sky) are left out of the pre-pass.
+ */
+export function createScreenAO(renderer, scene, camera, { direct = 0.45, strength = 1, resolution = 0.5 } = {}) {
+  // AO is computed at `resolution` of the drawing buffer (half by default: a quarter of the pixel work
+  // in the pre-pass and GTAO; the denoised result is smooth, and materials sample it by screen UV)
+  const size = renderer.getDrawingBufferSize(new THREE.Vector2());
+  const aoSize = (v) => Math.max(1, Math.round(v * resolution));
+  const pass = new GTAOPass(scene, camera, aoSize(size.x), aoSize(size.y));
+  pass.output = GTAOPass.OUTPUT.Off;
+  pass.updateGtaoMaterial({ radius: 3, distanceExponent: 1.5, thickness: 4.5, distanceFallOff: 1, scale: 1.3, samples: 16 });
+  pass.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 16 });
+  // pre-pass: only lit, opaque meshes cast AO
+  pass._overrideVisibility = function () {
+    const cache = this._visibilityCache;
+    scene.traverse((o) => {
+      if (!o.visible) return;
+      const m = Array.isArray(o.material) ? o.material[0] : o.material;
+      const lit = o.isMesh && m && (m.isMeshStandardMaterial || m.isMeshPhysicalMaterial) && !m.transparent;
+      if ((o.isPoints || o.isLine || o.isLine2 || o.isSprite || (o.isMesh && !lit))) { o.visible = false; cache.push(o); }
+    });
+  };
+  const U = {
+    uSAOTex: { value: pass.pdRenderTarget.texture },
+    uSAOInvRes: { value: new THREE.Vector2(1 / size.x, 1 / size.y) },
+    uSAOStr: { value: strength },
+    uSAODirect: { value: direct },
+  };
+  const patched = new WeakSet();
+  function patch(m) {
+    if (patched.has(m) || !(m.isMeshStandardMaterial || m.isMeshPhysicalMaterial)) return;
+    patched.add(m);
+    const prev = m.onBeforeCompile;
+    m.onBeforeCompile = (shader, r) => {
+      prev?.call(m, shader, r);
+      Object.assign(shader.uniforms, U);
+      shader.fragmentShader = shader.fragmentShader
+        .replace('#include <common>', '#include <common>\nuniform sampler2D uSAOTex; uniform vec2 uSAOInvRes; uniform float uSAOStr, uSAODirect;')
+        .replace('#include <aomap_fragment>', `#include <aomap_fragment>
+          {
+            float sao = mix(1.0, texture2D(uSAOTex, gl_FragCoord.xy * uSAOInvRes).r, uSAOStr);
+            reflectedLight.indirectDiffuse *= sao;
+            reflectedLight.indirectSpecular *= mix(1.0, sao, 0.8);
+            float sd = mix(1.0, sao, uSAODirect);
+            reflectedLight.directDiffuse *= sd; reflectedLight.directSpecular *= sd;
+          }`);
+    };
+    const prevKey = m.customProgramCacheKey.bind(m);
+    m.customProgramCacheKey = () => `sao|${prevKey()}`;
+    m.needsUpdate = true;
+  }
+  const patchScene = () => scene.traverse((o) => { if (o.isMesh) (Array.isArray(o.material) ? o.material : [o.material]).forEach(patch); });
+  let frames = 0;
+  return {
+    pass, uniforms: U,
+    /** run before the main render; `dist` = camera-to-subject distance (m) sets the radius */
+    render(dist) {
+      if (frames++ % 120 === 0) patchScene();
+      const s = renderer.getDrawingBufferSize(new THREE.Vector2());
+      if (aoSize(s.x) !== pass.width || aoSize(s.y) !== pass.height) { pass.setSize(aoSize(s.x), aoSize(s.y)); U.uSAOInvRes.value.set(1 / s.x, 1 / s.y); }
+      // metre-scale grounding in close views, a few metres on a 900 m carrier seen whole
+      const radius = THREE.MathUtils.clamp(dist * 0.025, 1.5, 14);
+      pass.updateGtaoMaterial({ radius, thickness: radius * 1.5 });
+      pass.render(renderer, null, null);
+      renderer.setRenderTarget(null);
+    },
+    set enabled(on) { U.uSAOStr.value = on ? strength : 0; },
+  };
+}

@@ -10,6 +10,7 @@
 //     roughness breakup and seam cavities for close-up views.
 import * as THREE from 'three';
 import { LITE } from './device.js';
+import { FINISH } from './finish.js';
 
 export const MAPS = ['basecolor', 'normal', 'roughness', 'metalness', 'height'];
 const loader = new THREE.TextureLoader();
@@ -31,8 +32,11 @@ export async function loadPatinaLibrary(base = './assets/materials/') {
   } catch { return {}; }
   const lib = {};
   await Promise.all(Object.entries(manifest.sets || {}).map(async ([name, meta]) => {
+    // look-dev sets (meta.load, e.g. 'finish': the worn-finish sets) load only when that look is on,
+    // and then only their packed runtime maps (meta.runtimeMaps)
+    if (meta.load === 'finish' && !FINISH) return;
     const maps = {};
-    await Promise.all((meta.maps || MAPS).map(async (m) => {
+    await Promise.all((meta.runtimeMaps || meta.maps || MAPS).map(async (m) => {
       // the phone tier of the artifact loads 512 px copies (<map>.lite.webp, written by build-artifact)
       try { maps[m] = configure(await loader.loadAsync(`${base}${name}/${m}${LITE && globalThis.__glbB64 ? '.lite' : ''}.webp`), m); } catch (e) { console.warn(`[patina] ${name}/${m} missing`, e); }
     }));

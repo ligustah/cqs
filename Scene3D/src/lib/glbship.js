@@ -8,6 +8,7 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { toCreasedNormals, mergeVertices, mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { addDetailLayer } from './patina.js';
 import { applyLivery } from './livery.js';
+import { FINISH, addWornFinish } from './finish.js';
 
 const loader = new GLTFLoader();
 loader.setMeshoptDecoder(MeshoptDecoder);
@@ -292,7 +293,7 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
     // the interior keep-box is evaluated in the ship frame, so a material is shared only
     // between meshes with the same object-to-ship transform
     const gate = cfg.interiorLights?.length && cfg.interiorLightGate;
-    const keyOf = (m) => (cfg.liveryKeep || gate || cfg.detail?.interior ? `${m.uuid}|${o.matrixWorld.elements.map((e) => e.toFixed(6)).join(',')}` : m);
+    const keyOf = (m) => (cfg.liveryKeep || gate || cfg.detail?.interior || FINISH ? `${m.uuid}|${o.matrixWorld.elements.map((e) => e.toFixed(6)).join(',')}` : m);
     const next = mats.map((m) => {
       if (upgraded.has(keyOf(m))) return upgraded.get(keyOf(m));
       const mm = m.clone();
@@ -314,6 +315,14 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
         const inner = cfg.detail.interior && library[cfg.detail.interior.set]
           ? { ...cfg.detail.interior, set: library[cfg.detail.interior.set], box: cfg.detail.interior.box || keeps[0]?.box, toShip: o.matrixWorld } : null;
         addDetailLayer(mm, detailSet, { unitsPerMetre: 1 / nodeScale.x, ...cfg.detail, interior: inner?.box ? inner : null });
+      }
+      // opt-in worn finish (?finish=worn, src/lib/finish.js): last in the chain; kit parts at lower strength
+      if (FINISH && library.hullWear) {
+        const engines = (cfg.engines || []).flatMap((e) => (e.mirrorX ? [e, { ...e, p: [-e.p[0], e.p[1], e.p[2]] }] : [e]))
+          .map((e) => ({ p: new THREE.Vector3(...e.p), dir: new THREE.Vector3(...(e.dir || [0, 0, -1])), radius: e.radius }));
+        const exBox = cfg.detail?.interior ? (cfg.detail.interior.box || keeps[0]?.box) : null;
+        // generated (Tripo) textures carry their own baked weathering: less added tone there
+        addWornFinish(mm, library, { toShip: o.matrixWorld, strength: role.hull ? 1 : 0.6, tone: cfg.hullNodes ? 1 : 0.6, engines, exclude: exBox ? { box: exBox, feather: 2 } : null });
       }
       upgraded.set(keyOf(m), mm);
       return mm;

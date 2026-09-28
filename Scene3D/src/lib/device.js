@@ -11,5 +11,5 @@ const mobileUA = /Android|iPhone|iPad|iPod|Mobile/i.test(nav.userAgent || '');
 export const LITE = forced === '1' || (forced !== '0' && (coarse || smallMemory || mobileUA));
 
 export const TIER = LITE
-  ? { pixelRatio: 1.5, samples: 2, shadowSize: 2048 }
-  : { pixelRatio: 2, samples: 4, shadowSize: 4096 };
+  ? { pixelRatio: 1.5, samples: 2, shadowSize: 2048, ao: false } // no screen-space AO on phones
+  : { pixelRatio: 2, samples: 4, shadowSize: 4096, ao: true };
