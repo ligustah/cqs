@@ -1,0 +1,1441 @@
+{
+ "about": "Keystone-class fleet carrier CV-50, v3 REMODEL: the hull is clean hard-surface geometry built by tools/blender/hulls/carrier.py from measurements of the fal/Tripo H3.1 blueprint (ship frame, centred, metres, bow +Z, dorsal +Y, port +X; not re-centred), painted by tools/blender/hulls/carrier_paint.py; this spec places the Blender parts kit (assets/parts-blender, +Z mounts) and the fal kit's sensor array on it.",
+ "hull": {
+  "glb": "HULL_GLB_FROM_COMMAND_LINE",
+  "rotate": [
+   0,
+   0,
+   0
+  ],
+  "scale": 1.0,
+  "centre": false
+ },
+ "partsDir": "../../../assets/parts-blender",
+ "kits": {
+  "fal": "../../../assets/parts"
+ },
+ "partDefaults": {
+  "door": {
+   "sink": 0.0
+  },
+  "airlock": {
+   "sink": 0.0
+  },
+  "rcs": {
+   "sink": 0.1
+  },
+  "floodlight": {
+   "sink": 0.02
+  },
+  "navlight": {
+   "sink": 0.0
+  },
+  "pdc": {
+   "sink": 0.05
+  },
+  "clamp": {
+   "sink": 0.02
+  },
+  "missilePod": {
+   "sink": 0.05
+  },
+  "rail": {
+   "sink": 0.0,
+   "xAlong": true,
+   "scale": [
+    3,
+    1,
+    1
+   ]
+  },
+  "ladder": {
+   "sink": 0.0,
+   "lift": 0.03
+  },
+  "antenna": {
+   "sink": 0.05
+  },
+  "dome": {
+   "sink": 0.05
+  },
+  "fal:sensorArray": {
+   "sink": 0.05
+  }
+ },
+ "fixes": {
+  "door": {
+   "decimate": 0.2
+  },
+  "airlock": {
+   "decimate": 0.3
+  },
+  "missilePod": {
+   "decimate": 0.3
+  },
+  "rail": {
+   "decimate": 1.0
+  },
+  "rcs": {
+   "decimate": 0.3
+  },
+  "navlight": {
+   "decimate": 0.35
+  },
+  "floodlight": {
+   "decimate": 0.3
+  },
+  "ladder": {
+   "decimate": 0.45
+  },
+  "turret-L": {
+   "decimate": 0.4
+  },
+  "turret-M": {
+   "decimate": 0.25
+  },
+  "bell-XL": {
+   "decimate": 0.35
+  },
+  "antenna": {
+   "decimate": 0.45
+  },
+  "dome": {
+   "decimate": 0.6
+  },
+  "pdc": {
+   "decimate": 0.25
+  },
+  "clamp": {
+   "decimate": 0.5
+  },
+  "fal:sensorArray": {
+   "decimate": 0.5
+  }
+ },
+ "seat": {
+  "maxGap": 0.2,
+  "maxBury": 0.5,
+  "drop": true
+ },
+ "bake": {
+  "ao": true,
+  "res": 2048,
+  "distance": 2.0,
+  "samples": 16,
+  "aa": 4,
+  "strength": 0.6
+ },
+ "placements": [
+  {
+   "id": "bells upper pair: bell-XL x2.6143 (exit r 18.3)",
+   "part": "bell-XL",
+   "p": [
+    57.4,
+    -3.2,
+    -449.78
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "scale": 2.6143,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "bells outboard pair: bell-XL x2.7 (exit r 18.9)",
+   "part": "bell-XL",
+   "p": [
+    92.3,
+    -50.1,
+    -449.773
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "scale": 2.7,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "bells lower pair: bell-XL x2.6143 (exit r 18.3)",
+   "part": "bell-XL",
+   "p": [
+    57.4,
+    -95.9,
+    -449.78
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "scale": 2.6143,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "spine turret z -306.0: turret-L x2.6 (guns aft)",
+   "part": "turret-L",
+   "p": [
+    0,
+    27.5,
+    -306.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    -1
+   ],
+   "scale": 2.6,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "spine turret z 60.0: turret-L x2.6 (guns forward)",
+   "part": "turret-L",
+   "p": [
+    0,
+    24.5,
+    60.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 2.6,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "spine turret z 235.0: turret-L x2.6 (guns forward)",
+   "part": "turret-L",
+   "p": [
+    0,
+    24.5,
+    235.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 2.6,
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "sponson turrets: turret-L x2.6 (guns forward)",
+   "part": "turret-L",
+   "p": [
+    168.0,
+    -30.0,
+    -310.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 2.6,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "deck-edge secondaries z -296.0: turret-M x1.4",
+   "part": "turret-M",
+   "p": [
+    78.0,
+    25.2,
+    -296.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    -1
+   ],
+   "scale": 1.4,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "deck-edge secondaries z 140.0: turret-M x1.4",
+   "part": "turret-M",
+   "p": [
+    78.0,
+    22.2,
+    140.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 1.4,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "deck-edge secondaries z 330.0: turret-M x1.4",
+   "part": "turret-M",
+   "p": [
+    78.0,
+    25.2,
+    330.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 1.4,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "pdc",
+   "p": [
+    60.0,
+    24.0,
+    -340.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true,
+   "scale": 1.6,
+   "id": "point-defence mounts x1.6: deck, island terraces"
+  },
+  {
+   "part": "pdc",
+   "p": [
+    60.0,
+    21.0,
+    -230.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true,
+   "scale": 1.6
+  },
+  {
+   "part": "pdc",
+   "p": [
+    60.0,
+    21.0,
+    50.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true,
+   "scale": 1.6
+  },
+  {
+   "part": "pdc",
+   "p": [
+    60.0,
+    21.0,
+    150.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true,
+   "scale": 1.6
+  },
+  {
+   "part": "pdc",
+   "p": [
+    60.0,
+    21.0,
+    250.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true,
+   "scale": 1.6
+  },
+  {
+   "part": "pdc",
+   "p": [
+    60.0,
+    24.0,
+    370.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true,
+   "scale": 1.6
+  },
+  {
+   "part": "pdc",
+   "p": [
+    16.5,
+    58.4,
+    -201.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    -1
+   ],
+   "mirrorX": true,
+   "scale": 1.6
+  },
+  {
+   "part": "pdc",
+   "p": [
+    11.5,
+    79.4,
+    -182.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    -1
+   ],
+   "mirrorX": true,
+   "scale": 1.6
+  },
+  {
+   "part": "pdc",
+   "p": [
+    10.5,
+    100.4,
+    -171.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    -1
+   ],
+   "mirrorX": true,
+   "scale": 1.6
+  },
+  {
+   "id": "VLS blocks, bow deck",
+   "part": "missilePod",
+   "p": [
+    40.0,
+    24.0,
+    300.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true,
+   "rows": {
+    "count": 2,
+    "step": [
+     0,
+     0,
+     7.0
+    ]
+   }
+  },
+  {
+   "id": "VLS blocks, stern deck",
+   "part": "missilePod",
+   "p": [
+    40.0,
+    24.0,
+    -345.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true,
+   "rows": {
+    "count": 2,
+    "step": [
+     0,
+     0,
+     7.0
+    ]
+   }
+  },
+  {
+   "id": "stern block airlocks (between the upper port rows)",
+   "part": "airlock",
+   "p": [
+    131.0,
+    -21.5,
+    -348.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "bow section airlocks",
+   "part": "airlock",
+   "p": [
+    131.0,
+    -24.5,
+    297.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "airlock",
+   "p": [
+    131.0,
+    -24.5,
+    399.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "docking clamps flanking the airlocks",
+   "part": "clamp",
+   "p": [
+    131.0,
+    -21.5,
+    -351.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "mirrorX": true,
+   "scale": 1.2
+  },
+  {
+   "part": "clamp",
+   "p": [
+    131.0,
+    -21.5,
+    -345.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "mirrorX": true,
+   "scale": 1.2
+  },
+  {
+   "part": "clamp",
+   "p": [
+    131.0,
+    -24.5,
+    294.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "mirrorX": true,
+   "scale": 1.2
+  },
+  {
+   "part": "clamp",
+   "p": [
+    131.0,
+    -24.5,
+    402.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "mirrorX": true,
+   "scale": 1.2
+  },
+  {
+   "id": "crew doors under the airlocks (lower port-row gaps)",
+   "part": "door",
+   "p": [
+    131.0,
+    -84.0,
+    -348.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "door",
+   "p": [
+    131.0,
+    -84.0,
+    -296.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "door",
+   "p": [
+    131.0,
+    -80.0,
+    297.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "door",
+   "p": [
+    131.0,
+    -80.0,
+    399.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "hangar back wall crew doors",
+   "part": "door",
+   "p": [
+    42.0,
+    -91.25,
+    -276.0
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "door",
+   "p": [
+    72.0,
+    -91.25,
+    -276.0
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "bow section inner-wall crew doors",
+   "part": "door",
+   "p": [
+    95.0,
+    -58.8,
+    297.5
+   ],
+   "n": [
+    -1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "door",
+   "p": [
+    95.0,
+    -58.8,
+    347.5
+   ],
+   "n": [
+    -1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "door",
+   "p": [
+    95.0,
+    -58.8,
+    397.5
+   ],
+   "n": [
+    -1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "door",
+   "p": [
+    101.0,
+    -90.7,
+    -164.3
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true,
+   "id": "frame-post crew doors (forward faces)"
+  },
+  {
+   "part": "door",
+   "p": [
+    101.0,
+    -95.14999999999999,
+    -73.5
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "door",
+   "p": [
+    101.0,
+    -95.14999999999999,
+    19.2
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "door",
+   "p": [
+    101.0,
+    -95.14999999999999,
+    111.6
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "door",
+   "p": [
+    101.0,
+    -90.7,
+    202.1
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "island plinth doors onto the deck",
+   "part": "door",
+   "p": [
+    45.0,
+    22.2,
+    -190.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "island plinth doors onto the deck",
+   "part": "door",
+   "p": [
+    45.0,
+    22.2,
+    -40.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "id": "ladders on the hangar back wall",
+   "part": "ladder",
+   "p": [
+    35.0,
+    -90.95,
+    -276.0
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "rows": {
+    "count": 8,
+    "step": [
+     0,
+     3.0,
+     0
+    ]
+   },
+   "mirrorX": true
+  },
+  {
+   "id": "bridge roof rails, forward edge",
+   "part": "rail",
+   "row": {
+    "from": [
+     -23.0,
+     112.4,
+     -58.2
+    ],
+    "to": [
+     23.0,
+     112.4,
+     -58.2
+    ],
+    "pitch": 3.0
+   },
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "rcs",
+   "p": [
+    115.0,
+    8.0,
+    -364.0
+   ],
+   "n": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0
+   ],
+   "mirrorX": true,
+   "normal": "hit",
+   "scale": 4.0,
+   "id": "rcs quads x4, bow and stern corners"
+  },
+  {
+   "part": "rcs",
+   "p": [
+    118.0,
+    -107.0,
+    -364.0
+   ],
+   "n": [
+    0.7071067811865476,
+    -0.7071067811865476,
+    0
+   ],
+   "mirrorX": true,
+   "normal": "hit",
+   "scale": 4.0
+  },
+  {
+   "part": "rcs",
+   "p": [
+    115.0,
+    8.0,
+    410.0
+   ],
+   "n": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0
+   ],
+   "mirrorX": true,
+   "normal": "hit",
+   "scale": 4.0
+  },
+  {
+   "part": "rcs",
+   "p": [
+    118.0,
+    -107.0,
+    410.0
+   ],
+   "n": [
+    0.7071067811865476,
+    -0.7071067811865476,
+    0
+   ],
+   "mirrorX": true,
+   "normal": "hit",
+   "scale": 4.0
+  },
+  {
+   "id": "nav lights: sponson sidelights (red port, green starboard)",
+   "part": "navlight",
+   "p": [
+    202.75,
+    -55.0,
+    -310.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true
+  },
+  {
+   "part": "navlight",
+   "p": [
+    4.0,
+    145.4,
+    -127.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ]
+  },
+  {
+   "part": "navlight",
+   "p": [
+    8.0,
+    -152.0,
+    182.0
+   ],
+   "n": [
+    0,
+    -1,
+    0
+   ]
+  },
+  {
+   "part": "navlight",
+   "p": [
+    0.0,
+    18.5,
+    -371.0
+   ],
+   "n": [
+    0,
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "floodlights over the mouth and on the island",
+   "part": "floodlight",
+   "p": [
+    -60.0,
+    3.0,
+    421.4
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "rot": 180,
+   "scale": 2.0
+  },
+  {
+   "id": "floodlights over the mouth and on the island",
+   "part": "floodlight",
+   "p": [
+    -30.0,
+    3.0,
+    421.4
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "rot": 180,
+   "scale": 2.0
+  },
+  {
+   "id": "floodlights over the mouth and on the island",
+   "part": "floodlight",
+   "p": [
+    0.0,
+    3.0,
+    421.4
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "rot": 180,
+   "scale": 2.0
+  },
+  {
+   "id": "floodlights over the mouth and on the island",
+   "part": "floodlight",
+   "p": [
+    30.0,
+    3.0,
+    421.4
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "rot": 180,
+   "scale": 2.0
+  },
+  {
+   "id": "floodlights over the mouth and on the island",
+   "part": "floodlight",
+   "p": [
+    60.0,
+    3.0,
+    421.4
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "rot": 180,
+   "scale": 2.0
+  },
+  {
+   "part": "floodlight",
+   "p": [
+    41.0,
+    40.0,
+    -200.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true,
+   "scale": 2.0
+  },
+  {
+   "part": "floodlight",
+   "p": [
+    41.0,
+    40.0,
+    -100.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true,
+   "scale": 2.0
+  },
+  {
+   "part": "floodlight",
+   "p": [
+    41.0,
+    40.0,
+    -20.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true,
+   "scale": 2.0
+  },
+  {
+   "id": "island whips x2",
+   "part": "antenna",
+   "p": [
+    4.5,
+    145.4,
+    -138.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 2.0,
+   "mirrorX": true
+  },
+  {
+   "part": "antenna",
+   "p": [
+    9.0,
+    136.4,
+    -149.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 2.0,
+   "mirrorX": true
+  },
+  {
+   "part": "antenna",
+   "p": [
+    14.0,
+    121.4,
+    -162.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 2.0,
+   "mirrorX": true
+  },
+  {
+   "id": "bow deck whips",
+   "part": "antenna",
+   "p": [
+    80.0,
+    24.0,
+    405.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 2.0,
+   "mirrorX": true
+  },
+  {
+   "id": "radomes (10-12.5 m) on the island and the stern block",
+   "part": "dome",
+   "p": [
+    12.0,
+    121.4,
+    -98.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 4.0,
+   "mirrorX": true
+  },
+  {
+   "part": "dome",
+   "p": [
+    70.0,
+    24.0,
+    -335.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 5.0,
+   "mirrorX": true
+  },
+  {
+   "id": "sensor arrays x4 (16 m): bow deck, island T3 roof",
+   "part": "fal:sensorArray",
+   "p": [
+    20.0,
+    24.0,
+    330.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 4.0,
+   "mirrorX": true
+  },
+  {
+   "part": "fal:sensorArray",
+   "p": [
+    15.0,
+    100.4,
+    -169.0
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    -1
+   ],
+   "scale": 3.0,
+   "mirrorX": true
+  }
+ ]
+}
