@@ -51,26 +51,20 @@
   },
   "missilePod": {
    "sink": 0.0
-  },
-  "fal:sensorArray": {
-   "sink": 0.05
   }
  },
  "fixes": {
   "door": {
-   "decimate": 0.3
+   "decimate": 0.22
   },
   "missilePod": {
-   "decimate": 0.18
+   "decimate": 0.15
   },
   "rail": {
-   "decimate": 0.5
-  },
-  "fal:sensorArray": {
-   "decimate": 0.3
+   "decimate": 0.45
   },
   "rcs": {
-   "decimate": 0.3
+   "decimate": 0.2
   },
   "navlight": {
    "decimate": 0.35
@@ -79,13 +73,13 @@
    "decimate": 0.3
   },
   "ladder": {
-   "decimate": 0.45
+   "decimate": 0.35
   },
   "turret-M": {
-   "decimate": 0.26
+   "decimate": 0.2
   },
   "bell-L": {
-   "decimate": 0.22
+   "decimate": 0.2
   },
   "bell-XL": {
    "decimate": 0.3
@@ -97,7 +91,7 @@
    "decimate": 0.6
   },
   "pdc": {
-   "decimate": 0.25
+   "decimate": 0.16
   }
  },
  "seat": {
@@ -193,7 +187,7 @@
    "part": "turret-M",
    "p": [
     0,
-    -6.05,
+    -7.177,
     79.2
    ],
    "n": [
@@ -213,11 +207,11 @@
    }
   },
   {
-   "id": "bow battery B: turret-M x1.15 superfiring on a 3 m barbette (guns forward)",
+   "id": "bow battery B: turret-M x1.15 superfiring on its barbette (guns forward)",
    "part": "turret-M",
    "p": [
     0,
-    -3.4,
+    -3.397,
     66.5
    ],
    "n": [
@@ -237,59 +231,11 @@
    }
   },
   {
-   "id": "bow ventral A': turret-M x1.15 (guns forward)",
+   "id": "aft battery X: turret-M x1.15 superfiring on its barbette (guns aft)",
    "part": "turret-M",
    "p": [
     0,
-    -30.75,
-    79.2
-   ],
-   "n": [
-    0,
-    -1,
-    0
-   ],
-   "up": [
-    0,
-    0,
-    1
-   ],
-   "scale": 1.15,
-   "snap": false,
-   "seat": {
-    "check": false
-   }
-  },
-  {
-   "id": "bow ventral B': turret-M x1.15 superfiring on a 3 m barbette",
-   "part": "turret-M",
-   "p": [
-    0,
-    -33.4,
-    66.5
-   ],
-   "n": [
-    0,
-    -1,
-    0
-   ],
-   "up": [
-    0,
-    0,
-    1
-   ],
-   "scale": 1.15,
-   "snap": false,
-   "seat": {
-    "check": false
-   }
-  },
-  {
-   "id": "aft battery X: turret-M x1.15 superfiring on a 3 m barbette (guns aft)",
-   "part": "turret-M",
-   "p": [
-    0,
-    -1.3,
+    -1.297,
     -66.3
    ],
    "n": [
@@ -313,7 +259,7 @@
    "part": "turret-M",
    "p": [
     0,
-    -3.95,
+    -5.077,
     -78.8
    ],
    "n": [
@@ -333,11 +279,11 @@
    }
   },
   {
-   "id": "aft ventral X': turret-M x1.15 superfiring on a 3 m barbette (guns aft)",
+   "id": "aft ventral X': turret-M x1.15 superfiring on its barbette (guns aft)",
    "part": "turret-M",
    "p": [
     0,
-    -38.8,
+    -38.803,
     -66.3
    ],
    "n": [
@@ -361,7 +307,7 @@
    "part": "turret-M",
    "p": [
     0,
-    -36.15,
+    -35.023,
     -78.8
    ],
    "n": [
@@ -381,11 +327,11 @@
    }
   },
   {
-   "id": "shoulder drums: turret-M x1.0 (guns forward)",
+   "id": "shoulder bastions: turret-M x1.0 on their seat rings (guns forward)",
    "part": "turret-M",
    "p": [
-    21.5,
-    -5.0,
+    21.2,
+    -4.98,
     -57.5
    ],
    "n": [
@@ -406,16 +352,41 @@
    "mirrorX": true
   },
   {
-   "id": "flank sponson guns: turret-M x1.0 on the sponson faces (guns forward)",
+   "id": "broadside sponson S1: turret-M x1.0 on its seat ring (guns forward)",
    "part": "turret-M",
    "p": [
-    20.3,
-    -20.2,
-    14.2
+    21.0,
+    -10.38,
+    14.5
    ],
    "n": [
-    1,
     0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 1.0,
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "mirrorX": true
+  },
+  {
+   "id": "broadside sponson S2: turret-M x1.0 on its seat ring (guns forward); superfires over S1",
+   "part": "turret-M",
+   "p": [
+    21.0,
+    -6.98,
+    -4.0
+   ],
+   "n": [
+    0,
+    1,
     0
    ],
    "up": [
@@ -459,29 +430,56 @@
    "mirrorX": true
   },
   {
-   "id": "VLS mid deck, column 1",
+   "id": "VLS deckhouse deck, column 1",
    "part": "missilePod",
    "p": [
-    7.4,
-    -8.918,
-    25.356
+    2.8,
+    2.2,
+    -24.85
    ],
    "n": [
-    0.0,
-    0.9901,
-    0.1404
+    0,
+    1,
+    0
    ],
    "up": [
-    0.0,
-    -0.1404,
-    0.9901
+    0,
+    0,
+    1
    ],
    "rows": {
-    "count": 3,
+    "count": 2,
     "step": [
      0.0,
-     -0.8,
-     5.644
+     0.0,
+     5.7
+    ]
+   },
+   "mirrorX": true
+  },
+  {
+   "part": "missilePod",
+   "p": [
+    6.1,
+    2.2,
+    -24.85
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "rows": {
+    "count": 2,
+    "step": [
+     0.0,
+     0.0,
+     5.7
     ]
    },
    "mirrorX": true
@@ -559,7 +557,7 @@
     1
    ],
    "mirrorX": true,
-   "id": "point-defence clusters: bow shoulders and chamfers, mid and engine shoulders, stern corners, keel, command block roof"
+   "id": "point-defence clusters: bow shoulders and chamfers, engine shoulders, stern corners, keel, broadside sponsons, command block roof"
   },
   {
    "part": "pdc",
@@ -590,44 +588,6 @@
    "n": [
     0.7938,
     -0.6082,
-    0.0
-   ],
-   "up": [
-    0,
-    0,
-    1
-   ],
-   "mirrorX": true
-  },
-  {
-   "part": "pdc",
-   "p": [
-    14.0,
-    -10.4,
-    -9.3
-   ],
-   "n": [
-    0.8137,
-    0.5812,
-    0.0
-   ],
-   "up": [
-    0,
-    0,
-    1
-   ],
-   "mirrorX": true
-  },
-  {
-   "part": "pdc",
-   "p": [
-    14.0,
-    -10.4,
-    -13.7
-   ],
-   "n": [
-    0.8137,
-    0.5812,
     0.0
    ],
    "up": [
@@ -773,6 +733,50 @@
   {
    "part": "pdc",
    "p": [
+    24.6,
+    -11.4,
+    9.7
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "pdc",
+   "p": [
+    24.6,
+    -8.0,
+    -8.8
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    1,
+    0,
+    0
+   ],
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "pdc",
+   "p": [
     5.2,
     5.6,
     -41.5
@@ -807,65 +811,6 @@
     -1
    ],
    "mirrorX": true
-  },
-  {
-   "id": "fire-control arrays x0.7 on the director faces",
-   "part": "fal:sensorArray",
-   "p": [
-    2.6,
-    6.949999999999999,
-    -51.5
-   ],
-   "n": [
-    1,
-    0,
-    0
-   ],
-   "up": [
-    0,
-    1,
-    0
-   ],
-   "scale": 0.7,
-   "mirrorX": true
-  },
-  {
-   "part": "fal:sensorArray",
-   "p": [
-    0,
-    6.949999999999999,
-    -48.9
-   ],
-   "n": [
-    0,
-    0,
-    1
-   ],
-   "up": [
-    0,
-    1,
-    0
-   ],
-   "scale": 0.7
-  },
-  {
-   "part": "fal:sensorArray",
-   "p": [
-    0,
-    6.949999999999999,
-    -54.1
-   ],
-   "n": [
-    0,
-    0,
-    -1
-   ],
-   "up": [
-    0,
-    1,
-    0
-   ],
-   "scale": 0.7
   },
   {
    "id": "boat hatch personnel door (1 x 2 m) in the aft leaf",
@@ -1260,14 +1205,18 @@
    "part": "navlight",
    "p": [
     0,
-    8.6,
-    -49.9
+    24.05,
+    -51.25
    ],
    "n": [
     0,
     1,
     0
-   ]
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   }
   },
   {
    "part": "navlight",
@@ -1343,12 +1292,12 @@
    "mirrorX": true
   },
   {
-   "id": "deckhouse whip",
+   "id": "deckhouse whip (v9: forward corner, clear of the VLS bays)",
    "part": "antenna",
    "p": [
-    6.0,
+    7.0,
     2.2,
-    -16.5
+    -14.4
    ],
    "n": [
     0,
@@ -1362,12 +1311,12 @@
    ]
   },
   {
-   "id": "masthead: antenna x1.0 on the sensor pole (the envelope top, ~y 29.5)",
+   "id": "masthead whip: antenna x0.91 on the topmast cap (the envelope top, ~y 29.47)",
    "part": "antenna",
    "p": [
     0,
-    23.5,
-    -51.5
+    24.05,
+    -51.7
    ],
    "n": [
     0,
@@ -1379,11 +1328,36 @@
     0,
     1
    ],
-   "scale": 1.0,
+   "scale": 0.91,
    "snap": false,
    "seat": {
     "check": false
    }
+  },
+  {
+   "id": "command block roof whips x0.7 on their bases (aft corners)",
+   "part": "antenna",
+   "p": [
+    5.6,
+    5.95,
+    -53.6
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "scale": 0.7,
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "mirrorX": true
   },
   {
    "id": "radome x1.8 on its drum (command block roof, forward)",

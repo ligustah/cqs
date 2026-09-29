@@ -5,7 +5,8 @@
 
   1. model + bake (4096 maps):  destroyer.py <work> --stage model --bake
   2. paint at 8192:             destroyer.py <work> --stage paint --paint-tex 8192
-  3. spec + assemble:           destroyer_spec.py; assemble.py specs/destroyer-v3.json --tex 8192
+  3. spec + assemble:           destroyer_spec.py; destroyer_assemble.py (assemble.py with the turret guns kept at
+                                full resolution) specs/destroyer-v3.json --tex 8192
                                 (the hull's base colour stays 8192; ORM / normal are 4096)
   4. module:                    module.py -> draft; destroyer_module.py -> <work>/destroyer.js
 Run from Scene3D/.
@@ -18,7 +19,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
-def run(cmd, log=None, filt=('[hull]', '[paint]', '[module]', '[dmodule]', 'Error', 'Traceback')):
+def run(cmd, log=None, filt=('[hull]', '[paint]', '[module]', '[dmodule]', '[dassemble]', 'Error', 'Traceback')):
     print('>', ' '.join(cmd[:4]), '...', flush=True)
     p = subprocess.run(cmd, capture_output=True, text=True)
     txt = p.stdout + p.stderr
@@ -45,7 +46,7 @@ def main():
     run(['python3', os.path.join(HERE, 'destroyer_spec.py')])
     spec = os.path.join(HERE, '..', 'specs', 'destroyer-v3.json')
     glb = os.path.join(work, 'destroyer-v3.glb')
-    run([py, os.path.join(HERE, '..', 'assemble.py'), spec, glb, '--hull', os.path.join(work, 'destroyer-hull.glb'), '--tex', ptex, '--threads', '4'],
+    run([py, os.path.join(HERE, 'destroyer_assemble.py'), spec, glb, '--hull', os.path.join(work, 'destroyer-hull.glb'), '--tex', ptex, '--threads', '4'],
         log=os.path.join(work, 'assemble.log'))
     r = json.load(open(os.path.join(work, 'destroyer-v3.json')))
     print('[build] tris', r['tris']['total'], {k: v for k, v in r['tris'].items() if k != 'total'})

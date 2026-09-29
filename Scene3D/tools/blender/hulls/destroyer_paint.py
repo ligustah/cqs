@@ -331,9 +331,12 @@ def paint(maps, spec, out, size=8192, normal_size=4096, rows=512):
 # DD-12's paint scheme (from the approved concept)
 # ------------------------------------------------------------------------------------------
 ORANGE = [0.93, 0.45, 0.10]
-COBALT = [0.24, 0.40, 0.82]
+COBALT = [0.2, 0.34, 0.72]   # v9: a little deeper (the livery now keeps 30 % of the hue)
 STENCIL_WHITE = [0.95, 0.94, 0.91]
-HAZ = {'kind': 'hazard', 'pitch': 0.55, 'color': ORANGE, 'alt': [0.16, 0.16, 0.17], 'mirrorX': True}
+# v9: hazard stripes in a yellower amber: through the livery's desaturation (markSat 0.3) the concept orange read
+# salmon-pink on the VLS frames; amber keeps them a dull naval ochre next to the walk lines
+AMBER = [0.93, 0.58, 0.12]
+HAZ = {'kind': 'hazard', 'pitch': 0.55, 'color': AMBER, 'alt': [0.16, 0.16, 0.17], 'mirrorX': True}
 
 
 def _frames():
@@ -350,16 +353,21 @@ def spec():
     tn = math.atan2(17.5 - 13.26, 43.5 - 21.0)    # mid hull forward taper
     n_taper = [round(math.cos(tn), 4), 0, round(math.sin(tn), 4)]
     decals = [
-        # hull number on the forward taper of the mid hull, both flanks (concept: DD-12 ahead of the
+        # hull number on the forward taper of the mid hull, both flanks (v9: 4.5 m further forward, clear of the S1
+        # sponson turret and its shadow from the hero view; concept: DD-12 ahead of the
         # boat hatch, upper flank), 3.4 m stencil reading left to right from outside
-        {'kind': 'text', 'text': 'DD-12', 'height': 3.4, 'p': [16.1, -19.0, 28.5], 'n': n_taper, 'size': [14.0, 4.4, 2.0], 'mirrorX': True, 'color': STENCIL_WHITE, 'wear': 0.15},
-        # cobalt bands: round the bow block ahead of its rear taper, and on the mid hull ahead of the tower
+        # v9: on a dark ID field, as the carrier's CV-50 (the dark livery maps neutral paint by luminance only:
+        # white 0.06 against the paint's 0.046 left the letters faint; on the field's 0.017 they read ~3.5x)
+        {'kind': 'fill', 'p': [15.24, -19.6, 33.0], 'n': n_taper, 'size': [13.0, 4.7, 2.0], 'mirrorX': True, 'color': [0.2, 0.2, 0.21], 'wear': 0.1},
+        {'kind': 'text', 'text': 'DD-12', 'height': 3.4, 'p': [15.24, -19.6, 33.0], 'n': n_taper, 'size': [14.0, 4.4, 2.0], 'mirrorX': True, 'color': STENCIL_WHITE, 'wear': 0.15},
+        # cobalt bands: round the bow block ahead of its rear taper, and on the mid hull ahead of the command block
+        # (v9: at z -12.4, between the boat hatch and the S2 sponson)
         {'kind': 'fill', 'p': [17.1, -18.0, 62.0], 'n': [1, 0, 0], 'size': [1.8, 11.0, 3.0], 'mirrorX': True, 'color': COBALT, 'facing': 0.3},
         {'kind': 'fill', 'p': [14.2, -10.0, 62.0], 'n': [0.774, 0.634, 0], 'up': [-0.634, 0.774, 0], 'size': [1.8, 9.4, 3.0], 'mirrorX': True, 'color': COBALT, 'facing': 0.3},
         {'kind': 'fill', 'p': [14.2, -26.5, 62.0], 'n': [0.774, -0.634, 0], 'up': [0.634, 0.774, 0], 'size': [1.8, 9.4, 3.0], 'mirrorX': True, 'color': COBALT, 'facing': 0.3},
         {'kind': 'fill', 'p': [5.5, -6.4, 62.0], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [11.5, 1.8, 3.0], 'mirrorX': True, 'color': COBALT, 'facing': 0.5},
-        {'kind': 'fill', 'p': [17.5, -20.0, -3.0], 'n': [1, 0, 0], 'size': [1.6, 9.6, 3.0], 'mirrorX': True, 'color': COBALT, 'facing': 0.3},
-        {'kind': 'fill', 'p': [15.0, -11.8, -3.0], 'n': [0.814, 0.581, 0], 'up': [-0.581, 0.814, 0], 'size': [1.6, 8.8, 3.0], 'mirrorX': True, 'color': COBALT, 'facing': 0.3},
+        {'kind': 'fill', 'p': [17.5, -20.0, -12.4], 'n': [1, 0, 0], 'size': [1.6, 9.6, 3.0], 'mirrorX': True, 'color': COBALT, 'facing': 0.3},
+        {'kind': 'fill', 'p': [15.0, -11.8, -12.4], 'n': [0.814, 0.581, 0], 'up': [-0.581, 0.814, 0], 'size': [1.6, 8.8, 3.0], 'mirrorX': True, 'color': COBALT, 'facing': 0.3},
         # orange marks on the engine block armour (concept: short bars and diagonal patches)
         {'kind': 'fill', 'p': [27.67, -18.5, -52.4], 'n': [1, 0, 0], 'size': [0.9, 6.0, 1.0], 'mirrorX': True, 'color': ORANGE},
         {'kind': 'fill', 'p': [27.67, -18.5, -79.0], 'n': [1, 0, 0], 'size': [0.9, 6.0, 1.0], 'mirrorX': True, 'color': ORANGE},
@@ -371,9 +379,14 @@ def spec():
         {**HAZ, 'p': [0.0, -17.0, 42.9], 'n': [0, 0, 1], 'size': [26.0, 26.0, 0.8], 'border': 0.6, 'mirrorX': False},
         {**HAZ, 'p': [0.0, -17.0, 54.9], 'n': [0, 0, -1], 'size': [26.0, 26.0, 0.8], 'border': 0.6, 'mirrorX': False},
         # v8: VLS coaming tops (armoured cell bays) framed in hazard stripes, so the launch bays read as weapons
-        {**HAZ, 'p': [8.0, -6.4 + 0.62, 70.8], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [4.4, 23.9, 1.4], 'border': 0.5, 'wear': 0.3},
-        {**HAZ, 'p': [7.4, -9.718 + 0.62, 31.0], 'n': [0, 0.99, 0.1404], 'up': [0, -0.1404, 0.99], 'size': [4.4, 18.2, 1.4], 'border': 0.5, 'wear': 0.3},
-        {**HAZ, 'p': [10.4, -4.3 + 0.62, -72.5], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [7.7, 18.2, 1.4], 'border': 0.5, 'wear': 0.3},
+        # (v9: the mid-deck bays moved to the deckhouse roof; a coarser 0.7 m pitch so the stripes still resolve
+        # at hero distance; the livery keeps part of their hue, destroyer.js livery.markSat)
+        {**HAZ, 'pitch': 0.7, 'p': [8.0, -6.4 + 0.62, 70.8], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [4.4, 23.9, 1.4], 'border': 0.5, 'wear': 0.25},
+        {**HAZ, 'pitch': 0.7, 'p': [4.45, 2.2 + 0.62, -22.0], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [7.7, 12.5, 1.4], 'border': 0.5, 'wear': 0.25},
+        {**HAZ, 'pitch': 0.7, 'p': [10.4, -4.3 + 0.62, -72.5], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [7.7, 18.2, 1.4], 'border': 0.5, 'wear': 0.25},
+        # v9: turret-arc warning bands on the broadside sponson decks (outboard deck edge)
+        {**HAZ, 'pitch': 0.7, 'p': [24.2, -11.4, 14.5], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [1.4, 10.6, 0.6], 'wear': 0.3},
+        {**HAZ, 'pitch': 0.7, 'p': [24.2, -8.0, -4.0], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [1.4, 10.6, 0.6], 'wear': 0.3},
         # walkway edge lines in the gun gap (safety yellow) and on the spine
         {'kind': 'fill', 'p': [10.9, -26.3, 48.9], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [0.2, 12.0, 0.6], 'mirrorX': True, 'color': [0.85, 0.62, 0.15], 'wear': 0.4},
         {'kind': 'fill', 'p': [4.0, -5.5, 30.0], 'n': [0, 1, 0], 'up': [0, 0, 1], 'size': [0.18, 62.0, 0.6], 'mirrorX': True, 'color': [0.85, 0.62, 0.15], 'wear': 0.4},

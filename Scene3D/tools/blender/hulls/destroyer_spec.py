@@ -40,19 +40,23 @@ def b_lower(t):     # bow lower chamfer (17.1, -22.7) -> (11.2, -30.4)
 
 # v8 weapon stations (destroyer.py TUR_*, SHOULDER_TUR, VLS, CB_*, MAST)
 TUR_A, TUR_B, TUR_X, TUR_Y = 79.2, 66.5, -66.3, -78.8
-BARBETTE_H = 3.0
+BARBETTE_H = 4.13
+SINK = 0.98       # v9: turrets seated 0.98 x scale into their rings / barbettes (the kit base discs are dropped)
 DECK_E, DECK_B, BELLY_E, BELLY_B = -4.3, -6.4, -35.8, -30.4
-SHOULDER_TUR = (21.5, -5.0, -57.5)
+SHOULDER_TUR = (21.2, -4.98, -57.5)   # bastion top -6.2 + 2.2 m seat ring - 0.98
 VLS_PITCH = (3.3, 5.7)
-M_DECK_N = unit((0.0, 22.5, 3.19))
-M_DECK_U = unit((0.0, -3.19, 22.5))
+DH_TOP = 2.2
 VLS = [
     ('bow', (8.0, DECK_B, 70.8), [0, 1, 0], [0, 0, 1], 1, 4),
-    ('mid', (7.4, -9.718, 31.0), M_DECK_N, M_DECK_U, 1, 3),
+    ('deckhouse', (4.45, DH_TOP, -22.0), [0, 1, 0], [0, 0, 1], 2, 2),
     ('aft', (10.4, DECK_E, -72.5), [0, 1, 0], [0, 0, 1], 2, 3),
 ]
+# v9 broadside sponsons (destroyer.py SPONSONS / SPON): (name, turret z, deck top y, turret x), seat ring 1.0 m
+SPONSONS = [('S1', 14.5, -11.4, 21.0), ('S2', -4.0, -8.0, 21.0)]
+SPON_RING = 2.0
 CB_Z, CASE_TOP = -45.0, 5.6
-MAST_Z, DIR_W, DIR_H, POLE_TOP = -51.5, 5.2, 3.0, 23.5
+MAST_Z, DIR_W, DIR_H, POLE_TOP = -51.5, 5.2, 3.0, 24.0
+FAIR = (5.75, -37.25, 2.4, 1.8)
 SPINE_BANDS = [-1.2, 6.3, 13.6, 21.2, 29.9, 38.6, 47.3, 56.0]
 
 
@@ -68,21 +72,22 @@ P += [
     {"id": "corner bells, lower pair: bell-L x1.237 (r 4.33)", "part": "bell-L", "p": [13.45, -25.45, -101.32], "n": [0, 0, 1], "up": [0, 1, 0], "scale": 1.237, "snap": False, "mirrorX": True, "seat": {"check": False}},
     {"id": "centre dish: bell-XL x1.106 (r 7.74), lip 10.7 m forward of the corner lips", "part": "bell-XL", "p": [0, -19.94, -90.6], "n": [0, 0, 1], "up": [0, 1, 0], "scale": 1.106, "snap": False, "seat": {"check": False}},
 ]
-# ---- turrets (kit turret-M; guns along +Y = `up`): 12 in naval batteries
+# ---- turrets (kit turret-M; guns along +Y = `up`): 12 in naval batteries (v9: the bow ventral pair moved up to
+# the broadside sponsons; destroyer_assemble.py keeps the guns at full resolution through the decimation)
 TM = 1.15   # main batteries (the carrier's turret-L x2.6 stay far bigger)
 tur = lambda id_, p, n, up, sc, **kw: {"id": id_, "part": "turret-M", "p": r(p), "n": n, "up": up, "scale": sc, "snap": False, "seat": {"check": False}, **kw}
 P += [
-    tur(f"bow battery A: turret-M x{TM} on its ring (guns forward)", [0, DECK_B + 0.35, TUR_A], [0, 1, 0], [0, 0, 1], TM),
-    tur(f"bow battery B: turret-M x{TM} superfiring on a 3 m barbette (guns forward)", [0, DECK_B + BARBETTE_H, TUR_B], [0, 1, 0], [0, 0, 1], TM),
-    tur(f"bow ventral A': turret-M x{TM} (guns forward)", [0, BELLY_B - 0.35, TUR_A], [0, -1, 0], [0, 0, 1], TM),
-    tur(f"bow ventral B': turret-M x{TM} superfiring on a 3 m barbette", [0, BELLY_B - BARBETTE_H, TUR_B], [0, -1, 0], [0, 0, 1], TM),
-    tur(f"aft battery X: turret-M x{TM} superfiring on a 3 m barbette (guns aft)", [0, DECK_E + BARBETTE_H, TUR_X], [0, 1, 0], [0, 0, -1], TM),
-    tur(f"aft battery Y: turret-M x{TM} on its ring (guns aft)", [0, DECK_E + 0.35, TUR_Y], [0, 1, 0], [0, 0, -1], TM),
-    tur(f"aft ventral X': turret-M x{TM} superfiring on a 3 m barbette (guns aft)", [0, BELLY_E - BARBETTE_H, TUR_X], [0, -1, 0], [0, 0, -1], TM),
-    tur(f"aft ventral Y': turret-M x{TM} (guns aft)", [0, BELLY_E - 0.35, TUR_Y], [0, -1, 0], [0, 0, -1], TM),
-    tur("shoulder drums: turret-M x1.0 (guns forward)", list(SHOULDER_TUR), [0, 1, 0], [0, 0, 1], 1.0, mirrorX=True),
-    tur("flank sponson guns: turret-M x1.0 on the sponson faces (guns forward)", [20.3, -20.2, 14.2], [1, 0, 0], [0, 0, 1], 1.0, mirrorX=True),
+    tur(f"bow battery A: turret-M x{TM} on its ring (guns forward)", [0, DECK_B + 0.35 - SINK * TM, TUR_A], [0, 1, 0], [0, 0, 1], TM),
+    tur(f"bow battery B: turret-M x{TM} superfiring on its barbette (guns forward)", [0, DECK_B + BARBETTE_H - SINK * TM, TUR_B], [0, 1, 0], [0, 0, 1], TM),
+    tur(f"aft battery X: turret-M x{TM} superfiring on its barbette (guns aft)", [0, DECK_E + BARBETTE_H - SINK * TM, TUR_X], [0, 1, 0], [0, 0, -1], TM),
+    tur(f"aft battery Y: turret-M x{TM} on its ring (guns aft)", [0, DECK_E + 0.35 - SINK * TM, TUR_Y], [0, 1, 0], [0, 0, -1], TM),
+    tur(f"aft ventral X': turret-M x{TM} superfiring on its barbette (guns aft)", [0, BELLY_E - BARBETTE_H + SINK * TM, TUR_X], [0, -1, 0], [0, 0, -1], TM),
+    tur(f"aft ventral Y': turret-M x{TM} (guns aft)", [0, BELLY_E - 0.35 + SINK * TM, TUR_Y], [0, -1, 0], [0, 0, -1], TM),
+    tur("shoulder bastions: turret-M x1.0 on their seat rings (guns forward)", list(SHOULDER_TUR), [0, 1, 0], [0, 0, 1], 1.0, mirrorX=True),
 ]
+for nm, zc, yd, xt in SPONSONS:
+    P.append(tur(f"broadside sponson {nm}: turret-M x1.0 on its seat ring (guns forward){'; superfires over S1' if nm == 'S2' else ''}",
+                 [xt, yd + SPON_RING - SINK, zc], [0, 1, 0], [0, 0, 1], 1.0, mirrorX=True))
 # ---- VLS (kit missilePod, 2 x 4 cells, 3.19 x 5.59 m) set flush in the armoured coamings: 26 blocks, 208 cells
 for name, c, n, up, cols, rows in VLS:
     rr, uu = [1, 0, 0], up
@@ -102,23 +107,19 @@ def pd(fn, t, zs, up, **kw):
         pdc.append({"part": "pdc", "p": r([x, y, z]), "n": n, "up": up, "mirrorX": True, **kw})
 pd(b_shoulder, 0.55, (75.8, 80.6), [0, 0, 1])             # bow shoulders
 pd(b_lower, 0.45, (76.0,), [0, 0, 1])                     # bow lower chamfer
-pd(m_shoulder, 0.3, (-9.3, -13.7), [0, 0, 1])             # mid shoulders
 pd(e_shoulder, 0.15, (-36.6, -39.6), [0, 0, 1])           # engine shoulders, forward
 pd(e_shoulder, 0.2, (-77.2, -79.8), [0, 0, -1])           # engine shoulders, stern
 pd(e_lower, 0.62, (-40.2,), [0, 0, 1])                    # engine lower chamfer, forward
 pd(e_lower, 0.40, (-80.2,), [0, 0, -1])                   # engine lower chamfer, stern
 pdc.append({"part": "pdc", "p": [7.0, BELLY_B, 60.0], "n": [0, -1, 0], "up": [0, 0, 1], "mirrorX": True})
+for nm, zc, yd, xt in SPONSONS:   # v9: on the sponson decks, aft-outboard of the turret, barrels outboard
+    pdc.append({"part": "pdc", "p": [24.6, yd, round(zc - 4.8, 3)], "n": [0, 1, 0], "up": [1, 0, 0], "mirrorX": True, "seat": {"check": False}})
 for z, up in ((CB_Z + 3.5, [0, 0, 1]), (CB_Z - 3.0, [0, 0, -1])):   # command block roof, either side of radome and director
     pdc.append({"part": "pdc", "p": [5.2, CASE_TOP, z], "n": [0, 1, 0], "up": up, "mirrorX": True})
-pdc[0]["id"] = "point-defence clusters: bow shoulders and chamfers, mid and engine shoulders, stern corners, keel, command block roof"
+pdc[0]["id"] = "point-defence clusters: bow shoulders and chamfers, engine shoulders, stern corners, keel, broadside sponsons, command block roof"
 P += pdc
-# ---- fire-control arrays (fal kit sensorArray x0.7: 2.8 x 2.26 m) on the four faces of the director
-fy = CASE_TOP + DIR_H / 2 - 0.15
-P += [
-    {"id": "fire-control arrays x0.7 on the director faces", "part": "fal:sensorArray", "p": [DIR_W / 2, fy, MAST_Z], "n": [1, 0, 0], "up": [0, 1, 0], "scale": 0.7, "mirrorX": True},
-    {"part": "fal:sensorArray", "p": [0, fy, MAST_Z + DIR_W / 2], "n": [0, 0, 1], "up": [0, 1, 0], "scale": 0.7},
-    {"part": "fal:sensorArray", "p": [0, fy, MAST_Z - DIR_W / 2], "n": [0, 0, -1], "up": [0, 1, 0], "scale": 0.7},
-]
+# ---- phased arrays: v9 builds them into the hull (destroyer.py phased_array(): director, mast trunk, roof
+# fairings); the fal kit sensorArray meshes they replace showed crumpled facets at close range
 # ---- doors: personnel door in the boat hatch's aft leaf, gun-gap faces, deckhouse, tower base
 lw = (BOAT['w'] - 1.2) / 2 - 0.06
 P += [
@@ -152,7 +153,7 @@ for fn in (e_shoulder, e_lower):
 # ---- nav lights (module lights at the lens): sidelights, strobes, stern light
 P += [
     {"id": "nav lights: engine-block flank sidelights (red port, green starboard)", "part": "navlight", "p": [27.67, -19.7, -50.0], "n": [1, 0, 0], "mirrorX": True},
-    {"part": "navlight", "p": [0, round(CASE_TOP + DIR_H, 3), round(MAST_Z + 1.6, 3)], "n": [0, 1, 0]},
+    {"part": "navlight", "p": [0, round(POLE_TOP + 0.05, 3), round(MAST_Z + 0.25, 3)], "n": [0, 1, 0], "snap": False, "seat": {"check": False}},
     {"part": "navlight", "p": [0, -36.9, -50.0], "n": [0, -1, 0], "sink": 0.1},
     {"part": "navlight", "p": [0, -7.8, -85.0], "n": [0, 0, -1]},
 ]
@@ -164,8 +165,9 @@ P += [
 ]
 # ---- antennas, mast, dome
 P += [
-    {"id": "deckhouse whip", "part": "antenna", "p": [6.0, 2.2, -16.5], "n": [0, 1, 0], "up": [0, 0, 1]},
-    {"id": "masthead: antenna x1.0 on the sensor pole (the envelope top, ~y 29.5)", "part": "antenna", "p": [0, POLE_TOP, MAST_Z], "n": [0, 1, 0], "up": [0, 0, 1], "scale": 1.0, "snap": False, "seat": {"check": False}},
+    {"id": "deckhouse whip (v9: forward corner, clear of the VLS bays)", "part": "antenna", "p": [7.0, DH_TOP, -14.4], "n": [0, 1, 0], "up": [0, 0, 1]},
+    {"id": "masthead whip: antenna x0.91 on the topmast cap (the envelope top, ~y 29.47)", "part": "antenna", "p": [0, round(POLE_TOP + 0.05, 3), round(MAST_Z - 0.2, 3)], "n": [0, 1, 0], "up": [0, 0, 1], "scale": 0.91, "snap": False, "seat": {"check": False}},
+    {"id": "command block roof whips x0.7 on their bases (aft corners)", "part": "antenna", "p": [5.6, round(CASE_TOP + 0.35, 3), -53.6], "n": [0, 1, 0], "up": [0, 0, 1], "scale": 0.7, "snap": False, "seat": {"check": False}, "mirrorX": True},
     {"id": "radome x1.8 on its drum (command block roof, forward)", "part": "dome", "p": [0, CASE_TOP + 1.2, CB_Z + 5.5], "n": [0, 1, 0], "up": [0, 0, 1], "scale": 1.8, "snap": False, "seat": {"check": False}},
 ]
 P = [{k: v for k, v in q.items() if v is not None} for q in P]
@@ -176,10 +178,10 @@ spec = {
     "kits": {"fal": "../../../assets/parts"},
     "partDefaults": {
         "door": {"sink": 0.0}, "rcs": {"sink": 0.04}, "floodlight": {"sink": 0.02}, "navlight": {"sink": 0.0}, "pdc": {"sink": 0.05},
-        "rail": {"sink": 0.0, "xAlong": True, "scale": [3, 1, 1]}, "ladder": {"sink": 0.0, "lift": 0.03}, "antenna": {"sink": 0.05}, "dome": {"sink": 0.05}, "missilePod": {"sink": 0.0}, "fal:sensorArray": {"sink": 0.05}},
-    "fixes": {"door": {"decimate": 0.3}, "missilePod": {"decimate": 0.18}, "rail": {"decimate": 0.5}, "fal:sensorArray": {"decimate": 0.3}, "rcs": {"decimate": 0.3}, "navlight": {"decimate": 0.35}, "floodlight": {"decimate": 0.3},
-              "ladder": {"decimate": 0.45}, "turret-M": {"decimate": 0.26}, "bell-L": {"decimate": 0.22}, "bell-XL": {"decimate": 0.3}, "antenna": {"decimate": 0.45},
-              "dome": {"decimate": 0.6}, "pdc": {"decimate": 0.25}},
+        "rail": {"sink": 0.0, "xAlong": True, "scale": [3, 1, 1]}, "ladder": {"sink": 0.0, "lift": 0.03}, "antenna": {"sink": 0.05}, "dome": {"sink": 0.05}, "missilePod": {"sink": 0.0}},
+    "fixes": {"door": {"decimate": 0.22}, "missilePod": {"decimate": 0.15}, "rail": {"decimate": 0.45}, "rcs": {"decimate": 0.2}, "navlight": {"decimate": 0.35}, "floodlight": {"decimate": 0.3},
+              "ladder": {"decimate": 0.35}, "turret-M": {"decimate": 0.2}, "bell-L": {"decimate": 0.2}, "bell-XL": {"decimate": 0.3}, "antenna": {"decimate": 0.45},
+              "dome": {"decimate": 0.6}, "pdc": {"decimate": 0.16}},
     "seat": {"maxGap": 0.15, "maxBury": 0.4, "drop": True},
     "bake": {"ao": True, "res": 2048, "distance": 0.5, "samples": 16, "aa": 4, "strength": 0.6},
     "placements": P,

@@ -23,13 +23,16 @@ profile about a point on the centre line, so every tapered facet stays planar):
   bow block     z 54.3 .. 101.34  34.2 x 24 m, rear and nose tapers, the muzzle shroud
   command block z -59 .. -31      (v8, replaces the v7 bridge tower) armoured base deck 23 x 28 m to
                                   y -0.4, sloped two-deck casemate to y 5.6 (10 m above the engine
-                                  deck) with an armoured glazing slit, radome drum, fire-control
-                                  director and a slim sensor mast (pole + whip: the envelope top)
+                                  deck); v9: bridge slit under an armour visor and a CIC slit, applique
+                                  armour, sensor fairings, docking collars, radome drum, fire-control
+                                  director and the sensor mast (trunk with arrays, gallery, lattice,
+                                  radar, topmast, strobe and whip: the envelope top)
   railgun       spine with a finned cooling ridge and heavy clamp bands, capacitor banks, the exposed
                 barrel in the gap (z 43.5 .. 54.3: rails, three heavy clamp rings, copper coil packs,
                 walkways with doors and ladders), muzzle boss, armoured muzzle collar and nose band
-  weapons (v8)  barbettes for 12 turret-M (A/B bow, X/Y aft, the same four ventral, two shoulder
-                drums, two sponsons), VLS coamings for 26 kit missile pods (bow, mid, aft decks)
+  weapons (v9)  seats for 12 turret-M (A/B bow, X/Y aft, X'/Y' ventral aft, two on the engine-shoulder
+                bastions, four on the broadside sponsons of the mid-hull upper flank), VLS coamings for
+                28 kit missile pods (bow deck, deckhouse roof, engine deck)
 """
 import json
 import math
@@ -75,32 +78,51 @@ SPINE_BANDS = [-1.2, 6.3, 13.6, 21.2, 29.9, 38.6, 47.3, 56.0]   # heavy clamp ba
 # ------------------------------------------------------------------------------------------
 # v8 redesign: weapon stations (destroyer_spec.py repeats these numbers). Turrets are kit turret-M
 # (x1.15 main batteries, x1.0 shoulders and sponsons; the carrier's turret-L x2.6 stay far bigger).
-# 'B' / 'X' stations superfire over 'A' / 'Y' on 3 m barbettes (turret-M x1.15: roof 4.44 m, trunnion
-# 2.6 m), dorsal and ventral alike.
+# 'B' / 'X' stations superfire over 'A' / 'Y' on barbettes, dorsal and ventral alike (turret-M x1.15: roof 4.44 m,
+# trunnion 2.6 m). v9: every turret is seated 0.98 x scale INTO its ring or barbette (destroyer_assemble.py drops the
+# kit's base discs, which the decimation left faceted): the barbettes grew by that 1.13 m (4.13 m), so B / X and the
+# envelope stay where they were, and A / Y sit 1.13 m lower on their rings (more clearance under B / X's guns).
 # ------------------------------------------------------------------------------------------
 TUR_A, TUR_B = 79.2, 66.5                 # bow block: A (low ring), B (superfiring barbette), guns forward
 TUR_X, TUR_Y = -66.3, -78.8               # engine block: X (superfiring barbette), Y (low ring), guns aft
-BARBETTE_H = 3.0
-SHOULDER_TUR = (21.5, -5.0, -57.5)        # engine-shoulder barbettes (top centre), guns forward
+BARBETTE_H = 4.13
+SHOULDER_TUR = (21.2, -4.98, -57.5)       # engine-shoulder turrets (turret origin), guns forward, on the shoulder bastions
 DECK_E, DECK_M, DECK_B = -4.3, -8.3, -6.4 # dorsal deck heights: engine block, mid hull, bow block
 BELLY_E, BELLY_B = -35.8, -30.4           # ventral flats: engine block, bow block
+# v9: shoulder bastions: flat-topped armoured plinths squaring off the engine shoulder under the shoulder
+# turrets (v8's drums rose out of the sloped facet with a base flare half way up their outboard side).
+# Plan: x0 .. x1 (inboard edge buried under the shoulder), l long, plan chamfer c; walls battered `batter`
+# inward from the buried foot to the top, a top chamfer; a 1.2 m seat ring on the flat top.
+BASTION = dict(x0=14.2, x1=27.2, l=13.4, c=2.4, foot=-16.5, top=-6.2, batter=0.5, tch=0.4, ring_r=4.6, ring_h=2.2)
+# v9: broadside sponsons on the mid-hull upper flank (the bow ventral pair of v8 moved here): turret-M x1.0,
+# guns forward; the aft pair (S2) superfires over the forward pair (S1). (name, turret z, deck top y, turret x)
+SPONSONS = [('S1', 14.5, -11.4, 21.0), ('S2', -4.0, -8.0, 21.0)]   # S2's deck 0.3 m above the mid deck: its turret breaks the hull line
+SPON = dict(xi=11.5, xo=26.2, ch=1.2, face=3.4, under=28.0, xf=16.9, l=13.0, lc=1.0, ring_r=4.6, ring_h=2.0)
 # VLS bays (kit missilePod 3.188 x 5.588 m, 8 cells): armoured coamings flush with the pod tops.
 # (name, deck centre, normal, up, cols, rows); columns at +-x, mirrored
 VLS_PITCH = (3.3, 5.7)
 M_DECK_N = (0.0, 22.5, 3.19)              # mid hull forward-taper deck normal (unnormalised)
+DH_TOP = 2.2                              # deckhouse roof (v9: carries the ex-mid-deck VLS, clear of the spine rails)
 VLS = [
     ('bow', (8.0, DECK_B, 70.8), (0, 1, 0), (0, 0, 1), 1, 4),
-    ('mid', (7.4, -9.718, 31.0), M_DECK_N, (0, -3.19, 22.5), 1, 3),
+    ('dh', (4.45, DH_TOP, -22.0), (0, 1, 0), (0, 0, 1), 2, 2),
     ('aft', (10.4, DECK_E, -72.5), (0, 1, 0), (0, 0, 1), 2, 3),
 ]
 VLS_H, VLS_WALL = 0.62, 0.5
 # command block (replaces the v7 bridge tower): armoured base deck, sloped two-deck casemate with a
-# glazing slit, radome drum and a fire-control director at the foot of a slim sensor mast
+# bridge slit (upper deck) and a CIC slit (lower deck, front only), applique armour, radome drum,
+# fire-control director and the sensor mast
 CB_Z = -45.0
 CB_BASE = dict(w=23.0, l=28.4, c=3.2, top=-0.4)   # front at z -30.8: 0.2 m into the deckhouse
 CB_CASE = dict(w0=19.6, l0=25.0, c0=3.0, w1=15.0, l1=19.0, c1=2.2, y0=-0.4, y1=5.6)
-CB_SLIT = dict(y=4.1, h=0.5, d=0.45, zcut=-47.0)
-MAST = dict(z=-51.5, dir_w=5.2, dir_h=3.0, pylon=(2.6, 1.2), pylon_top=14.0, pole_top=23.5)
+CB_SLIT = dict(y=4.25, h=0.85, d=0.5, zcut=-47.0, pitch=1.5)      # bridge (v8: 0.5 m tall)
+CB_CIC = dict(y=1.35, h=0.55, d=0.45, zcut=-37.6, pitch=1.8)      # combat information centre, lower deck
+# v9 sensor mast on the director: a 45-degree tapered trunk with four phased arrays, a railed gallery, a
+# lattice section, the surveillance radar on the upper platform, a topmast with a yard, the masthead strobe
+# and the whip (the envelope top ~y 29.47, as v8's pole + whip)
+FAIR = (5.75, -37.25, 2.4, 1.8)   # v9 roof sensor fairings: |x|, z, width, height (faces 45 deg outboard-forward)
+MAST = dict(z=-51.5, dir_w=5.2, dir_h=3.0, trunk=(3.4, 2.3), trunk_top=15.0, lat=(1.9, 1.15), lat_top=20.5,
+            radar_y=21.75, pole_top=24.0)
 
 
 def barbette(bm, top, axis, h, r=5.0, bury=0.9, zone=None):
@@ -111,6 +133,40 @@ def barbette(bm, top, axis, h, r=5.0, bury=0.9, zone=None):
     L = h + bury
     prof = [(r + 0.45, 0.0), (r + 0.45, bury + 0.35), (r, bury + 0.75), (r, L - 0.35), (r + 0.3, L - 0.3), (r + 0.3, L)]
     K.lathe(bm, p0, ax, prof, n=40, zone=Z['trim'] if zone is None else zone)
+
+
+def seat_ring(bm, top, h, r, bury=0.3, zone=None):
+    """Low turret seat ring on a flat deck (v9): a base flange, the drum and a top lip; `top` = the turret seat."""
+    top = V(top)
+    L = h + bury
+    prof = [(r + 0.4, 0.0), (r + 0.4, bury + 0.18), (r, bury + 0.32), (r, L - 0.28), (r + 0.25, L - 0.24), (r + 0.25, L)]
+    K.lathe(bm, top - V((0, L, 0)), (0, 1, 0), prof, n=32, zone=Z['trim'] if zone is None else zone)
+
+
+def sponson(bm, s, zc, yd):
+    """Broadside sponson on the mid-hull upper flank (v9), side s (+1 port): a flat deck at yd from the
+    shoulder facet out to SPON.xo, a vertical outer face, and a corbelled underside back into the flank;
+    the inboard part is buried in the hull (culled). Chamfered ends (a loft of the section inset at the ends)."""
+    p = SPON
+    ye = yd - p['face'] - (p['xo'] - p['xf']) * math.tan(math.radians(p['under']))
+    sec = [(p['xi'], yd), (p['xo'] - p['ch'], yd), (p['xo'], yd - p['ch']), (p['xo'], yd - p['face']), (p['xf'], ye), (p['xi'], ye)]
+    if s < 0:
+        sec = [(-x, y) for x, y in reversed(sec)]
+    ins = K.offset_poly(sec, -p['lc'])
+    z0, z1 = zc - p['l'] / 2, zc + p['l'] / 2
+    K.stack(bm, [(ins, z0), (sec, z0 + p['lc']), (sec, z1 - p['lc']), (ins, z1)], 'xy', zone=Z['paint'])
+    return ye
+
+
+def bastion(bm, s):
+    """Engine-shoulder bastion (v9): a flat-topped armoured plinth (plan chamfer_rect, battered walls, top
+    chamfer) whose foot is buried in the engine block; the shoulder turret's seat ring stands on its top."""
+    b = BASTION
+    x0, x1 = (b['x0'], b['x1']) if s > 0 else (-b['x1'], -b['x0'])
+    zc = SHOULDER_TUR[2]
+    plan = K.chamfer_rect((x0 + x1) / 2, zc, x1 - x0, b['l'], b['c'])
+    K.stack(bm, [(plan, b['foot']), (K.offset_poly(plan, -b['batter']), b['top'] - b['tch']),
+                 (K.offset_poly(plan, -b['batter'] - b['tch']), b['top'])], 'xz', zone=Z['paint'])
 
 
 def tube(bm, outers, inners, zone):
@@ -260,12 +316,12 @@ def engine_block():
         # the profile segments)
         sh = V((27.67 - 15.0, -15.0 + 4.3))
         nsh = V((s * 10.7, 12.67, 0)).normalized()
-        for t, zr in ((0.72, [(-64.0, -81.0)]),):
+        for t, zr in ((0.72, [(-65.8, -81.0)]),):   # v9: aft of the shoulder bastion
             p = V((s * (15.0 + 12.67 * t), -4.3 - 10.7 * t, 0))
             for z0, z1 in zr:
                 port_row(cut, (p.x, p.y, z0), (p.x, p.y, z1), 2.5, nsh, up=(-s * 0.764, 0.645, 0))
         nlo = V((s * 10.4, -12.77, 0)).normalized()
-        for t in (0.28, 0.52):
+        for t in (0.28,):   # v9: one lower-chamfer row (the second, seen only from below, went to the triangle budget)
             p = V((s * (27.67 - 12.77 * t), -25.4 - 10.4 * t, 0))
             for z0, z1 in ((-38.5, -56.0), (-59.5, -81.0)):
                 port_row(cut, (p.x, p.y, z0), (p.x, p.y, z1), 2.5, nlo, up=(s * 0.775, 0.631, 0))
@@ -325,17 +381,33 @@ def engine_details():
     # ventral: X' / Y' under the engine block (guns aft)
     barbette(d.bm, (0, BELLY_E - BARBETTE_H, TUR_X), (0, -1, 0), BARBETTE_H)
     K.cyl(d.bm, (0, BELLY_E + 0.5, TUR_Y), (0, BELLY_E - 0.35, TUR_Y), 5.1, n=40, zone=Z['trim'])
-    # engine-shoulder barbettes: drums rising out of the shoulder facets to a flat seat
-    for s_ in (1, -1):
-        x, y, z = SHOULDER_TUR
-        barbette(d.bm, (s_ * x, y, z), (0, 1, 0), 3.0, r=4.9, bury=8.5)
-        # buttress ribs round the outboard half of the drum, down to the shoulder facet
-        for a in np.radians([-75, -45, -15, 15, 45, 75]):
-            cx, cz = s_ * x + s_ * 5.05 * math.cos(a), z + 5.05 * math.sin(a)
-            R = Matrix(((s_ * math.cos(a), 0, math.sin(a)), (0, 1, 0), (-math.sin(a), 0, s_ * math.cos(a)))).transposed()   # columns: radial, up, tangent
-            K.box(d.bm, (cx, y - 6.8, cz), (0.7, 12.4, 0.55), R=R, zone=Z['trim'])
     K.solid(d.bm)
     vols.append(d)
+    # v9: engine-shoulder bastions (flat armoured plinths) with the shoulder turrets' seat rings, a trim band
+    # round the top and applique plates on the outboard wall
+    bs = Volume('bastions', bevel=0.1)
+    b = BASTION
+    for s_ in (1, -1):
+        bastion(bs.bm, s_)
+    K.solid(bs.bm)
+    vols.append(bs)
+    br = Volume('bastion_rings', bevel=0.05)
+    for s_ in (1, -1):
+        x, y, z = SHOULDER_TUR
+        seat_ring(br.bm, (s_ * x, b['top'] + b['ring_h'], z), b['ring_h'], b['ring_r'], bury=0.5)
+        # armour band round the bastion just under the top chamfer, and two applique plates per outboard wall
+        yp, hw = b['top'] - 3.3, b['top'] - b['tch'] - b['foot']
+        xo = b['x1'] - b['batter'] * (yp - b['foot']) / hw
+        nb = V((s_ * hw, b['batter'], 0)).normalized()
+        for dz in (-2.0, 2.0):
+            K.plate(br.bm, (s_ * (xo - 0.02), yp, z + dz), nb, (0, 1, 0), 3.6, 3.4, 0.16, ch=0.05, back=0.1, zone=Z['trim'])
+        # one plate on each of the fore and aft walls, outboard where the wall stands tallest above the shoulder
+        yq = b['top'] - 2.0
+        for sz in (1, -1):
+            zw = z + sz * (b['l'] / 2 - b['batter'] * (yq - b['foot']) / hw)
+            K.plate(br.bm, (s_ * 23.4, yq, zw - sz * 0.02), V((0, b['batter'], sz * hw)).normalized(), (0, 1, 0), 2.4, 2.0, 0.14, ch=0.04, back=0.1, zone=Z['trim'])
+    K.solid(br.bm)
+    vols.append(br)
     v = Volume('vls_aft', bevel=0.05)
     for s_ in (1, -1):
         nm, c, n, up, cols, rows = VLS[2]
@@ -346,9 +418,9 @@ def engine_details():
     st = Volume('stern_bosses', bevel=0.05)
     for s in (1, -1):
         for y in (-13.71, -25.45):
-            K.lathe(st.bm, (s * 13.45, y, E_STERN + 0.4), (0, 0, -1), [(5.35, 0.0), (5.35, 3.8), (4.95, 4.3), (4.95, 7.2)], n=32, zone=Z['metal'])
+            K.lathe(st.bm, (s * 13.45, y, E_STERN + 0.4), (0, 0, -1), [(5.35, 0.0), (5.35, 3.8), (4.95, 4.3), (4.95, 7.2)], n=28, zone=Z['metal'])
             for t in (1.0, 2.4):
-                K.cyl(st.bm, (s * 13.45, y, E_STERN - t), (s * 13.45, y, E_STERN - t - 0.45), 5.6, n=32, zone=Z['trim'])
+                K.cyl(st.bm, (s * 13.45, y, E_STERN - t), (s * 13.45, y, E_STERN - t - 0.45), 5.6, n=28, zone=Z['trim'])
     K.lathe(st.bm, (0, -19.94, E_STERN + 0.4), (0, 0, -1), [(9.1, 0.0), (9.1, 1.2), (8.75, 1.6), (8.75, 3.2)], n=48, zone=Z['metal'])
     K.solid(st.bm)
     vols.append(st)
@@ -382,7 +454,7 @@ def mid_hull():
         # shoulder row
         nsh = V((s * 7.0, 5.0, 0)).normalized()
         p = V((s * (12.5 + 5.0 * 0.55), -8.3 - 7.0 * 0.55, 0))
-        port_row(cut, (p.x, p.y, -24.5), (p.x, p.y, 19.5), 2.5, nsh, up=(-s * 0.581, 0.814, 0), skip=[(-4.0, -1.0)])
+        port_row(cut, (p.x, p.y, -24.5), (p.x, p.y, 19.5), 2.5, nsh, up=(-s * 0.581, 0.814, 0), skip=[(-11.6, 3.6), (7.4, 22.0)])   # v9: sponsons
         # forward taper flank: one low row under the hull number
         ntp = V((s * 1.0, 0, (17.5 - 13.26) / (M_FRONT - M_Z1))).normalized()
         za, zb = 22.5, 41.0
@@ -434,19 +506,37 @@ def mid_details():
     kb.adds.append(('slats', lambda bm2: [K.box(bm2, (x, -33.25, zc), (0.1, 0.3, 3.0), zone=Z['fin'])
                                            for zc in (-16.0, -6.0, 4.0, 12.0) for x in np.arange(-3.0, 3.01, 0.5)]))
     vols.append(kb)
-    # sponsons for the flank guns (blueprint: z 10..18.5, out to x +-21, y -18..-23)
-    sp = Volume('sponsons', bevel=0.08)
+    # v9: broadside sponsons on the upper flank (replace v8's flank sponsons, whose turret lay on its side
+    # facing outboard): flat decks catching the sun, turret-M x1.0 on seat rings, S2 superfiring over S1
+    sp = Volume('sponsons', bevel=0.1)
     for s in (1, -1):
-        # v8: enlarged to seat a full turret-M (x1.0): 11 x 9 m face
-        prof = K.chamfer_rect(14.2, -20.2, 11.0, 9.0, 1.5)
-        K.stack(sp.bm, [(prof, s * 16.8), (prof, s * 19.8), (K.chamfer_rect(14.2, -20.2, 10.0, 8.0, 1.1), s * 20.3)], 'zy', zone=Z['paint'])
+        for nm, zc, yd, xt in SPONSONS:
+            sponson(sp.bm, s, zc, yd)
     K.solid(sp.bm)
+    for f in sp.bm.faces:
+        if f.normal.y > 0.95:
+            f.material_index = Z['deck']
     vols.append(sp)
+    sr = Volume('sponson_rings', bevel=0.05)
+    p = SPON
+    for s in (1, -1):
+        for nm, zc, yd, xt in SPONSONS:
+            seat_ring(sr.bm, (s * xt, yd + p['ring_h'], zc), p['ring_h'], p['ring_r'])
+            # applique plates on the outer face, a deck hatch forward-inboard of the ring
+            for dz in (-2.9, 2.9):
+                K.plate(sr.bm, (s * p['xo'], yd - p['ch'] - 1.05, zc + dz), (s, 0, 0), (0, 1, 0), 5.0, 1.7, 0.14, ch=0.04, back=0.1, zone=Z['trim'])
+            K.plate(sr.bm, (s * 16.7, yd, zc + 4.7), (0, 1, 0), (0, 0, 1), 1.3, 1.3, 0.1, ch=0.03, back=0.1, zone=Z['trim'])
+    K.solid(sr.bm)
+    vols.append(sr)
     # pre-tower deckhouse (blueprint z -31..-13, x +-9.5, top y 2.2) and the drum ahead of it
     dh = Volume('deckhouse', bevel=0.1)
     base = K.chamfer_rect(0, -22.0, 19.0, 18.0, 2.0)
-    K.stack(dh.bm, [(base, -8.6), (base, 0.9), (K.chamfer_rect(0, -22.2, 16.6, 16.0, 1.6), 2.2)], 'xz', zone=Z['paint'])
+    # v9: a broader roof (18.2 x 17.2 m, was 16.6 x 16) for the VLS bays moved up from the mid-hull deck
+    K.stack(dh.bm, [(base, -8.6), (base, DH_TOP - 0.7), (K.chamfer_rect(0, -22.0, 18.2, 17.2, 1.8), DH_TOP)], 'xz', zone=Z['paint'])
     K.solid(dh.bm)
+    for f in dh.bm.faces:
+        if f.normal.y > 0.95:
+            f.material_index = Z['deck']
     for s in (1, -1):
         for y in (-5.2, -2.2):
             port_row(dh.cutters, (s * 9.5, y, -28.8), (s * 9.5, y, -15.2), 2.3, (s, 0, 0))
@@ -454,6 +544,12 @@ def mid_details():
         port(dh.cutters, (x, -2.2, -13.0), (0, 0, 1))
     K.solid(dh.cutters)
     vols.append(dh)
+    v = Volume('vls_dh', bevel=0.05)
+    for s_ in (1, -1):
+        nm, c, n, up, cols, rows = VLS[1]
+        vls_bay(v.bm, (s_ * c[0], c[1], c[2]), n, up, cols, rows)
+    K.solid(v.bm)
+    vols.append(v)
     dr = Volume('drum', bevel=0.06)
     K.stack(dr.bm, [(K.chamfer_rect(0, -9.6, 12.0, 7.2, 1.6), -8.6), (K.chamfer_rect(0, -9.6, 12.0, 7.2, 1.6), -2.2),
                     (K.chamfer_rect(0, -9.6, 10.8, 6.0, 1.2), -1.4)], 'xz', zone=Z['paint'])
@@ -536,14 +632,23 @@ def bow_details():
         ring_solid(co.bm, K.chamfer_rect(0, BORE_Y, w + 0.2, h + 0.2, ch), K.chamfer_rect(0, BORE_Y, w - 0.7, h - 0.7, ch - 0.25), 'xy', zc, zc + 0.8, zone=COPPER)
     K.solid(co.bm)
     vols.append(co)
-    # dorsal turret barbette, ventral turret barbette, hatch plates, blue band plinth
+    # dorsal turret ring and barbette (v9: the ventral A' / B' pair moved up to the broadside sponsons)
     d = Volume('bow_dorsal', bevel=0.05)
     K.cyl(d.bm, (0, DECK_B - 0.5, TUR_A), (0, DECK_B + 0.35, TUR_A), 5.1, n=40, zone=Z['trim'])
     barbette(d.bm, (0, DECK_B + BARBETTE_H, TUR_B), (0, 1, 0), BARBETTE_H)
-    K.cyl(d.bm, (0, BELLY_B + 0.5, TUR_A), (0, BELLY_B - 0.35, TUR_A), 5.1, n=40, zone=Z['trim'])
-    barbette(d.bm, (0, BELLY_B - BARBETTE_H, TUR_B), (0, -1, 0), BARBETTE_H)
     K.solid(d.bm)
     vols.append(d)
+    # v9: ventral sensor keel under the bow block where the ventral pair stood: a low fairing with two
+    # louvred sensor windows
+    kb = Volume('keel_bow', bevel=0.06)
+    K.prism(kb.bm, [(62.4, BELLY_B + 0.3), (63.8, BELLY_B - 1.7), (80.2, BELLY_B - 1.7), (81.6, BELLY_B + 0.3)], 'zy', -4.6, 4.6, zone=Z['belly'])
+    K.solid(kb.bm)
+    for zc in (67.5, 76.5):
+        rect_cutter(kb.cutters, (0, BELLY_B - 1.7, zc), (0, -1, 0), (0, 0, 1), 6.0, 5.6, 0.3, ch=0.3, zone_back=Z['dark'])
+    K.solid(kb.cutters)
+    kb.adds.append(('slats', lambda bm2: [K.box(bm2, (x, BELLY_B - 1.55, zc), (0.1, 0.26, 5.2), zone=Z['fin'])
+                                           for zc in (67.5, 76.5) for x in np.arange(-2.5, 2.51, 0.5)]))
+    vols.append(kb)
     v = Volume('vls_bow', bevel=0.05)
     for s in (1, -1):
         nm, c, n, up, cols, rows = VLS[0]
@@ -601,11 +706,14 @@ def railgun():
                 K.plate(cb.bm, (xc, -4.3, zc + dz), (0, 1, 0), (0, 0, 1), 4.6, L / 2 - 0.6, 0.12, ch=0.04, back=0.15, zone=Z['trim'])
     K.solid(cb.bm)
     vols.append(cb)
-    # VLS bays on the mid hull's forward deck, outboard of the spine (v8; were equipment cabinets)
-    vm = Volume('vls_mid', bevel=0.05)
+    # v9: the mid-deck VLS bays (hidden under the spine rails from the hero view) moved to the deckhouse
+    # roof; the forward deck keeps flush magazine hatches between the spine and the outer rails
+    vm = Volume('mid_hatches', bevel=0.03)
+    nn = V(M_DECK_N).normalized(); uu = V((0, -3.19, 22.5)).normalized()
     for s in (1, -1):
-        nm, c, n, up, cols, rows = VLS[1]
-        vls_bay(vm.bm, (s * c[0], c[1], c[2]), n, up, cols, rows)
+        for z in (25.6, 34.4):
+            c = V((s * 7.4, -9.718, 31.0)) + uu * ((z - 31.0) / uu.z)
+            K.plate(vm.bm, c, nn, uu, 3.0, 6.4, 0.1, ch=0.03, back=0.12, zone=Z['trim'])
     K.solid(vm.bm)
     vols.append(vm)
     # v8: cooling ridge along the spine crown (the railgun's heat path, a dark finned core between the
@@ -664,7 +772,7 @@ def railgun():
             L = GAP[1] - GAP[0] - 1.0
             for k in range(3):
                 c0 = GAP[0] + 0.5 + k * L / 3
-                for zc in np.arange(c0 + 0.35, c0 + L / 3 - 0.35, 0.36):
+                for zc in np.arange(c0 + 0.35, c0 + L / 3 - 0.35, 0.48):   # v9: 0.48 m pitch (was 0.36; triangle budget)
                     K.cyl(cp.bm, (s * 7.6, y, zc), (s * 7.6, y, zc + 0.2), 1.62, n=16, zone=COPPER)
                 K.cyl(cp.bm, (s * 7.6, y, c0 - 0.1), (s * 7.6, y, c0 + 0.2), 1.78, n=16, zone=Z['trim'])
         # cable conduits along the outer side
@@ -703,37 +811,20 @@ def u_band(inner, outer, zcut):
     return [(xi, zcut)] + fi + [(-xi, zcut), (-xo, zcut)] + fo[::-1] + [(xo, zcut)]
 
 
-def command_block():
-    vols = []
-    b = CB_BASE
-    base = K.chamfer_rect(0, CB_Z, b['w'], b['l'], b['c'])
-    v = Volume('cmd_base', bevel=0.1)
-    K.stack(v.bm, [(base, -8.0), (base, b['top'] - 0.55), (K.offset_poly(base, -0.5), b['top'])], 'xz', zone=Z['paint'])
-    K.solid(v.bm)
-    # crew deck ports along the base sides (1 m ports, deck -4.3)
-    for s in (1, -1):
-        port_row(v.cutters, (s * b['w'] / 2, -2.5, CB_Z - 10.5), (s * b['w'] / 2, -2.5, CB_Z + 6.0), 2.5, (s, 0, 0))
-    K.solid(v.cutters)
-    vols.append(v)
-    # casemate: sloped armour faces, two decks, the bridge glazing slit on the upper deck
-    c = CB_CASE
-    cm = Volume('cmd_case', bevel=0.1)
-    K.stack(cm.bm, [(case_outline(c['y0'] - 0.3), c['y0'] - 0.3), (case_outline(c['y1']), c['y1'])], 'xz', zone=Z['paint'])
-    K.solid(cm.bm)
-    sl = CB_SLIT
+def slit(cm, sl, zone_back=None):
+    """Cut an armoured glazing slit round the casemate front (z > sl.zcut) at height sl.y (sl.h tall, sl.d deep,
+    glass on the back wall) into cm.cutters; returns the armoured mullion frames (every sl.pitch)."""
     band = u_band(case_outline(sl['y'], -sl['d']), case_outline(sl['y'], 3.0), sl['zcut'])
     grid, _caps = K.prism(cm.cutters, band, 'xz', sl['y'] - sl['h'] / 2, sl['y'] + sl['h'] / 2, zone=Z['recess'])
     for j in range(5):       # the band's inner run (edges 0..4) is the slit's back wall: glass
         if grid[0][j] is not None:
-            grid[0][j].material_index = Z['glass']
-    K.solid(cm.cutters)
-    # armoured mullions in the slit every 1.5 m (thick bars: armoured glazing)
+            grid[0][j].material_index = Z['glass'] if zone_back is None else zone_back
     o = case_outline(sl['y'], -sl['d'] + 0.2)
     mm = []
     for i in range(1, 4):
         a_, b_ = V(o[i]), V(o[i + 1])
         L = (b_ - a_).length; d = (b_ - a_).normalized()
-        k = max(1, int(L / 1.5))
+        k = max(1, int(L / sl['pitch']))
         for j in range(k + (1 if i == 3 else 0)):
             p = a_ + d * (L * j / k)
             if p.y < sl['zcut'] + 0.3:
@@ -742,30 +833,225 @@ def command_block():
             mm.append((V((p.x, sl['y'], p.y)), Rm))
     for s in (1, -1):   # the side runs forward of zcut
         a_ = V(o[0] if s > 0 else o[5]); b_ = V(o[1] if s > 0 else o[4])
-        for zz in np.arange(sl['zcut'] + 1.0, max(a_.y, b_.y) - 0.3, 1.5):
+        for zz in np.arange(sl['zcut'] + 1.0, max(a_.y, b_.y) - 0.3, sl['pitch']):
             Rm = Matrix(((0, 0, 1), (0, 1, 0), (1, 0, 0))).transposed()
             mm.append((V((a_.x, sl['y'], zz)), Rm))
-    cm.adds.append(('mullions', lambda bm2, mm=mm: [K.box(bm2, cc, (0.3, sl['h'] + 0.02, 0.7), R=R, zone=Z['trim']) for cc, R in mm]))
+    return [(c, R, sl['h']) for c, R in mm]
+
+
+def rot_outline(pts, cx, cz, ang):
+    ca, sa = math.cos(ang), math.sin(ang)
+    return [(cx + x * ca - z * sa, cz + x * sa + z * ca) for x, z in pts]
+
+
+def octa(bm, c, n, up, w, h, ch, d0, d1, lip=0.0, zone=0):
+    """Octagonal plate (chamfer_rect w x h, corner cut ch) on a face: from d0 to d1 along n about c, front edge
+    chamfered by `lip`."""
+    r, u, nn = K.basis(n, up)
+    c = V(c)
+    at = lambda pts, d: [c + r * a + u * b + nn * d for a, b in pts]
+    o = K.chamfer_rect(0, 0, w, h, ch)
+    rings = [at(o, d0)] + ([at(o, d1 - lip), at(K.offset_poly(o, -lip), d1)] if lip > 0 else [at(o, d1)])
+    return K.loft(bm, rings, zone=zone)
+
+
+# v9: phased-array faces (were fal kit sensorArray meshes: crumpled facets at close range and 540 triangles
+# each): an octagonal armoured backing (trim), a dark radiating face and a grid of raised tile modules
+ARRAY_T = (0.2, 0.05, 0.035)   # backing proud of the host face, face proud of the backing, tiles proud of the face
+
+
+def phased_array(vol, tiles, c, n, up, w, h, pitch=0.46):
+    """Octagonal phased-array face w x h standing on a host face at c (outward normal n): backing and face into
+    vol.bm (closed, bevelled); the tile grid (rows of tiles clipped to the octagon, columns aligned) is appended
+    to `tiles` as K.plate arguments (the caller adds them unbevelled: 12 triangles a tile)."""
+    tb, tf, tt = ARRAY_T
+    ch = 0.24 * min(w, h)
+    octa(vol.bm, c, n, up, w, h, ch, -0.15, tb, lip=0.05, zone=Z['trim'])
+    fw, fh, fch = w - 0.28, h - 0.28, ch - 0.14 * 0.414
+    octa(vol.bm, c, n, up, fw, fh, fch, tb - 0.1, tb + tf, lip=0.02, zone=Z['dark'])
+    r, u, nn = K.basis(V(n), V(up))
+    gw, gh, gch = fw - 0.16, fh - 0.16, fch - 0.08 * 0.414
+    rows = max(2, int(round(gh / pitch)))
+    th = gh / rows
+    cols_full = max(2, int(round(gw / pitch)))
+    tw = gw / cols_full
+    gap = 0.05
+    for i in range(rows):
+        yc = -gh / 2 + th * (i + 0.5)
+        worst = abs(yc) + th / 2 - gap / 2
+        hw = gw / 2 - max(0.0, worst - (gh / 2 - gch))
+        cols = cols_full
+        while cols > 1 and cols * tw > 2 * hw + 1e-6:
+            cols -= 2
+        for j in range(cols):
+            xc = (j - (cols - 1) / 2) * tw
+            tiles.append((V(c) + r * xc + u * yc + nn * (tb + tf), V(n), V(up), tw - gap, th - gap, tt))
+
+
+def case_frame(y, side):
+    """Point on the casemate's sloped face at height y (centre of the face run) and its outward normal / up-slope
+    direction. side: 'port', 'front', 'aft'."""
+    c = CB_CASE
+    kw = (c['w1'] - c['w0']) / 2 / (c['y1'] - c['y0'])    # x change per metre of height (negative)
+    kl = (c['l1'] - c['l0']) / 2 / (c['y1'] - c['y0'])
+    t = (y - c['y0'])
+    if side == 'port':
+        x = c['w0'] / 2 + kw * t
+        n = V((1.0, -kw, 0)).normalized(); up = V((kw, 1.0, 0)).normalized()
+        return V((x, y, CB_Z)), n, up
+    zf = c['l0'] / 2 + kl * t
+    sg = 1 if side == 'front' else -1
+    n = V((0, -kl, sg)).normalized(); up = V((0, 1.0, sg * kl)).normalized()
+    return V((0, y, CB_Z + sg * zf)), n, up
+
+
+def command_block():
+    vols = []
+    b = CB_BASE
+    base = K.chamfer_rect(0, CB_Z, b['w'], b['l'], b['c'])
+    v = Volume('cmd_base', bevel=0.1)
+    K.stack(v.bm, [(base, -8.0), (base, b['top'] - 0.55), (K.offset_poly(base, -0.5), b['top'])], 'xz', zone=Z['paint'])
+    K.solid(v.bm)
+    # crew deck ports along the base sides (1 m ports, deck -4.3); v9: the docking collar replaces one
+    for s in (1, -1):
+        port_row(v.cutters, (s * b['w'] / 2, -2.5, CB_Z - 10.5), (s * b['w'] / 2, -2.5, CB_Z + 6.0), 2.5, (s, 0, 0), skip=[(-48.4, -46.1)])
+    K.solid(v.cutters)
+    vols.append(v)
+    # casemate: sloped armour faces, two decks; v9: a taller bridge slit on the upper deck (0.85 m) under an armour
+    # visor, and a CIC slit on the lower deck (front only)
+    c = CB_CASE
+    cm = Volume('cmd_case', bevel=0.1)
+    K.stack(cm.bm, [(case_outline(c['y0'] - 0.3), c['y0'] - 0.3), (case_outline(c['y1']), c['y1'])], 'xz', zone=Z['paint'])
+    K.solid(cm.bm)
+    mm = slit(cm, CB_SLIT) + slit(cm, CB_CIC)
+    K.solid(cm.cutters)
+    cm.adds.append(('mullions', lambda bm2, mm=mm: [K.box(bm2, cc, (0.3, h + 0.02, 0.7), R=R, zone=Z['trim']) for cc, R, h in mm]))
     vols.append(cm)
-    # roof: plates, radome drum (forward), fire-control director box (aft) and the slim sensor mast
+    # visor: an armour brow 0.55 m proud over the bridge slit (its shadow line makes the slit read)
+    vz = Volume('cmd_visor', bevel=0.03)
+    sl = CB_SLIT
+    yv = sl['y'] + sl['h'] / 2 + 0.03
+    K.prism(vz.bm, u_band(case_outline(yv + 0.12, -0.15), case_outline(yv + 0.12, 0.55), sl['zcut'] - 0.6), 'xz', yv, yv + 0.24, zone=Z['trim'])
+    K.solid(vz.bm)
+    vols.append(vz)
+    # applique armour: bolted plates on the sloped faces (sides aft of the slits, front between the slits, aft face)
+    ap = Volume('cmd_applique', bevel=0.04)
+    for s in (1, -1):
+        cc, n, up = case_frame(1.65, 'port')
+        for zc in (-50.8, -45.6, -40.4):
+            K.plate(ap.bm, V((s * cc.x, cc.y, zc)), V((s * n.x, n.y, 0)), up if s > 0 else V((-up.x, up.y, 0)), 4.6, 3.5, 0.16, ch=0.05, back=0.12, zone=Z['trim'])
+    cc, n, up = case_frame(2.72, 'front')
+    for x in (-2.8, 2.8):
+        K.plate(ap.bm, cc + V((x, 0, 0)), n, up, 5.2, 1.95, 0.16, ch=0.05, back=0.12, zone=Z['trim'])
+    cc, n, up = case_frame(1.9, 'aft')
+    for x in (-2.9, 2.9):
+        K.plate(ap.bm, cc + V((x, 0, 0)), n, up, 5.0, 3.6, 0.16, ch=0.05, back=0.12, zone=Z['trim'])
+    K.solid(ap.bm)
+    vols.append(ap)
+    # docking collars on the base sides (a 2.2 m hatch in a flanged ring; crew and boat transfer at the deck)
+    dk = Volume('cmd_collars', bevel=0.03)
+    for s in (1, -1):
+        K.lathe(dk.bm, (s * (b['w'] / 2 - 0.2), -2.55, -47.25), (s, 0, 0),
+                [(1.42, 0.0), (1.42, 0.72), (1.66, 0.72), (1.66, 0.98), (1.14, 0.98), (1.14, 0.8), (0.001, 0.8)], n=18, zone=Z['trim'])
+    K.solid(dk.bm)
+    for f in dk.bm.faces:
+        if abs(f.normal.x) > 0.95 and (f.calc_center_median() - V((f.calc_center_median().x, -2.55, -47.25))).length < 1.1:
+            f.material_index = Z['dark']
+    vols.append(dk)
+    # roof: plates and hatches, radome drum (forward), sensor fairings on the forward corners, antenna bases on the
+    # aft corners, the fire-control director (aft) and the sensor mast on it
     rf = Volume('cmd_roof', bevel=0.05)
     yt = c['y1']
     K.plate(rf.bm, (0.0, yt, CB_Z + 2.0), (0, 1, 0), (0, 0, 1), 6.0, 3.6, 0.14, ch=0.05, back=0.2, zone=Z['deck'])
+    for s in (1, -1):
+        K.plate(rf.bm, (s * 3.8, yt, -46.0), (0, 1, 0), (0, 0, 1), 1.2, 1.2, 0.1, ch=0.03, back=0.1, zone=Z['trim'])
     K.cyl(rf.bm, (0, yt - 0.3, CB_Z + 5.5), (0, yt + 1.2, CB_Z + 5.5), 2.5, n=32, zone=Z['paint'])
+    for s in (1, -1):
+        d = V((s * 0.7071, 0, 0.7071))
+        fc = V((s * FAIR[0], yt + FAIR[3] / 2 - 0.2, FAIR[1]))
+        R = Matrix((d.cross(V((0, 1, 0))) * -1, V((0, 1, 0)), d)).transposed()   # columns: right, up, out
+        K.box(rf.bm, fc, (FAIR[2], FAIR[3] + 0.4, 1.3), R=R, zone=Z['paint'])
+        K.cyl(rf.bm, (s * 5.6, yt - 0.2, -53.6), (s * 5.6, yt + 0.35, -53.6), 0.38, n=12, zone=Z['trim'])   # clear of the director arrays' footprint
     m = MAST
     dw, dh = m['dir_w'], m['dir_h']
     K.stack(rf.bm, [(K.chamfer_rect(0, m['z'], dw, dw, 0.6), yt - 0.3), (K.chamfer_rect(0, m['z'], dw, dw, 0.6), yt + dh - 0.3),
                     (K.chamfer_rect(0, m['z'], dw - 0.6, dw - 0.6, 0.4), yt + dh)], 'xz', zone=Z['paint'])
-    p0, p1 = m['pylon']
-    K.stack(rf.bm, [(K.chamfer_rect(0, m['z'], p0, p0, 0.3), yt + dh - 0.2), (K.chamfer_rect(0, m['z'], p1, p1, 0.2), m['pylon_top'])], 'xz', zone=Z['metal'])
-    # yards on the pylon and the platform at its top
-    K.box(rf.bm, (0, 11.2, m['z']), (5.4, 0.25, 0.3), zone=Z['metal'])
-    K.plate(rf.bm, (0, m['pylon_top'], m['z']), (0, 1, 0), (0, 0, 1), 2.2, 2.2, 0.25, ch=0.06, back=0.05, zone=Z['metal'])
-    K.cyl(rf.bm, (0, m['pylon_top'] + 0.2, m['z']), (0, m['pole_top'], m['z']), 0.32, 0.16, n=12, zone=Z['metal'])
-    K.box(rf.bm, (0, 18.5, m['z']), (3.2, 0.14, 0.16), zone=Z['metal'])
-    K.box(rf.bm, (0, 21.5, m['z']), (2.2, 0.12, 0.14), zone=Z['metal'])
+    # mast trunk: a square turned 45 degrees (its four array faces look fore/aft-quarter), tapered
+    t0, t1 = m['trunk']
+    K.stack(rf.bm, [(rot_outline(K.chamfer_rect(0, 0, t0, t0, 0.4), 0, m['z'], math.pi / 4), yt + dh - 0.2),
+                    (rot_outline(K.chamfer_rect(0, 0, t1, t1, 0.3), 0, m['z'], math.pi / 4), m['trunk_top'])], 'xz', zone=Z['paint'])
+    # gallery at the trunk top, the upper (radar) platform on the lattice, pedestal, pole and cap
+    K.plate(rf.bm, (0, m['trunk_top'], m['z']), (0, 1, 0), (0, 0, 1), 4.4, 4.4, 0.22, ch=0.05, back=0.05, zone=Z['metal'])
+    K.plate(rf.bm, (0, m['lat_top'], m['z']), (0, 1, 0), (0, 0, 1), 2.8, 2.8, 0.18, ch=0.04, back=0.05, zone=Z['metal'])
+    K.cyl(rf.bm, (0, m['lat_top'] + 0.1, m['z']), (0, m['radar_y'] - 0.35, m['z']), 0.34, n=12, zone=Z['metal'])
+    K.cyl(rf.bm, (0, m['radar_y'] + 0.3, m['z']), (0, m['pole_top'], m['z']), 0.14, 0.1, n=10, zone=Z['metal'])
+    K.cyl(rf.bm, (0, m['pole_top'] - 0.06, m['z']), (0, m['pole_top'] + 0.05, m['z']), 0.46, n=12, zone=Z['metal'])
+    # surveillance radar: a slotted planar antenna tilted back 12 degrees on a backing frame
+    tl = math.radians(-12)   # face normal forward and up
+    Rr = Matrix(((1, 0, 0), (0, math.cos(tl), -math.sin(tl)), (0, math.sin(tl), math.cos(tl))))
+    K.box(rf.bm, (0, m['radar_y'], m['z'] + 0.12), (4.8, 1.0, 0.22), R=Rr, zone=Z['dark'])
+    K.box(rf.bm, (0, m['radar_y'] - 0.05, m['z'] - 0.12), (4.4, 0.5, 0.3), R=Rr, zone=Z['metal'])
     K.solid(rf.bm)
+    # thin unbevelled members: gallery railing, lattice legs and braces, yard and dipoles
+    fins = []
+    gy, g = m['trunk_top'] + 0.11, 2.1
+    for s in (1, -1):
+        fins.append(((0, gy + 1.0, m['z'] + s * g), (2 * g, 0.06, 0.06)))
+        fins.append(((s * g, gy + 1.0, m['z']), (0.06, 0.06, 2 * g)))
+        fins.append(((0, gy + 0.5, m['z'] + s * g), (2 * g, 0.05, 0.05)))
+        fins.append(((s * g, gy + 0.5, m['z']), (0.05, 0.05, 2 * g)))
+        for k in (-1, 0, 1):
+            fins.append(((k * g, gy + 0.5, m['z'] + s * g), (0.06, 1.0, 0.06)))
+            if k:
+                fins.append(((s * g, gy + 0.5, m['z'] + k * g * 0.5), (0.06, 1.0, 0.06)))
+    fins.append(((0, m['pole_top'] - 0.9, m['z']), (3.0, 0.09, 0.12)))                   # yard
+    for s in (1, -1):
+        fins.append(((s * 1.4, m['pole_top'] - 1.3, m['z']), (0.04, 0.8, 0.04)))        # dipoles
+    lat = []
+    a0, a1 = m['lat']
+    y0, y1 = m['trunk_top'] + 0.1, m['lat_top']
+    ym = (y0 + y1) / 2
+    hw = lambda y: (a0 + (a1 - a0) * (y - y0) / (y1 - y0)) / 2
+    for sx in (1, -1):
+        for sz in (1, -1):
+            lat.append(((sx * hw(y0), y0, m['z'] + sz * hw(y0)), (sx * hw(y1), y1, m['z'] + sz * hw(y1)), 0.08))
+    for ya, yb in ((y0, ym), (ym, y1)):
+        for s in (1, -1):   # X braces on the four faces
+            lat.append(((s * hw(ya), ya, m['z'] - hw(ya)), (s * hw(yb), yb, m['z'] + hw(yb)), 0.045))
+            lat.append(((s * hw(ya), ya, m['z'] + hw(ya)), (s * hw(yb), yb, m['z'] - hw(yb)), 0.045))
+            lat.append(((-hw(ya), ya, m['z'] + s * hw(ya)), (hw(yb), yb, m['z'] + s * hw(yb)), 0.045))
+            lat.append(((hw(ya), ya, m['z'] + s * hw(ya)), (-hw(yb), yb, m['z'] + s * hw(yb)), 0.045))
+    for s in (1, -1):       # the ring half way up
+        lat.append(((-hw(ym), ym, m['z'] + s * hw(ym)), (hw(ym), ym, m['z'] + s * hw(ym)), 0.05))
+        lat.append(((s * hw(ym), ym, m['z'] - hw(ym)), (s * hw(ym), ym, m['z'] + hw(ym)), 0.05))
+    def members(bm2, fins=fins, lat=lat):
+        for cc, sz in fins:
+            K.box(bm2, cc, sz, zone=Z['metal'])
+        for pa, pb, r in lat:
+            K.cyl(bm2, pa, pb, r, n=6, zone=Z['metal'])
+    rf.adds.append(('fins', members))
     vols.append(rf)
+    # phased-array faces (v9, parametric; were fal kit sensorArray meshes): four fire-control arrays on the
+    # director faces, four surveillance arrays on the mast trunk faces, one on each roof fairing
+    ar = Volume('cmd_arrays', bevel=0.02)
+    tiles = []
+    fy = yt + dh / 2 - 0.15
+    for n_ in ((1, 0, 0), (-1, 0, 0), (0, 0, 1), (0, 0, -1)):
+        phased_array(ar, tiles, (n_[0] * dw / 2, fy, m['z'] + n_[2] * dw / 2), n_, (0, 1, 0), 2.8, 2.26, pitch=0.36)
+    tb0, ty = yt + dh - 0.2, 11.7
+    ta = math.atan2((t0 - t1) / 2, m['trunk_top'] - tb0)
+    ap = t0 / 2 - (t0 - t1) / 2 * (ty - tb0) / (m['trunk_top'] - tb0)
+    for sx in (1, -1):
+        for sz in (1, -1):
+            nrm = (sx * 0.7071 * math.cos(ta), math.sin(ta), sz * 0.7071 * math.cos(ta))
+            phased_array(ar, tiles, (sx * ap * 0.7071, ty, m['z'] + sz * ap * 0.7071), nrm, (0, 1, 0), 1.8, 1.9, pitch=0.36)
+    for s in (1, -1):
+        d = V((s * 0.7071, 0, 0.7071))
+        phased_array(ar, tiles, V((s * FAIR[0], yt + 0.9, FAIR[1])) + d * 0.65, d, (0, 1, 0), 2.0, 1.5, pitch=0.34)
+    K.solid(ar.bm)
+    ar.adds.append(('grille_tiles', lambda bm2, tiles=tiles: [K.plate(bm2, p, n_, up_, w_, h_, t_, back=0.01, zone=Z['metal'])
+                                                              for p, n_, up_, w_, h_, t_ in tiles]))
+    vols.append(ar)
     return vols
 
 
@@ -886,18 +1172,24 @@ MODULE = {
 // conduits, walkways with 1 x 2 m doors, ladders and hand rails at true scale), the dorsal spine with its
 // rails, finned cooling ridge, heavy clamp bands and the capacitor banks.
 // v8 redesign (user feedback: 'massive tower, relatively little weaponisation'): the bridge tower is gone;
-// a low armoured command block (two decks, sloped armour, a narrow armoured glazing slit, radome, fire-
-// control director with four phased arrays, a slim sensor mast whose whip holds the envelope top) sits
-// on the spine, crew live inside the armoured hull (rows of 1 m ports on 3 m decks). Weapons: 12 kit
-// turret-M (bow A/B and aft X/Y with superfiring barbettes, the same four ventral, two shoulder drums,
-// two sponsons), 26 flush VLS blocks (208 cells) in armoured coamings, point-defence clusters at bow,
-// shoulders, stern and on the command block.
+// a low armoured command block sits on the spine, crew live inside the armoured hull (rows of 1 m ports on
+// 3 m decks).
+// v9 polish: the command block carries a bridge slit under an armour visor and a CIC slit, applique armour,
+// sensor fairings, docking collars and a designed sensor mast (a tapered trunk with four phased arrays, a
+// railed gallery, a lattice section, the surveillance radar, a topmast with the masthead strobe and whip:
+// the envelope top). Weapons: 12 kit turret-M with full-resolution guns (tools/blender/hulls/
+// destroyer_assemble.py): bow A/B and aft X/Y with superfiring barbettes, X'/Y' ventral aft, two on
+// flat-topped shoulder bastions and four in the broadside (two sponsons a side on the upper flank, the aft
+// one superfiring), 28 flush VLS blocks (224 cells) in armoured coamings on open deck (bow, deckhouse roof,
+// engine deck), point-defence clusters at bow, shoulders, stern, sponsons and on the command block.
+// The aft superfiring X turret cannot fire forward over the command block: its arc is aft and abeam, as a
+// sea-going ship's after turrets (A/B cover the forward arc, the shoulder and broadside guns the beam).
 // Engines: kit bells (bell-L x1.237 corner bells: CORNER_BELL, bell-XL x1.106 centre dish) with the kit's
 // documented engine entry (depth to the throat plate, throat, inner wall) times that scale.
 // Lights: at the lenses of the kit nav-light housings.""",
     'meta': {
         'name': 'Bastion-class destroyer', 'designation': 'DD-12', 'crew': 'about 2,000',
-        'blurb': 'Heavy line destroyer built around a massive spinal railgun: an armoured bow block with the heavy-collared muzzle, the barrel exposed in the gun gap between the bow block and the mid hull, a finned cooling spine with capacitor banks and clamp bands along the back, a low armoured command block with a slit bridge and a slim sensor mast, twelve twin turrets in superfiring dorsal and ventral batteries, shoulder drums and flank sponsons, 208 vertical launch cells, point-defence clusters, and five fusion bells in the stern.',
+        'blurb': 'Heavy line destroyer built around a massive spinal railgun: an armoured bow block with the heavy-collared muzzle, the barrel exposed in the gun gap between the bow block and the mid hull, a finned cooling spine with capacitor banks and clamp bands along the back, a low armoured command block with bridge and combat-centre slits under a lattice sensor mast, twelve twin turrets (superfiring batteries fore and aft, a ventral pair, shoulder bastions and a four-gun broadside on flank sponsons), 224 vertical launch cells, point-defence clusters, and five fusion bells in the stern.',
     },
     'asset': {
         'glb': './assets/ships/destroyer.glb', 'generator': 'tools/blender/hulls/destroyer.py (remodel of the tripo3d/h3.1/multiview-to-3d hull) + tools/blender/assemble.py',
@@ -905,7 +1197,9 @@ MODULE = {
         'rotate': [0, 0, 0], 'hullNodes': ['hull'],
         # remodel paint is lighter than the generated textures: gain 0.05 matches the fleet grey; kit and
         # hull glass get a dim warm interior light (livery.js glassGlow, opt-in)
-        'livery': {'gain': 0.05, 'glassGlow': [0.06, 0.055, 0.046], 'glassLit': 0.35},
+        # v9: markings keep part of their hue (mark 0.18, markSat 0.3; the fleet 'dark' default is 0.11 / 0.05):
+        # the hazard frames, cobalt bands and walk lines read as muted naval paint instead of vanishing
+        'livery': {'gain': 0.05, 'glassGlow': [0.06, 0.055, 0.046], 'glassLit': 0.35, 'mark': 0.18, 'markSat': 0.3},
         # runtime PATINA micro detail, turned down: the hull carries its own plating seams and panel breaks
         'detail': {'set': 'hull', 'tile': 6, 'normalStrength': 0.6, 'roughAmount': 0.5, 'cavity': 0.2},
     },
@@ -913,7 +1207,7 @@ MODULE = {
     'lights': [
         {'color': 'red', 'note': 'steady sidelights on the flat flank of the engine section (the beam extremity): red port, green starboard'},
         {'color': 'green'},
-        {'color': 'white', 'blink': {'period': 1.3, 'duty': 0.1}, 'note': 'anti-collision strobes, alternating: fire-control director roof on the command block and the keel fin'},
+        {'color': 'white', 'blink': {'period': 1.3, 'duty': 0.1}, 'note': 'anti-collision strobes, alternating: the masthead (topmast cap) and the keel fin'},
         {'color': 'white', 'blink': {'period': 1.3, 'duty': 0.1, 'phase': 0.5}},
         {'color': 'white', 'note': 'steady stern light on the stern plate above the centre dish'},
     ],
@@ -922,8 +1216,8 @@ MODULE = {
         'engine-flank-stbd': {'centre': [-27.67, -20.2, -47.0], 'normal': [-1, 0, 0], 'u': [0, 0, -1], 'width': 18.0, 'height': 9.0},
         'engine-flank-aft-port': {'centre': [27.67, -20.2, -70.0], 'normal': [1, 0, 0], 'u': [0, 0, 1], 'width': 22.0, 'height': 9.0},
         'engine-flank-aft-stbd': {'centre': [-27.67, -20.2, -70.0], 'normal': [-1, 0, 0], 'u': [0, 0, -1], 'width': 22.0, 'height': 9.0},
-        'mid-flank-port': {'centre': [17.5, -20.0, -2.0], 'normal': [1, 0, 0], 'u': [0, 0, 1], 'width': 18.0, 'height': 8.6, 'note': 'mid-hull flank between the boat hatch and the sponson (three port rows, cobalt band)'},
-        'mid-flank-stbd': {'centre': [-17.5, -20.0, -2.0], 'normal': [-1, 0, 0], 'u': [0, 0, -1], 'width': 18.0, 'height': 8.6},
+        'mid-flank-port': {'centre': [17.5, -21.5, -2.0], 'normal': [1, 0, 0], 'u': [0, 0, 1], 'width': 18.0, 'height': 5.4, 'note': 'mid-hull flank under the S2 sponson (two port rows)'},
+        'mid-flank-stbd': {'centre': [-17.5, -21.5, -2.0], 'normal': [-1, 0, 0], 'u': [0, 0, -1], 'width': 18.0, 'height': 5.4},
         'boat-hatch-port': {'centre': [17.14, -19.9, -19.0], 'normal': [1, 0, 0], 'u': [0, 0, 1], 'width': 5.8, 'height': 6.8, 'note': 'boat hatch leaves (6 x 7 m opening, 1 x 2 m personnel door in the aft leaf)'},
         'boat-hatch-stbd': {'centre': [-17.14, -19.9, -19.0], 'normal': [-1, 0, 0], 'u': [0, 0, -1], 'width': 5.8, 'height': 6.8},
         'bow-flank-port': {'centre': [17.1, -18.2, 70.5], 'normal': [1, 0, 0], 'u': [0, 0, 1], 'width': 24.0, 'height': 8.6, 'note': 'bow block flank (two port rows)'},
@@ -931,7 +1225,7 @@ MODULE = {
         'engine-deck': {'centre': [0.0, -4.3, -80.5], 'normal': [0, 1, 0], 'u': [0, 0, 1], 'width': 5.0, 'height': 3.0, 'note': 'engine-section deck aft of the aft turret'},
         'spine-top': {'centre': [0.0, -5.5, 32.0], 'normal': [0, 1, 0], 'u': [1, 0, 0], 'width': 3.0, 'height': 20.0, 'note': 'rail spine catwalk between the spine rails'},
         'gap-face-mid': {'centre': [0.0, -18.0, 42.9], 'normal': [0, 0, 1], 'u': [-1, 0, 0], 'width': 4.0, 'height': 3.0, 'note': 'gun-gap face of the mid hull (above the barrel)'},
-        'command-front': {'centre': [0.0, 1.5, -33.45], 'normal': [0, 0.447, 0.894], 'u': [1, 0, 0], 'width': 8.0, 'height': 2.0, 'note': 'sloped casemate front below the bridge slit'},
+        'command-front': {'centre': [2.8, 2.72, -33.9], 'normal': [0, 0.447, 0.894], 'u': [1, 0, 0], 'width': 4.6, 'height': 1.6, 'note': 'applique plate on the sloped casemate front between the CIC and bridge slits'},
         'command-aft': {'centre': [0.0, -2.3, -59.2], 'normal': [0, 0, -1], 'u': [-1, 0, 0], 'width': 5.0, 'height': 2.0, 'note': 'command block base, aft face between the two doors'},
         'command-roof': {'centre': [0.0, 5.6, -46.5], 'normal': [0, 1, 0], 'u': [1, 0, 0], 'width': 6.0, 'height': 3.0, 'note': 'casemate roof between the radome drum and the director'},
         'stern-plate': {'centre': [0.0, -8.0, -85.0], 'normal': [0, 0, -1], 'u': [-1, 0, 0], 'width': 8.0, 'height': 1.0, 'note': 'stern plate above the centre dish'},

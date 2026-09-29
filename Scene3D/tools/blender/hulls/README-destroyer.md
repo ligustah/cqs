@@ -17,9 +17,10 @@ $PY tools/blender/hulls/compare.py <work>/m/destroyer-hull.blend <work>/measure 
 | `destroyer.py` | Parametric hull: engine block, mid hull, bow block, command block, railgun, barbettes and VLS coamings; `MODULE` for module.py. |
 | `destroyer_uv.py` | Per-volume UV projection **before** the bevel, one metre per UV unit, then one pack. |
 | `destroyer_paint.py` | paint.py's layers evaluated in row chunks at 8192 on upsampled 4096 bakes; copper zone, varied access panels, a stencil with `D`, DD-12's scheme. |
-| `destroyer_spec.py` → `../specs/destroyer-v3.json` | Kit placements (bells, 12 turret-M, 26 VLS pods, 28 PDCs, 4 fal sensor arrays, doors, ladders, rails, RCS, nav lights, floods, antennas, dome). |
+| `destroyer_spec.py` → `../specs/destroyer-v3.json` | Kit placements (bells, 12 turret-M, 28 VLS pods, 28 PDCs, doors, ladders, rails, RCS, nav lights, floods, antennas, dome; v8's 10 fal sensor arrays are hull geometry since v9). |
 | `destroyer_module.py` | Finishes module.py's draft: `CORNER_BELL`, the re-measured `railgunMuzzle` anchor, the muzzle-rim fixtures, `liveryKeep` for the gun gap. |
-| `destroyer_build.py` | The chain above (build.sh with the destroyer's texture sizes). |
+| `destroyer_assemble.py` | (v9) assemble.py wrapped so the turret-M guns (barrels, muzzle brakes, collars: every piece wholly in front of the mantlet) keep their full 32-sided resolution; only the turret body takes the spec's decimation. |
+| `destroyer_build.py` | The chain above (build.sh with the destroyer's texture sizes; assembles through `destroyer_assemble.py`). |
 
 ## Frame and size
 
@@ -100,3 +101,65 @@ Lessons (v8)
 - A mixed-zone volume (clamp rings: trim + metal bands) must stay at full UV density, or the thin
   bands sample their neighbours (white banding in the gap).
 - Training the shoulder turrets 20 deg outboard pushed the barrels past the beam (+4.7 % width).
+
+## v9 polish: a broadside, open-deck VLS, an armoured command block with a real mast, round guns
+
+User feedback on v8: "Whatever you think improves the design". Orchestrator's list of v8 weaknesses and what
+changed (hull body, bow, gun gap, railgun, stern, drives and scale unchanged; envelope and class correction
+identical to v8):
+
+- **Broadside** (v8 looked under-armed from the side: the ventral turrets sat in shadow). The bow ventral
+  pair A'/B' moved to **broadside sponsons** on the mid-hull upper flank (`SPONSONS`, `SPON`, `sponson()`):
+  two a side, turret-M x1.0 on 2 m seat rings, guns forward, the aft pair (S2, deck 0.3 m above the mid
+  deck) superfiring over S1 (deck -11.4). Flat decks catch the sun, a vertical outer face with applique
+  plates, a corbelled underside back into the flank, a PDC on each deck, turret-arc hazard bands. v8's
+  flank sponsons (turret lying on its side facing outboard) are gone. The bow belly gets a low sensor keel
+  with two louvred windows. Still 12 turret-M: A/B, X/Y, X'/Y' (these set the envelope bottom), two shoulder,
+  four broadside. The side view now shows seven turret silhouettes above the keel line (v8: four).
+- **Shoulder bastions** (v8's drums rose out of the sloped shoulder with the base flare half way up their
+  outboard side): flat-topped armoured plinths (`BASTION`, `bastion()`), battered walls buried in the engine
+  block, a top chamfer, applique plates on the outboard, fore and aft walls, the turret on a 2.2 m seat ring.
+- **VLS**: the mid-deck bays sat under the spine's outer rails and saddles from the hero view. They moved
+  to the deckhouse roof (widened to 18.2 x 17.2 m): 2 x (2 x 2) blocks, 28 blocks / 224 cells in all; the
+  mid deck keeps flush magazine hatches. Bow, deckhouse and engine-deck arrays all read from the hero and
+  top views.
+- **Markings**: the destroyer's livery keeps part of the markings' hue (`livery.mark 0.18, markSat 0.3`,
+  fleet 'dark' default 0.11 / 0.05; calibrated against 0.2/0.35 and 0.16/0.25 renders): the orange hazard
+  frames, cobalt bands and walk lines read as muted naval paint. Hazard pitch 0.55 -> 0.7 m on the VLS
+  frames; the hazard colour moved from the concept orange to amber (0.93, 0.58, 0.12): through the livery's
+  desaturation the orange read salmon-pink, amber reads as a dull ochre next to the walk lines. The DD-12 stencil stands on a dark ID field (as the carrier's CV-50: white 0.06 vs paint 0.046
+  vanished) and moved 4.5 m forward, clear of the S1 turret's shadow. Cobalt a little deeper.
+- **Command block**: a taller bridge slit (0.85 m, was 0.5) under a 0.55 m armour visor, a CIC slit on the
+  lower deck (front only, 1.8 m mullions), bolted applique plates on the sloped sides, front and aft faces,
+  two roof sensor fairings with phased arrays facing 45 deg forward-outboard, roof hatches, two antenna bases
+  with whips, a 2.2 m docking collar (dark hatch in a flanged ring) on each side of the base.
+- **Sensor mast** (v8: a 0.3 m pole and whip): a tapered trunk turned 45 deg on the director with four
+  phased arrays, a railed gallery at y 15, a four-leg lattice with X-bracing to the radar platform (y 20.5),
+  a tilted planar surveillance radar on a pedestal, a topmast with yard and dipoles, the masthead strobe
+  (moved from the director roof) and the whip; the envelope top stays 29.47 m.
+- **Phased arrays** (`phased_array()`): the ten fal kit sensorArray meshes (director, trunk, fairings) showed
+  crumpled facets at close range; they are hull geometry now: an octagonal armoured backing (trim), a dark
+  radiating face and a grid of raised tile modules clipped to the octagon (1,200 unbevelled tile triangles and
+  2,800 for backings and faces, against 5,400 for the fal meshes).
+- **Guns** (`destroyer_assemble.py`): turret-M barrels (32-sided, 680 triangles each) and collars keep their
+  full resolution, and so do the rounded mantlet cheeks and front plates (decimated, their outlines were
+  notched); only the rest of the body is decimated (x0.2). The kit's base discs and ring bolts (faceted after the
+  decimation) are dropped and every turret sits 0.98 x scale into its own ring / barbette (B/X barbettes
+  4.13 m, so B/X and the envelope are unchanged; A/Y sit 1.13 m lower, more clearance under B/X's guns).
+  The PDC barrel rods are kept too: v8's decimation left their clamp rings as floating dots.
+- **Stern superfiring turret X**: its forward arc stays blocked by the command block. Accepted as
+  naval-logical (after turrets cover the stern and the beams; A/B, the shoulder and the broadside guns the
+  forward and beam arcs); noted in the module header.
+- Budget (<= 180k): turret body x0.2, PDC body x0.16, doors 0.22, VLS pods 0.15, RCS 0.2, ladders 0.35,
+  rails 0.45, bell-L 0.2; railgun coil turns at 0.48 m pitch (was 0.36); stern bosses 28-sided; one lower-chamfer port row (seen only from below) removed.
+- Result (v9): 179,620 triangles (hull 77,432; turret-M 37,524), 8.8 MB GLB; scale-check 203.13 x 56.02 x
+  73.82 m, class correction 1.002, carrier bay fits 6 destroyers (4 needed), the carrier's 'long' zone parks 2
+  without a warning.
+
+Lessons (v9)
+- Kit part decimation eats thin round pieces first. Split a part into connected pieces on welded positions
+  (the glTF import splits vertices at UV seams) and keep, drop or decimate each piece by its bounding box.
+- The seat check casts from 8 m out: a small roof fixture (an antenna base) inside a sensor array's footprint
+  made the array "float" and dropped it. Keep fixtures out of other parts' footprints.
+- The side view (az 90) is lit from the stern at 30 deg: flanks are always in shadow. What reads from the
+  side is silhouette above the hull line and lit horizontal surfaces, hence the raised S2 sponson.
