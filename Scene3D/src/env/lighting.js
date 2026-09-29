@@ -108,3 +108,168 @@ export function createLighting(renderer, scene, { shadowSize = 4096 } = {}) {
 
   return { sun, fitShadow, envTexture: envRT.texture };
 }
+
+// ---------------------------------------------------------------------------------------------
+// Showcase ("studio") rig for the single-ship view (main.js, mode=ship, default; ?studio=0 falls
+// back to the orbital rig above). Product-shot lighting, as in the concept art:
+//   - a soft KEY from the upper front-left of the camera (shadowed, soft PCF);
+//   - a cool FILL from the lower right that keeps the shadow side dark but readable;
+//   - a thin cool RIM (kicker) from behind-right that draws the silhouette edges, and a weaker
+//     warm kicker from behind-left;
+//   - an environment of soft boxes (PMREM) over a navy gradient dome toned to the backdrop:
+//     broad reflections on glass and paint sheen, and the unshadowed ambient that lifts the
+//     shadow side;
+//   - a screen-space gradient BACKDROP (dark navy at the edges, lighter behind the ship).
+// Directions are placed relative to the camera azimuth / elevation (degrees, ship frame), so
+// every view is lit the same way. All values are scene-linear; STUDIO.exposure is the default
+// tone-mapping exposure for this rig.
+export const STUDIO = {
+  exposure: 1.4,
+  key: { az: -40, el: 40, E: 3.8, color: '#fff4e8' },   // relative to the camera: az < 0 = camera left
+  fill: { az: 75, el: -5, E: 1.3, color: '#dee3eb' },
+  rim: { az: 125, el: 24, E: 3.0, color: '#dbe6ff' },
+  kick: { az: -140, el: 34, E: 1.2, color: '#ffe9d2' },
+  envIntensity: 0.8,
+  // backdrop, as displayed sRGB (0-255) after tone mapping, before the vignette/grain pass
+  backdrop: { centre: [66, 78, 98], edge: [14, 19, 30], at: [0.56, 0.58] },
+};
+
+/** Unit vector for an azimuth/elevation (degrees) relative to a camera at camAz/camEl (degrees). */
+export function studioDir(camAz, camEl, az, el) {
+  const a = THREE.MathUtils.degToRad(camAz + az), e = THREE.MathUtils.degToRad(el + camEl * 0.5);
+  return new THREE.Vector3(Math.sin(a) * Math.cos(e), Math.sin(e), Math.cos(a) * Math.cos(e)).normalize();
+}
+
+function studioEnvScene(dirs) {
+  const scene = new THREE.Scene();
+  const mat = new THREE.ShaderMaterial({
+    side: THREE.BackSide,
+    uniforms: { uKey: { value: dirs.key }, uFill: { value: dirs.fill }, uRim: { value: dirs.rim }, uKick: { value: dirs.kick } },
+    vertexShader: `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+    fragmentShader: `
+      uniform vec3 uKey, uFill, uRim, uKick; varying vec3 vDir;
+      // soft box: a rounded-rectangle lobe (angular half-sizes w, h) around direction c, soft edge
+      float box(vec3 d, vec3 c, float w, float h, float soft) {
+        vec3 up = abs(c.y) > 0.95 ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0);
+        vec3 r = normalize(cross(up, c)); vec3 u = cross(c, r);
+        float z = dot(d, c); if (z <= 0.0) return 0.0;
+        vec2 q = vec2(dot(d, r), dot(d, u)) / z;
+        vec2 e = abs(q) - vec2(w, h);
+        float dist = length(max(e, 0.0)) + min(max(e.x, e.y), 0.0);
+        return 1.0 - smoothstep(-soft, soft, dist);
+      }
+      void main(){
+        vec3 d = normalize(vDir);
+        // navy dome toned to the backdrop: darker below, a little lighter overhead
+        vec3 navy = vec3(0.62, 0.69, 0.82);
+        vec3 col = navy * mix(0.022, 0.050, smoothstep(-0.6, 0.9, d.y));
+        // key soft box (large, warm white) and a dimmer skirt around it
+        col += vec3(1.0, 0.96, 0.9) * (0.8 * box(d, uKey, 0.42, 0.30, 0.10) + 0.05 * box(d, uKey, 1.0, 0.8, 0.5));
+        // fill: a broad, dim cool panel
+        col += vec3(0.75, 0.83, 1.0) * 0.10 * box(d, uFill, 0.9, 0.6, 0.4);
+        // rim strips: tall and narrow, cool (edge highlights on glass and glossy parts)
+        col += vec3(0.85, 0.9, 1.0) * 1.3 * box(d, uRim, 0.10, 0.75, 0.05);
+        col += vec3(1.0, 0.92, 0.82) * 0.5 * box(d, uKick, 0.10, 0.6, 0.05);
+        gl_FragColor = vec4(col, 1.0);
+      }`,
+  });
+  scene.add(new THREE.Mesh(new THREE.SphereGeometry(100, 128, 64), mat));
+  return scene;
+}
+
+/** Inverse of three's Khronos PBR Neutral below its compression knee (sRGB-linear out -> in). */
+function neutralInverse(rgb255) {
+  const lin = new THREE.Color().setRGB(rgb255[0] / 255, rgb255[1] / 255, rgb255[2] / 255, THREE.SRGBColorSpace);
+  const c = [lin.r, lin.g, lin.b];
+  const mn = Math.min(...c);
+  // below x = 0.08 the curve subtracts x - 6.25 x^2 (x = the smallest channel), a constant 0.04 above
+  let off;
+  if (mn < 0.04) { const m = Math.sqrt(mn / 6.25); off = m - 6.25 * m * m; } else off = 0.04;
+  return new THREE.Vector3(c[0] + off, c[1] + off, c[2] + off);
+}
+
+/**
+ * Studio rig: key / fill / rim / kicker lights, a soft-box PMREM environment and the gradient
+ * backdrop. `camAz` / `camEl` in degrees (ship frame); `keyDir` (optional) overrides the key.
+ * Returns the same { sun, fitShadow, envTexture } contract as createLighting (sun = the key).
+ */
+export function createStudioLighting(renderer, scene, { shadowSize = 4096, camAz = 35, camEl = 18, keyDir = null, exposure = STUDIO.exposure, lite = false } = {}) {
+  const S = STUDIO;
+  const dirs = {
+    key: keyDir ? keyDir.clone().normalize() : studioDir(camAz, camEl, S.key.az, S.key.el),
+    fill: studioDir(camAz, camEl, S.fill.az, S.fill.el),
+    rim: studioDir(camAz, camEl, S.rim.az, S.rim.el),
+    kick: studioDir(camAz, camEl, S.kick.az, S.kick.el),
+  };
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const envRT = pmrem.fromScene(studioEnvScene(dirs), 0.02);
+  pmrem.dispose();
+  scene.environment = envRT.texture;
+  scene.environmentIntensity = S.envIntensity;
+
+  const key = new THREE.DirectionalLight(S.key.color, S.key.E);
+  key.castShadow = true;
+  key.shadow.mapSize.set(shadowSize, shadowSize);
+  key.shadow.bias = -0.0002;
+  key.shadow.normalBias = 0.04;
+  // soft shadow edges: PCF over a Vogel disk of this many texels (the phone tier's smaller map
+  // already has larger texels, so it gets a smaller radius for the same penumbra and less noise)
+  key.shadow.radius = lite ? 2 : 3.5;
+  key.name = 'studio-key';
+  scene.add(key, key.target);
+  const extra = [];
+  for (const [name, spec] of [['fill', S.fill], ['rim', S.rim], ['kick', S.kick]]) {
+    const L = new THREE.DirectionalLight(spec.color, spec.E);
+    L.position.copy(dirs[name]).multiplyScalar(500);
+    L.name = `studio-${name}`;
+    L.userData.dir = dirs[name];
+    scene.add(L, L.target);
+    extra.push(L);
+  }
+
+  // backdrop: a clip-space quad drawn first behind everything (no depth), radial gradient in
+  // aspect-corrected screen space. Colours are given as displayed sRGB and pre-inverted through
+  // the tone curve and exposure, so the frame shows exactly them (before the vignette and grain).
+  const bd = S.backdrop;
+  const backdrop = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
+    depthTest: false, depthWrite: false,
+    uniforms: {
+      uCentre: { value: neutralInverse(bd.centre).divideScalar(exposure) },
+      uEdge: { value: neutralInverse(bd.edge).divideScalar(exposure) },
+      uAt: { value: new THREE.Vector2(...bd.at) },
+      uAspect: { value: 1.6 },
+    },
+    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 1.0, 1.0); }',
+    fragmentShader: `uniform vec3 uCentre, uEdge; uniform vec2 uAt; uniform float uAspect; varying vec2 vUv;
+      void main(){
+        vec2 q = (vUv - uAt) * vec2(uAspect, 1.0);
+        float r = length(q) / (0.62 * uAspect);           // ~1 in the far corners
+        float t = smoothstep(0.0, 1.05, r); t = t * t * (1.6 - 0.6 * t);
+        vec3 c = mix(uCentre, uEdge, clamp(t, 0.0, 1.0));
+        c *= mix(1.04, 0.92, vUv.y < uAt.y ? (uAt.y - vUv.y) / uAt.y : 0.0) ; // a touch darker toward the floor
+        gl_FragColor = vec4(c, 1.0);
+      }`,
+  }));
+  backdrop.frustumCulled = false;
+  backdrop.renderOrder = -100;
+  backdrop.name = 'studio-backdrop';
+  backdrop.onBeforeRender = (r) => { const s = r.getDrawingBufferSize(_v2); backdrop.material.uniforms.uAspect.value = s.x / Math.max(1, s.y); };
+  scene.add(backdrop);
+  scene.background = null;
+
+  function fitShadow(box) {
+    const center = box.getCenter(new THREE.Vector3());
+    const radius = box.getSize(new THREE.Vector3()).length() / 2;
+    key.target.position.copy(center);
+    key.position.copy(center).addScaledVector(dirs.key, radius * 2 + 50);
+    const cam = key.shadow.camera;
+    cam.left = -radius; cam.right = radius; cam.top = radius; cam.bottom = -radius;
+    cam.near = 1; cam.far = radius * 4 + 100;
+    cam.updateProjectionMatrix();
+    key.shadow.normalBias = Math.max(0.02, radius / 2000);
+    for (const L of extra) { L.target.position.copy(center); L.position.copy(center).addScaledVector(L.userData.dir, radius * 2 + 50); }
+  }
+
+  return { sun: key, fitShadow, envTexture: envRT.texture, backdrop, dirs, lights: extra };
+}
+const _v2 = new THREE.Vector2();

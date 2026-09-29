@@ -68,6 +68,15 @@ export const asset = {
     { ...MUZZLE_RIM, p: [-7.865, -6.615, 100.456], size: [3.68, 0.04, 0.12], rotZ: 0.7854 },
     { ...MUZZLE_RIM, p: [-7.865, -15.756, 100.456], size: [3.68, 0.04, 0.12], rotZ: -0.7854 },
   ],
+  // Two-tone armour zones (?livery=tone|bone, livery.js SCHEMES; ship frame, metres, = blender y + 7.36): the bow
+  // cheeks (flank walls and nose below the chamfer, z 72 to the nose) round a dark muzzle collar, and the engine
+  // block's flanks and upper chamfer aft of the port rows take the light paint; the decks, spine, mid hull, command
+  // block and gun gap stay dark.
+  liveryZones: [
+    { box: [[-21.0, -30.0, 72.0], [21.0, -5.4, 102.0]] },                // bow cheeks: flank walls, nose and muzzle shroud (below the chamfer)
+    { box: [[-9.35, -17.4, 84.0], [9.35, -4.95, 103.0]], tone: 0 },      // ... but not the muzzle shroud and its bore (18.4 x 11.8): a dark collar
+    { box: [[14.6, -18.6, -85.2], [28.6, 3.4, -58.0]], mirrorX: true },  // engine block flank + upper chamfer
+  ],
   length: 202.712,
   engines: [
     // corner bells, upper pair: bell-L x1.237 (r 4.33)
@@ -86,6 +95,15 @@ export const asset = {
     {p: [0.0, -29.672, -49.984], color: "white", size: 0.4, blink: { ...STROBE, phase: 0.5 }},
     // steady stern light on the stern plate above the centre dish
     {p: [0.0, -0.442, -85.214], color: "white", size: 0.4},
+    // v10 amber running lights along the hull lines: the top of the engine-block flanks, the mid flank and the bow block
+    { p: [27.73, -8.84, -39.98], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [27.73, -8.84, -52.98], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [27.72, -8.84, -61.98], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [27.72, -8.84, -78.98], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [17.54, -11.74, -8.98], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [17.54, -11.74, 5.02], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [17.19, -6.84, 60.52], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [17.15, -6.84, 80.52], color: 'amber', size: 0.3, mirrorX: true },
   ],
   anchors: {
     // Railgun, re-measured on the assembled hull: p = centre of the hexagonal bore opening on the barrel boss

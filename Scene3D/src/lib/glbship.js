@@ -10,6 +10,11 @@ import { addDetailLayer } from './patina.js';
 import { applyLivery } from './livery.js';
 import { FINISH, addWornFinish } from './finish.js';
 
+// Two-tone livery scheme for every GLB ship built from now on (main.js: ?livery=tone|bone), or null.
+// The module's own livery (dark / civil) stays the base; its liveryZones take the light paint.
+let LIVERY_SCHEME = null;
+export function setLiveryScheme(s) { LIVERY_SCHEME = s || null; }
+
 const loader = new GLTFLoader();
 loader.setMeshoptDecoder(MeshoptDecoder);
 const cache = new Map();
@@ -244,6 +249,9 @@ function interiorLight(spec) {
  *              onto the ceiling and walls inside the box (needs interiorLights + interiorLightGate)
  *   fixtures   optional [{ p: [x,y,z] (centre), size: [sx,sy,sz], rotZ (rad), color, radiance, mirrorX, mirrorOffset }]:
  *              emissive light fixtures (hangar light strips), drawn as unlit boxes of that radiance
+ *   liveryZones optional [{ box: [[x,y,z], [x,y,z]] (ship frame), tone (1 = light paint, 0 = carve back to the
+ *              base), feather (m), mirrorX }]: armour zones that take the light paint of a two-tone scheme
+ *              (?livery=tone|bone via setLiveryScheme, or cfg.liveryScheme; livery.js SCHEMES). Hull meshes only, unless liveryZoneParts
  *   liveryKeep optional { box: [[x,y,z], [x,y,z]] (ship frame), gain, saturation, feather } or a list
  *              of them: inside a box the texture keeps its own paint (scaled by gain) instead of the livery repaint
  */
@@ -293,7 +301,9 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
     // the interior keep-box is evaluated in the ship frame, so a material is shared only
     // between meshes with the same object-to-ship transform
     const gate = cfg.interiorLights?.length && cfg.interiorLightGate;
-    const keyOf = (m) => (cfg.liveryKeep || gate || cfg.detail?.interior || FINISH ? `${m.uuid}|${o.matrixWorld.elements.map((e) => e.toFixed(6)).join(',')}` : m);
+    const scheme = cfg.liveryScheme ?? LIVERY_SCHEME;
+    const zoned = !!(scheme && cfg.livery && cfg.liveryZones?.length && (role.hull || cfg.liveryZoneParts));
+    const keyOf = (m) => (cfg.liveryKeep || gate || cfg.detail?.interior || FINISH || zoned ? `${m.uuid}|${zoned ? 'z' : ''}|${o.matrixWorld.elements.map((e) => e.toFixed(6)).join(',')}` : m);
     const next = mats.map((m) => {
       if (upgraded.has(keyOf(m))) return upgraded.get(keyOf(m));
       const mm = m.clone();
@@ -305,7 +315,8 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
       if (over.emissiveBoost && mm.emissiveMap) mm.emissiveIntensity = over.emissiveBoost;
       // true-scale ports and panes are a few texels wide: keep them sharp at grazing angles
       for (const t of [mm.map, mm.normalMap, mm.roughnessMap]) if (t) t.anisotropy = 8;
-      if (cfg.livery) applyLivery(mm, cfg.livery);
+      // two-tone scheme (?livery=tone|bone): the module's liveryZones, on the hull (and on kit parts if liveryZoneParts)
+      if (cfg.livery) applyLivery(mm, cfg.livery, zoned ? { scheme, zones: cfg.liveryZones, toShip: o.matrixWorld } : {});
       if (cfg.livery && cfg.liveryKeep) keeps.forEach((kp, k) => keepInterior(mm, kp, o.matrixWorld, k));
       if (gate) gateInteriorLights(mm, gate, o.matrixWorld, cfg.interiorBounce || null);
       if (detailSet) {

@@ -39,6 +39,14 @@ export const asset = {
   livery: { ...LIVERIES.civil, gain: 0.05, glassGlow: [0.06, 0.055, 0.046], glassLit: 0.45 }, // civil grey; the remodel paint is lighter than the generated textures (gain 0.05); lit cabins behind the ports
   detail: { set: 'hull', tile: 6, normalStrength: 0.6, roughAmount: 0.5, cavity: 0.2 }, // the hull carries its own seams: runtime PATINA turned down
   length: 134.122, // 134.12 x 54.68 x 38.16 m assembled (L x B x H), 4 slots
+  // Two-tone zones (?livery=tone|bone, livery.js SCHEMES; ship frame, metres): the crew module (aft bulkhead z 34 to
+  // the bow), the reactor block (z -34..-22.5) and the engine housings round the bells take the light paint; the
+  // collar, payload truss, tanks and radiators stay the civil grey. Containers are kit parts: they keep their colours.
+  liveryZones: [
+    { box: [[-12.0, -14.0, 34.0], [12.0, 11.0, 67.5]] },                 // crew module
+    { box: [[-14.5, -13.5, -34.2], [14.5, 13.0, -22.3]] },               // reactor block
+    { box: [[1.4, -6.4, -60.5], [14.0, 6.6, -34.2]], mirrorX: true },    // engine housings (bell x 7.74, r 5.95)
+  ],
   engines: [
     // main bells: bell-L x1.3571 (r 4.75)
     {p: [7.74, 0.102, -67.002], radius: 4.75, mirrorX: true, depth: 6.412, throat: 2.375, wall: [[0.916, 4.678], [1.832, 4.5], [2.748, 4.233], [3.664, 3.883], [4.58, 3.454], [5.496, 2.95]]},
@@ -52,6 +60,11 @@ export const asset = {
     { p: [0.0, -13.028, -39.999], color: 'white', size: 0.4, blink: { ...STROBE, phase: 0.5 } },
     // steady stern light on the aft face of the dorsal block, between the bells
     { p: [0.0, 6.002, -56.012], color: 'white', size: 0.4 },
+    // v10 amber running lights: the crew module's upper walkway ledge and the top of the reactor block flanks
+    { p: [9.85, 4.68, 37.0], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [9.85, 4.68, 53.0], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [13.55, 4.6, -32.05], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [13.45, 4.6, -24.45], color: 'amber', size: 0.3, mirrorX: true },
   ],
   anchors: {
     // flat hull faces, measured on the remodelled hull by ray casts (0.5 m grid along -normal, plane refit;
@@ -81,6 +94,14 @@ export const variants = {
     beauty: './assets/concepts/freighter-troops-beauty.webp',
     rotate: [0, 0, 0],
     length: 128.843, // 128.84 x 57.74 x 37.66 m assembled (L x B x H), 4 slots
+    // two-tone zones as on the cargo ship, at the troop hull's stations (crew module from z 31.4, reactor z -30.5..-20.5)
+    liveryZones: [
+      { box: [[-12.0, -14.0, 31.4], [12.0, 11.0, 64.9]] },
+      { box: [[-16.6, -13.5, -30.7], [16.6, 11.2, -20.3]] },
+      { box: [[1.6, -7.2, -58.0], [15.6, 7.2, -30.7]], mirrorX: true },
+      // the upper habitat pair (HAB x +-4.6, y 5.5, r 4.6) above the girder tops (y 2.0); the lower pair stays grey
+      { box: [[-9.4, 2.1, -20.3], [9.4, 10.4, 24.0]] },
+    ],
     engines: [
       // main bells: bell-L x1.6143 (r 5.65)
       {p: [8.54, -0.049, -64.351], radius: 5.65, mirrorX: true, depth: 7.628, throat: 2.825, wall: [[1.09, 5.564], [2.179, 5.353], [3.269, 5.035], [4.359, 4.619], [5.448, 4.108], [6.538, 3.509]]},
@@ -94,6 +115,11 @@ export const variants = {
       { p: [0.0, -13.029, -36.499], color: 'white', size: 0.4, blink: { ...STROBE, phase: 0.5 } },
       // steady stern light on the aft face of the dorsal block, between the bells
       { p: [0.0, 4.101, -51.273], color: 'white', size: 0.4 },
+      // v10 amber running lights: crew-module ledge and reactor block flanks
+      { p: [9.85, 4.68, 34.4], color: 'amber', size: 0.3, mirrorX: true },
+      { p: [9.85, 4.68, 50.4], color: 'amber', size: 0.3, mirrorX: true },
+      { p: [15.59, 4.6, -29.3], color: 'amber', size: 0.3, mirrorX: true },
+      { p: [15.59, 4.6, -21.7], color: 'amber', size: 0.3, mirrorX: true },
     ],
     anchors: {
       // flat hull faces, measured on the remodelled hull by ray casts (0.5 m grid along -normal, plane refit;

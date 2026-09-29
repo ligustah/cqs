@@ -25,6 +25,14 @@ export const asset = {
   hullNodes: ["hull"],
   livery: { gain: 0.05, glassGlow: [0.06, 0.055, 0.046], glassLit: 0.3 }, // remodel paint is lighter than the generated textures: gain 0.05 matches the fleet grey
   detail: {"set": "hull", "tile": 6, "normalStrength": 0.6, "roughAmount": 0.5, "cavity": 0.2},
+  // Two-tone armour zones (?livery=tone|bone, livery.js SCHEMES; ship frame, metres): the outrigger drive pods, the
+  // chamfered bow cap (forward of the deck slope, z 41.5) and the stern block below the main deck (aft of the
+  // deckhouse end, z -38.8) take the light paint; the deckhouse, tower, spine and belly stay dark.
+  liveryZones: [
+    { box: [[24.2, -20.8, -29.2], [35.0, -9.1, -0.3]], mirrorX: true },  // drive pods (POD x 29.55 +- 4.9, y -14.95 +- 5.25)
+    { box: [[-20.0, -25.0, 41.5], [20.0, -1.0, 55.0]] },                 // bow cap
+    { box: [[-20.0, -25.0, -50.0], [20.0, -1.6, -38.8]] },               // stern block under the deck
+  ],
   length: 108.129,
   engines: [
     // centre bell: bell-L x1.463 (r 5.12)
@@ -51,6 +59,12 @@ export const asset = {
     {p: [0.0, 23.325, -11.486], color: "white", size: 0.4, blink: {period: 1.3, duty: 0.1}},
     // steady stern light on the stern plate above the centre bell
     {p: [0.0, -3.075, -49.466], color: "white", size: 0.4},
+    // v10 amber running lights along the hull lines: the armour belt and the tapered bow flank
+    { p: [16.19, -14.28, -31.99], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [16.32, -14.28, -15.99], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [16.48, -14.28, 4.01], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [14.12, -7.37, 28.2], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [11.19, -7.37, 40.86], color: 'amber', size: 0.3, mirrorX: true },
   ],
   anchors: {
     // Flat hull faces for the composition step, measured on the remodelled hull by ray casts (0.5 m

@@ -34,11 +34,40 @@ export const LIVERIES = {
   civil: { base: 0.018, gain: 0.07, tint: '#e8ebee', mark: 0.34, markSat: 0.7, cyanSat: 0.15, copperSat: 0.9, sat0: 0.22, sat1: 0.45, matte: 0.3, metal: 1 },
 };
 
+// Two-tone schemes (?livery=tone|bone, look-dev v10): the module's own livery stays the base (dark
+// or civil), and texels inside its liveryZones (ship-frame boxes, see glbship.js) take a lighter paint:
+//   light = (base + gain * l) * tint, l = the texture paint's luminance (its seams, grime, AO and
+//   edge wear carry through). Saturated markings, glass and copper keep the base livery's handling;
+//   markings on light zones are lifted by `mark` so hazard bands still read on the lighter paint.
+//   tone: a warm mid grey, ~2.25x the dark hull's albedo (0.046 -> ~0.105 linear on the remodel paint)
+//   bone: the concept art's warm off-white (~0.48 linear on the remodel paint's 0.6), next to charcoal
+export const SCHEMES = {
+  tone: { scale: 2.25, tint: '#f2ece2', mark: 1.6 },
+  bone: { base: 0.004, gain: 0.62, tint: '#ece6dc', mark: 3.2 },
+};
+export const MAX_ZONES = 16;
+
+/** Expand a module's liveryZones ([{ box: [[x,y,z],[x,y,z]], tone = 1, feather = 0.06, mirrorX }], ship frame,
+ *  metres) into the uniform arrays; later zones win where they overlap (tone 0 carves a dark zone back out). */
+export function zoneUniforms(zones = []) {
+  const list = zones.flatMap((z) => (z.mirrorX ? [z, { ...z, box: [[-z.box[1][0], z.box[0][1], z.box[0][2]], [-z.box[0][0], z.box[1][1], z.box[1][2]]] }] : [z])).slice(0, MAX_ZONES);
+  const V3 = THREE.Vector3;
+  const pad = (a, f) => Array.from({ length: MAX_ZONES }, (_, i) => (a[i] ? f(a[i]) : f(null)));
+  return {
+    n: list.length,
+    min: pad(list, (z) => new V3(...(z ? z.box[0] : [0, 0, 0]))),
+    max: pad(list, (z) => new V3(...(z ? z.box[1] : [0, 0, 0]))),
+    tf: pad(list, (z) => new THREE.Vector2(z ? z.tone ?? 1 : 0, z ? z.feather ?? 0.06 : 1)),
+  };
+}
+
 /** Repaint a MeshStandard/Physical material in place. opts: a LIVERIES key or an object
  *  (merged over 'dark'); glassGlow: [r, g, b] linear radiance of lit interiors behind glass
  *  texels (opt-in), glassLit: share of compartments lit (default 0.6). */
-export function applyLivery(material, opts = 'dark') {
+export function applyLivery(material, opts = 'dark', { scheme = null, zones = null, toShip = null } = {}) {
   const o = { ...LIVERIES.dark, ...(typeof opts === 'string' ? LIVERIES[opts] : opts) };
+  // two-tone scheme: only with zones and the mesh's object -> ship-frame matrix
+  const sc = scheme && SCHEMES[scheme] && zones?.length && toShip ? SCHEMES[scheme] : null;
   const uniforms = {
     uLivBase: { value: o.base }, uLivGain: { value: o.gain }, uLivTint: { value: new THREE.Color(o.tint) },
     uLivMark: { value: o.mark }, uLivSat: { value: new THREE.Vector2(o.sat0, o.sat1) }, uLivMatte: { value: o.matte },
@@ -51,13 +80,35 @@ export function applyLivery(material, opts = 'dark') {
   };
   const glow = o.glassGlow ? new THREE.Vector3(...o.glassGlow) : null;
   if (glow) Object.assign(uniforms, { uLivGlassGlow: { value: glow }, uLivGlassLit: { value: o.glassLit ?? 0.6 } });
+  if (sc) {
+    const z = zoneUniforms(zones);
+    const lt = new THREE.Color(sc.tint); const lum = 0.2126 * lt.r + 0.7152 * lt.g + 0.0722 * lt.b; lt.multiplyScalar(1 / lum);
+    Object.assign(uniforms, {
+      uLivZM: { value: toShip.clone() }, uLivZN: { value: z.n }, uLivZMin: { value: z.min }, uLivZMax: { value: z.max }, uLivZTF: { value: z.tf },
+      uLivLight: { value: new THREE.Vector3(sc.base ?? o.base * sc.scale, sc.gain ?? o.gain * sc.scale, sc.mark ?? 1) }, uLivLightTint: { value: lt },
+    });
+  }
   material.userData.livery = uniforms;
   const prev = material.onBeforeCompile;
   material.onBeforeCompile = (shader, renderer) => {
     prev?.call(material, shader, renderer);
     Object.assign(shader.uniforms, uniforms);
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform float uLivBase, uLivGain, uLivMark, uLivMatte, uLivMarkSat, uLivMetal, uLivCopperSat, uLivCyanSat; uniform vec3 uLivTint; uniform vec2 uLivSat, uLivMagHue, uLivMagSat; uniform float uLivMagOn, uLivMagMarkSat; float livGlass;')
+      .replace('#include <common>', '#include <common>\nuniform float uLivBase, uLivGain, uLivMark, uLivMatte, uLivMarkSat, uLivMetal, uLivCopperSat, uLivCyanSat; uniform vec3 uLivTint; uniform vec2 uLivSat, uLivMagHue, uLivMagSat; uniform float uLivMagOn, uLivMagMarkSat; float livGlass; float livL; float livZone;' + (sc ? `
+        uniform int uLivZN; uniform vec3 uLivZMin[${MAX_ZONES}], uLivZMax[${MAX_ZONES}]; uniform vec2 uLivZTF[${MAX_ZONES}]; uniform vec3 uLivLight, uLivLightTint; varying vec3 vLivZP;
+        float livZoneAt(vec3 p) {
+          float z = 0.0;
+          // crisp painted edges, antialiased over about a pixel (or the zone's feather, if wider)
+          vec3 aa = fwidth(p);
+          for (int i = 0; i < ${MAX_ZONES}; i++) {
+            if (i >= uLivZN) break;
+            vec3 d = min(p - uLivZMin[i], uLivZMax[i] - p);
+            vec3 f = max(vec3(uLivZTF[i].y), aa);
+            vec3 m = clamp(d / f + 0.5, 0.0, 1.0);
+            z = mix(z, uLivZTF[i].x, m.x * m.y * m.z);
+          }
+          return z;
+        }` : ''))
       .replace('#include <map_fragment>', `#include <map_fragment>
         {
           vec3 c = diffuseColor.rgb;
@@ -75,6 +126,8 @@ export function applyLivery(material, opts = 'dark') {
           }
           float copper = smoothstep(10.0, 18.0, hue) * (1.0 - smoothstep(42.0, 52.0, hue)) * (1.0 - smoothstep(0.42, 0.62, mx));
           vec3 grey = (uLivBase + uLivGain * l) * uLivTint;
+          livL = l; livZone = 0.0;
+          ${sc ? 'livZone = livZoneAt(vLivZP); grey = mix(grey, (uLivLight.x + uLivLight.y * l) * uLivLightTint, livZone);' : ''}
           float cyan = smoothstep(160.0, 172.0, hue) * (1.0 - smoothstep(198.0, 210.0, hue));
           float mSat = mix(mix(uLivMarkSat, max(uLivMarkSat, uLivCopperSat), copper), min(uLivMarkSat, uLivCyanSat), cyan);
           // opt-in pink / magenta band (hue wraps through 360): its own saturation window and markSat
@@ -83,6 +136,7 @@ export function applyLivery(material, opts = 'dark') {
           mSat = mix(mSat, min(mSat, uLivMagMarkSat), magenta);
           vec2 satWin = mix(uLivSat, uLivMagSat, magenta);
           vec3 mark = mix(vec3(l), c, mSat) * uLivMark; // dimmed low-visibility markings; copper keeps some hue
+          ${sc ? 'mark *= mix(1.0, uLivLight.z, livZone * (1.0 - copper));' : ''}
           diffuseColor.rgb = mix(grey, mark, smoothstep(satWin.x, satWin.y, sat));
           // glass: dark, blue-tinted, not strongly saturated (cobalt paint is)
           livGlass = smoothstep(1.12, 1.4, c.b / max(c.r, 1e-3)) * (1.0 - smoothstep(0.05, 0.12, l)) * (1.0 - smoothstep(0.55, 0.75, sat));
@@ -90,6 +144,11 @@ export function applyLivery(material, opts = 'dark') {
         }`)
       .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(mix(roughnessFactor, 1.0, uLivMatte), 0.08, livGlass);')
       .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor *= uLivMetal * (1.0 - livGlass);');
+    if (sc) {
+      shader.vertexShader = shader.vertexShader
+        .replace('#include <common>', '#include <common>\nuniform mat4 uLivZM; varying vec3 vLivZP;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvLivZP = (uLivZM * vec4(transformed, 1.0)).xyz;');
+    }
     if (glow) {
       shader.vertexShader = shader.vertexShader
         .replace('#include <common>', '#include <common>\nvarying vec3 vLivPos;')
@@ -112,7 +171,7 @@ export function applyLivery(material, opts = 'dark') {
     }
   };
   const prevKey = material.customProgramCacheKey.bind(material);
-  material.customProgramCacheKey = () => `livery${glow ? '-glow' : ''}|${prevKey()}`;
+  material.customProgramCacheKey = () => `livery${glow ? '-glow' : ''}${sc ? `-${scheme}` : ''}|${prevKey()}`;
   material.needsUpdate = true;
   return material;
 }

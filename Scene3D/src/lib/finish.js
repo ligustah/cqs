@@ -23,6 +23,11 @@
 //     normal variance of the faded grit is folded back into roughness;
 //   - drive soot: near each drive bell's lip (userData.ship.engines / cfg.engines) the paint is
 //     stained darker and rougher (the 'sootStreak' set breaks it up).
+//   - v10 seam grime and edge wear push, read from the remodel's own texture paint (the livery exports its
+//     luminance livL and the two-tone zone livZone): seams and AO grime (paint luminance ~0.2-0.5 around
+//     the ~0.6 paint) are darkened further, warm-brown on light zones; edge wear (paint.py writes it into
+//     the ORM metal channel, 0.03-0.28 on paint) is scuffed lighter on dark paint and chipped darker on
+//     light paint; the plate tone breakup is stronger on light zones, where it would otherwise vanish.
 // Glass (the livery's livGlass), saturated markings and container colours (reduced strength), and
 // the carrier's hangar interior (excluded box) are respected. Kit parts get it at lower strength.
 import * as THREE from 'three';
@@ -90,6 +95,9 @@ export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, e
     uFinExMin: { value: new V3(...(exclude?.box[0] || [0, 0, 0])) },
     uFinExMax: { value: new V3(...(exclude?.box[1] || [0, 0, 0])) },
     uFinExFeather: { value: exclude?.feather ?? 2 },
+    // v10 wear push: seam grime darkening, edge wear (x: lighten on dark paint, y: darken on light paint)
+    uFinSeam: { value: 0.45 * strength },
+    uFinEdge: { value: new THREE.Vector2(1.2, 0.5).multiplyScalar(strength) },
   };
   material.userData.finish = uniforms;
   const prev = material.onBeforeCompile;
@@ -101,6 +109,7 @@ export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, e
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvFinP = (uFinM * vec4(transformed, 1.0)).xyz;\nvFinN = mat3(uFinM) * objectNormal;');
     const fns = /* glsl */`
       varying vec3 vFinP; varying vec3 vFinN;
+      uniform float uFinSeam; uniform vec2 uFinEdge;
       uniform float uFinAmt, uFinGritOn, uFinGritScale, uFinGritNrm, uFinPlateOn, uFinExOn, uFinExFeather;
       uniform int uFinEngN;
       uniform vec4 uFinWearStat; uniform vec2 uFinTone, uFinScale, uFinGritStat, uFinPlateStat, uFinSootStat; uniform vec3 uFinRough;
@@ -149,13 +158,27 @@ export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, e
         finPlateZ = 0.0;
         ${plate ? 'finPlateZ = clamp((detTriS(uFinPlate, uDetScale) - uFinPlateStat.x) / uFinPlateStat.y, -2.0, 2.0) * uFinPlateOn;' : ''}
         tone += 0.025 * finPlateZ;
-        tone = clamp(tone, -0.2, 0.2) * mix(1.0, 0.5, finMark);
+        float finLZ = ${hasLiv ? 'livZone' : '0.0'}, finLL = ${hasLiv ? 'livL' : '0.6'};
+        tone = clamp(tone, -0.2, 0.2) * mix(1.0, 0.5, finMark) * (1.0 + 0.6 * finLZ);
         finSootK = finSoot();
         // soot breakup: the soot set's streaks where the drive stains the paint (uniform branch: ships
         // without drives skip the fetches; they stay out of per-pixel branches so their mips are defined)
         float sootAmt = 0.0;
         if (uFinEngN > 0) { float sootTex = finTri(uFinSoot, vFinP * 0.18, w).r; sootAmt = finSootK * clamp(0.75 + 0.5 * (uFinSootStat.x - sootTex) / max(uFinSootStat.y, 1e-3), 0.3, 1.2); }
         diffuseColor.rgb *= mix(1.0, (1.0 + tone) * (1.0 - 0.6 * sootAmt), finMask);
+        ${hasLiv ? `{
+          // seams and AO grime: the paint's darker texels, not its dark zones (belly, recess plates < ~0.15)
+          float grime = smoothstep(0.52, 0.3, finLL) * smoothstep(0.1, 0.2, finLL) * (1.0 - finMark) * finMask;
+          vec3 gcol = mix(vec3(1.0), vec3(0.86, 0.8, 0.72), finLZ) * (1.0 - uFinSeam * (0.6 + 0.4 * finLZ));
+          diffuseColor.rgb *= mix(vec3(1.0), gcol, grime);
+          float edge = 0.0;
+          #ifdef USE_METALNESSMAP
+            float mt = texture2D(metalnessMap, vMetalnessMapUv).b;
+            edge = smoothstep(0.03, 0.16, mt) * (1.0 - smoothstep(0.3, 0.38, mt));
+          #endif
+          edge *= finMask * (1.0 - finMark);
+          diffuseColor.rgb *= mix(1.0, mix(1.0 + uFinEdge.x, 1.0 - uFinEdge.y, finLZ), edge);
+        }` : ''}
       }`;
     // roughness (after the livery's matte push and the detail layer)
     const rough = /* glsl */`{

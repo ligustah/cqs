@@ -79,6 +79,20 @@ export const asset = {
   concept: './assets/concepts/carrier.webp', beauty: './assets/concepts/carrier-beauty.webp',
   rotate: [0, 0, 0], hullNodes: ['hull'],
   length: 899.998, // 406.0 x 319.3 x 900.0 m design (no slot normalisation)
+  // Two-tone armour zones (?livery=tone|bone, livery.js SCHEMES; ship frame, metres): the bow section (aft face
+  // z 276 to the probes), the stern block (stern plate to its front face z -261, with the gun sponsons) and the
+  // five frame rings between the open bays take the light paint, a bold light/dark rhythm along the flank; the
+  // bays' flank plating, the island, the keel wedge and the dorsal deck between stay dark. (The hangar interior
+  // keeps its own plating: liveryKeep wins inside the cavity.)
+  liveryZones: [
+    { box: [[-215, -165, 276.0], [215, 165, 455]] },       // bow section
+    { box: [[-215, -165, -460], [215, 165, -261.0]] },     // stern block
+    { box: [[-215, -165, -188.1], [215, 21.6, -164.3]] },    // frame F1 (up to the dorsal deck: the island stays dark)
+    { box: [[-215, -165, -98.0], [215, 21.6, -73.5]] },      // frame F2
+    { box: [[-215, -165, -5.25], [215, 21.6, 19.2]] },       // frame F3
+    { box: [[-215, -165, 87.42], [215, 21.6, 111.6]] },      // frame F4
+    { box: [[-215, -165, 178.1], [215, 21.6, 202.1]] },      // frame F5
+  ],
   // remodel paint is lighter than the generated textures: gain 0.05 matches the fleet grey; kit and hull glass get a
   // dim warm interior light (livery.js glassGlow, opt-in)
   livery: { gain: 0.05, glassGlow: [0.06, 0.055, 0.046], glassLit: 0.35 },

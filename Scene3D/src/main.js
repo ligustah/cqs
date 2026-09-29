@@ -15,8 +15,9 @@ import { CLASSES, SLOT_VOLUME, carrierLoads } from './lib/scale.js';
 import { hangarInsideFraction } from './lib/hangar.js';
 import { buildShip, loadShips, setShipContext, LOAD_ERRORS, ORDER } from './ships/index.js';
 import { loadPatinaLibrary, proceduralStandIn } from './lib/patina.js';
+import { setLiveryScheme } from './lib/glbship.js';
 import { panelSet } from './lib/textures.js';
-import { createLighting, SUN_DIR } from './env/lighting.js';
+import { createLighting, createStudioLighting, studioDir, STUDIO, SUN_DIR } from './env/lighting.js';
 import { TIER } from './lib/device.js';
 import { AO_REQUESTED, createScreenAO } from './lib/finish.js';
 import { createSky } from './env/sky.js';
@@ -41,7 +42,20 @@ const fixedTime = params.has('t') ? parseFloat(params.get('t')) : null;
 // plane (the fleet's port-high SUN_DIR lit most of the default 35/18 view flat and left the 270
 // side views as silhouettes). SUN_DIR is shared by reference (env map, planet, sky, shadow fit),
 // so it is set here, before anything reads it. ?sunaz= / ?sunel= override (degrees, ship frame).
-if (mode === 'ship') {
+// Showcase lighting (env/lighting.js createStudioLighting) is the ship studio's default: key, fill and
+// rim lights, a soft-box environment and a gradient backdrop, no planet. ?studio=0 falls back to the
+// orbital rig (the hard sun below over the planet). Every other view keeps the orbital rig.
+const studio = mode === 'ship' && params.get('studio') !== '0';
+if (studio) {
+  // the key light is also SUN_DIR (the shadow fit reads it); ?sunaz= / ?sunel= still override it (ship frame)
+  const camAz = parseFloat(params.get('az') ?? '35'), camEl = parseFloat(params.get('el') ?? '18');
+  SUN_DIR.copy(studioDir(camAz, camEl, STUDIO.key.az, STUDIO.key.el));
+  if (params.has('sunaz') || params.has('sunel')) {
+    const sAz = THREE.MathUtils.degToRad(parseFloat(params.get('sunaz') ?? String(camAz + STUDIO.key.az)));
+    const sEl = THREE.MathUtils.degToRad(parseFloat(params.get('sunel') ?? String(STUDIO.key.el)));
+    SUN_DIR.set(Math.sin(sAz) * Math.cos(sEl), Math.sin(sEl), Math.cos(sAz) * Math.cos(sEl)).normalize();
+  }
+} else if (mode === 'ship') {
   const camAz = parseFloat(params.get('az') ?? '35');
   const sAz = THREE.MathUtils.degToRad(parseFloat(params.get('sunaz') ?? String(camAz + 85)));
   const sEl = THREE.MathUtils.degToRad(parseFloat(params.get('sunel') ?? '30'));
@@ -55,7 +69,12 @@ const palette = createPalette();
 // fal PATINA tiling PBR sets (assets/materials); ?standin uses procedural textures for testing
 const library = await loadPatinaLibrary();
 if (!Object.keys(library).length && params.has('standin')) library.hull = proceduralStandIn(panelSet({ seed: 7, style: 'hull' }));
-setShipContext({ library, livery: params.get('livery') || null });
+// ?livery=none|dark|civil replaces every module's livery; ?livery=tone|bone keeps it and paints the
+// module's liveryZones in a lighter two-tone scheme (lib/livery.js SCHEMES). Default: dark (each module's own)
+const liveryQ = params.get('livery') || null;
+const liveryScheme = liveryQ === 'tone' || liveryQ === 'bone' ? liveryQ : null;
+setLiveryScheme(liveryScheme);
+setShipContext({ library, livery: liveryScheme ? null : liveryQ });
 const studioShip = params.get('ship') || (ORDER.includes(hash) ? hash : 'fighter');
 // The studio carrier's open bays show parked ships by default (?parked=0 empties the hangar,
 // ?parked=1 also aims the camera at it), so every class is needed; the carrier's spec sheet also
@@ -115,7 +134,7 @@ function start() {
   // Look-dev: ?tonemap=agx|neutral, ?exposure=
   const TONEMAPS = { agx: THREE.AgXToneMapping, neutral: THREE.NeutralToneMapping };
   renderer.toneMapping = TONEMAPS[params.get('tonemap')] ?? THREE.NeutralToneMapping;
-  renderer.toneMappingExposure = parseFloat(params.get('exposure') || String(EXPOSURE));
+  renderer.toneMappingExposure = parseFloat(params.get('exposure') || String(studio ? STUDIO.exposure : EXPOSURE));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
   container.appendChild(renderer.domElement);
@@ -141,8 +160,14 @@ function start() {
   };
   camera.updateProjectionMatrix();
 
-  const lighting = createLighting(renderer, scene, { shadowSize: TIER.shadowSize });
-  const sky = createSky(scene);
+  const lighting = studio
+    ? createStudioLighting(renderer, scene, {
+      shadowSize: TIER.shadowSize, lite: TIER.ao === false, exposure: renderer.toneMappingExposure,
+      camAz: parseFloat(params.get('az') ?? '35'), camEl: parseFloat(params.get('el') ?? '18'), keyDir: SUN_DIR,
+    })
+    : createLighting(renderer, scene, { shadowSize: TIER.shadowSize });
+  // the studio has no sky (star field, sun glare): its backdrop is part of the lighting rig
+  const sky = studio ? { update() {} } : createSky(scene);
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
@@ -263,7 +288,8 @@ function start() {
     }
     // studio stills are shot in orbit, over the planet (?planet=0 for a black backdrop); the
     // interactive studio stays on black unless ?planet is given (the planet costs frame time)
-    const studioPlanet = params.has('planet') ? params.get('planet') !== '0' : still && !params.has('debug');
+    // (showcase lighting: never a planet)
+    const studioPlanet = studio ? false : params.has('planet') ? params.get('planet') !== '0' : still && !params.has('debug');
     if (studioPlanet) createPlanet(scene);
     if (params.has('debug')) g.add(debugOverlay(s));
     return { ships: [{ group: g, cls }], selected: cls, focus: () => {} };

@@ -28,6 +28,14 @@ export const asset = {
   hullNodes: ["hull"],
   livery: {"gain": 0.05, "glassGlow": [0.06, 0.055, 0.046], "glassLit": 0.3},
   detail: {"set": "hull", "tile": 6, "normalStrength": 0.6, "roughAmount": 0.5, "cavity": 0.2},
+  // Two-tone armour zones (?livery=tone|bone, livery.js SCHEMES; ship frame, metres): the flank sponsons, the
+  // stern engine block (aft deck and flanks, z -26.4..-18.5 step) and the forward flank cheeks (hull stations
+  // z 20.5..30.5, outboard of the top flat) take the light paint; the spine, bridge block and nose stay dark.
+  liveryZones: [
+    { box: [[16.6, -6.8, -14.0], [23.8, 0.1, 2.3]], mirrorX: true },   // sponsons (SP: x 20.05 +- 3.1, y -3.35 +- 2.8, z -13.4..0.2 + nose)
+    { box: [[-14.0, -8.5, -26.6], [14.0, 5.6, -18.5]] },               // stern block to the deck step
+    { box: [[6.4, -9.5, 20.5], [12.0, 3.2, 30.5]], mirrorX: true },    // forward flank cheeks
+  ],
   length: 71.756,
   engines: [
     // main bells: bell-L x1.0143 (r 3.55)
@@ -48,6 +56,10 @@ export const asset = {
     {p: [0.0, -10.349, -0.978], color: "white", size: 0.4, blink: {period: 1.3, duty: 0.1, phase: 0.5}},
     // steady stern light on the stern plate between the bell sockets
     {p: [0.0, 3.951, -26.258], color: "white", size: 0.4},
+    // v10 amber running lights along the hull lines: the upper chamfer (ends of the stencil row) and the forward flank
+    { p: [10.77, 3.21, -15.88], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [10.77, 3.21, -1.08], color: 'amber', size: 0.3, mirrorX: true },
+    { p: [11.76, -2.36, 13.69], color: 'amber', size: 0.3, mirrorX: true },
   ],
   anchors: {
     // railgun muzzles (twin-bore muzzle block face, z 17.86 in the model frame), fire along +Z
