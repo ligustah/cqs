@@ -26,24 +26,79 @@ export const asset = {
   // remodel paint is lighter than the generated textures: gain 0.05 matches the fleet grey. v11: lit cabins behind the
   // ports and bridge panes (warm, varied per compartment, a few dark, a few flickering)
   livery: { gain: 0.05, glassGlow: [0.52, 0.42, 0.28], glassLit: 0.5, glassFlicker: 0.12 },
-  // v11 lightscape (src/lib/lightscape.js): crease pins, recess bars, drive status lights and authored runs
+  // v11 lightscape (src/lib/lightscape.js); v12: the hierarchy turned round to the concept's: a few short amber bars in
+  // real recesses and at block corners (door jambs, the bow torpedo frame, the pod radiator bay, the flank's forward
+  // corner, vent floors, the deckhouse base) carry the look; crease pins are sparse background texture (no white pins
+  // on the key-lit top, none on louvres or glazing)
   lightscape: {
     seed: 21,
-    creases: { angle: 35, minLen: 3, pitch: 6, share: 0.4, run: [1, 3], runPitch: 1.1, corners: 0.45, spacing: 1.5, size: [0.22, 0.34], intensity: [0.65, 1.0], mix: { amber: 0.7, warm: 0.18, white: 0.12 }, max: 230, blinkShare: 0.03 },
-    slits: { angle: 35, minLen: 1.5, share: 0.45, every: 9, len: [0.8, 1.8], width: 0.15, radiance: [0.9, 1.5], spacing: 4, max: 40, mix: { amber: 0.8, warm: 0.2 } },
+    creases: { angle: 35, minLen: 3, pitch: 6, share: 0.2, run: [1, 2], runPitch: 1.1, corners: 0.3, spacing: 2.0, size: [0.17, 0.25], intensity: [0.45, 0.75], mix: { amber: 0.75, warm: 0.25 }, max: 120, blinkShare: 0.03 },
+    slits: { angle: 35, minLen: 1.5, share: 0.65, every: 8, len: [0.7, 1.2], width: 0.2, radiance: [1.0, 1.4], spacing: 4, max: 48, mix: { amber: 0.85, warm: 0.15 }, corner: { radiance: [1.1, 1.5], len: [0.8, 1.2], width: 0.2 } },
     cool: { radius: 1.8, depth: 2.5 },
+    // first matching box wins (ship frame; mirrorX adds the starboard twin)
+    zones: [
+      // pod radiator bay (0.45 m recess x 34.0..34.45, y -17.05..-12.85, z -22.6..-9.4, fins at 0.3 m): no confetti in the fins
+      { box: [[33.4, -17.6, -23.1], [35.3, -12.3, -8.9]], mirrorX: true, creases: null, slits: null },
+      // shoulder vent bays (0.3 m recesses with slanted louvres) and the ribbed launcher tubes
+      { box: [[12.5, -5.2, 5.6], [17.2, -0.6, 17.4]], mirrorX: true, creases: null, slits: null },
+      { box: [[12.2, -5.2, -47.0], [16.9, -0.6, -39.8]], mirrorX: true, creases: null, slits: null },
+      { box: [[12.5, -5.0, -38.2], [17.5, -0.6, -28.2]], mirrorX: true, creases: null },
+      // bridge glazing band: the lit panes carry it
+      { box: [[-10.5, 0.2, 10.5], [10.5, 2.7, 25.5]], creases: null, slits: null },
+      // bow torpedo frame (lip z 54.05, plate 52.75): authored corner bars instead of the pin necklace
+      { box: [[-9.6, -20.0, 52.2], [9.6, -4.0, 54.7]], creases: null, slits: null },
+      // tapered bow flank: the belt thins to 0.01 m forward of z 21, so its top line is flat plating (no painted-on bars)
+      { box: [[7.5, -12.4, 21.0], [16.0, -10.6, 54.0]], mirrorX: true, slits: null },
+      // bow cap: only a few block corners
+      { box: [[-20.0, -25.0, 41.5], [20.0, -1.0, 52.2]], creases: { share: 0.08, run: [1, 1], corners: 0.25 } },
+      // armour belt ledge (0.22 m proud): too shallow to read as a recess, so only the odd bar
+      { box: [[15.9, -12.2, -49.5], [16.9, -10.9, 21.0]], mirrorX: true, slits: { share: 0.15 } },
+      // key-lit top (deck, walkways, deckhouse, tower): sparse, the studio key washes pins there
+      { box: [[-20.0, -2.0, -50.0], [20.0, 30.0, 50.0]], creases: { share: 0.12, corners: 0.2 } },
+    ],
     patterns: [
-      // bridge and tower glazing: lit sills
-      { surface: 'bridge-glazing', edge: 'bottom', inset: 0.15, lift: 0.08, pitch: 0.7, color: 'warm', size: 0.16, intensity: 0.55, keep: true },
+      // tower glazing: lit sill
       { surface: 'tower-glazing', edge: 'bottom', inset: 0.2, lift: 0.1, pitch: 0.8, color: 'warm', size: 0.16, intensity: 0.55, keep: true },
-      // armour belt: amber pins along its top edge; deck walkways: white edge lights
-      { surface: 'belt-port', edge: 'top', inset: 0.3, pitch: 3.2, color: 'amber', size: 0.24, intensity: 0.85, skip: 0.3, mirrorX: true },
-      { surface: 'deck-walk-port', edge: 'top', inset: 0.2, pitch: 5.5, color: 'white', size: 0.2, intensity: 0.6, skip: 0.2, mirrorX: true },
-      { surface: 'shoulder-port', edge: 'bottom', inset: 0.2, pitch: 4.5, color: 'amber', size: 0.22, intensity: 0.8, skip: 0.35, mirrorX: true },
-      { surface: 'deckhouse-side-port', edge: 'bottom', inset: 0.25, pitch: 3.5, color: 'warm', size: 0.2, intensity: 0.6, skip: 0.4, mirrorX: true },
-      // drive pods: blue-white status lights on the outboard faces
-      { surface: 'pod-outboard-port', edge: 'top', inset: 0.4, pitch: 0.9, color: 'cool', size: 0.2, intensity: 0.85, mirrorX: true },
+      // armour belt top and shoulder bottom: sparse amber marks (were dotted lines)
+      { surface: 'belt-port', edge: 'top', inset: 0.3, pitch: 7, color: 'amber', size: 0.22, intensity: 0.8, skip: 0.45, mirrorX: true },
+      { surface: 'shoulder-port', edge: 'bottom', inset: 0.2, pitch: 8, color: 'amber', size: 0.2, intensity: 0.7, skip: 0.45, mirrorX: true },
+      // deckhouse base / walkway junction (concave corner at x 10.37, y -1.44): short amber bars
+      { slitRow: [[10.43, -1.34, -27.0], [10.43, -1.34, 3.0]], pitch: 7.5, u: [0, 0, 1], n: [0.52, 0.85, 0], len: 1.1, width: 0.2, radiance: 1.5, color: 'amber', skip: 0.3, keep: true, mirrorX: true },
+      // crew-door bays (z 1.5 / 9.9 / -39.5, recess y -15.2..-12.2): short lamps at the head and foot of the aft jamb
+      // wall (faces forward), inside the recess
+      { slit: [16.285, -12.75, 0.555], u: [0, 1, 0], n: [0, 0, 1], len: 0.6, width: 0.14, radiance: 1.5, color: 'amber', keep: true, mirrorX: true },
+      { slit: [16.285, -14.65, 0.555], u: [0, 1, 0], n: [0, 0, 1], len: 0.5, width: 0.14, radiance: 1.2, color: 'amber', mirrorX: true },
+      { slit: [16.285, -12.75, 8.955], u: [0, 1, 0], n: [0, 0, 1], len: 0.6, width: 0.14, radiance: 1.5, color: 'amber', mirrorX: true },
+      { slit: [15.81, -12.75, -40.445], u: [0, 1, 0], n: [0, 0, 1], len: 0.6, width: 0.14, radiance: 1.5, color: 'amber', keep: true, mirrorX: true },
+      { slit: [15.81, -14.65, -40.445], u: [0, 1, 0], n: [0, 0, 1], len: 0.5, width: 0.14, radiance: 1.2, color: 'amber', mirrorX: true },
+      // forward flank: corner bars 0.4 m inside the block edge where the flat flank meets the bow taper (z 19.2), and
+      // one at the foot of the tapered bow flank by the torpedo frame lip (z 54.05)
+      { slit: [16.16, -10.4, 18.8], u: [0, 1, 0], n: [1, 0, 0], len: 1.0, width: 0.17, radiance: 1.5, color: 'amber', keep: true, mirrorX: true },
+      { slit: [16.16, -5.7, 18.8], u: [0, 1, 0], n: [1, 0, 0], len: 0.8, width: 0.17, radiance: 1.3, color: 'amber', mirrorX: true },
+      { slit: [8.47, -12.9, 52.9], u: [0, 1, 0], n: [0.975, 0, 0.222], len: 1.0, width: 0.17, radiance: 1.4, color: 'amber', keep: true, mirrorX: true },
+      // pod radiator bay: short corner bars in the open slots between the end walls and the first / last fin (in the
+      // face plane, x 34.4: the fins hide anything deeper at oblique views), and dim warm lamps along its sill and head
+      { slit: [34.4, -13.6, -9.56], u: [0, 1, 0], n: [1, 0, 0], len: 0.8, width: 0.17, radiance: 1.5, color: 'amber', keep: true, mirrorX: true },
+      { slit: [34.4, -16.3, -22.49], u: [0, 1, 0], n: [1, 0, 0], len: 0.8, width: 0.17, radiance: 1.4, color: 'amber', keep: true, mirrorX: true },
+      { row: [[34.5, -16.85, -21.4], [34.5, -16.85, -10.6]], pitch: 1.8, color: 'warm', size: 0.2, intensity: 0.7, skip: 0.25, mirrorX: true },
+      { row: [[34.5, -13.05, -20.5], [34.5, -13.05, -11.5]], pitch: 3.0, color: 'amber', size: 0.18, intensity: 0.55, skip: 0.3, mirrorX: true },
+      // pod extremities: lamps at the outboard face corners (fore steady, aft slow pulse)
+      { points: [[34.56, -11.45, -2.4], [34.56, -18.45, -2.4]], color: 'amber', size: 0.42, intensity: 1.5, keep: true, mirrorX: true },
+      { points: [[34.56, -11.45, -26.3], [34.56, -18.45, -26.3]], color: 'amber', size: 0.42, intensity: 1.5, keep: true, pulse: 4.2, mirrorX: true },
+      // drive pods: blue-white status strip on the outboard faces, amber below
+      { surface: 'pod-outboard-port', edge: 'top', inset: 0.4, pitch: 1.4, color: 'cool', size: 0.2, intensity: 0.85, mirrorX: true },
       { surface: 'pod-outboard-port', edge: 'bottom', inset: 0.4, pitch: 1.8, color: 'amber', size: 0.22, intensity: 0.8, mirrorX: true },
+      // bow torpedo frame: upright bars on the inner side walls (x 7.6, facing in), one under the deck lintel, lamps at the lip's shoulder corners
+      { slit: [7.57, -9.6, 53.4], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.19, radiance: 1.6, color: 'amber', keep: true, mirrorX: true },
+      { slit: [7.57, -13.8, 53.4], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.19, radiance: 1.6, color: 'amber', keep: true, mirrorX: true },
+      { slit: [3.2, -5.76, 53.4], u: [1, 0, 0], n: [0, -1, 0], len: 1.0, width: 0.17, radiance: 1.4, color: 'amber', mirrorX: true },
+      { points: [[8.25, -8.4, 54.16]], color: 'amber', size: 0.3, intensity: 1.1, keep: true, mirrorX: true },
+      // stern frame (0.3 m inner wall, lip z -49.53, plate -49.24): short bars either side of the drive chaser
+      { slit: [14.68, -6.6, -49.39], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.17, radiance: 1.4, color: 'amber', mirrorX: true },
+      { slit: [14.895, -14.0, -49.39], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.17, radiance: 1.4, color: 'amber', mirrorX: true },
+      // shoulder vent bays: warm glow on the recess floor between the slanted louvres (mid-gap, fins at z0 + 0.6 + k 1.15)
+      { slitRow: [[14.627, -3.147, 7.375], [14.627, -3.147, 16.575]], pitch: 1.15, u: [0, 0, 1], n: [0.752, 0.659, 0], len: 0.55, width: 0.14, radiance: 0.8, color: 'warm', skip: 0.45, mirrorX: true },
+      { slitRow: [[14.18, -3.075, -45.225], [14.18, -3.075, -41.775]], pitch: 1.15, u: [0, 0, 1], n: [0.751, 0.66, 0], len: 0.55, width: 0.14, radiance: 0.9, color: 'amber', skip: 0.4, mirrorX: true },
       // stern plate: drive status chaser; the bow deck: two slow beacons
       { surface: 'stern-plate', edge: 'centre', inset: 0.4, pitch: 0.6, color: 'cool', size: 0.18, intensity: 0.85, chase: 2.6 },
       { surface: 'bow-deck', edge: 'left', inset: 0.5, pitch: 7, color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.4 },
@@ -78,19 +133,14 @@ export const asset = {
   ],
   lights: [
     // steady sidelights on the flat outboard face of each pod (the beam extremity): red port, green starboard
-    {p: [34.68, -14.925, -6.986], color: "red", size: 0.4},
-    {p: [-34.68, -14.925, -6.986], color: "green", size: 0.4},
+    {p: [34.68, -14.925, -6.986], color: "red", size: 0.6},
+    {p: [-34.68, -14.925, -6.986], color: "green", size: 0.6},
     // anti-collision strobes, alternating: keel and masthead (top of the sensor block)
-    {p: [0.0, -23.305, 0.014], color: "white", size: 0.4, blink: {period: 1.3, duty: 0.1, phase: 0.5}},
-    {p: [0.0, 23.325, -11.486], color: "white", size: 0.4, blink: {period: 1.3, duty: 0.1}},
+    {p: [0.0, -23.305, 0.014], color: "white", size: 0.5, blink: {period: 1.3, duty: 0.1, phase: 0.5}},
+    {p: [0.0, 23.325, -11.486], color: "white", size: 0.5, blink: {period: 1.3, duty: 0.1}},
     // steady stern light on the stern plate above the centre bell
     {p: [0.0, -3.075, -49.466], color: "white", size: 0.4},
-    // v10 amber running lights along the hull lines: the armour belt and the tapered bow flank
-    { p: [16.19, -14.28, -31.99], color: 'amber', size: 0.3, mirrorX: true },
-    { p: [16.32, -14.28, -15.99], color: 'amber', size: 0.3, mirrorX: true },
-    { p: [16.48, -14.28, 4.01], color: 'amber', size: 0.3, mirrorX: true },
-    { p: [14.12, -7.37, 28.2], color: 'amber', size: 0.3, mirrorX: true },
-    { p: [11.19, -7.37, 40.86], color: 'amber', size: 0.3, mirrorX: true },
+    // (v10 amber running lights on bare plating removed in v12: the lightscape's recess bars replace them)
   ],
   anchors: {
     // Flat hull faces for the composition step, measured on the remodelled hull by ray casts (0.5 m

@@ -96,6 +96,14 @@ function plumeMaterial(color, seed) {
 // is really smaller than that is dimmed toward its true energy (never below its `floor`), so a
 // thousand pins on a distant carrier read as a fine scatter of crisp points, not a glittering haze.
 const PIN_SPRITE = 2.0;
+// Lightscape emissive gain (pins and slits, not nav lights). main.js raises it a little in the studio, whose key
+// and fill light the dark hull far more than the orbital sun does; orbit / fleet stay at 1.
+export const LIGHTSCAPE_GAIN = { value: 1 };
+// Slits are the concept's signature (short, hard-edged amber bars, brighter than any pin): their radiance is
+// scaled by this before display, so a radiance-1.5 bar just crosses the bloom threshold (2.0) along its centre
+// line and stays amber through the tone map (much hotter and its core clips to cream: a neon tube, not a slit).
+const SLIT_GAIN = 1.6;
+const SLIT_SAT = 1.3;
 const fract = (x) => x - Math.floor(x);
 const blinkGLSL = /* glsl */`
   float blinkOn(vec4 b, float time) {
@@ -115,7 +123,7 @@ const blinkGLSL = /* glsl */`
   }`;
 const lightVS = /* glsl */`
   attribute vec3 color; attribute float size; attribute vec4 blink; attribute float floorE; attribute float rank;
-  uniform float uTime; uniform float uScale; uniform float uMinPx;
+  uniform float uTime; uniform float uScale; uniform float uMinPx; uniform float uGain; uniform float uShipLen;
   varying vec3 vColor; varying float vOn; varying float vSize; varying float vBurn;
   ${blinkGLSL}
   void main() {
@@ -125,14 +133,18 @@ const lightVS = /* glsl */`
     float d = max(-mv.z, 1e-3);
     mv.xyz *= 1.0 - min(0.5, (0.04 + 0.0005 * d) / d);
     float truePx = size * uScale / d;
+    // sprites never draw below uMinPx (3 px, a soft Gaussian footprint: no coverage popping as a pin crosses pixel
+    // boundaries); energy and thinning are measured against a 2 px reference
     float px = max(uMinPx, truePx);
-    float energy = floorE >= 1.0 ? 1.0 : max(floorE, min(1.0, truePx / uMinPx));
-    // far off, a hull's pins would crowd into a solid glitter: keep a share that shrinks with their true
-    // size (by a fixed random rank per pin, so the same ones stay lit), never below about one in eight
-    float keep = floorE >= 1.0 ? 1.0 : clamp(truePx / uMinPx * 1.6, 0.12, 1.0);
+    float energy = floorE >= 1.0 ? 1.0 : max(floorE, min(1.0, truePx / 2.0));
+    // far off, a hull's pins would crowd into a solid glitter: keep a share that shrinks with their true size and
+    // with the whole ship's size on screen (a 150 px ship keeps about a sixth), by a fixed per-pin rank: block
+    // corners and authored rows rank low (lightscape.js) and are the last to go, crease-run pins go first
+    float shipPx = length((modelViewMatrix * vec4(uShipLen, 0.0, 0.0, 0.0)).xyz) * uScale / max(-(modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0)).z, 1e-3);
+    float keep = floorE >= 1.0 ? 1.0 : clamp(min(truePx / 2.0 * 0.9, shipPx / 900.0), 0.04, 1.0);
     on *= clamp((keep - rank) / 0.06, 0.0, 1.0);
-    vColor = color * energy;
-    vBurn = floorE >= 1.0 ? 0.7 : 0.28; // lightscape pins keep their colour: only a hint of a white-hot core
+    vColor = color * energy * (floorE >= 1.0 ? 1.0 : uGain);
+    vBurn = floorE >= 1.0 ? 0.7 : 0.15; // lightscape pins keep their amber: only a hint of a warm-white core
     vOn = on;
     vSize = px;
     gl_PointSize = on > 0.004 ? px : 0.0;
@@ -147,49 +159,100 @@ const lightFS = /* glsl */`
     vec2 d = gl_PointCoord - 0.5; float r = length(d) * 2.0;
     float core = smoothstep(0.35, 0.0, r);
     float halo = pow(max(0.0, 1.0 - r), 3.0) * 0.6;
-    // drawn at a few pixels the fragments miss the core: a small sprite is a soft flat dot instead
+    // drawn at a few pixels the fragments miss the core: a small sprite is a normalised Gaussian footprint instead
+    // (same energy as the old 2 px flat dot on the 3 px minimum sprite; its coverage does not jump as it moves)
     float small = 1.0 - smoothstep(3.0, 7.0, vSize);
-    float a = max(core + halo, small * 0.8 * (1.0 - smoothstep(0.5, 1.05, r))) * vOn;
+    float a = max(core + halo, small * exp(-r * r * 4.5)) * vOn;
     if (a < 0.01) discard;
-    // (dim sources such as lit ports never burn white: only lamps, max channel >= ~0.5, do)
-    float lamp = smoothstep(0.25, 0.5, max(vColor.r, max(vColor.g, vColor.b)));
-    gl_FragColor = vec4(mix(vColor, vec3(1.0), core * vBurn * lamp * smoothstep(2.0, 6.0, vSize)) * a * 4.0, a);
+    // (dim sources such as lit ports never burn white: only lamps, max channel >= ~0.5, do); the core burns toward
+    // a warm white of the lamp's own hue, so amber pins stay amber at their centre
+    float mx = max(vColor.r, max(vColor.g, vColor.b));
+    float lamp = smoothstep(0.25, 0.5, mx);
+    vec3 hot = vBurn > 0.5 ? vec3(1.0) : mix(vColor / max(mx, 1e-3), vec3(1.0), 0.6);
+    gl_FragColor = vec4(mix(vColor, hot, core * vBurn * lamp * smoothstep(2.0, 6.0, vSize)) * a * 4.0, a);
   }`;
 
-// Lightscape slits: short glowing bars in recesses (one InstancedMesh per ship). Unlit colour =
-// radiance; anim as blink above (chasers). Seen from far off a bar is widened to about a pixel
-// and dimmed by the same factor, so it neither shimmers nor vanishes.
+// Lightscape slits: short glowing bars in recesses (one InstancedMesh per ship), plus a soft halo quad per bar
+// (a second InstancedMesh on the same instances: the warm pool the bar throws on its recess walls). Unlit colour =
+// radiance x SLIT_GAIN; anim as blink above (chasers). The concept's hierarchy has the slits as the brightest thing
+// on a hull at every range, so far off a bar is widened to at least 1.3 px and stretched to at least 3 px along its
+// length; the widening dims it only by its square root, never below 0.45 of its near radiance, and the stretch not
+// at all (a distant bar reads as a short bright dash; pins, by contrast, are thinned and fade toward their true energy).
 const slitGeometry = new THREE.BoxGeometry(1, 1, 1);
-const slitVS = /* glsl */`
-  attribute vec3 iColor; attribute vec4 iAnim;
-  uniform float uTime; uniform float uScale;
+const haloGeometry = new THREE.PlaneGeometry(1, 1);
+const slitCommon = /* glsl */`
+  attribute vec3 iColor; attribute vec4 iAnim; attribute float iRank;
+  uniform float uTime; uniform float uScale; uniform float uGain; uniform float uShipLen;
   varying vec3 vC; varying vec2 vL;
   ${blinkGLSL}
-  void main() {
-    float on = blinkOn(iAnim, uTime);
+  // a small ship on screen keeps only its lowest-ranked bars (corner bars first): about a quarter on a 70 px fighter,
+  // all of them from ~250 px up. Pins thin far harder, so the bars carry the read at range
+  float slitKeep() {
+    float shipPx = length((modelViewMatrix * vec4(uShipLen, 0.0, 0.0, 0.0)).xyz) * uScale / max(-(modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0)).z, 1e-3);
+    return clamp((clamp(shipPx / 250.0, 0.25, 1.0) - iRank) / 0.08 + 1.0, 0.0, 1.0);
+  }
+  // on-screen size of a bar: width / length in px at its centre's distance d
+  void slitPx(out float d, out float wPx, out float lPx) {
     vec4 c = modelViewMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0);
-    float d = max(-c.z, 1e-3);
+    d = max(-c.z, 1e-3);
     float w = length((modelMatrix * vec4(instanceMatrix[1].xyz, 0.0)).xyz);
-    float wPx = w * uScale / d;
-    float grow = max(1.0, 0.9 / max(wPx, 1e-4));
-    vec3 p = position; p.y *= min(grow, 6.0);
+    float l = length((modelMatrix * vec4(instanceMatrix[0].xyz, 0.0)).xyz);
+    wPx = w * uScale / d; lPx = l * uScale / d;
+  }`;
+const slitVS = /* glsl */`
+  ${slitCommon}
+  void main() {
+    float on = blinkOn(iAnim, uTime) * slitKeep();
+    float d, wPx, lPx; slitPx(d, wPx, lPx);
+    float grow = min(max(1.0, 1.3 / max(wPx, 1e-4)), 8.0);
+    float stretch = min(max(1.0, 3.0 / max(lPx, 1e-4)), 6.0);
+    vec3 p = position; p.y *= grow; p.x *= stretch;
     vL = position.xy * 2.0; // -1..1 along and across the bar
-    vC = iColor * on / min(grow, 6.0);
+    vC = iColor * on * uGain * max(inversesqrt(grow), 0.4);
     vec4 mv = modelViewMatrix * instanceMatrix * vec4(p, 1.0);
     mv.xyz *= 1.0 - min(0.5, (0.02 + 0.0003 * d) / d);
     gl_Position = projectionMatrix * mv;
   }`;
-// a lit slot, not a painted bar: brightest along its middle line, dimmer toward the lips and the ends,
-// with a faintly whiter core (seen from far off the whole bar is a pixel wide and reads as its mean)
+// a lit slot, not a painted bar: a crisp edge, brightest along its middle line, a little dimmer toward the lips
+// and the ends; the middle line leans only slightly toward a warm white, so the bar stays amber (seen from far
+// off the whole bar is a pixel wide and reads as its mean: amber)
 const slitFS = /* glsl */`
   varying vec3 vC; varying vec2 vL;
   void main() {
-    float across = 1.0 - smoothstep(0.1, 1.0, abs(vL.y));
-    float along = 1.0 - smoothstep(0.7, 1.0, abs(vL.x));
-    float k = (0.35 + 0.9 * across) * (0.45 + 0.55 * along);
+    float across = 1.0 - smoothstep(0.45, 1.0, abs(vL.y));
+    float along = 1.0 - smoothstep(0.8, 1.0, abs(vL.x));
+    float k = (0.5 + 0.6 * across) * (0.55 + 0.45 * along);
     vec3 c = vC * k;
-    c = mix(c, vec3(max(c.r, max(c.g, c.b))), 0.25 * across * along);
-    gl_FragColor = vec4(c, 1.0);
+    float mx = max(c.r, max(c.g, c.b));
+    c = mix(c, vec3(1.0, 0.86, 0.66) * mx, 0.15 * smoothstep(0.7, 1.0, across * along));
+    gl_FragColor = vec4(c * ${SLIT_GAIN.toFixed(2)}, 1.0);
+  }`;
+// halo: a quad in the bar's own plane, ~3.5x its width (at least 3 px) and its length plus a couple of widths; a
+// Gaussian across, soft ends; ~0.1 of the bar's radiance (a faint warm spill on the recess, not a neon bloom),
+// fading out as the bar drops under ~1.5 px wide. Pulled a little further toward the lens than the bar, so the
+// recess walls right next to it do not clip it
+const haloVS = /* glsl */`
+  ${slitCommon}
+  void main() {
+    float on = blinkOn(iAnim, uTime) * slitKeep();
+    float d, wPx, lPx; slitPx(d, wPx, lPx);
+    float hw = max(wPx * 3.5, 3.0), hl = max(lPx, 3.0) + max(wPx * 2.0, 2.0);
+    float gw = hw / max(wPx, 1e-4), gl = hl / max(lPx, 1e-4);
+    vec3 p = position; p.y *= gw; p.x *= gl;
+    vL = position.xy * 2.0;
+    // (fades out once the bar is under ~1.5 px wide: far off a slit is a crisp dash, not a blob)
+    vC = iColor * on * uGain * 0.1 * ${SLIT_GAIN.toFixed(2)} * clamp(wPx / 1.5, 0.1, 1.0);
+    vec4 mv = modelViewMatrix * instanceMatrix * vec4(p, 1.0);
+    float m = max(length((modelMatrix * vec4(instanceMatrix[1].xyz, 0.0)).xyz) * 1.5, 0.05);
+    mv.xyz *= 1.0 - min(0.5, (m + 0.0005 * d) / d);
+    gl_Position = projectionMatrix * mv;
+  }`;
+const haloFS = /* glsl */`
+  varying vec3 vC; varying vec2 vL;
+  void main() {
+    float a = exp(-vL.y * vL.y * 7.0) * (1.0 - smoothstep(0.35, 1.0, abs(vL.x)));
+    if (a < 0.003) discard;
+    gl_FragColor = vec4(vC * a, 1.0);
   }`;
 
 /**
@@ -251,7 +314,8 @@ export function attachEffects(group, { power = 1, plumeScale = 1, spill = true }
   if (plumes.length) updaters.push((t) => { for (const m of plumes) m.uniforms.uTime.value = t; });
 
   // nav lights and the lightscape's pins: ONE Points object per ship
-  const allPts = [...info.lights.map((l) => ({ ...l, floor: 1, intensity: 1, nav: true })), ...(info.pins || []).map((l) => ({ ...l, floor: l.floor ?? 0.5 }))];
+  const shipLen = info.envelope ? Math.max(info.envelope.size.x, info.envelope.size.y, info.envelope.size.z) : 100;
+  const allPts = [...info.lights.map((l) => ({ ...l, floor: 1, intensity: 1, nav: true })), ...(info.pins || []).map((l) => ({ ...l, floor: l.floor ?? 0.4 }))];
   if (allPts.length) {
     const n = allPts.length;
     const pos = new Float32Array(n * 3), col = new Float32Array(n * 3), size = new Float32Array(n), blink = new Float32Array(n * 4), floorE = new Float32Array(n), rank = new Float32Array(n);
@@ -263,7 +327,8 @@ export function attachEffects(group, { power = 1, plumeScale = 1, spill = true }
       // a pin's sprite spans its halo: the visible core is about a third of it, so a 0.3 m lamp draws 2.4x wide
       size[i] = l.nav ? l.size : l.size * PIN_SPRITE;
       floorE[i] = l.floor;
-      rank[i] = l.nav ? 0 : l.keep ? 0.05 : fract(Math.sin(i * 12.9898 + 4.1) * 43758.5453);
+      // distance-thinning rank: structural (lightscape.js: corners / authored low, crease runs high), else random
+      rank[i] = l.nav ? 0 : l.keep ? 0.03 : l.rank ?? fract(Math.sin(i * 12.9898 + 4.1) * 43758.5453);
       if (l.blink) {
         if (l.blink.flicker) blink.set([0, 0, (i * 0.618) % 1, -l.blink.flicker], i * 4);
         else blink.set([l.blink.period ?? 1.2, l.blink.duty ?? 0.12, l.blink.phase ?? 0, l.blink.soft ?? 0], i * 4);
@@ -277,7 +342,7 @@ export function attachEffects(group, { power = 1, plumeScale = 1, spill = true }
     g.setAttribute('floorE', new THREE.BufferAttribute(floorE, 1));
     g.setAttribute('rank', new THREE.BufferAttribute(rank, 1));
     const m = new THREE.ShaderMaterial({
-      uniforms: { uTime: { value: 0 }, uScale: { value: 1160 }, uMinPx: { value: 2.0 } },
+      uniforms: { uTime: { value: 0 }, uScale: { value: 1160 }, uMinPx: { value: 3.0 }, uGain: LIGHTSCAPE_GAIN, uShipLen: { value: shipLen } },
       vertexShader: lightVS, fragmentShader: lightFS,
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     });
@@ -294,26 +359,47 @@ export function attachEffects(group, { power = 1, plumeScale = 1, spill = true }
   const slits = info.slits || [];
   if (slits.length) {
     const n = slits.length;
-    const m = new THREE.ShaderMaterial({ uniforms: { uTime: { value: 0 }, uScale: { value: 1160 } }, vertexShader: slitVS, fragmentShader: slitFS });
+    const m = new THREE.ShaderMaterial({ uniforms: { uTime: { value: 0 }, uScale: { value: 1160 }, uGain: LIGHTSCAPE_GAIN, uShipLen: { value: shipLen } }, vertexShader: slitVS, fragmentShader: slitFS });
     const mesh = new THREE.InstancedMesh(slitGeometry, m, n);
-    const iColor = new Float32Array(n * 3), iAnim = new Float32Array(n * 4);
+    const iColor = new Float32Array(n * 3), iAnim = new Float32Array(n * 4), iRank = new Float32Array(n);
     const M = new THREE.Matrix4(), v = new THREE.Vector3(), c = new THREE.Color();
     slits.forEach((s, i) => {
       v.crossVectors(s.n, s.u).normalize();
       const u = s.u.clone(), nn = new THREE.Vector3().crossVectors(u, v).normalize();
       M.makeBasis(u.multiplyScalar(s.len), v.multiplyScalar(s.width), nn.multiplyScalar(0.05)).setPosition(s.p);
       mesh.setMatrixAt(i, M);
-      c.set(PIN_COLORS[s.color] ?? LIGHT_COLORS[s.color] ?? s.color).multiplyScalar(s.radiance ?? 1);
+      c.set(PIN_COLORS[s.color] ?? LIGHT_COLORS[s.color] ?? s.color);
+      // a bar is bright enough that the tone map pulls it toward cream: start it a little more saturated so it
+      // lands on the concept's orange-amber (neutral colours are left as they are)
+      const Y = 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
+      c.setRGB(Math.max(0, Y + (c.r - Y) * SLIT_SAT), Math.max(0, Y + (c.g - Y) * SLIT_SAT), Math.max(0, Y + (c.b - Y) * SLIT_SAT)).multiplyScalar(s.radiance ?? 1);
       iColor.set([c.r, c.g, c.b], i * 3);
+      iRank[i] = s.keep ? 0 : s.rank ?? 0;
       if (s.anim) iAnim.set([s.anim.period, s.anim.duty ?? 0.25, s.anim.phase ?? 0, s.anim.soft ?? 0.6], i * 4);
     });
     mesh.geometry = slitGeometry.clone();
     mesh.geometry.setAttribute('iColor', new THREE.InstancedBufferAttribute(iColor, 3));
     mesh.geometry.setAttribute('iAnim', new THREE.InstancedBufferAttribute(iAnim, 4));
+    mesh.geometry.setAttribute('iRank', new THREE.InstancedBufferAttribute(iRank, 1));
     mesh.instanceMatrix.needsUpdate = true;
     mesh.frustumCulled = false;
     mesh.name = 'light-slits';
     group.add(mesh);
+    // the halo: same instances, soft additive quads
+    const hm = new THREE.ShaderMaterial({
+      uniforms: { uTime: m.uniforms.uTime, uScale: m.uniforms.uScale, uGain: LIGHTSCAPE_GAIN, uShipLen: m.uniforms.uShipLen }, vertexShader: haloVS, fragmentShader: haloFS,
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+    });
+    const hg = haloGeometry.clone();
+    hg.setAttribute('iColor', mesh.geometry.getAttribute('iColor'));
+    hg.setAttribute('iAnim', mesh.geometry.getAttribute('iAnim'));
+    hg.setAttribute('iRank', mesh.geometry.getAttribute('iRank'));
+    const halo = new THREE.InstancedMesh(hg, hm, n);
+    halo.instanceMatrix = mesh.instanceMatrix;
+    halo.frustumCulled = false;
+    halo.renderOrder = 12;
+    halo.name = 'light-slit-halos';
+    group.add(halo);
     updaters.push((t, viewportH, projY) => { m.uniforms.uTime.value = t; if (viewportH) m.uniforms.uScale.value = viewportH * 0.5 * (projY || 2.9); });
   }
   return { update: (t, viewportH, projY) => updaters.forEach((u) => u(t, viewportH, projY)) };

@@ -15,7 +15,16 @@
 //                 spacing (m, no two pins closer), lift (m off the edge), clear (m of open space in front),
 //                 size: [min, max] m, intensity: [min, max], mix: { colour: weight }, blinkShare, max (cap) }
 //   slits       automatic bars in concave creases (recess corners, block gaps): { angle, minLen, share, every
-//               (m between bars on a long crease), len: [min, max], width, radiance: [min, max], mix, spacing, max }
+//               (m between bars on a long crease), len: [min, max], width, radiance: [min, max], mix, spacing, max,
+//               orient (default true: upright bars in side-facing recesses are favoured, keel undersides and
+//               edge-on horizontal corners rarely lit), symmetric (default true: drawn on x >= 0 and mirrored where the
+//               hull has the same recess on the other flank) }
+//   louvre      { minFamily: 4, pitch: 1.0, lenTol: 0.15 } | false (also accepted as creases.louvre): families of
+//               parallel, same-length, same-facing creases side by side (grilles, louvres, radiator fins) get no
+//               pins and no slits
+//   (slits carry a rank too: corner bars 0-0.5, recess bars 0-1, authored / animated 0; mirror twins share it)
+//   (every pin carries a distance-thinning rank for effects.js: crease-end corner pins 0.02-0.47, authored
+//   rows 0.1-0.5, port rows 0.15-0.65, crease-run pins 0.4-1: corners and authored rows are the last left far off)
 //   zones       [{ box, mirrorX, creases: {...overrides} | null, slits: {...} | null }]: inside the box the
 //               overrides apply (null: none there), e.g. a warmer, denser hangar interior or a vent grille kept dark
 //   cool        { radius, depth (x the bell radius) }: crease pins round a drive housing turn blue-white
@@ -166,7 +175,7 @@ export function hullCreases(meshes, { angle = 35, minLen = 1 } = {}) {
       const side = opp.dot(nA);
       const bis = new V3().addVectors(nA, nB);
       if (bis.lengthSq() < 1e-6) continue;
-      out.push({ a: a.clone(), b: b.clone(), len, n: bis.normalize(), convex: side < 0, sharp: Math.acos(THREE.MathUtils.clamp(d, -1, 1)) });
+      out.push({ a: a.clone(), b: b.clone(), len, n: bis.normalize(), convex: side < 0, sharp: Math.acos(THREE.MathUtils.clamp(d, -1, 1)), nA: nA.clone(), nB: nB.clone() });
     }
   }
   // long creases first: the main chines claim their pins before greebles do
@@ -293,16 +302,18 @@ export function buildLightscape(cfg, meshes, engines = []) {
   if (!L) return { pins: [], slits: [] };
   const seed = L.seed ?? 1;
   const pins = [], slits = [];
+  const stats = { vent: 0 };
+  let scapeCreases = null;
   const surfaces = cfg.anchors?.surfaces || {};
   let serial = 0;
   const addPin = (p, o) => {
     pins.push({
       p: p.clone(), n: o.n ? o.n.clone() : null, color: o.color || 'amber', size: o.size ?? 0.3, intensity: o.intensity ?? 1,
-      blink: o.blink || null, keep: !!o.keep,
+      blink: o.blink || null, keep: !!o.keep, rank: o.rank ?? null,
     });
   };
   const addSlit = (p, u, n, o) => {
-    slits.push({ p: p.clone(), u: u.clone().normalize(), n: n.clone().normalize(), len: o.len ?? 1.2, width: o.width ?? 0.18, color: o.color || 'amber', radiance: o.radiance ?? 1.2, anim: o.anim || null, keep: !!o.keep });
+    slits.push({ p: p.clone(), u: u.clone().normalize(), n: n.clone().normalize(), len: o.len ?? 1.4, width: o.width ?? 0.22, color: o.color || 'amber', radiance: o.radiance ?? 1.4, anim: o.anim || null, keep: !!o.keep, rank: o.rank ?? (o.keep || o.anim ? 0 : hashP(new V3(Math.abs(p.x), p.y, p.z), seed + 91)) });
   };
 
   // ---- authored patterns ------------------------------------------------------------------
@@ -333,7 +344,8 @@ export function buildLightscape(cfg, meshes, engines = []) {
       const size = Array.isArray(pat.size) ? range(pat.size, jit(i, 3)) : pat.size ?? 0.3;
       const intensity = Array.isArray(pat.intensity) ? range(pat.intensity, jit(i, 4)) : pat.intensity ?? 1;
       const color = pat.mix ? pick(pat.mix, jit(i, 5)) : pat.color || 'amber';
-      addPin(p, { ...base, ...o, size, intensity, color, blink });
+      // distance-thinning rank (effects.js): authored rows outlast the automatic crease runs
+      addPin(p, { ...base, ...o, size, intensity, color, blink, rank: blink ? 0.06 : 0.1 + 0.4 * jit(i, 7) });
     };
     if (pat.row) {
       const [a, b] = pat.row.map((q) => new V3(...q));
@@ -341,9 +353,13 @@ export function buildLightscape(cfg, meshes, engines = []) {
     } else if (pat.surface) {
       // a row along one edge of a measured flat face (anchors.surfaces), inset from it, standing
       // `lift` m proud; or a grid of `rows` over its face (lit ports)
-      const s = surfaces[pat.surface];
+      // a mirrorX copy is built on the SOURCE surface and reflected (x -> -x): re-deriving the frame from the
+      // other side's anchor put 'top' on the inboard edge of horizontal faces (v = n x u keeps its sign)
+      const src = pat.mirrorSurface && surfaces[pat.mirrorSurface];
+      const s = src || surfaces[pat.surface];
       if (!s) return;
-      const f = surfaceFrame(s);
+      const f = surfaceFrame(src ? { ...s, centre: [-s.centre[0], s.centre[1], s.centre[2]], normal: [-s.normal[0], s.normal[1], s.normal[2]], u: [-s.u[0], s.u[1], s.u[2]] } : s);
+      if (src) { const v0 = surfaceFrame(s).v; f.v.set(-v0.x, v0.y, v0.z); }
       const lift = pat.lift ?? 0.1;
       const inset = pat.inset ?? 0.4;
       const hu = f.w / 2 - (pat.insetU ?? inset), hv = f.h / 2 - inset;
@@ -361,7 +377,7 @@ export function buildLightscape(cfg, meshes, engines = []) {
             if (skip && jit(i + r * 997, 1) < skip) return;
             const flick = pat.flicker && hash1(run * 13 + r * 71, s0 + 1) < pat.flicker;
             const color = pat.mix ? pick(pat.mix, hash1(run * 3 + r, s0 + 2)) : pat.color || 'port';
-            addPin(p, { color, size: pat.size ?? 0.9, intensity: lerp(0.55, 1.1, (lvl - (pat.dark ?? 0.25)) / (1 - (pat.dark ?? 0.25))) * (pat.intensity ?? 1), blink: flick ? { period: 0, flicker: 1 + hash1(run, s0) * 3 } : null, keep: pat.keep });
+            addPin(p, { color, size: pat.size ?? 0.9, intensity: lerp(0.55, 1.1, (lvl - (pat.dark ?? 0.25)) / (1 - (pat.dark ?? 0.25))) * (pat.intensity ?? 1), blink: flick ? { period: 0, flicker: 1 + hash1(run, s0) * 3 } : null, keep: pat.keep, rank: 0.15 + 0.5 * jit(i + r * 997, 8) });
           });
         });
       } else {
@@ -409,12 +425,18 @@ export function buildLightscape(cfg, meshes, engines = []) {
     const grid = creases.grid;
     const order = creases.map((e, i) => [hashP(e.a.clone().lerp(e.b, 0.5), seed + 61) / Math.sqrt(1 + e.len / 20), i]).sort((a, b) => a[0] - b[0]).map(([, i]) => creases[i]);
     order.grid = grid;
+    // grilles and louvres: a family of short parallel creases at sub-metre pitch would otherwise count as dozens of
+    // independent candidates (pins floating on vent slats); flag them and light only the family's end walls
+    const louvre = L.louvre ?? cz?.louvre ?? { minFamily: 4, pitch: 1.0 };
+    const vent = louvre ? louvreFamilies(creases, louvre) : new Set();
+    stats.vent = vent.size;
     const zones = expandBoxes(L.zones);
     const settings = (p, base, key) => {
       for (const z of zones) if (inBox(p, z.box)) return z[key] === null ? null : { ...base, ...(z[key] || z) };
       return base;
     };
     const excluded = (p, s) => (s.exclude && expandBoxes(s.exclude).some((z) => inBox(p, z.box))) || (s.only && !expandBoxes(s.only).some((z) => inBox(p, z.box)));
+    scapeCreases = { order, grid, vent, settings, excluded: (p, s) => excluded(p, s) };
     const engineNear = (p) => {
       for (const e of engines) {
         const d = p.clone().sub(e.p);
@@ -431,12 +453,14 @@ export function buildLightscape(cfg, meshes, engines = []) {
       for (const p of pins) pinSpacer.tryAdd(p.p, 0.3);
       for (let ci = 0; ci < order.length && count < cap; ci++) {
         const e = order[ci];
-        if (!e.convex) continue;
+        if (!e.convex || vent.has(e)) continue;
         const mid = e.a.clone().lerp(e.b, 0.5);
         const s = settings(mid, cz, 'creases');
         if (!s || e.len < (s.minLen ?? 3) || e.sharp < ((s.angle ?? 35) * Math.PI) / 180) continue;
         const dir = e.b.clone().sub(e.a).normalize();
-        const place = (p, k) => {
+        // rank (effects.js distance thinning: lower survives longer): block corners are the last to go, the
+        // pins along a crease's run the first, so a distant hull keeps its corner accents, not a uniform glitter
+        const place = (p, rank) => {
           if (count >= cap) return;
           const s2 = settings(p, cz, 'creases');
           if (!s2 || excluded(p, s2)) return;
@@ -446,11 +470,11 @@ export function buildLightscape(cfg, meshes, engines = []) {
           if (!pinSpacer.tryAdd(q, s2.spacing ?? 1.2)) return;
           const cool = L.cool && engineNear(q);
           const color = cool ? (L.cool.color || 'cool') : pick(s2.mix || { amber: 1 }, hp);
-          addPin(q, { color, n: e.n, size: range(s2.size ?? [0.22, 0.34], hashP(p, seed + 3)), intensity: range(s2.intensity ?? [0.7, 1.0], hashP(p, seed + 5)) * (cool ? 0.9 : 1), blink: s2.blinkShare && hashP(p, seed + 9) < s2.blinkShare ? { period: range(s2.blinkPeriod ?? [2.2, 4.5], hashP(p, seed + 13)), duty: 0.5, phase: hashP(p, seed + 17), soft: 1 } : null });
+          addPin(q, { color, n: e.n, size: range(s2.size ?? [0.22, 0.34], hashP(p, seed + 3)), intensity: range(s2.intensity ?? [0.7, 1.0], hashP(p, seed + 5)) * (cool ? 0.9 : 1), blink: s2.blinkShare && hashP(p, seed + 9) < s2.blinkShare ? { period: range(s2.blinkPeriod ?? [2.2, 4.5], hashP(p, seed + 13)), duty: 0.5, phase: hashP(p, seed + 17), soft: 1 } : null, rank });
           count++;
         };
         // block corners: the crease's ends
-        if ((s.corners ?? 0.5) > 0) for (const [end, sgn] of [[e.a, 1], [e.b, -1]]) if (hashP(end, seed + 21) < s.corners) place(end.clone().addScaledVector(dir, sgn * Math.min(0.5, e.len * 0.15)), 0);
+        if ((s.corners ?? 0.5) > 0) for (const [end, sgn] of [[e.a, 1], [e.b, -1]]) if (hashP(end, seed + 21) < s.corners) place(end.clone().addScaledVector(dir, sgn * Math.min(0.5, e.len * 0.15)), 0.02 + 0.45 * hashP(end, seed + 23));
         // runs along the crease: at `pitch` m, each slot used with probability `share`, a run of 1-3 pins
         const pitch = s.pitch ?? 8, runPitch = s.runPitch ?? 1.2;
         const slots = Math.floor(e.len / pitch);
@@ -463,7 +487,7 @@ export function buildLightscape(cfg, meshes, engines = []) {
           for (let j = 0; j < nrun; j++) {
             const t = t0 + (j - (nrun - 1) / 2) * runPitch;
             if (t < 0.3 || t > e.len - 0.3) continue;
-            place(e.a.clone().addScaledVector(dir, t), j);
+            place(e.a.clone().addScaledVector(dir, t), 0.4 + 0.6 * hashP(p0, seed + 29 + j));
           }
         }
       }
@@ -472,36 +496,109 @@ export function buildLightscape(cfg, meshes, engines = []) {
       let count = 0;
       const cap = sz.max ?? 60;
       const slitSpacer = new Spacer(sz.spacing ?? 6);
+      // symmetric (default): candidates are drawn on the port side (x >= 0) and mirrored, so a lit recess is lit on
+      // both flanks (the twin only where the hull really has the same recess); centreline recesses stay single
+      const sym = sz.symmetric ?? true;
+      const mirrored = (v) => new V3(-v.x, v.y, v.z);
+      const surfaceBehind = (q, n, lift) => { const h = grid.cast(q, n.clone().negate(), lift + 0.3); return !!h; };
       for (let ci = 0; ci < order.length && count < cap; ci++) {
         const e = order[ci];
-        if (e.convex) continue;
+        if (e.convex || vent.has(e)) continue;
         const mid = e.a.clone().lerp(e.b, 0.5);
         const s = settings(mid, sz, 'slits');
         if (!s || e.len < (s.minLen ?? 2) || excluded(mid, s)) continue;
         if (e.sharp < ((s.angle ?? 60) * Math.PI) / 180) continue;
         const dir = e.b.clone().sub(e.a).normalize();
+        // orientation (orient: false turns it off): the concept's bars stand upright in side-facing recesses; a
+        // horizontal crease in an up- or down-facing corner is seen edge-on, and the keel's underside rarely at all
+        const ny = e.n.y, orient = s.orient ?? true;
+        const w = orient ? 1.3 * (0.55 + 0.45 * Math.abs(dir.y)) * (ny < -0.6 ? 0.3 : 1) * (1 - 0.5 * THREE.MathUtils.smoothstep(Math.abs(ny), 0.75, 0.95)) : 1;
         const every = s.every ?? 14; // long recess corners carry a few bars
         const nb = Math.max(1, Math.floor(e.len / every));
         for (let k = 0; k < nb && count < cap; k++) {
           const p = e.a.clone().addScaledVector(dir, ((k + 0.5) / nb) * e.len);
-          if (hashP(p, seed + 41) >= (s.share ?? 0.2)) continue;
+          const lift = s.lift ?? 0.06;
+          const q = p.clone().addScaledVector(e.n, lift);
+          if (sym && q.x < -0.3) continue; // drawn as the port twin's mirror
+          if (hashP(sym ? new V3(Math.abs(p.x), p.y, p.z) : p, seed + 41) >= (s.share ?? 0.3) * w) continue;
           if (excluded(p, s)) continue;
-          const q = p.clone().addScaledVector(e.n, s.lift ?? 0.06);
           if (!grid.exposed(q, e.n, s.clear ?? 0.3)) continue;
           if (!slitSpacer.tryAdd(q, s.spacing ?? 6)) continue;
           const len = Math.min(range(s.len ?? [0.8, 2.2], hashP(p, seed + 47)), e.len * 0.8);
-          addSlit(q, dir, e.n, { len, width: s.width ?? 0.16, color: pick(s.mix || { amber: 1 }, hashP(p, seed + 53)), radiance: range(s.radiance ?? [0.9, 1.6], hashP(p, seed + 59)) });
+          const o = { len, width: s.width ?? 0.22, color: pick(s.mix || { amber: 1 }, hashP(p, seed + 53)), radiance: range(s.radiance ?? [1.2, 2.0], hashP(p, seed + 59)) };
+          addSlit(q, dir, e.n, o);
           count++;
+          if (sym && q.x > 0.3 && count < cap) {
+            const q2 = mirrored(q), n2 = mirrored(e.n), p2 = mirrored(p);
+            const s2 = settings(p2, sz, 'slits');
+            if (s2 && !excluded(p2, s2) && surfaceBehind(q2, n2, lift) && grid.exposed(q2, n2, s2.clear ?? 0.3) && slitSpacer.tryAdd(q2, (s2.spacing ?? 6) * 0.5)) {
+              addSlit(q2, mirrored(dir), n2, { ...o, color: pick(s2.mix || { amber: 1 }, hashP(p, seed + 53)) });
+              count++;
+            }
+          }
         }
       }
     }
   }
+  // ---- corner slits: the concept's signature accent ------------------------------------------------------
+  // short upright bars set into a side- or end-facing plate just inside a vertical block edge, near the edge's top or
+  // bottom end (sz.corner: { share, max, len, width, radiance, inset, mix } | null; default on wherever `slits` is)
+  const cs = sz && sz.corner !== null ? { share: 0.45, len: [1.0, 1.8], inset: 0.35, ...(sz.corner || {}) } : null;
+  if (cs && meshes.length && scapeCreases) {
+    const { order, grid, vent, settings, excluded } = scapeCreases;
+    const cap = cs.max ?? Math.round((sz.max ?? 60) * 0.8);
+    let count = 0;
+    const spacer = new Spacer(cs.spacing ?? Math.max(1.5, (sz.spacing ?? 6) * 0.5));
+    for (const q of slits) spacer.tryAdd(q.p, 0.5);
+    const sym = sz.symmetric ?? true;
+    const tryCorner = (e, end, sgn, fA, fB, o, dry) => {
+      const dir = e.b.clone().sub(e.a).normalize();
+      let t = new V3().crossVectors(dir, fA).normalize();
+      if (t.dot(fB) > 0) t.negate(); // across face A, away from the edge
+      const q = end.clone().addScaledVector(dir, sgn * (o.len / 2 + 0.35)).addScaledVector(t, cs.inset).addScaledVector(fA, 0.04);
+      const h = grid.cast(q, fA.clone().negate(), 0.35); // the plate is really there
+      if (!h || !grid.exposed(q, fA, 0.3)) return null;
+      return { q, dir, n: fA };
+    };
+    for (let ci = 0; ci < order.length && count < cap; ci++) {
+      const e = order[ci];
+      if (!e.convex || vent.has(e) || e.len < 2.2) continue;
+      const dir = e.b.clone().sub(e.a).normalize();
+      if (Math.abs(dir.y) < 0.7) continue;
+      const mid = e.a.clone().lerp(e.b, 0.5);
+      if (sym && mid.x < -0.3) continue;
+      const s = settings(mid, sz, 'slits');
+      if (!s || excluded(mid, s)) continue;
+      const h0 = hashP(sym ? new V3(Math.abs(mid.x), mid.y, mid.z) : mid, seed + 71);
+      if (h0 >= (s.corner?.share ?? cs.share)) continue;
+      // the face that looks more sideways / endways carries the bar
+      const [fA, fB] = Math.abs(e.nA.y) <= Math.abs(e.nB.y) ? [e.nA, e.nB] : [e.nB, e.nA];
+      if (Math.abs(fA.y) > 0.5) continue;
+      const top = hashP(mid, seed + 73) < 0.5;
+      const [end, sgn] = (e.a.y > e.b.y) === top ? [e.a, 1] : [e.b, -1];
+      const o = {
+        len: Math.min(range(cs.len, hashP(mid, seed + 77)), e.len * 0.45), width: cs.width ?? s.width ?? 0.2,
+        color: pick(cs.mix || s.mix || { amber: 1 }, hashP(mid, seed + 79)), radiance: range(cs.radiance ?? [1.4, 2.0], hashP(mid, seed + 83)),
+      };
+      const c = tryCorner(e, end, sgn, fA, fB, o);
+      if (!c || !spacer.tryAdd(c.q)) continue;
+      o.rank = 0.5 * hashP(new V3(Math.abs(c.q.x), c.q.y, c.q.z), seed + 89); // corner bars outlast recess bars far off
+      addSlit(c.q, c.dir, c.n, o);
+      count++;
+      if (sym && c.q.x > 0.3 && count < cap) {
+        const q2 = new V3(-c.q.x, c.q.y, c.q.z), n2 = new V3(-c.n.x, c.n.y, c.n.z);
+        const h = grid.cast(q2, n2.clone().negate(), 0.35);
+        if (h && grid.exposed(q2, n2, 0.3) && spacer.tryAdd(q2, 0.5)) { addSlit(q2, new V3(-c.dir.x, c.dir.y, c.dir.z), n2, o); count++; }
+      }
+    }
+    stats.corner = count;
+  }
   // phone tier (device.js LITE): about half of the pins and slits (animated and `keep` ones stay; nav lights are in `lights`)
   if (LITE) {
     const thin = (list) => list.filter((l, i) => l.keep || l.blink || l.anim || hash1(i, seed + 97) < 0.5);
-    return { pins: thin(pins), slits: thin(slits) };
+    return { pins: thin(pins), slits: thin(slits), stats };
   }
-  return { pins, slits };
+  return { pins, slits, stats };
 }
 
 function mirrorPattern(p) {
@@ -512,9 +609,49 @@ function mirrorPattern(p) {
   if (p.slit) out.slit = m(p.slit);
   if (p.slitRow) out.slitRow = p.slitRow.map(m);
   if (p.u) out.u = m(p.u);
-  if (p.n) out.n = m(p.n);
+  if (Array.isArray(p.n)) out.n = m(p.n); // (a ring's n is its lamp count, not a normal)
   if (p.ring) out.ring = { ...p.ring, c: m(p.ring.c), axis: p.ring.axis ? m(p.ring.axis) : undefined };
-  if (p.surface) out.surface = p.surface.replace(/port$/, '\u0000').replace(/stbd$/, 'port').replace('\u0000', 'stbd');
+  if (p.surface) { out.surface = p.surface.replace(/port$/, '\u0000').replace(/stbd$/, 'port').replace('\u0000', 'stbd'); out.mirrorSurface = p.surface; }
   if (p.mirrorColor) out.color = p.mirrorColor;
+  return out;
+}
+
+/** Creases that belong to a grille or louvre: transitive families of >= minFamily creases that are parallel (|dot| >
+ *  0.98), of the same kind (convex / concave), similar in length (lenTol), facing the same way (bisectors within
+ *  ~25 deg), side by side (midpoints within `pitch` m across, a quarter length along). cfg: { minFamily, pitch, lenTol }. */
+export function louvreFamilies(creases, { minFamily = 4, pitch = 1.0, lenTol = 0.15 } = {}) {
+  const info = creases.map((e) => ({ e, m: e.a.clone().lerp(e.b, 0.5), d: e.b.clone().sub(e.a).normalize() }));
+  const cell = Math.max(pitch, 0.25);
+  const cells = new Map();
+  const key = (i, j, k) => `${i},${j},${k}`;
+  info.forEach((c, i) => {
+    const k = key(Math.floor(c.m.x / cell), Math.floor(c.m.y / cell), Math.floor(c.m.z / cell));
+    if (!cells.has(k)) cells.set(k, []);
+    cells.get(k).push(i);
+  });
+  const parent = info.map((_, i) => i);
+  const find = (i) => { while (parent[i] !== i) { parent[i] = parent[parent[i]]; i = parent[i]; } return i; };
+  const off = new V3();
+  info.forEach((c, i) => {
+    const ci = Math.floor(c.m.x / cell), cj = Math.floor(c.m.y / cell), ck = Math.floor(c.m.z / cell);
+    for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let d = -1; d <= 1; d++) {
+      for (const j of cells.get(key(ci + a, cj + b, ck + d)) || []) {
+        if (j <= i) continue;
+        const o = info[j];
+        if (o.e.convex !== c.e.convex || Math.abs(o.d.dot(c.d)) < 0.98 || o.e.n.dot(c.e.n) < 0.9) continue;
+        if (Math.abs(o.e.len - c.e.len) > lenTol * Math.max(o.e.len, c.e.len)) continue;
+        off.subVectors(o.m, c.m);
+        const al = off.dot(c.d);
+        if (Math.abs(al) > 0.25 * c.e.len) continue;
+        const perp = off.addScaledVector(c.d, -al).length();
+        if (perp > pitch || perp < 0.02) continue;
+        parent[find(j)] = find(i);
+      }
+    }
+  });
+  const size = new Map();
+  info.forEach((_, i) => { const r = find(i); size.set(r, (size.get(r) || 0) + 1); });
+  const out = new Set();
+  info.forEach((c, i) => { if (size.get(find(i)) >= minFamily) out.add(c.e); });
   return out;
 }

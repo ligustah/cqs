@@ -184,14 +184,31 @@ export function applyLivery(material, opts = 'dark', { scheme = null, zones = nu
             // compartments differ: most burn warm, some neutral-cool, levels vary; a few flicker faintly
             vec3 cell = floor(vLivPos / uLivCell + 0.37);
             float h1 = livHash(cell + 3.1), h2 = livHash(cell + 17.7);
-            vec3 tint = h1 > 0.86 ? vec3(0.8, 0.92, 1.15) : h1 > 0.45 ? vec3(1.0, 0.95, 0.86) : vec3(1.14, 0.9, 0.64);
-            float level = 0.4 + 1.0 * livHash(cell + 9.3);
+            // (v12: cool cells rarer and dimmer, like screens; no lit cell sits near the albedo level)
+            vec3 tint = h1 > 0.93 ? vec3(0.7, 0.85, 1.1) * 0.7 : h1 > 0.45 ? vec3(1.0, 0.95, 0.86) : vec3(1.14, 0.9, 0.64);
+            float level = 0.55 + 0.85 * livHash(cell + 9.3);
             float fl = h2 < uLivFlicker ? 0.84 + 0.16 * sin(uLivTime * (5.0 + 9.0 * h1) + h2 * 60.0) * sin(uLivTime * 1.9 + h1 * 20.0) : 1.0;
             float glassOn = 1.0;
             ${dark ? `for (int i = 0; i < 4; i++) { if (i >= uLivDarkN) break; vec3 dd = min(vLivPos - uLivDarkMin[i], uLivDarkMax[i] - vLivPos); if (min(dd.x, min(dd.y, dd.z)) > 0.0) glassOn = 0.0; }` : ''}
             // the kit's port and pane glass is only partly caught by the glass test (its texels sit near the
             // thresholds): a lit window glows across its whole pane, so the partial mask is saturated here
             float pane = smoothstep(0.15, 0.6, livGlass);
+            // saturation of the paint around the texel (12 taps, 3, 6 and 10 texels out): glass next to saturated paint
+            // is a dark stripe of a hazard band or a marking, not a pane
+            #ifdef USE_MAP
+            {
+              float satNear = 0.0;
+              vec2 tpx = 1.0 / vec2(textureSize(map, 0));
+              for (int i = 0; i < 12; i++) {
+                float ring = floor(float(i) / 4.0);
+                float a = float(i) * 1.5708 + ring * 0.5236;
+                vec3 q = texture2D(map, vMapUv + vec2(cos(a), sin(a)) * tpx * (ring < 0.5 ? 3.0 : ring < 1.5 ? 6.0 : 10.0)).rgb;
+                float qx = max(q.r, max(q.g, q.b)), qn = min(q.r, min(q.g, q.b));
+                satNear = max(satNear, (qx - qn) / max(qx, 1e-3) * smoothstep(0.08, 0.2, qx));
+              }
+              pane *= 1.0 - smoothstep(0.32, 0.5, satNear);
+            }
+            #endif
             totalEmissiveRadiance += uLivGlassGlow * tint * pane * glassOn * (0.06 + 0.94 * lit * level * fl);
           }`);
     }

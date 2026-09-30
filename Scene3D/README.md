@@ -41,6 +41,13 @@ Look-dev overrides: `?livery=none|dark|civil`, `?exposure=`, `?fov=`, `&t=` (fre
 (fleet: the most horizon tilt a shot keeps; each named shot sets its own lens and tilt),
 `?planetss=1..3` (planet supersampling; stills default to 2), `?envhide=surface,clouds,atmosphere`.
 
+Ship lights (`src/lib/lightscape.js`, drawn by `src/lib/effects.js`): each module's `lightscape`
+field generates the small lights that make a dark hull read as crewed. The hierarchy follows
+the concept art: short, hard-edged amber slits at block corners and in real recesses carry the
+look (a crisp bar with a faint warm spill, not a bloomed tube); sparse amber pins mark corners;
+authored runs, rings, chasers and beacons mark doors, drives and docking ports; grilles and
+louvres stay dark. Far off, pins thin out first and the corner slits are the last lights left.
+
 The launch cycle (`src/lib/launch.js`) is one closed track flown by three fighters, a
 third of its 105 s period apart: a deck lift in the enclosed bow section raises the
 fighter onto the starboard half of the centreline lane, the deck's linear catapult

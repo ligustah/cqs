@@ -123,13 +123,17 @@ export function createLighting(renderer, scene, { shadowSize = 4096 } = {}) {
 // Directions are placed relative to the camera azimuth / elevation (degrees, ship frame), so
 // every view is lit the same way. All values are scene-linear; STUDIO.exposure is the default
 // tone-mapping exposure for this rig.
+// v12: key 3.8 -> 2.6, fill 1.3 -> 0.8, env 0.8 -> 0.55 (rim and exposure unchanged): the dark livery sits near-black
+// on its lit faces as in the concept (key-lit deck ~sRGB 55-60, was ~90), so the small lights (lightscape, lit ports)
+// read against it; lightscapeGain lifts pins and slits a little more in this rig only (effects.js LIGHTSCAPE_GAIN)
 export const STUDIO = {
   exposure: 1.4,
-  key: { az: -40, el: 40, E: 3.8, color: '#fff4e8' },   // relative to the camera: az < 0 = camera left
-  fill: { az: 75, el: -5, E: 1.3, color: '#dee3eb' },
+  key: { az: -40, el: 40, E: 2.6, color: '#fff4e8' },   // relative to the camera: az < 0 = camera left
+  fill: { az: 75, el: -5, E: 0.8, color: '#dee3eb' },
   rim: { az: 125, el: 24, E: 3.0, color: '#dbe6ff' },
   kick: { az: -140, el: 34, E: 1.2, color: '#ffe9d2' },
-  envIntensity: 0.8,
+  envIntensity: 0.55,
+  lightscapeGain: 1.15,
   // backdrop, as displayed sRGB (0-255) after tone mapping, before the vignette/grain pass
   backdrop: { centre: [66, 78, 98], edge: [14, 19, 30], at: [0.56, 0.58] },
 };

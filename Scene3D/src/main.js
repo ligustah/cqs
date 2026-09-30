@@ -10,7 +10,7 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 
 import { createPalette } from './lib/materials.js';
-import { attachEffects } from './lib/effects.js';
+import { attachEffects, LIGHTSCAPE_GAIN } from './lib/effects.js';
 import { CLASSES, SLOT_VOLUME, carrierLoads } from './lib/scale.js';
 import { hangarInsideFraction } from './lib/hangar.js';
 import { buildShip, loadShips, setShipContext, LOAD_ERRORS, ORDER } from './ships/index.js';
@@ -47,6 +47,9 @@ const fixedTime = params.has('t') ? parseFloat(params.get('t')) : null;
 // orbital rig (the hard sun below over the planet). Every other view keeps the orbital rig.
 const studio = mode === 'ship' && params.get('studio') !== '0';
 if (studio) {
+  // the studio key and fill light the dark hull far more than the orbital sun: the lightscape (pins, slits) gets
+  // STUDIO.lightscapeGain there so the small lights keep the concept's contrast; orbit and fleet stay at 1
+  LIGHTSCAPE_GAIN.value = STUDIO.lightscapeGain ?? 1;
   // the key light is also SUN_DIR (the shadow fit reads it); ?sunaz= / ?sunel= still override it (ship frame)
   const camAz = parseFloat(params.get('az') ?? '35'), camEl = parseFloat(params.get('el') ?? '18');
   SUN_DIR.copy(studioDir(camAz, camEl, STUDIO.key.az, STUDIO.key.el));

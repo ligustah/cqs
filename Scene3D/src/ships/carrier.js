@@ -55,24 +55,47 @@ const GALLERY = FRAME_FACES.flatMap(([z, s]) => [105, 111, 117, 123, -105, -111,
 const BOW_WALL = Array.from({ length: 11 }, (_, i) => 285 + i * 12.5).flatMap((z) => [{ p: [94.93, -48, z], color: PORT, size: 1 }, { p: [-94.93, -48, z], color: PORT, size: 1 }]);
 const MOUTH_RIM = [-80, -40, 0, 40, 80].flatMap((x) => [{ p: [x, -3, 421.5], color: 'amber', size: 0.4 }, { p: [x, -94.5, 421.5], color: 'amber', size: 0.4 }]);
 const OUTER = [
-  ...HULL_PORTS.map((p) => ({ p, color: PORT, size: 1 })), ...ISLAND_PORTS.map((p) => ({ p, color: PORT, size: 1 })),
+  // (v12: the flank rows of the stern block and bow section are lit as grouped compartments instead, WINDOW_RUNS in
+  // the lightscape; only the keel wedge keeps its evenly spaced ports here)
+  ...HULL_PORTS.filter((p) => Math.abs(p[0]) < 120).map((p) => ({ p, color: PORT, size: 1 })), ...ISLAND_PORTS.map((p) => ({ p, color: PORT, size: 1 })),
   ...EDGE_RUN.map((p) => ({ p, color: 'amber', size: RUN })), ...SPONSON_RUN.map((p) => ({ p, color: 'amber', size: RUN })),
 ];
 
 // Hangar light strips (emissive fixtures, see glbship.js): three 150 m strips across each bay ceiling (ray-cast
 // ceilings, between the girders) and the bow section, and a 64 m vertical strip on every bay-facing frame face (x +-108.5,
 // between the gallery ports, 0.25 m off the face). Radiance ~1.8 (ceiling) / 0.9 (posts).
-const STRIP = { color: '#fff1e0', radiance: 1.8 };
-const POST_STRIP = { color: '#ffe9d2', radiance: 0.9 };
+// (v12: warm, ~3500 K, and a little dimmer: the bay glows warm as in the concept instead of a flat grey-white)
+const STRIP = { color: '#ffd4a2', radiance: 1.5 };
+const POST_STRIP = { color: '#ffc58a', radiance: 0.8 };
 const BAY_CEILINGS = [[-260.5, -188.6, -0.58], [-163.8, -98.5, -0.58], [-73.0, -5.8, -0.58], [19.7, 86.9, -0.58], [112.1, 177.6, -0.58], [202.6, 275.5, -0.58], [276.8, 415.0, -6.39]];
+// (v12 apply: every ceiling strip is five 18 m lamp bars 30 m apart and every frame-face tube three 6 m lamps, so the
+// bays read as lamp-lit rooms with dark gaps instead of neon lines; short lamps run a little hotter)
 const STRIPS = [
-  ...BAY_CEILINGS.flatMap(([z0, z1, y]) => [1 / 6, 1 / 2, 5 / 6].map((f) => ({ ...STRIP, p: [0, y - 0.35, z0 + (z1 - z0) * f], size: [150, 0.3, 1.0] }))),
-  ...FRAME_FACES.flatMap(([z, s]) => [108.5, -108.5].map((x) => ({ ...POST_STRIP, p: [x, -47.5, z + s * 0.25], size: [0.45, 64, 0.1] }))),
+  ...BAY_CEILINGS.flatMap(([z0, z1, y]) => [1 / 6, 1 / 2, 5 / 6].flatMap((f) => [-60, -30, 0, 30, 60].map((x) => ({ ...STRIP, p: [x, y - 0.35, z0 + (z1 - z0) * f], size: [18, 0.3, 1.0] })))),
+  ...FRAME_FACES.flatMap(([z, s]) => [108.5, -108.5].flatMap((x) => [-20, -47, -74].map((y) => ({ ...POST_STRIP, radiance: 1.3, p: [x, y, z + s * 0.25], size: [0.45, 6, 0.1] })))),
 ];
 
 // hangar floodlights: under the five frame rings (ray-cast ring ceilings) and in the bow section
-const FLOOD = { kind: 'spot', color: '#fff3e8', intensity: 52000, distance: 240, angle: 64, penumbra: 0.55, fixture: 1.5 };
+// (v12: ~3500 K sodium-warm work light instead of #fff3e8, 52000 -> 36000 cd, a narrower cone with a long penumbra
+// (64 -> 46 deg, 0.55 -> 0.85) so each lamp throws a pool on the deck with dimmer deck between the pools)
+const FLOOD = { kind: 'spot', color: '#ffc68c', intensity: 36000, distance: 240, angle: 46, penumbra: 0.85, fixture: 1.5 };
 const RING_CEIL = [[-176.2, -5.71], [-85.75, -5.71], [6.97, -5.71], [99.51, -5.71], [190.1, -5.71]];
+
+// v12 apply: lit compartments on the stern block's and bow section's flank port grids (1.1 x 0.9 m ports, 2.5 m apart,
+// rows 3 m apart; ray-cast): a few runs of 3-6 neighbouring ports on one deck, the rest dark, instead of the painted
+// grid glowing everywhere (the livery glass glow is off on these flanks, glassDark). [row y, first column, count];
+// the starboard flank takes the same runs mirrored end for end so the two sides do not match exactly.
+const BOW_PORT_Z = [280.95, 288.5, 290.95, 303, 305.45, 308, 310.55, 313, 315.45, 317.95, 320.55, 323, 325.45, 327.95, 330.55, 333, 335.45, 337.95, 340.55, 343.05, 345.45, 348.05, 350.55, 353.05, 355.45, 358, 360.55, 363.05, 365.45, 368, 370.55, 373.05, 375.45, 378, 380.55, 383.05, 385.45, 387.95, 390.55, 393.05];
+const STERN_PORT_HI = [-359, -356.45, -354.05, -341.95, -339.55, -337.05, -334.5, -331.95, -286.75, -284.25, -281.75, -279.25, -276.75, -274.25, -271.75];
+const STERN_PORT_LO = [-359, -356.45, -354.05, -341.95, -339.55, -337.05, -334.5, -331.95, -329.55, -327.05, -324.5, -321.95, -319.55, -317.05, -314.55, -311.95, -309.55, -307.05, -304.55, -301.95, -289.25, -286.75, -284.25, -281.75, -279.25, -276.75, -274.25, -271.75];
+const PORT_RUNS = [
+  [BOW_PORT_Z, [[-17, 3, 5], [-20, 3, 5], [-26, 14, 6], [-14, 27, 4], [-29, 31, 5], [-32, 31, 5], [-35, 20, 3], [-23, 36, 4],
+    [-73, 6, 6], [-76, 6, 6], [-82, 22, 5], [-88, 13, 4], [-91, 30, 6], [-70, 35, 3], [-85, 33, 3]]],
+  [STERN_PORT_HI, [[-14, 0, 3], [-17, 9, 4], [-26, 3, 4]]],
+  [STERN_PORT_LO, [[-76, 2, 5], [-79, 2, 5], [-85, 12, 6], [-91, 20, 5], [-82, 22, 4]]],
+];
+const WINDOW_RUNS = PORT_RUNS.flatMap(([cols, runs]) => runs.flatMap(([y, i0, n]) => Array.from({ length: n }, (_, k) => [
+  [131.1, y, cols[i0 + k]], [-131.1, y, cols[cols.length - 1 - (i0 + k)]]]).flat()));
 
 export const asset = {
   glb: './assets/ships/carrier.glb', generator: 'tools/blender/hulls/carrier.py (remodel of the tripo3d/h3.1/multiview-to-3d hull) + tools/blender/assemble.py',
@@ -95,28 +118,88 @@ export const asset = {
   ],
   // remodel paint is lighter than the generated textures: gain 0.05 matches the fleet grey; kit and hull glass get a
   // dim warm interior light (livery.js glassGlow, opt-in)
-  livery: { gain: 0.05, glassGlow: [0.52, 0.42, 0.28], glassLit: 0.5, glassFlicker: 0.1 },
+  // (v12 apply: the flank port grids of the bow section and stern block (with the sponsons) and the bow-face louvre
+  // panels stay dark: at 50 % lit they read as a perforated LED sheet; their lit compartments are WINDOW_RUNS)
+  livery: { gain: 0.05, glassGlow: [0.52, 0.42, 0.28], glassLit: 0.5, glassFlicker: 0.1,
+    glassDark: [[[95.5, -126, 276.5], [140, 26, 460]], [[-140, -126, 276.5], [-95.5, 26, 460]], [[124, -126, -460], [210, 26, -261.5]], [[-210, -126, -460], [-124, 26, -261.5]]] },
   // v11 lightscape (src/lib/lightscape.js): crease pins over the whole hull (block corners, chines, frame edges), recess
   // bars, blue-white status lights round the drive collars; inside the hangar (the zone) a denser, warmer set, plus
-  // authored deck, lane and ceiling lights, and chasers along the launch lane toward the bow mouth
+  // authored deck, lane and ceiling lights, and chasers along the launch lane toward the bow mouth.
+  // v12 apply (concept: the armour stays dark, the light comes from a few bright bars at block corners, seams and
+  // recesses, lit window groups, lamp-lit bays and one cool intake accent): the pin budget is cut to a third and moved to
+  // block corners; automatic bars are sized for a 900 m hull; authored bars go into the bow face's recessed header and
+  // chin panels (the lit brow and waist band), the dorsal armour gaps at every frame ring, the frame posts' recessed
+  // panels (window boxes), the bays' lintels and sills, the hangar lanes and the sponsons' forward intakes (ice). All
+  // positions are ray-cast (bow face plane z 418.02, its panels 417.39; flank 130.98; post recesses 129.99, y -19.5..-44;
+  // sponson face -278.98, its recess -280.18). Signature bars are `keep` (phone tier, distance thinning).
   lightscape: {
     seed: 51,
-    creases: { angle: 35, minLen: 7, pitch: 16, share: 0.42, run: [1, 4], runPitch: 1.8, corners: 0.4, spacing: 3.2, size: [0.35, 0.55], intensity: [0.65, 1.0], mix: { amber: 0.68, warm: 0.2, white: 0.12 }, max: 1500, blinkShare: 0.02 },
-    slits: { angle: 35, minLen: 3, share: 0.4, every: 18, len: [1.2, 3.2], width: 0.25, radiance: [0.9, 1.5], spacing: 9, max: 220, mix: { amber: 0.75, warm: 0.25 } },
+    creases: { angle: 35, minLen: 7, pitch: 16, share: 0.2, run: [1, 3], runPitch: 1.8, corners: 0.35, spacing: 5, size: [0.45, 0.7], intensity: [0.65, 1.0], mix: { amber: 0.68, warm: 0.2, white: 0.12 }, max: 800, blinkShare: 0.02 },
+    slits: { angle: 35, minLen: 3, share: 0.3, every: 24, len: [2.5, 5.5], width: 0.65, radiance: [1.0, 1.5], spacing: 16, max: 160, mix: { amber: 0.75, warm: 0.25 },
+      corner: { share: 0.4, len: [3, 5], width: 0.72, radiance: [1.2, 1.7], inset: 0.8, spacing: 14, max: 80 } },
     cool: { radius: 1.7, depth: 4.5 },
     zones: [
+      // louvre panels either side of the bow mouth (x 106.75-119.75, y -18..-81 at z 416.6) and the forward flank: no pins
+      // on the slats (they are framed by authored bars instead)
+      { box: [[96, -100, 405], [135, 0, 432]], mirrorX: true, creases: { share: 0.03, corners: 0 }, slits: null },
       // the vent grilles on the upper chamfers above the bays: their bars are long creases, so only a few pins there
-      { box: [[100, -1, -262], [140, 24, 277]], mirrorX: true, creases: { share: 0.06, corners: 0.05 }, slits: null },
-      // hangar interior (the cavity and the open bays out to the flank plating): warmer, denser work lights
+      { box: [[100, -1, -262], [140, 24, 277]], mirrorX: true, creases: { share: 0.03, corners: 0.05 }, slits: null },
+      // and the lower louvre chamfer under the bays (y below the sill at -96.3)
+      { box: [[100, -122, -262], [126, -97.6, 277]], mirrorX: true, creases: { share: 0.05, corners: 0.25 }, slits: null },
+      // frame posts' corners: a light at a corner, no dotted chains up the long verticals
+      { box: [[119, -95, -262], [133, -2, 277]], mirrorX: true, creases: { share: 0.1, run: [1, 1], corners: 0.6 } },
+      // the bow face: corner accents, no speckle (its brow and waist bars are authored)
+      { box: [[-126, -116, 416], [126, 18, 423]], creases: { share: 0.12, corners: 0.7 } },
+      // the flat dorsal deck: block and hatch corners, not a sparkle over the plates
+      { box: [[-100, 14, -262], [100, 24, 421]], creases: { share: 0.1, run: [1, 2], corners: 0.6 } },
+      // the island: its window glow already lights it
+      { box: [[-50, 23, -250], [50, 160, 25]], creases: { share: 0.2 }, slits: { share: 0.12 } },
+      // hangar interior (the cavity and the open bays out to the flank plating): warmer work lights on girder and wall
+      // corners, not on the plate seams
       { box: [[-121, -97.5, -277], [121, -0.2, 421]],
-        creases: { minLen: 5, pitch: 10, share: 0.5, run: [1, 3], runPitch: 1.5, corners: 0.5, spacing: 2.6, mix: { warm: 0.55, amber: 0.3, white: 0.15 }, intensity: [0.6, 0.95] },
-        slits: { minLen: 3, share: 0.55, every: 12, spacing: 7, mix: { warm: 0.6, amber: 0.4 } } },
+        creases: { minLen: 5, pitch: 16, share: 0.25, run: [1, 2], runPitch: 1.5, corners: 0.7, spacing: 4, mix: { warm: 0.55, amber: 0.3, white: 0.15 }, intensity: [0.6, 0.95] },
+        slits: { minLen: 3, share: 0.35, every: 16, spacing: 12, mix: { warm: 0.6, amber: 0.4 } } },
     ],
     patterns: [
-      // launch lane edges on the long deck (x +-25): white deck lights every 8 m; amber lane lights in the bow section
-      // run as chasers toward the mouth
-      { row: [[25.5, -96.25, -160], [25.5, -96.25, 176]], pitch: 8, color: 'white', size: 0.34, intensity: 0.75, mirrorX: true },
-      { row: [[25.5, -90.87, 280], [25.5, -90.87, 414]], pitch: 6, color: 'amber', size: 0.4, intensity: 1.0, chase: 3.0, duty: 0.18, mirrorX: true },
+      // ---- bow face (z 418.02): the brow and the waist band. A bar along the lower lip of each recessed header panel
+      // (x 8.25-31.75 / 38.25-61.75 / 68-91.75, y 5.25-12.75, floor 417.39) and a pair under the upper lip of each chin
+      // panel (y -102.25..-110.75), right under the mouth sill (the middle chin panel left dark: a few signature slits,
+      // not a marquee)
+      { slitRow: [[20, 6.1, 417.45], [80, 6.1, 417.45]], pitch: 30, len: 13, width: 0.87, u: [1, 0, 0], n: [0, 0, 1], color: 'amber', radiance: 1.65, mirrorX: true, keep: true },
+      ...[[14, 26], [74, 86]].map(([a, b]) => ({ slitRow: [[a, -103.0, 417.45], [b, -103.0, 417.45]], pitch: 12, len: 8, width: 0.87, u: [1, 0, 0], n: [0, 0, 1], color: 'amber', radiance: 1.8, mirrorX: true, keep: true })),
+      // the waist band wraps round the corner onto the flank above the lower chamfer, and a warm bar marks each upper
+      // corner (bow face above the louvres and the flank just under the deck-edge chamfer)
+      { slitRow: [[131.04, -93.1, 393], [131.04, -93.1, 399]], pitch: 6, len: 4.5, width: 0.87, u: [0, 0, 1], n: [1, 0, 0], color: 'amber', radiance: 1.65, mirrorX: true, keep: true },
+      { slit: [131.04, -11.6, 396], u: [0, 0, 1], n: [1, 0, 0], len: 7, width: 0.87, color: 'warm', radiance: 1.65, mirrorX: true, keep: true },
+      { slit: [121, -11.2, 418.08], u: [1, 0, 0], n: [0, 0, 1], len: 5, width: 0.87, color: 'warm', radiance: 1.65, mirrorX: true, keep: true },
+      // louvre panels beside the mouth (x 106.75-119.75; y -18.25..-45.25 and -54.25..-81.25, floor 416.6): lit along
+      // their top lips, so the vents are framed by light instead of sprinkled with it
+      ...[-18.9, -54.9].map((y) => ({ slit: [113.25, y, 416.66], u: [1, 0, 0], n: [0, 0, 1], len: 11, width: 0.72, color: 'amber', radiance: 1.35, mirrorX: true })),
+      // ---- armour gaps: every frame ring's cap (and the end blocks) stands 2 m above the bay slabs of the dorsal deck
+      // (22.98 vs 20.99); a bright bar on that step face next to the deck-edge chamfer marks where the blocks meet
+      ...FRAME_FACES.slice(1, -1).map(([z, s]) => ({ slit: [94, 21.9, z + s * 0.06], u: [1, 0, 0], n: [0, 0, s], len: 6, width: 0.72, color: 'amber', radiance: 1.8, mirrorX: true, keep: true })),
+      // (the end blocks meet the deck with a 45-degree chamfer instead of a step face)
+      { slit: [94, 21.94, -261.9], u: [1, 0, 0], n: [0, 0.7071, 0.7071], len: 6, width: 0.72, color: 'amber', radiance: 1.8, mirrorX: true, keep: true },
+      { slit: [94, 21.94, 276.87], u: [1, 0, 0], n: [0, 0.7071, -0.7071], len: 6, width: 0.72, color: 'amber', radiance: 1.8, mirrorX: true, keep: true },
+      // ---- frame posts (outer faces x 131, recessed panels 129.99, y -19.5..-44, z +-8 round the post centre): a window
+      // box of four lit panes at the top of the upper recess
+      ...[-176.2, -85.75, 6.97, 99.51, 190.1].map((zc) => ({ slitRow: [[130.05, -23.5, zc - 5], [130.05, -23.5, zc + 5]], pitch: 3.33, len: 2, width: 0.9, u: [0, 0, 1], n: [1, 0, 0], color: 'warm', radiance: 1.5, mirrorX: true })),
+      // ---- lit compartments on the flank port grids (grouped runs, see WINDOW_RUNS)
+      { points: WINDOW_RUNS, color: 'port', size: 1.0, intensity: 1.25, keep: true },
+      // ---- the open flank bays: a lamp bar under the lintel of each bay-facing frame face (lamp segments in the
+      // fixtures below it), a few warm pins down the face, and amber sill bars along each bay's deck edge
+      ...FRAME_FACES.map(([z, s]) => ({ slit: [115, -5.6, z + s * 0.06], u: [1, 0, 0], n: [0, 0, s], len: 6, width: 0.72, color: 'warm', radiance: 1.5, mirrorX: true })),
+      ...FRAME_FACES.map(([z, s]) => ({ row: [[127.5, -90, z + s * 0.12], [127.5, -8, z + s * 0.12]], pitch: 7, mix: { warm: 0.6, amber: 0.4 }, size: 0.45, intensity: 0.85, skip: 0.8, mirrorX: true, seed: Math.round(z) })),
+      ...BAY_CEILINGS.slice(0, 6).map(([z0, z1]) => ({ row: [[120, -0.72, z0 + 3], [120, -0.72, z1 - 3]], pitch: 8, color: 'warm', size: 0.45, intensity: 0.8, skip: 0.75, mirrorX: true, seed: Math.round(z0) })),
+      ...BAY_CEILINGS.slice(0, 6).map(([z0, z1], i) => ({ slitRow: [[119.6, (i === 0 ? -92.45 : i === 5 ? -93.61 : -96.33) + 0.06, z0 + 8], [119.6, (i === 0 ? -92.45 : i === 5 ? -93.61 : -96.33) + 0.06, z1 - 8]], pitch: 14, len: 4, width: 0.65, u: [0, 0, 1], n: [0, 1, 0], color: 'amberDeep', radiance: 1.5, mirrorX: true })),
+      // ---- stern gun sponsons: the forward face's recessed panel (x 156.5-174, y -45..-55, floor -280.18) glows as a
+      // cool intake, the one cold note the hero view sees (the drive collars face aft)
+      { slit: [165.25, -50.0, -280.12], len: 14, width: 1.4, u: [1, 0, 0], n: [0, 0, 1], color: 'ice', radiance: 1.0, mirrorX: true, keep: true },
+      // ---- hangar
+      // launch lane edges on the long deck (x +-25): warm bars every 8 m; in the bow section amber lane bars run as
+      // chasers toward the mouth (bars, not pins, so they read against the deck and reflect in it)
+      { slitRow: [[25.5, -96.26, -160], [25.5, -96.26, 176]], pitch: 8, len: 2.4, width: 0.65, u: [0, 0, 1], n: [0, 1, 0], color: 'warm', radiance: 1.4, mirrorX: true },
+      { slitRow: [[25.5, -90.91, 280], [25.5, -90.91, 414]], pitch: 4, len: 2.2, width: 0.72, u: [0, 0, 1], n: [0, 1, 0], color: 'amber', radiance: 1.5, chase: 3.0, duty: 0.18, mirrorX: true },
       { row: [[25.5, -93.51, 205], [25.5, -93.51, 274]], pitch: 6, color: 'amber', size: 0.4, intensity: 1.0, chase: 3.0, duty: 0.18, chaseSpan: 0.5, mirrorX: true },
       { row: [[25.5, -92.35, -254], [25.5, -92.35, -192]], pitch: 8, color: 'white', size: 0.34, intensity: 0.75, mirrorX: true },
       // bay deck edges (x +-93.5): sparse amber pins at the open flank
@@ -125,13 +208,8 @@ export const asset = {
       { row: [[45, -1.0, -258], [45, -1.0, 412]], pitch: 11, color: 'warm', size: 0.4, intensity: 0.8, skip: 0.3, mirrorX: true },
       { row: [[80, -1.0, -258], [80, -1.0, 412]], pitch: 13, color: 'white', size: 0.36, intensity: 0.7, skip: 0.4, mirrorX: true },
       // bow-section walls: amber guidance lights at deck height and a white row above
-      { row: [[94.8, -88.5, 282], [94.8, -88.5, 414]], pitch: 7, color: 'amber', size: 0.36, intensity: 0.9, mirrorX: true },
+      { row: [[94.8, -88.5, 282], [94.8, -88.5, 414]], pitch: 7, color: 'amber', size: 0.36, intensity: 0.9, mirrorX: true, keep: true },
       { row: [[94.8, -20, 282], [94.8, -20, 414]], pitch: 12, color: 'white', size: 0.34, intensity: 0.7, skip: 0.2, mirrorX: true },
-      // the open flank bays: warm lights up the bay-facing sides of the frames, along the lintels and the deck sills,
-      // so each opening reads as a lit working space from outside (as in the concept)
-      ...FRAME_FACES.map(([z, s]) => ({ row: [[127.5, -90, z + s * 0.12], [127.5, -8, z + s * 0.12]], pitch: 7, mix: { warm: 0.6, amber: 0.4 }, size: 0.45, intensity: 0.85, skip: 0.2, mirrorX: true, seed: Math.round(z) })),
-      ...BAY_CEILINGS.slice(0, 6).map(([z0, z1]) => ({ row: [[120, -0.72, z0 + 3], [120, -0.72, z1 - 3]], pitch: 8, color: 'warm', size: 0.45, intensity: 0.8, skip: 0.2, mirrorX: true, seed: Math.round(z0) })),
-      ...BAY_CEILINGS.slice(0, 6).map(([z0, z1]) => ({ row: [[119.5, -96.24, z0 + 3], [119.5, -96.24, z1 - 3]], pitch: 7, color: 'amber', size: 0.45, intensity: 0.9, skip: 0.15, mirrorX: true, seed: Math.round(z1) })),
       // mouth lip: an amber chaser across the sill
       { row: [[-88, -94.4, 421.6], [88, -94.4, 421.6]], pitch: 8, color: 'amber', size: 0.4, intensity: 1.0, chase: 2.4, duty: 0.2 },
     ],
@@ -171,7 +249,8 @@ export const asset = {
   // only the hangar's own surfaces receive the floodlights: back wall to just past the mouth lip, from 1.1 m below the
   // lowest deck up, out to the flank plating (so the open bays' floors and frame sides still catch the light)
   interiorLightGate: { box: [[-133, -97.5, -277], [133, 0, 425]], feather: 1 },
-  interiorBounce: { box: [[-100.5, -97.5, -277], [100.5, 4, 416]], color: '#e9e4dc', irradiance: 1.2, feather: 3 },
+  // (v12: the deck's bounce is warm and low, 1.2 -> 0.45: the ceiling and walls sit dim above the lamp pools)
+  interiorBounce: { box: [[-100.5, -97.5, -277], [100.5, 4, 416]], color: '#f2c898', irradiance: 0.45, feather: 3 },
   anchors: {
     hangar: { p: [0, -48.7, 80], size: [155.8, 84.4, 670] },
     hangarMouth: { p: [0, -48.7, 418], dir: [0, 0, 1] },

@@ -27,25 +27,57 @@ export const asset = {
   rotate: [0, 0, 0],
   hullNodes: ["hull"],
   // v11: lit cabins behind the ports and the bridge glazing (warm, varied per compartment, a few dark, a few flickering)
-  livery: {"gain": 0.05, "glassGlow": [0.52, 0.42, 0.28], "glassLit": 0.5, "glassFlicker": 0.12,
+  // v12: 2.2 m compartment cells so single ports and bridge panes vary (some dark, some dim), bridge a touch dimmer
+  livery: {"gain": 0.05, "glassGlow": [0.46, 0.37, 0.245], "glassLit": 0.45, "glassFlicker": 0.15, "glassCell": 2.2,
     "glassDark": [[[-15, -11, 32.5], [15, 9, 40]]]}, // the bow sensor lenses stay dark glass
   // v11 lightscape (src/lib/lightscape.js): pins on the hull's convex creases (block corners and chines), short
-  // amber bars in its recesses, blue-white status lights round the drive housings, and authored runs
+  // amber bars in its recesses, blue-white status lights round the drive housings, and authored runs.
+  // v12 (concept pass): far fewer pins, favouring block corners; short amber bars, not tubes; authored lamp-heads on
+  // the sponson ends, the bow bezel posts, the bridge sill and the crew door lintel; the radiator bays kept dark.
   lightscape: {
     seed: 11,
-    creases: { angle: 35, minLen: 2.5, pitch: 5, share: 0.42, run: [1, 3], runPitch: 1.0, corners: 0.45, spacing: 1.3, size: [0.2, 0.32], intensity: [0.65, 1.0], mix: { amber: 0.7, warm: 0.18, white: 0.12 }, max: 170, blinkShare: 0.03 },
-    slits: { angle: 35, minLen: 1.2, share: 0.45, every: 8, len: [0.7, 1.6], width: 0.14, radiance: [0.9, 1.5], spacing: 3.5, max: 28, mix: { amber: 0.8, warm: 0.2 } },
+    creases: { angle: 35, minLen: 2.5, pitch: 7, share: 0.25, run: [1, 2], runPitch: 1.0, corners: 0.62, spacing: 2.2, size: [0.16, 0.3], intensity: [0.45, 1.0], mix: { amber: 0.8, warm: 0.2 }, max: 80, blinkShare: 0.03 },
+    slits: { angle: 35, minLen: 1.2, share: 0.6, every: 5, len: [0.8, 1.4], width: 0.22, radiance: [1.0, 1.5], spacing: 2.5, max: 36, mix: { amber: 0.85, warm: 0.15 }, corner: { share: 0.5, width: 0.22, len: [0.8, 1.3], radiance: [1.2, 1.6] } },
     cool: { radius: 1.9, depth: 2.5 },
+    zones: [
+      // dorsal spine and its two radiator/louvre bays (x +-4.5..7, z -17..-5.5): no crease pins, no bars (the pulse
+      // beacons and the shoulder rows below are authored)
+      { box: [[-7.8, 6.4, -19.2], [7.8, 7.4, -0.8]], creases: null, slits: null },
+      // stern block: a few corner accents, not a glitter
+      { box: [[-14, -9, -27.5], [14, 6, -24]], creases: { share: 0.12, corners: 0.35 } },
+      // bow face: only the two authored bezel lamps (the concept's bow has two small slits, not a grille)
+      { box: [[-13, -10, 34], [13, 6, 37]], creases: null, slits: null },
+      // crew door (flank z 7.3..9.9): its lintel lamp only
+      { box: [[11.2, -6.5, 7.0], [13.6, -1.6, 10.2]], mirrorX: true, slits: null },
+      // bridge glazing recess: its auto bars dim, so the warm panes lead
+      { box: [[-3.6, 2.6, 14.6], [3.6, 5.4, 17.4]], slits: { radiance: [0.7, 0.9], width: 0.17 } },
+      // pylon (x 13..17.5, y -6.5..-0.3): few crease pins; its junction lamps are authored (the pylon and hull are
+      // overlapping solids, so the recess corner has no mesh crease for the automatic bars)
+      { box: [[11.5, -7.5, -14.5], [17.8, 0.6, 2.8]], mirrorX: true, creases: { share: 0.1, corners: 0.4 } },
+    ],
     patterns: [
-      // bridge: a lit sill under the glazing band
-      { surface: 'bridge-glazing', edge: 'bottom', inset: 0.15, lift: 0.08, pitch: 0.7, color: 'warm', size: 0.16, intensity: 0.55, keep: true },
-      // stencil chamfer: a run of amber pins along its upper edge, and a slow beacon pair
-      { surface: 'chamfer-port', edge: 'top', inset: 0.3, pitch: 2.2, color: 'amber', size: 0.22, intensity: 0.8, skip: 0.25, mirrorX: true },
-      { surface: 'flank-fore-port', edge: 'bottom', inset: 0.3, pitch: 1.6, color: 'amber', size: 0.2, intensity: 0.7, skip: 0.3, mirrorX: true },
+      // bridge: two warm sill lamps on the proud sill face under the glazing recess (y 2.9..3.35, z 16.7..17.0)
+      { slit: [1.5, 3.13, 16.89], u: [1, 0, 0], n: [0, 0.607, 0.795], len: 0.6, width: 0.14, radiance: 1.2, color: 'amber', keep: true, mirrorX: true },
+      // upper chamfer: running lights on its real shoulder crease (x 8.0, y 6.72) with a slow beacon at each end
+      { row: [[8.07, 6.80, -16.4], [8.07, 6.80, -5.1]], pitch: 4.5, color: 'amber', size: 0.22, intensity: 0.8, mirrorX: true },
+      { points: [[8.07, 6.80, -18.0], [8.07, 6.80, -3.5]], color: 'amber', size: 0.28, intensity: 1.0, pulse: 3.2, mirrorX: true },
+      // forward flank: a sparse run along the lower chine, and a warm lintel lamp over the crew door (z 8.6)
+      { row: [[12.86, -6.17, 5.7], [11.58, -5.03, 14.59]], pitch: 2.8, color: 'amber', size: 0.2, intensity: 0.7, skip: 0.2, mirrorX: true },
+      { slit: [12.44, -1.98, 8.62], u: [-0.143, 0, 0.99], n: [0.99, 0, 0.143], len: 1.2, width: 0.19, radiance: 1.6, color: 'warm', keep: true, mirrorX: true },
+      // pylon / hull junction: warm lamps in the 0.3 m riser where the pylon top meets the hull flank (x 13.0, y -0.33..0)
+      { slitRow: [[13.03, -0.17, -9.5], [13.03, -0.17, -0.5]], pitch: 4.5, u: [0, 0, 1], n: [1, 0, 0], len: 1.0, width: 0.19, radiance: 1.6, color: 'warm', keep: true, mirrorX: true },
+      // sponsons: upright lamp-heads on the bevelled ends (aft outboard / inboard, forward outboard), the concept's
+      // nacelle-corner bars
+      { slit: [22.74, -3.35, -13.55], u: [0, 1, 0], n: [0.318, 0, -0.948], len: 1.8, width: 0.2, radiance: 1.7, color: 'amber', keep: true, mirrorX: true },
+      { slit: [17.36, -3.35, -13.55], u: [0, 1, 0], n: [-0.318, 0, -0.948], len: 1.4, width: 0.2, radiance: 1.4, color: 'amber', keep: true, mirrorX: true },
+      { slit: [22.78, -3.35, 0.65], u: [0, 1, 0], n: [0.717, 0, 0.697], len: 1.4, width: 0.2, radiance: 1.6, color: 'amber', keep: true, mirrorX: true },
       // sponsons: blue-white status lights on the outboard faces
       { surface: 'sponson-outboard-port', edge: 'top', inset: 0.25, pitch: 0.5, color: 'cool', size: 0.18, intensity: 0.8, mirrorX: true },
-      // stern plate: a short chaser for the drive status
+      // bow: a short upright lamp on each outer bezel post (x 6.1..6.5)
+      { slit: [6.31, -3.3, 35.92], u: [0, 1, 0], n: [0, 0, 1], len: 1.1, width: 0.19, radiance: 1.6, color: 'amber', keep: true, mirrorX: true },
+      // stern plate: a short chaser for the drive status; main bell lips: idle status ring
       { surface: 'stern-plate', edge: 'centre', inset: 0.3, pitch: 0.5, color: 'cool', size: 0.16, intensity: 0.8, chase: 2.4 },
+      { ring: { c: [5.9, -0.05, -35.80], axis: [0, 0, 1], r: 3.72 }, n: 8, color: 'cool', size: 0.16, intensity: 0.55, mirrorX: true },
       // dorsal deck: two slow amber beacons at the hatch rows
       { points: [[1.9, 6.95, -3.6], [-1.9, 6.95, -16.3]], color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.2 },
     ],
@@ -79,10 +111,7 @@ export const asset = {
     {p: [0.0, -10.349, -0.978], color: "white", size: 0.4, blink: {period: 1.3, duty: 0.1, phase: 0.5}},
     // steady stern light on the stern plate between the bell sockets
     {p: [0.0, 3.951, -26.258], color: "white", size: 0.4},
-    // v10 amber running lights along the hull lines: the upper chamfer (ends of the stencil row) and the forward flank
-    { p: [10.77, 3.21, -15.88], color: 'amber', size: 0.3, mirrorX: true },
-    { p: [10.77, 3.21, -1.08], color: 'amber', size: 0.3, mirrorX: true },
-    { p: [11.76, -2.36, 13.69], color: 'amber', size: 0.3, mirrorX: true },
+    // (v12: the v10 amber running lights mid-panel on the chamfer and flank moved into lightscape: shoulder beacons, door lintel)
   ],
   anchors: {
     // railgun muzzles (twin-bore muzzle block face, z 17.86 in the model frame), fire along +Z
