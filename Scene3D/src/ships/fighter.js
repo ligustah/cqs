@@ -34,12 +34,13 @@ export const asset = {
   // - canopy at 0.15x, whole panes (no glassDark): each pane glows as one fleet-size 1.0 x 1.15 m pane, the glazing
   //   bar only a hairline, barely over the bridge plating: a cockpit running dark. (A dark band over the upper lights
   //   left 0.67 m cells between black mullions, under the 0.8 m minimum of lit glass: a dotted window row at range.)
-  // - door ports at 0.07x (about 1.3x the flank at the hero): a faint crew space; the amber door lamp beside them is
-  //   the ruler.
+  // - door ports dark (gain 0): 1.0 m frames beside the 2.4 m door are the human ruler, the amber door lamp the only
+  //   light at the door. Lit, even at 0.07x, amber glass on the blue-grey flank read as two windows beside a lit
+  //   door (a house front), and as two tan specks at range.
   livery: {"gain": 0.05, "glassGlow": [0.52, 0.42, 0.28], "glassFlicker": 0, "glassParts": ["port", "pane"],
     "glassZones": [
       { box: [[-3.6, 2.6, 14.6], [3.6, 5.4, 17.4]], gain: 0.15, uniform: true },                 // canopy
-      { box: [[11.0, -3.9, 10.2], [13.0, -1.4, 14.6]], mirrorX: true, gain: 0.07, uniform: true }, // door ports
+      { box: [[11.0, -3.9, 10.2], [13.0, -1.4, 14.6]], mirrorX: true, gain: 0, uniform: true },    // door ports: dark
     ]},
   // v11 lightscape (src/lib/lightscape.js): pins on the hull's convex creases (block corners and chines), short
   // amber bars in its recesses, blue-white status lights round the drive housings, and authored runs.
@@ -49,7 +50,7 @@ export const asset = {
   // evenly spaced rows read as deck lighting and windows on a hull 1.3-1.8x this size, so: no automatic crease pins
   // (small craft are authored, R4), no rows, a handful of amber bars at the block extremities and joints (the
   // concept's slits; at each stern-block corner a chamfer bar over a vertical corner bar), one lamp per door,
-  // 2 masthead beacons on the dorsal centreline, a 2-lamp drive status and the aircraft nav set; no other lone pins
+  // 2 roof beacons on the centreline, a 2-lamp drive status and the aircraft nav set; no other lone pins
   // on open plating (a single dot on a flat reads as a small window or a random light). Every lamp is fleet size
   // (pins 0.2-0.3 m, bars 0.14-0.2 m wide), so it does not scale with the hull. 26 lamps (4 pins, 22 bars), 8 of
   // them `keep` (the sponson heads and bow bezels: all that is left of it at fleet range).
@@ -63,8 +64,8 @@ export const asset = {
     slits: { angle: 35, minLen: 1.2, share: 0.6, every: 5, len: [0.8, 1.4], width: 0.2, radiance: [1.0, 1.5], spacing: 2.5, max: 0, mix: { amber: 1 }, corner: { share: 0.3, width: 0.2, len: [0.8, 1.3], radiance: [1.2, 1.6], max: 4 } },
     cool: { radius: 1.9, depth: 2.5 },
     zones: [
-      // dorsal spine and its two radiator/louvre bays (x +-4.5..7, z -17..-5.5): no bars (its two masthead beacons
-      // are authored below)
+      // dorsal spine and its two radiator/louvre bays (x +-4.5..7, z -17..-5.5): no bars (the roof beacons are
+      // authored below)
       { box: [[-7.8, 6.4, -19.2], [7.8, 7.4, -0.8]], creases: null, slits: null },
       // stern block: a few corner accents, not a glitter
       { box: [[-14, -9, -27.5], [14, 6, -24]], creases: { share: 0.12, corners: 0.35 } },
@@ -103,9 +104,10 @@ export const asset = {
       { slit: [6.31, -3.3, 35.92], u: [0, 1, 0], n: [0, 0, 1], len: 1.1, width: 0.19, radiance: 1.6, color: 'amber', keep: true, mirrorX: true },
       // stern plate: drive status, one slow cool lamp each side of the white stern light (2.1 m clear of it)
       { points: [[2.1, 3.95, -26.13]], color: 'cool', size: 0.2, intensity: 0.8, pulse: 2.4, mirrorX: true },
-      // dorsal centreline: two slow amber masthead beacons (F6), clear of the hatch covers at x +-1.9 and 4.7 m forward
-      // of the dorsal strobe; off the hatch rows they read as the craft's beacons, not as a hatch lamp
-      { points: [[0, 6.95, -3.6], [0, 6.95, -12.0]], color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.2 },
+      // centreline: two slow amber roof beacons (F6), one on the bridge block roof (z 8.5, 6 m clear of the whip
+      // antennas at x +-5.2, z 5.5: from the default view a lamp on a whip tip read as a lamp post, making the
+      // whip a 4-6 m pole) and one on the dorsal deck clear of the hatch covers, 4.7 m forward of the dorsal strobe
+      { points: [[0, 6.95, 8.5], [0, 6.95, -12.0]], color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.2 },
     ],
   },
   detail: {"set": "hull", "tile": 6, "normalStrength": 0.6, "roughAmount": 0.5, "cavity": 0.2},

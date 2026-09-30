@@ -34,8 +34,9 @@ const STROBE = { period: 1.3, duty: 0.1 };
 // is low (33): an 80-crew ship is mostly dark working structure, and a fine even scatter of lamps reads as a larger,
 // populated hull (the fighter's "small random lights = windows"); with the engine section dark (zones) a higher cap
 // only refilled the reactor and collar. No blinking crease pins: a blinking lamp keeps its far-field floor, and
-// scattered blinkers read at range as a busier, larger hull
-const CIVIL_CREASES = { angle: 35, minLen: 3, pitch: 7, share: 0.34, run: [1, 2], runPitch: 1.2, corners: 0.4, spacing: 1.6, size: [0.2, 0.28], intensity: [0.7, 1.0], mix: { amber: 0.85, white: 0.15 }, max: 33, blinkShare: 0 };
+// scattered blinkers read at range as a busier, larger hull. Pins 2.2 m or more apart (F11: 2 m): at 1.6 m the crew
+// module's aft keel corners held three pin pairs 1.7 m apart, lit pairs that read as a window and its light
+const CIVIL_CREASES = { angle: 35, minLen: 3, pitch: 7, share: 0.34, run: [1, 2], runPitch: 1.2, corners: 0.4, spacing: 2.2, size: [0.2, 0.28], intensity: [0.7, 1.0], mix: { amber: 0.85, white: 0.15 }, max: 33, blinkShare: 0 };
 const CIVIL_SLITS = { angle: 35, minLen: 1.5, share: 0.5, every: 8, len: [0.8, 1.3], width: 0.2, radiance: [0.9, 1.4], spacing: 4, max: 24, mix: { amber: 1 }, corner: { width: 0.2, len: [0.8, 1.2], radiance: [1.1, 1.5] } };
 // civil grey; the remodel paint is lighter than the generated textures (gain 0.05); lit cabins behind the ports (v11: warm,
 // varied, a few flickering). v14: only the kit glass glows (glassParts: the 0.86 m port lites and the bridge panes):
@@ -68,10 +69,17 @@ const pinClear = ({ dzCollar, reactorFace }) => [
   { box: [[10.4, -6.4, 24.9 + dzCollar], [11.8, 5.4, 27.2 + dzCollar]], mirrorX: true },
   { box: [[-17, -15, reactorFace - 1.2], [17, 20, reactorFace + 0.4]] },
 ];
-const CARGO_PIN_CLEAR = [...CARGO_CLEAR, ...pinClear({ dzCollar: 0, reactorFace: -22.45 })];
-// (troops: also the reactor's aft-face outer corners, z -30.6, where the automatic corner bars sit, and the bow brow over
-// the bridge panes, whose two automatic bars would otherwise sit between three pins 0.9 m off their ends)
-const TROOPS_PIN_CLEAR = [...TROOPS_CLEAR, ...pinClear({ dzCollar: -1.5, reactorFace: -20.45 }), { box: [[13.6, -11, -31.4], [16.7, 9, -29.8]], mirrorX: true }, { box: [[-4.2, 3.4, 63.4], [4.2, 4.8, 65.2]] }];
+// The bow brow over the bridge panes (front face x +-4.2, top edge y 4.6) takes no automatic lamp: its crease runs
+// drew unmirrored pins 1.7 m above the front pane row (cargo x -0.5 and 3.2), random specks that read as small
+// windows over the glass, and on the troop hull two bars under the brow lip, hidden from above. It gets one authored
+// mirrored pair at its outer top corners instead (the block's corners, 2.2 m above the panes: patterns)
+const browClear = (dz) => ({ box: [[-4.2, 3.4, 66.0 + dz], [4.2, 4.8, 67.8 + dz]] });
+const CARGO_PIN_CLEAR = [...CARGO_CLEAR, ...pinClear({ dzCollar: 0, reactorFace: -22.45 }), browClear(0)];
+// (troops: also the reactor's aft-face outer corners, z -30.6, where the automatic corner bars sit: to z -29.2, as a
+// pin at z -29.5 sat 1.2 m off the corner bar's end; and the collar's aft-face top corners, z 24.0, whose diagonal
+// corner bars had a pin 1.2 m off one end on one side only)
+const TROOPS_PIN_CLEAR = [...TROOPS_CLEAR, ...pinClear({ dzCollar: -1.5, reactorFace: -20.45 }), { box: [[13.6, -11, -31.4], [16.7, 9, -29.2]], mirrorX: true }, { box: [[7.6, 6.8, 23.4], [9.8, 8.2, 24.6]], mirrorX: true }, browClear(-2.64)];
+const TROOPS_SLIT_CLEAR = [...TROOPS_CLEAR, browClear(-2.64)];
 
 export const asset = {
   glb: './assets/ships/freighter.glb',
@@ -84,11 +92,14 @@ export const asset = {
   // v12 glassDark box) and the hull stencils stay dark without boxes. Compartment grid aligned to the decks and port
   // columns (cells 5.8 x 3.0 x 5.85 m): no 0.86 m port lite is split into two-tone halves (0 of 130; a half-lit port
   // reads as a half-size window, so the hull reads bigger). Bridge deck (panes x +-9.4, y -2.3..2.4, z 56.7..66.6, and
-  // the 8 bridge-deck ports on the bow chamfers): one steady compartment at half the cabin glow (bridges run dark,
-  // STANDARD R8); the box stops at y -2.4, above the next port row's glass (top y -2.47), so no port straddles it
-  livery: { ...CIVIL_LIVERY, glassCell: [5.8, 3.0, 5.85], glassPhase: [0.0, 0.47, 0.49], glassZones: [{ box: [[-9.5, -2.4, 56.5], [9.5, 2.5, 67.0]], gain: 0.5, uniform: true }] },
-  // v14 lightscape (src/lib/lightscape.js), fleet scale standard: the lit accommodation block (6 decks of ports, ~55 %
-  // lit: measured on the GPU render, 55 % of the visible cabin ports at half glow or more) carries the human scale;
+  // the 8 bridge-deck ports on the bow chamfers): one steady compartment, dim (bridges run dark, STANDARD R8). Gain
+  // 0.32, not 0.5: the kit glass's lit ochre albedo adds to the glow, so at 0.5 the panes rendered at 0.92x a lit
+  // cabin port's brightness, a lit band as bright as the cabins; the box stops at y -2.4, above the next port row's
+  // glass (top y -2.47), so no port straddles it
+  livery: { ...CIVIL_LIVERY, glassCell: [5.8, 3.0, 5.85], glassPhase: [0.0, 0.47, 0.49], glassZones: [{ box: [[-9.5, -2.4, 56.5], [9.5, 2.5, 67.0]], gain: 0.32, uniform: true }] },
+  // v14 lightscape (src/lib/lightscape.js), fleet scale standard: the lit accommodation block (6 decks of ports at the
+  // civil share, glassLit 0.55: on the GPU render 47 % of the visible cabin ports carry half their full glow or more,
+  // measured on the emission alone, (L - L_unlit) / (L_all_lit - L_unlit)) carries the human scale;
   // the working spine is dark structure marked only where a fixture has a job. Amber bars at the block extremities
   // (bow lower block, collar flank, reactor forward face and flank: the 10 keep bars), the truss marked at every other
   // web node plus a short loading-guide chaser, the reactor dark but for its corner bars and cool sequencer, the
@@ -125,10 +136,18 @@ export const asset = {
     ],
     patterns: [
       // crew module: the walkway ledge (y 4.6) and the lower chine (y -10.45) each run 1.2-1.5 m from a port row, so
-      // they carry no lamp rows (a row there reads as one more deck of small windows, STANDARD R2): one white lamp at
-      // the ladder head on the ledge (ladder z 40.1..40.7 from the crew door up), amber lamps at the chine's two ends
-      { points: [[10.15, 4.7, 40.4]], color: 'white', size: 0.22, intensity: 0.7, mirrorX: true },
-      { points: [[10.36, -10.25, 34.6], [10.36, -10.25, 55.0]], color: 'amber', size: 0.24, intensity: 0.85, mirrorX: true },
+      // they carry no lamp rows (a row there reads as one more deck of small windows, STANDARD R2). No lamp within
+      // 1.5 m of glass (STANDARD 3.5: a small dot one port-height under a port reads as a smaller window): one white
+      // lamp on the ledge just forward of the ladder head (ladder z 40.1..40.7), in the port-free bay between z 39.6
+      // and 42.6 (1.7 m from the nearest port); one amber lamp at the chine's aft end, on the collar's lower chamfer at
+      // the crew-module joint (1.8 m from the aft port). The chine's forward end has none: every point of it lies within
+      // 1.3 m of the last flank port (z 54.4) or the first bow-chamfer port (z 56.9); the bow's lower corners are
+      // marked by the F7 slits below
+      { points: [[10.15, 4.7, 40.9]], color: 'white', size: 0.22, intensity: 0.7, mirrorX: true },
+      { points: [[9.89, -10.48, 33.6]], color: 'amber', size: 0.24, intensity: 0.85, mirrorX: true },
+      // bow brow (front face x +-4.2, top edge y 4.6, z 67.06): a mirrored pair of corner pins at its outer top corners,
+      // 2.2 m above the front pane row: the block's corners, not specks over the glass
+      { points: [[3.85, 4.62, 67.08]], color: 'amber', size: 0.24, intensity: 0.85, mirrorX: true },
       // crew doors (recesses z 37.65..39.55 and 50.25..52.15, 1.4 x 2.4 m leaves): one amber door lamp each, the fleet's
       // F10 fixture (0.6 x 0.14 m, as on the fighter), upright on the flank beside the forward jamb, its top 0.15 m under
       // the lintel: the human ruler beside the door. (Under the kit floodlight housing it would be hidden from above)
@@ -238,17 +257,23 @@ export const variants = {
     beauty: './assets/concepts/freighter-troops-beauty.webp',
     rotate: [0, 0, 0],
     length: 128.843, // 128.84 x 57.74 x 37.66 m assembled (L x B x H), 4 slots
-    // v14 livery: lit share by role (STANDARD R9), measured on the GPU render (hero, per visible port at half glow or
-    // more): the habitats' 750 berths at glassLit 0.30 light ~45 % (upper pair 50 %, lower 34 %), the troop share (the
-    // GPU's value noise lights far more than a CPU model of it predicts); at 0.45 the berth rows put the 129 m troop
-    // ship above the 2,000-crew destroyer's mark count at every range (a finer, busier grain than a warship half again
-    // its length reads as the bigger ship). The crew module at the civil crew share (zone lit 0.55: 53 % measured, as
-    // the cargo ship's 55 %: the same 80 crew read the same on both), the bridge panes one dim steady compartment; only
-    // the kit glass glows (CIVIL_LIVERY.glassParts: no stencil specks on the reactor). Compartment grid aligned to the
-    // decks and berth columns (5.8 x 6.1 x 5.8 m: 0 of 386 port lites split)
+    // v14 livery: lit share by role (STANDARD R9). Shares are measured on the GPU render (hero) from the emission alone,
+    // (L - L_unlit) / (L_all_lit - L_unlit) at 0.5 or more per visible port: the kit port lite's ochre albedo reads
+    // as half lit on an unlit port, so a background-relative measure overcounts. The habitats' 750 berths at the troop
+    // share, about 45 % (railcar rows of lit berths: the mid-body's human scale): the upper pair at the base glassLit
+    // (the value noise's few 5.8 x 6.1 x 5.8 m cells make its share step steeply: 0.30 lit 2 %, 0.50 30 %, 0.55 53 %),
+    // the lower pair in its own zone. The crew module at the civil crew share (zone lit 0.55, as on the cargo ship: the
+    // same 80 crew read the same on both), the bridge panes one dim steady compartment (gain 0.32, as on the cargo
+    // ship); only the kit glass glows (CIVIL_LIVERY.glassParts: no stencil specks on the reactor). Compartment grid
+    // aligned to the decks and berth columns (5.8 x 6.1 x 5.8 m: 0 of 386 port lites split)
     livery: {
-      ...CIVIL_LIVERY, glassLit: 0.30, glassCell: [5.8, 6.1, 5.8], glassPhase: [0.0, 0.69, 0.86],
-      glassZones: [{ box: [[-9.5, -2.4, 54.0], [9.5, 2.5, 64.5]], gain: 0.5, uniform: true }, { box: [[-12.0, -14.0, 31.4], [12.0, 11.0, 64.9]], lit: 0.55 }],
+      ...CIVIL_LIVERY, glassLit: 0.53, glassCell: [5.8, 6.1, 5.8], glassPhase: [0.0, 0.69, 0.86],
+      glassZones: [
+        { box: [[-9.5, -2.4, 54.0], [9.5, 2.5, 64.5]], gain: 0.32, uniform: true },
+        { box: [[-12.0, -14.0, 31.4], [12.0, 11.0, 64.9]], lit: 0.55 },
+        // lower habitat pair (berths y -13.3..-8.5, z -15.9..18.9)
+        { box: [[-12.0, -15.0, -20.3], [12.0, -7.0, 24.0]], lit: 0.40 },
+      ],
     },
     // v14 lightscape: as on the cargo ship, at the troop hull's stations (reactor face z -20.5, flank x 15.6, collar
     // aft face z 24.0, girder chord outer face x 11.6, web nodes every 4.82 m, radiators to z -55.5). The habitat
@@ -256,7 +281,7 @@ export const variants = {
     lightscape: {
       seed: 37,
       creases: { ...CIVIL_CREASES, exclude: TROOPS_PIN_CLEAR },
-      slits: { ...CIVIL_SLITS, exclude: TROOPS_CLEAR },
+      slits: { ...CIVIL_SLITS, exclude: TROOPS_SLIT_CLEAR },
       cool: { radius: 1.7, depth: 2 },
       zones: [
         { box: [[19.5, -14, -57], [33, 3.7, -26]], mirrorX: true, creases: null, slits: null },
@@ -272,9 +297,12 @@ export const variants = {
         { box: [[-14, -20, 24.0], [14, 20, 65.9]], creases: { share: 0, corners: 0.6 } },
       ],
       patterns: [
-        // crew module (2.6 m aft of the cargo ship's): ladder-head lamp, chine ends, the two crew-door lamps
-        { points: [[10.15, 4.7, 37.8]], color: 'white', size: 0.22, intensity: 0.7, mirrorX: true },
-        { points: [[10.36, -10.25, 32.0], [10.36, -10.25, 52.4]], color: 'amber', size: 0.24, intensity: 0.85, mirrorX: true },
+        // crew module (2.6 m aft of the cargo ship's): ladder-head lamp, the chine's aft end on the collar chamfer (the
+        // troop collar joint is at z 31.2), the brow corner pair (the brow's automatic bars sat under its lip, hidden
+        // from above, so the bow's upper block showed no lamp), the two crew-door lamps
+        { points: [[10.15, 4.7, 38.3]], color: 'white', size: 0.22, intensity: 0.7, mirrorX: true },
+        { points: [[9.89, -10.48, 31.0]], color: 'amber', size: 0.24, intensity: 0.85, mirrorX: true },
+        { points: [[3.85, 4.62, 64.44]], color: 'amber', size: 0.24, intensity: 0.85, mirrorX: true },
         { slit: [10.31, -7.75, 37.15], u: [0, 1, 0], n: [1, 0, 0], len: 0.6, width: 0.14, radiance: 1.4, color: 'amber', mirrorX: true },
         { slit: [10.31, -7.75, 49.75], u: [0, 1, 0], n: [1, 0, 0], len: 0.6, width: 0.14, radiance: 1.4, color: 'amber', mirrorX: true },
         { surface: 'cm-roof', edge: 'left', inset: 0.3, pitch: 5, color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.8 },
