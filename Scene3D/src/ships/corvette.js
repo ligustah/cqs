@@ -44,8 +44,9 @@ export const asset = {
   // real recesses and at block corners (door jambs, the bow torpedo frame, the pod radiator bay, the flank's forward
   // corner, vent floors, the deckhouse base) carry the look; crease pins are sparse background texture (no white pins
   // on the key-lit top, none on louvres or glazing).
-  // v14 scale pass: lamps are fleet-size fixtures (pins 0.2-0.3 m, bars 0.14-0.2 m wide) and only where a fixture has a
-  // job (door, block corner, torpedo and stern frames, drive status, deck edge, mast); no row runs beside or at the pitch
+  // v14 scale pass: lamps are fleet-size fixtures (pins 0.2-0.3 m; corner and frame bars 0.2 m wide, the same fixture
+  // as on every hull, a thinner one made this hull read bigger; door lamps 0.14 m) and only where a fixture has a job
+  // (door, block corner, torpedo and stern frames, drive status, deck edge, mast); no row runs beside or at the pitch
   // of the 2.5 m port grid (a dotted row there reads as another deck of windows); warm is an interior colour, so the
   // exterior is amber with a little white; the uncrewed drive pods are dark machinery with corner lamps only
   lightscape: {
