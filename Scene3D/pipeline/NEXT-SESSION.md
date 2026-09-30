@@ -1,4 +1,4 @@
-> **Superseded.** This was the brief for the asset session; the scene has since moved on. Current scale: 1 slot = 3,200 m³, fighter 25.5 m (crew 3), carrier 900 m through-deck. See `Scene3D/README.md` (Scale model) and `tools/scale-check.mjs`.
+> **Superseded.** This was the brief for the asset session; the scene has since moved on. Current scale (source of truth: `src/lib/scale.js`): 1 slot = 70,000 m³, fighter 71.7 m (crew about 40), carrier 900 m through-deck. The numbers below are historical. See `Scene3D/README.md` (Scale model) and `tools/scale-check.mjs`.
 
 You're continuing work on the **CQS Orbital Fleet** 3D scene in the repo `ligustah/cqs`. Start from branch `claude/3d-orbital-ships-scene-u95ehb`: fetch it and base your work on it. The previous session may still push commits to it under `Scene3D/src/env/` (planet/sky), so fetch and merge it again before you finish.
 

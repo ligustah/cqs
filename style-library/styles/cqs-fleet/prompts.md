@@ -1,0 +1,84 @@
+# Prompts that worked (cqs-fleet)
+
+Every job id and parameter is recorded in `Scene3D/pipeline/fal-pipeline.json`, and the per-part jobs
+in `Scene3D/assets/parts/parts.json`. This file keeps the reusable wording. Paste the `{style}` block
+into every concept prompt.
+
+## {style} block
+
+> Photorealistic spacecraft in a credible near-future 'naval-industrial' design language, as in a
+> high-end aerospace concept photograph: faceted hard-surface hull with chamfered edges and layered
+> armour plates, off-white thermal-control paint with realistic weathering, scuffs and panel-to-panel
+> colour variation, signal-orange hazard and identification markings and stencilled hull numbers like on
+> real naval ships, small painted cobalt-blue identification bands, bare brushed-metal and gunmetal
+> structural frames, gold and silver multi-layer insulation blankets on sensor and electronics boxes,
+> dark ceramic heat tiles on the belly, radiator panels, RCS thruster quads, antennas and hand rails at
+> human scale, hatches, ladders and small windows that make each ship read as a real engineered object at
+> its true size, large fusion-drive engine bells with magnetic-nozzle coils, heavy radiation shielding
+> between the drive and the crew sections. Physically based materials, real-world engineering logic, no
+> aerodynamic wings, no neon, no glowing trim, no glowing panel lines, no emissive strips, engines and
+> emitters switched off, not a video game, not stylised, not a toy. Original design, not based on any
+> existing franchise.
+
+Keep this sentence up to date with the rulers. The real scale is now much larger than the first bible's
+(the fighter is 71.7 m, not 16 m), so state the true length and the anchors in every prompt: "2 m crew
+doors, 1 m windows in 3 m deck rows, 1.1 m rails, 20-ft containers".
+
+## Art bible (nano-banana-pro, 4K, 16:9)
+
+> A professional concept art design sheet for an original science-fiction space fleet on a clean neutral
+> light-grey studio background. Five ship classes arranged in a tidy grid, each large enough to read its
+> details (not to scale), each with a small clean sans-serif caption: <CLASS (one-line description with
+> length and signature features)> ... {style} Photorealistic, like a professional studio photograph of
+> highly detailed physical models, soft even studio lighting, three-quarter views, natural materials and
+> wear.
+
+## Isolated concept (nano-banana-pro/edit, refs: bible and approved sister ships; 4:3, 2K, 2 images)
+
+> Using the attached concept sheet only as the design-language reference, render ONLY the {class} as one
+> isolated object: {description} Three-quarter view from the front-left and slightly above (camera about
+> 35 degrees off the bow, 20 degrees up). The entire ship is visible and centred with generous empty
+> margin, filling about 70% of the frame. Plain seamless light-grey studio background, soft even
+> lighting, no floor, no cast shadow, no environment, no stars, no text, no labels, no engine exhaust
+> plumes, no motion blur. Photorealistic, like a studio photograph of a highly detailed physical model
+> with real materials and subtle weathering, sharp focus, suitable for 3D reconstruction. {style}
+
+The `{description}` names the forms positively (e.g. "one elongated faceted armoured fuselage shaped
+like a flattened hexagonal pod ... two compact weapon sponsons hugging the lower flanks each carrying a
+single long railgun barrel"). It lists what must not appear ("no wings, no tail fins, nothing
+projecting outward from the sides") and ends with the paint, the bands and the hull number.
+
+## Beauty shot (edit, refs: the approved isolated concept)
+
+> The same ship in orbit above a planet, in its dark matte operational livery (dark charcoal-grey paint
+> over the same panels, markings kept faint), lit by one hard sun from the side, black space, a thin
+> bright atmosphere limb, a few small amber recess lights at block corners, engines off.
+
+## Turnaround (edit at 4K, refs: the approved concept)
+
+The worked text is in `model-forge/references/fal-models.md`: six ortho views in a 3 x 2 grid, one
+scale, light-grey, no labels. For a bay or recess that must stay open in 3D, add "the hangar bays are
+open and see-through in every view".
+
+## Parts kit (edit, ref: the door concept `assets/parts` door image)
+
+> Isolated hull component for an original sci-fi spacecraft parts kit, in the same style, materials and
+> weathering as the reference door: <part with exact metric dimensions>. Three-quarter view from the
+> front, on a plain light-grey studio background, light off-white weathered paint, dark blue-grey glass,
+> no hull around it, nothing else in frame.
+
+Tripo H3.1 image-to-3D with texture and PBR on, detailed quality, `face_limit` 2000-5000. Glass parts
+(ports, panes) came back as holes twice; the shipped glass is procedural.
+
+## PATINA materials (all five maps, 2x upscale, tiling both)
+
+- `hull`: Photoreal off-white spacecraft thermal-control paint over composite hull panels, rectangular
+  panels of varied sizes with thin recessed seams, flush fasteners, small access hatches, realistic
+  weathering, scuffs, slight panel-to-panel colour variation, seamless.
+- `armor`: Gunmetal grey heavy warship armour plating, thick bolted plates with chamfered edges, weld
+  seams, worn edges showing bare steel, seamless.
+- `deck`: Spaceship hangar deck plating, dark grey non-slip tread steel plates with painted yellow
+  safety lines and recessed tie-down points, seamless.
+- `radiator`: Spacecraft radiator panel, dense parallel cooling fins, dark anodised metal with faint
+  blue heat discolouration, seamless.
+- Others (`orange`, `ceramic`, `foil`, `hullWear`, `hullGrit`, `sootStreak`): see the pipeline record.
