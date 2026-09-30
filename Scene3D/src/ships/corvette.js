@@ -29,13 +29,15 @@ export const asset = {
   // glow (glassParts: the turret sights and hull stencils stay dark, no cabin window on a gun); compartment grid 5.1 m
   // with phase 0.54 so no cell edge crosses a 1 m port (the old grid split 40 of 86 into two-tone half windows, which
   // read half size and made the flank read bigger); the bridge glazing band and the tower glazing are each one steady,
-  // dim compartment (a bridge runs dark at night)
+  // dim compartment (a bridge runs dark: gain 0.3 displays at about 0.65x the lit cabin ports after tone mapping, L 103
+  // against 158; at 0.5 every pane showed at 0.85x and the band read as a lit promenade, the widest and brightest glass
+  // on the ship where the fewest people are)
   livery: {
     gain: 0.05, glassGlow: [0.52, 0.42, 0.28], glassLit: 0.45, glassFlicker: 0.08, glassCell: 5.1, glassPhase: 0.54,
     glassParts: ['port', 'pane'],
     glassZones: [
-      { box: [[-10.5, 0.2, 10.5], [10.5, 2.7, 25.5]], gain: 0.5, uniform: true },  // bridge glazing band
-      { box: [[-8, 10.5, -18], [8, 12.5, -3]], gain: 0.5, uniform: true },         // tower glazing
+      { box: [[-10.5, 0.2, 10.5], [10.5, 2.7, 25.5]], gain: 0.3, uniform: true },  // bridge glazing band
+      { box: [[-8, 10.5, -18], [8, 12.5, -3]], gain: 0.3, uniform: true },         // tower glazing
     ],
   },
   // v11 lightscape (src/lib/lightscape.js); v12: the hierarchy turned round to the concept's: a few short amber bars in
@@ -104,10 +106,11 @@ export const asset = {
       { slit: [16.285, -12.75, 8.955], u: [0, 1, 0], n: [0, 0, 1], len: 0.6, width: 0.14, radiance: 1.5, color: 'amber', mirrorX: true },
       { slit: [15.81, -12.75, -40.445], u: [0, 1, 0], n: [0, 0, 1], len: 0.6, width: 0.14, radiance: 1.5, color: 'amber', mirrorX: true },
       { slit: [15.81, -14.65, -40.445], u: [0, 1, 0], n: [0, 0, 1], len: 0.5, width: 0.14, radiance: 1.2, color: 'amber', mirrorX: true },
-      // forward flank: a corner bar 0.4 m inside the block edge where the flat flank meets the bow taper (z 19.2), above
-      // the first port column (v14: moved up clear of its frame, and the bar beside the lower port dropped: a bar at a
-      // window reads as a door-jamb lamp), and one at the foot of the tapered bow flank by the torpedo frame lip (z 54.05)
-      { slit: [16.16, -5.0, 18.8], u: [0, 1, 0], n: [1, 0, 0], len: 0.8, width: 0.17, radiance: 1.3, color: 'amber', mirrorX: true },
+      // forward flank: a corner bar at the foot of the flank block's forward corner, on the bow taper 2 m forward of the
+      // flat flank's edge (z 19.2) and 2.3 m clear of the port grid (v14: the bars beside and above the first port
+      // column are gone: a lamp at a window reads as a door-jamb lamp or a lit transom, a human-scale cue that doubles
+      // the window count), and one at the foot of the tapered bow flank by the torpedo frame lip (z 54.05)
+      { slit: [15.67, -12.0, 21.18], u: [0, 1, 0], n: [0.974, 0, 0.225], len: 0.8, width: 0.17, radiance: 1.3, color: 'amber', mirrorX: true },
       { slit: [8.47, -12.9, 52.9], u: [0, 1, 0], n: [0.975, 0, 0.222], len: 1.0, width: 0.17, radiance: 1.4, color: 'amber', keep: true, mirrorX: true },
       // pod radiator bay: short corner bars in the open slots between the end walls and the first / last fin (in the
       // face plane, x 34.4: the fins hide anything deeper at oblique views). v14: the warm sill and amber head rows are
@@ -140,6 +143,11 @@ export const asset = {
       { row: [[2.4, -2.88, -49.34], [3.6, -2.88, -49.34]], pitch: 1.2, color: 'cool', size: 0.2, intensity: 0.85, chase: 2.6, mirrorX: true },
       { surface: 'bow-deck', edge: 'left', inset: 0.5, pitch: 7, color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.4 },
       { surface: 'bow-deck', edge: 'right', inset: 0.5, pitch: 7, color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.4 },
+      // bridge tower: a corner bar on each front chamfer (0.8 m plate between the front and side walls, flat y 7.1..10.3),
+      // at the block extremity 2.2 m below the tower glass (bottom y 10.93): the command block keeps the concept's amber
+      // without a lamp on the glazing sill or lip, where one reads as another window (last in the list, so the pattern
+      // seeds above, and with them the aft vent skips and beacon phases, stay as they were)
+      { slit: [5.5, 8.3, -6.16], u: [0, 1, 0], n: [0.707, 0, 0.707], len: 0.8, width: 0.17, radiance: 1.3, color: 'amber', mirrorX: true },
     ],
   },
   detail: {"set": "hull", "tile": 6, "normalStrength": 0.6, "roughAmount": 0.5, "cavity": 0.2},

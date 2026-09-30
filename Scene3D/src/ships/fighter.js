@@ -28,10 +28,20 @@ export const asset = {
   hullNodes: ["hull"],
   // v14 (fleet lighting scale standard, R8/R9): a combat craft shows almost no lit glass. Only the kit glass parts
   // glow (the 5 canopy panes at x1.0 and the 2 x 1.0 m ports per side beside the crew door); the bow sensor lenses
-  // and every other hull-texture glass stay dark without boxes. All of it is one steady, dim compartment at 0.45x
-  // the fleet cabin glow: a combat bridge runs dark, and a varied, flickering grid would read as several rooms.
+  // and every other hull-texture glass stay dark without boxes. Each is one steady uniform compartment, and both
+  // run below R8's 0.45x: on this hull the canopy faces the hero camera, and at 0.45x the glass was the ship's
+  // brightest mark at every range (a lit window block, the "windows" read); the amber lamps carry the life.
+  // - glassDark: the canopy's upper lights (y 4.12..4.47, 0.44 m tall: the kit pane's glazing bar at 60 % height
+  //   splits each pane) stay dark. Lit, they made a 5 x 2 grid of small windows, two storeys of bridge; dark, the
+  //   canopy is one row of 5 lights of 1.0 x 0.67 m (armoured-slit size) under a dark visor band.
+  // - canopy lower lights at 0.23x (a shade over the bridge plating), the door ports at 0.15x: a dim cockpit and a
+  //   faint crew space, never brighter than the door lamp beside them.
   livery: {"gain": 0.05, "glassGlow": [0.52, 0.42, 0.28], "glassFlicker": 0, "glassParts": ["port", "pane"],
-    "glassZones": [{ box: [[-13, -4, 10], [13, 5, 17]], gain: 0.45, uniform: true }]},
+    "glassDark": [[[-3.0, 4.105, 15.2], [3.0, 4.8, 16.6]]],
+    "glassZones": [
+      { box: [[-3.6, 2.6, 14.6], [3.6, 5.4, 17.4]], gain: 0.23, uniform: true },                 // canopy (lower lights)
+      { box: [[11.0, -3.9, 10.2], [13.0, -1.4, 14.6]], mirrorX: true, gain: 0.15, uniform: true }, // door ports
+    ]},
   // v11 lightscape (src/lib/lightscape.js): pins on the hull's convex creases (block corners and chines), short
   // amber bars in its recesses, blue-white status lights round the drive housings, and authored runs.
   // v12 (concept pass): far fewer pins, favouring block corners; short amber bars, not tubes; authored lamp-heads on
@@ -39,15 +49,16 @@ export const asset = {
   // v14 (scale pass): a 71.7 m strike craft is lit like an aircraft, not a ship. A fine scatter of small lamps and
   // evenly spaced rows read as deck lighting and windows on a hull 1.3-1.8x this size, so: no automatic crease pins
   // (small craft are authored, R4), no rows, a handful of amber bars at the block extremities and joints (the
-  // concept's slits), one lamp per door, 2 beacons, a 2-lamp drive status and the aircraft nav set. Every lamp
-  // is fleet size (pins 0.2-0.3 m, bars 0.14-0.2 m wide), so it does not scale with the hull. 30 lamps (8 pins,
-  // 22 bars), 8 of them `keep` (the sponson heads and bow bezels: all that is left of it at fleet range).
+  // concept's slits), one lamp per door, 2 beacons, a 2-lamp drive status and the aircraft nav set; no lone pins
+  // on open plating (a single dot on a flat reads as a small window or a random light). Every lamp is fleet size
+  // (pins 0.2-0.3 m, bars 0.14-0.2 m wide), so it does not scale with the hull. 26 lamps (4 pins, 22 bars), 8 of
+  // them `keep` (the sponson heads and bow bezels: all that is left of it at fleet range).
   lightscape: {
     seed: 11,
     creases: null,
-    // a few amber recess and corner bars, all on the stern block's aft corners (the recess cap is 2: with a third
-    // pair the next candidate is a bar on the railgun muzzle block), amber only: a cream bar reads as a window
-    slits: { angle: 35, minLen: 1.2, share: 0.6, every: 5, len: [0.8, 1.4], width: 0.2, radiance: [1.0, 1.5], spacing: 2.5, max: 2, mix: { amber: 1 }, corner: { share: 0.3, width: 0.2, len: [0.8, 1.3], radiance: [1.2, 1.6], max: 4 } },
+    // a few amber recess and corner bars, all on the stern block's aft chamfers (the caps are 2 + 2: with a third
+    // recess pair the next candidate is a bar on the railgun muzzle block), amber only: a cream bar reads as a window
+    slits: { angle: 35, minLen: 1.2, share: 0.6, every: 5, len: [0.8, 1.4], width: 0.2, radiance: [1.0, 1.5], spacing: 2.5, max: 2, mix: { amber: 1 }, corner: { share: 0.3, width: 0.2, len: [0.8, 1.3], radiance: [1.2, 1.6], max: 2 } },
     cool: { radius: 1.9, depth: 2.5 },
     zones: [
       // dorsal spine and its two radiator/louvre bays (x +-4.5..7, z -17..-5.5): no bars (its two pulse beacons are
@@ -77,11 +88,10 @@ export const asset = {
       { slit: [12.44, -1.98, 8.62], u: [-0.143, 0, 0.99], n: [0.99, 0, 0.143], len: 0.6, width: 0.14, radiance: 1.4, color: 'amber', mirrorX: true },
       // aft door (z -17.0..-15.6): the same lamp under its floodlight housing (x 12.96..13.44, y -0.76..-0.41)
       { slit: [13.03, -0.88, -16.28], u: [0, 0, 1], n: [1, 0, 0], len: 0.6, width: 0.14, radiance: 1.4, color: 'amber', mirrorX: true },
-      // extremity markers, like an aircraft's formation lights: the chin and the forward belly chine
-      { points: [[4.67, 0.28, 32.41], [10.61, -8.35, 10.20]], color: 'amber', size: 0.24, intensity: 0.9, mirrorX: true },
-      // mid-block forward corner: one amber bar in the recess corner where the chamfer meets the step face (z 15.5),
-      // the concept's hard slit at a block joint (2.9 m clear of the door ports)
+      // mid-block forward joint (z 15.5): one amber bar in each recess corner where a chamfer meets the step face,
+      // upper and lower, the concept's hard slits at a block joint (2.9 m and 3.9 m clear of the door ports)
       { slit: [9.45, 0.51, 15.55], u: [-0.49, 0.87, 0], n: [0.80, 0.45, 0.40], len: 1.3, width: 0.2, radiance: 1.3, color: 'amber', mirrorX: true },
+      { slit: [9.92, -6.61, 15.55], u: [-0.49, -0.87, 0], n: [0.76, -0.43, 0.48], len: 1.0, width: 0.2, radiance: 1.4, color: 'amber', mirrorX: true },
       // sponsons: upright lamp-heads on the bevelled ends (aft outboard / inboard, forward outboard), the concept's
       // nacelle-corner bars
       { slit: [22.74, -3.35, -13.55], u: [0, 1, 0], n: [0.318, 0, -0.948], len: 1.8, width: 0.2, radiance: 1.7, color: 'amber', keep: true, mirrorX: true },
