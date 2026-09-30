@@ -240,6 +240,9 @@ export const asset = {
       // each end of a rectangular recess turned it into a vehicle's side window or visor (a 60 m sponson read as a pod)
       // (fix 2: and no pins round the aft recess either: four or five crease pins still framed it like a lit hatch)
       { box: [[151, -60, -343], [179, -40, -338]], mirrorX: true, creases: null, slits: null },
+      // (fix 3) the forward ice-intake recess: once the posts' jambs went dark, the freed crease budget put a pin on its
+      // lip, framing it as a lit visor again
+      { box: [[155, -57, -282], [176, -43, -277]], mirrorX: true, creases: null, slits: null },
       { box: [[140, -70, -345], [210, -30, -275]], mirrorX: true, slits: null },
       // louvre panels either side of the bow mouth (x 106.75-119.75, y -18..-81 at z 416.6) and the forward flank: no pins
       // on the slats (they are framed by authored bars instead)
@@ -253,6 +256,10 @@ export const asset = {
       // lit sill and lit jambs reads as a hatch or a door in its frame and shrinks the 95 m post about ten times, the same
       // cue as the window box it replaced. The post face's top and bottom corner bands (y over -15, under -87) take no
       // automatic lamp either: the authored corner markers stand there (one lamp per corner, F7)
+      // (fix 3) the posts' outboard jambs (the vertical edges at zc +-12.24, between the corner markers): no crease pins.
+      // Edge pins, the mid-edge corner bars and the frame-face row lined up into one evenly spaced dot column per edge,
+      // one light per floor, which made each 84 m post read as a 7-9 storey building; the automatic corner bars stay
+      ...POSTS.flatMap((zc) => [-12.24, 12.24].map((dz) => ({ box: [[125.5, -87, zc + dz - 1.6], [131.6, -15, zc + dz + 1.6]], mirrorX: true, creases: null }))),
       ...POSTS.flatMap((zc) => [[-46, -17.5, 9.5], [-85, -54, 9.5], [-15, -9, 13], [-95, -87, 13]].map(([y0, y1, dz]) => (
         { box: [[128.5, y0, zc - dz], [131.6, y1, zc + dz]], mirrorX: true, creases: null, slits: null }))),
       // frame posts' corners: a light at a corner, no dotted chains up the long verticals
@@ -279,7 +286,7 @@ export const asset = {
       // (fix 2: corner bars share 0.2, down from the hull's 0.4: the corner-bar cap is global too, and the bars freed on the
       // drive collars and post recesses had refilled here, 20 -> 42)
       { box: [[-121, -97.5, -277], [121, -0.2, 421]],
-        creases: { minLen: 5, pitch: 16, share: 0.2, run: [1, 2], runPitch: 1.5, corners: 0.3, spacing: 4, mix: { warm: 0.55, amber: 0.3, white: 0.15 }, intensity: [0.6, 0.95] },
+        creases: { minLen: 5, pitch: 16, share: 0.15, run: [1, 2], runPitch: 1.5, corners: 0.3, spacing: 4, mix: { warm: 0.55, amber: 0.3, white: 0.15 }, intensity: [0.6, 0.95] },
         slits: { minLen: 3, share: 0.35, every: 16, spacing: 12, mix: { warm: 0.6, amber: 0.4 }, corner: { share: 0.2 } } },
     ],
     patterns: [
@@ -333,7 +340,8 @@ export const asset = {
       // ---- the open flank bays: a lamp bar under the lintel of each bay-facing frame face (lamp segments in the
       // fixtures below it), a few warm pins down the face, and amber sill bars along each bay's deck edge
       ...FRAME_FACES.map(([z, s]) => ({ slit: [115, -5.6, z + s * 0.06], u: [1, 0, 0], n: [0, 0, s], len: 6, width: 0.26, color: 'warm', radiance: 1.8, mirrorX: true })),
-      ...FRAME_FACES.map(([z, s]) => ({ row: [[127.5, -90, z + s * 0.12], [127.5, -8, z + s * 0.12]], pitch: 7, mix: { warm: 0.6, amber: 0.4 }, size: 0.26, intensity: 0.85, skip: 0.8, mirrorX: true, seed: Math.round(z) })),
+      // (fix 3: pitch 7 -> 21; 3.5 m inside the flank edge the closer row lined up with the jamb pins from outside)
+      ...FRAME_FACES.map(([z, s]) => ({ row: [[127.5, -90, z + s * 0.12], [127.5, -8, z + s * 0.12]], pitch: 21, mix: { warm: 0.6, amber: 0.4 }, size: 0.26, intensity: 0.85, skip: 0.8, mirrorX: true, seed: Math.round(z) })),
       ...BAY_CEILINGS.slice(0, 6).map(([z0, z1]) => ({ row: [[120, -0.72, z0 + 3], [120, -0.72, z1 - 3]], pitch: 8, color: 'warm', size: 0.26, intensity: 0.8, skip: 0.75, mirrorX: true, seed: Math.round(z0) })),
       ...BAY_CEILINGS.slice(0, 6).map(([z0, z1], i) => ({ slitRow: [[119.6, (i === 0 ? -92.45 : i === 5 ? -93.61 : -96.33) + 0.06, z0 + 8], [119.6, (i === 0 ? -92.45 : i === 5 ? -93.61 : -96.33) + 0.06, z1 - 8]], pitch: 14, len: 4, width: 0.26, u: [0, 0, 1], n: [0, 1, 0], color: 'amberDeep', radiance: 1.5, mirrorX: true })),
       // ---- stern gun sponsons: the forward face's recessed panel (x 156.5-174, y -45..-55, floor -280.18) glows as a

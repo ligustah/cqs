@@ -121,9 +121,11 @@ export const asset = {
       // gone (a lamp rim round the bay read as a lit hangar mouth on an uncrewed pod)
       { slit: [34.4, -13.6, -9.56], u: [0, 1, 0], n: [1, 0, 0], len: 0.8, width: 0.2, radiance: 1.5, color: 'amber', keep: true, mirrorX: true },
       { slit: [34.4, -16.3, -22.49], u: [0, 1, 0], n: [1, 0, 0], len: 0.8, width: 0.2, radiance: 1.4, color: 'amber', keep: true, mirrorX: true },
-      // pod extremities: fleet-size lamps (0.3 m) at the outboard face corners (fore steady, aft slow pulse)
+      // pod extremities: fleet-size lamps (0.3 m) at the outboard face corners, all steady (the aft pair pulsed until the
+      // fleet check: with the 4 bow-deck beacons that gave the corvette 8 pulses, more than the destroyer; beacons are
+      // the bow deck's job)
       { points: [[34.56, -11.45, -2.4], [34.56, -18.45, -2.4]], color: 'amber', size: 0.3, intensity: 1.5, keep: true, mirrorX: true },
-      { points: [[34.56, -11.45, -26.3], [34.56, -18.45, -26.3]], color: 'amber', size: 0.3, intensity: 1.5, pulse: 4.2, mirrorX: true },
+      { points: [[34.56, -11.45, -26.3], [34.56, -18.45, -26.3]], color: 'amber', size: 0.3, intensity: 1.5, mirrorX: true },
       // drive pods: one cool drive-status bar on the flat outboard face between the radiator bay and the strap at z -5
       // (0.12 m proud), above the sidelight (2.5 m clear). v14: it replaces a cool row at 1.4 m and an amber row at
       // 1.8 m, which read as rows of portholes where no crew can be

@@ -323,7 +323,10 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
       for (const t of [mm.map, mm.normalMap, mm.roughnessMap]) if (t) t.anisotropy = 8;
       const liv = glassOff ? { ...cfg.livery, glassGlow: null } : cfg.livery;
       // two-tone scheme (?livery=tone|bone): the module's liveryZones, on the hull (and on kit parts if liveryZoneParts)
-      if (cfg.livery) applyLivery(mm, liv, zoned ? { scheme, zones: cfg.liveryZones, toShip: o.matrixWorld } : { toShip: o.matrixWorld });
+      // kit glass (a glassParts part): its glow fades with its on-screen area far off (livery.js), as hull-texture ports
+      // do through texture filtering
+      const kitGlass = !!(cfg.livery?.glassParts && role.part && cfg.livery.glassParts.includes(role.part));
+      if (cfg.livery) applyLivery(mm, liv, zoned ? { scheme, zones: cfg.liveryZones, toShip: o.matrixWorld, kitGlass } : { toShip: o.matrixWorld, kitGlass });
       if (cfg.livery && cfg.liveryKeep) keeps.forEach((kp, k) => keepInterior(mm, kp, o.matrixWorld, k));
       if (gate) gateInteriorLights(mm, gate, o.matrixWorld, cfg.interiorBounce || null);
       if (detailSet) {

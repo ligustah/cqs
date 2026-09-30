@@ -153,7 +153,9 @@ export const asset = {
       { surface: 'boat-hatch-port', edge: 'top', inset: 0.1, lift: 0.15, pitch: 5.6, color: 'cool', size: 0.2, intensity: 0.8, mirrorX: true },
       // command block: one white work light over each aft door, a beacon on the roof
       { surface: 'command-aft', edge: 'top', inset: 0.2, pitch: 4.6, color: 'white', size: 0.22, intensity: 0.6 },
-      { surface: 'command-roof', edge: 'left', inset: 0.3, pitch: 1.5, color: 'amber', size: 0.24, intensity: 0.9, pulse: 3.6 },
+      // (a mirrored pair of fleet-size beacons, 5.4 m apart on the casemate roof; was two 0.24 m pins 2.4 m apart on its
+      // port edge only, which split at range and read as a small fitting)
+      { points: [[2.70, 13.05, -46.5]], mirrorX: true, color: 'amber', size: 0.28, intensity: 1.0, pulse: 3.6 },
       // spine catwalk: a sparse run of white deck lights (a walkway: deck-lighting practice)
       { surface: 'spine-top', edge: 'left', inset: 0.2, pitch: 4, color: 'white', size: 0.2, intensity: 0.6, skip: 0.2 },
       { surface: 'spine-top', edge: 'right', inset: 0.2, pitch: 4, color: 'white', size: 0.2, intensity: 0.6, skip: 0.2 },

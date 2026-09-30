@@ -35,7 +35,9 @@
 //                    glassDark first (each dark box is a zone of gain 0); the first box containing a texel wins
 //       glassParts   (read by glbship.js) kit part names whose glass may glow, e.g. ['port', 'pane']: the hull
 //                    texture and every other part keep the dark glass look without interior light (stencils,
-//                    sensor lenses, gun sights, containers). Unset: all glass glows
+//                    sensor lenses, gun sights, containers). Unset: all glass glows. That kit glass also fades
+//                    with its on-screen area once a port is under ~2 px (applyLivery kitGlass), as hull-texture
+//                    ports do through texture filtering
 //     glassDark and glassZones need the mesh's ship-frame matrix (glbship.js passes it).
 //   - roughness is pushed toward matte (matte 0.35: a broad, dim sheen only at grazing angles,
 //     never a glossy highlight), and metalness is scaled down: the hull is paint (a
@@ -88,7 +90,7 @@ export function zoneUniforms(zones = []) {
  *  (merged over 'dark'); glassGlow: [r, g, b] linear radiance of lit interiors behind glass
  *  texels (opt-in), glassLit: share of compartments lit (default 0.6); the other glass fields
  *  (glassCell, glassPhase, glassDark, glassZones) are listed in the header. */
-export function applyLivery(material, opts = 'dark', { scheme = null, zones = null, toShip = null } = {}) {
+export function applyLivery(material, opts = 'dark', { scheme = null, zones = null, toShip = null, kitGlass = false } = {}) {
   const o = { ...LIVERIES.dark, ...(typeof opts === 'string' ? LIVERIES[opts] : opts) };
   // two-tone scheme: only with zones and the mesh's object -> ship-frame matrix
   const sc = scheme && SCHEMES[scheme] && zones?.length && toShip ? SCHEMES[scheme] : null;
@@ -250,12 +252,19 @@ export function applyLivery(material, opts = 'dark', { scheme = null, zones = nu
               pane *= 1.0 - smoothstep(0.32, 0.5, satNear);
             }
             #endif
+            ${kitGlass ? `// kit glass (real port / pane geometry, livery.glassParts) fades with its area once a 0.86 m port is under
+            // ~2 px: geometry never blurs into the plating the way hull-texture ports do under texture filtering, so a
+            // distant crew block would otherwise stay a field of full-bright 1 px specks (a fine scatter of small lights
+            // reads as a much bigger structure). vLivPos is in ship-frame metres
+            float livMpp = max(length(dFdx(vLivPos)), length(dFdy(vLivPos)));
+            float livGpx = 0.86 / max(livMpp, 1e-5);
+            pane *= clamp(0.25 * livGpx * livGpx, 0.05, 1.0);` : ''}
             totalEmissiveRadiance += uLivGlassGlow * tint * pane * zGain * (0.06 + 0.94 * lit * level * fl);
           }`);
     }
   };
   const prevKey = material.customProgramCacheKey.bind(material);
-  material.customProgramCacheKey = () => `livery${glow ? (toShip ? '-glowS' : '-glow') : ''}${gz ? `-zones${gz.length}` : ''}${sc ? `-${scheme}` : ''}|${prevKey()}`;
+  material.customProgramCacheKey = () => `livery${glow ? (toShip ? '-glowS' : '-glow') : ''}${glow && kitGlass ? '-kg' : ''}${gz ? `-zones${gz.length}` : ''}${sc ? `-${scheme}` : ''}|${prevKey()}`;
   material.needsUpdate = true;
   return material;
 }
