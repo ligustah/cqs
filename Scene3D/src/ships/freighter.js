@@ -98,7 +98,7 @@ export const asset = {
   // glass (top y -2.47), so no port straddles it
   livery: { ...CIVIL_LIVERY, glassCell: [5.8, 3.0, 5.85], glassPhase: [0.0, 0.47, 0.49], glassZones: [{ box: [[-9.5, -2.4, 56.5], [9.5, 2.5, 67.0]], gain: 0.32, uniform: true }] },
   // v14 lightscape (src/lib/lightscape.js), fleet scale standard: the lit accommodation block (6 decks of ports at the
-  // civil share, glassLit 0.55: on the GPU render 47 % of the visible cabin ports carry half their full glow or more,
+  // civil share, glassLit 0.55: on the GPU render 46 % of the visible cabin ports carry half their full glow or more,
   // measured on the emission alone, (L - L_unlit) / (L_all_lit - L_unlit)) carries the human scale;
   // the working spine is dark structure marked only where a fixture has a job. Amber bars at the block extremities
   // (bow lower block, collar flank, reactor forward face and flank: the 10 keep bars), the truss marked at every other
@@ -260,19 +260,23 @@ export const variants = {
     // v14 livery: lit share by role (STANDARD R9). Shares are measured on the GPU render (hero) from the emission alone,
     // (L - L_unlit) / (L_all_lit - L_unlit) at 0.5 or more per visible port: the kit port lite's ochre albedo reads
     // as half lit on an unlit port, so a background-relative measure overcounts. The habitats' 750 berths at the troop
-    // share, about 45 % (railcar rows of lit berths: the mid-body's human scale): the upper pair at the base glassLit
-    // (the value noise's few 5.8 x 6.1 x 5.8 m cells make its share step steeply: 0.30 lit 2 %, 0.50 30 %, 0.55 53 %),
-    // the lower pair in its own zone. The crew module at the civil crew share (zone lit 0.55, as on the cargo ship: the
-    // same 80 crew read the same on both), the bridge panes one dim steady compartment (gain 0.32, as on the cargo
-    // ship); only the kit glass glows (CIVIL_LIVERY.glassParts: no stencil specks on the reactor). Compartment grid
-    // aligned to the decks and berth columns (5.8 x 6.1 x 5.8 m: 0 of 386 port lites split)
+    // share, about 45 % from above and from below (railcar rows of lit berths: the mid-body's human scale; measured
+    // 41 % upper pair, 46 % lower pair, 43 % overall at the hero; 41 % overall from below). Each view sees only a few
+    // of the value noise's 5.8 x 6.1 x 5.8 m cells, so the share steps steeply with the setting (upper pair: 0.30 lit
+    // 2 %, 0.50 30 %, 0.515 41 %, 0.55 53 %) and differs by view: the upper pair takes the base glassLit, the lower
+    // pair two zones split between its berth rows (y -11.5 and -13.3: the underside row, seen from below, runs lower:
+    // 0.26 lights 6 of its 22 visible berths, 0.27 already 10). The crew module at the civil crew share (zone lit 0.55, as on the cargo ship: the same 80 crew read the same on
+    // both), the bridge panes one dim steady compartment (gain 0.32, as on the cargo ship); only the kit glass glows
+    // (CIVIL_LIVERY.glassParts: no stencil specks on the reactor). Compartment grid aligned to the decks and berth
+    // columns (5.8 x 6.1 x 5.8 m: 0 of 386 port lites split)
     livery: {
-      ...CIVIL_LIVERY, glassLit: 0.53, glassCell: [5.8, 6.1, 5.8], glassPhase: [0.0, 0.69, 0.86],
+      ...CIVIL_LIVERY, glassLit: 0.515, glassCell: [5.8, 6.1, 5.8], glassPhase: [0.0, 0.69, 0.86],
       glassZones: [
         { box: [[-9.5, -2.4, 54.0], [9.5, 2.5, 64.5]], gain: 0.32, uniform: true },
         { box: [[-12.0, -14.0, 31.4], [12.0, 11.0, 64.9]], lit: 0.55 },
-        // lower habitat pair (berths y -13.3..-8.5, z -15.9..18.9)
-        { box: [[-12.0, -15.0, -20.3], [12.0, -7.0, 24.0]], lit: 0.40 },
+        // lower habitat pair (berth rows y -8.5, -11.5, -13.3; z -15.9..18.9): the two outboard rows, the underside row
+        { box: [[-12.0, -12.4, -20.3], [12.0, -7.0, 24.0]], lit: 0.40 },
+        { box: [[-12.0, -15.0, -20.3], [12.0, -12.4, 24.0]], lit: 0.26 },
       ],
     },
     // v14 lightscape: as on the cargo ship, at the troop hull's stations (reactor face z -20.5, flank x 15.6, collar

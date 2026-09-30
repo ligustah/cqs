@@ -24,7 +24,8 @@
 //   deck-edge chamfer every 75 m. Amber lamps every 25 m between them, at mid-height (y -50) on the frame posts'
 //   capital band and the end blocks, and on the sponsons' outer faces (lightscape); eleven slow amber beacons on the
 //   dorsal centreline, block tops, sponsons and island roofs; a cool drive-status bar and amber corner strips on the
-//   stern plate. Lit ports: grouped runs of 1 m window points on real glass (ray-cast) on the flank port grids of the
+//   stern plate; amber corner markers at the outer corners of the frame posts, the stern block and the sponsons, none on
+//   the drive collars or in the posts' door-shaped recesses (a lit recess edge is a door, and shrinks the post). Lit ports: grouped runs of 1 m window points on real glass (ray-cast) on the flank port grids of the
 //   stern block and bow section and on the keel wedge; the island is lit by its own glass (livery). No automatic lamp
 //   sits within 1.5 m of glass (zones): a lamp on a port band's lip reads as one more, larger window.
 // - v14 fleet lighting scale standard (one fixture, one size on every hull; lamps where a fixture has a job; windows
@@ -83,7 +84,9 @@ const BAY_CEILINGS = [[-260.5, -188.6, -0.58], [-163.8, -98.5, -0.58], [-73.0, -
 // far off the dashed lines stay)
 const STRIPS = [
   ...BAY_CEILINGS.flatMap(([z0, z1, y]) => [1 / 6, 1 / 2, 5 / 6].flatMap((f) => [-60, -30, 0, 30, 60].flatMap((x) => [-8, -4, 0, 4, 8].map((dx) => ({ ...STRIP, p: [x + dx, y - 0.35, z0 + (z1 - z0) * f], size: [2, 0.3, 0.3] }))))),
-  ...FRAME_FACES.flatMap(([z, s]) => [108.5, -108.5].flatMap((x) => [-20, -47, -74].flatMap((y) => [-1.5, 1.5].map((dy) => ({ ...POST_STRIP, radiance: 1.3, p: [x, y + dy, z + s * 0.25], size: [0.3, 1.5, 0.1] }))))),
+  // (fix 2: the post pair 5 m apart, a 3.5 m gap: at 3 m pitch the pair read as one split slot 4.5 m tall far off, the
+  // old tube again; F16, lamp bars at 4 m pitch or more)
+  ...FRAME_FACES.flatMap(([z, s]) => [108.5, -108.5].flatMap((x) => [-20, -47, -74].flatMap((y) => [-2.5, 2.5].map((dy) => ({ ...POST_STRIP, radiance: 1.3, p: [x, y + dy, z + s * 0.25], size: [0.3, 1.5, 0.1] }))))),
 ];
 
 // hangar floodlights: under the five frame rings (ray-cast ring ceilings) and in the bow section
@@ -202,14 +205,23 @@ export const asset = {
   // signs of life for a 20,000-crew ship (R12): eleven slow amber beacons, a drive-status bar and amber corner strips on
   // the stern plate, which had no light at all; the keel's lit compartments are 12 runs a side at the flank ports'
   // brightness (they had faded to nothing in the dark)
+  // (fix 2: the drive collars, the posts' recesses and the sponsons' aft recess lose their automatic lamps, and the caps
+  // come down so the lamps they free do not refill the hangar past its 900: creases 560 -> 525, corner bars 60 -> 45
+  // with the hangar zone's corner share at 0.2, so the cut falls on hangar corner bars, not on the stern block's and
+  // bow section's corner bars (a lower cap alone takes those first: the order interleaves hull and hangar). The
+  // recess-bar cap, 120 -> 100, is a guard only: 41 bars)
   lightscape: {
     seed: 51,
-    creases: { angle: 35, minLen: 7, pitch: 16, share: 0.2, run: [1, 3], runPitch: 1.8, corners: 0.35, spacing: 5, size: [0.22, 0.28], intensity: [0.8, 1.1], mix: { amber: 0.85, white: 0.15 }, max: 560, blinkShare: 0.02 },
-    slits: { angle: 35, minLen: 3, share: 0.3, every: 24, len: [1.2, 2.4], width: 0.2, radiance: [1.0, 1.5], spacing: 16, max: 120, mix: { amber: 1 },
-      corner: { share: 0.4, len: [1.4, 2.4], width: 0.2, radiance: [1.2, 1.7], inset: 0.8, spacing: 14, max: 60 } },
+    creases: { angle: 35, minLen: 7, pitch: 16, share: 0.2, run: [1, 3], runPitch: 1.8, corners: 0.35, spacing: 5, size: [0.22, 0.28], intensity: [0.8, 1.1], mix: { amber: 0.85, white: 0.15 }, max: 525, blinkShare: 0.02 },
+    slits: { angle: 35, minLen: 3, share: 0.3, every: 24, len: [1.2, 2.4], width: 0.2, radiance: [1.0, 1.5], spacing: 16, max: 100, mix: { amber: 1 },
+      corner: { share: 0.4, len: [1.4, 2.4], width: 0.2, radiance: [1.2, 1.7], inset: 0.8, spacing: 14, max: 45 } },
     // (no crease on this hull falls inside it: the drive-status fixture is the authored cool bar on the stern plate)
     cool: { radius: 1.7, depth: 4.5 },
     zones: [
+      // (fix 2) the six drive-bell collars behind the stern plate (z -376.5..-408): uncrewed machinery (R3), no lamps. 28
+      // automatic bars sat round them, lit slots on the engines; the box stops at z -371.5, so the stern plate's own
+      // corner pins stay, and its drive-status fixture is the one cool bar on the plate (patterns ignore zones)
+      { box: [[-125, -125, -412], [125, 25, -371.5]], creases: null, slits: null },
       // (fix) no automatic lamp within 1.5 m of glass: the flank port grids of the bow section and the stern block
       // (1 m port ribbons at y -13.5..-37 and -70..-92; bow z 279-410, stern z -366..-265) and the keel wedge's two port
       // rows (x 82 / 90). A crease pin on a port band's lip or a recess bar in its foot is a lit sill in a row of windows,
@@ -226,6 +238,8 @@ export const asset = {
       { box: [[-30, -112, -372], [30, 18, -368.5]], creases: null, slits: null },
       // (v14) the stern sponsons' aft recess (x 153.2-176.8, y -50.5, z -339.9) and forward intake recess: a lit bar at
       // each end of a rectangular recess turned it into a vehicle's side window or visor (a 60 m sponson read as a pod)
+      // (fix 2: and no pins round the aft recess either: four or five crease pins still framed it like a lit hatch)
+      { box: [[151, -60, -343], [179, -40, -338]], mirrorX: true, creases: null, slits: null },
       { box: [[140, -70, -345], [210, -30, -275]], mirrorX: true, slits: null },
       // louvre panels either side of the bow mouth (x 106.75-119.75, y -18..-81 at z 416.6) and the forward flank: no pins
       // on the slats (they are framed by authored bars instead)
@@ -234,6 +248,13 @@ export const asset = {
       // at -96.3): uncrewed machinery, no lamps at all (v14: 35 + 67 pins on grilles no crew or fixture would light)
       { box: [[100, -1, -262], [140, 24, 277]], mirrorX: true, creases: null, slits: null },
       { box: [[100, -122, -262], [126, -97.6, 277]], mirrorX: true, creases: null, slits: null },
+      // (fix 2) the frame posts' two door-shaped recesses (upper y -19.5..-44, lower -56..-83, z +-8 round the post
+      // centre, floor x 129.99): no automatic lamp on their lintels, sills or jambs (rule 3.5). A tall rounded recess with a
+      // lit sill and lit jambs reads as a hatch or a door in its frame and shrinks the 95 m post about ten times, the same
+      // cue as the window box it replaced. The post face's top and bottom corner bands (y over -15, under -87) take no
+      // automatic lamp either: the authored corner markers stand there (one lamp per corner, F7)
+      ...POSTS.flatMap((zc) => [[-46, -17.5, 9.5], [-85, -54, 9.5], [-15, -9, 13], [-95, -87, 13]].map(([y0, y1, dz]) => (
+        { box: [[128.5, y0, zc - dz], [131.6, y1, zc + dz]], mirrorX: true, creases: null, slits: null }))),
       // frame posts' corners: a light at a corner, no dotted chains up the long verticals
       { box: [[119, -95, -262], [133, -2, 277]], mirrorX: true, creases: { share: 0.1, run: [1, 1], corners: 0.6 } },
       // the bow face: corner accents, no speckle (its brow and waist bars are authored)
@@ -255,9 +276,11 @@ export const asset = {
       // (fix: share 0.25 -> 0.2, corners 0.7 -> 0.3. The pins the glass zones above freed would otherwise refill here (the
       // crease cap is global) and push the hangar past its 900-lamp budget; fewer loose warm dots in the dark bays, which
       // hinted at a lit tower facade, and the freed share goes back to the exterior's block corners)
+      // (fix 2: corner bars share 0.2, down from the hull's 0.4: the corner-bar cap is global too, and the bars freed on the
+      // drive collars and post recesses had refilled here, 20 -> 42)
       { box: [[-121, -97.5, -277], [121, -0.2, 421]],
         creases: { minLen: 5, pitch: 16, share: 0.2, run: [1, 2], runPitch: 1.5, corners: 0.3, spacing: 4, mix: { warm: 0.55, amber: 0.3, white: 0.15 }, intensity: [0.6, 0.95] },
-        slits: { minLen: 3, share: 0.35, every: 16, spacing: 12, mix: { warm: 0.6, amber: 0.4 } } },
+        slits: { minLen: 3, share: 0.35, every: 16, spacing: 12, mix: { warm: 0.6, amber: 0.4 }, corner: { share: 0.2 } } },
     ],
     patterns: [
       // ---- bow face (z 418.02): the brow and the waist band. A bar along the lower lip of each recessed header panel
@@ -337,6 +360,24 @@ export const asset = {
       // ports on the bow section's inner walls (window points, half of them dark; the frame faces' gallery ports are
       // lit by the livery alone)
       { points: BOW_WALL, ...WIN, skip: 0.5, seed: 13 },
+      // ---- corner markers (fix 2; F7: upright 1.5 x 0.22 m amber bars, radiance 1.4, not keep; all ray-cast). Last in the
+      // list, so the patterns above keep their seeds (a pattern's skip hash follows its place in the list).
+      // The frame posts: one at each of the four outer corners of every post's outer face (x 130.98, y -9.9..-93.8, z +-12
+      // round the centre), 0.85 m in from its top and bottom edges and 1 m from its sides. They take over from the
+      // automatic lamps that outlined the door-shaped recesses: a lamp at each corner marks the 24 x 84 m block, so the post
+      // keeps its size and the flank keeps its amber
+      ...POSTS.flatMap((zc) => [-11.5, -92.2].flatMap((y) => [-11.2, 11.2].map((dz) => (
+        { slit: [131.06, y, zc + dz], u: [0, 1, 0], n: [1, 0, 0], len: 1.5, width: 0.22, color: 'amber', radiance: 1.4, mirrorX: true })))),
+      // the stern block's lower outboard corners, on its forward chamfer (z -261.6, the bay-6 edge) and on its aft chamfer to
+      // the stern plate (z -370.4): their top corners already carry an automatic corner bar. 3.4 m or more from the port
+      // ribbons
+      { slit: [129.6, -91.5, -261.55], u: [0, 1, 0], n: [0.7071, 0, 0.7071], len: 1.5, width: 0.22, color: 'amber', radiance: 1.4, mirrorX: true },
+      { slit: [127.6, -91.5, -370.48], u: [0, 1, 0], n: [0.7071, 0, -0.7071], len: 1.5, width: 0.22, color: 'amber', radiance: 1.4, mirrorX: true },
+      // the stern gun sponsons' outboard corners, on the flat of the forward face (z -278.98, y -42.3..-61.8) and the aft
+      // face (z -341.02), 0.8 m in from the outboard chamfer and 31 m from the sidelight: a gun block gets corner markers
+      // only (R3), and they give the 60 m sponson its size where the lit recess ends had made it read as a pod with a visor
+      ...[[-278.92, [0, 0, 1]], [-341.08, [0, 0, -1]]].flatMap(([z, n]) => [-44.3, -59.7].map((y) => (
+        { slit: [197.8, y, z], u: [0, 1, 0], n, len: 1.5, width: 0.22, color: 'amber', radiance: 1.4, mirrorX: true }))),
     ],
   },
   // the operational repaint stops at the hangar: inside the cavity box the texture keeps its own plating (x 0.14, 8 %
