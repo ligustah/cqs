@@ -31,8 +31,10 @@ $PY tools/blender/hulls/compare.py <work>/m4/fighter-hull.blend <work>/measure <
   stern face (z -26) to z 4, tapering in plan (flank 13.0 -> 6.75, a 0.7 m step at z 15) and
   height to the framed bow face. Raised dorsal deck y 6.84 from z -18.5 to -3; aft deck y 5.28.
 - Spine y 6.98 (six oval hatches) runs forward into the bridge block (walls x 3.85 -> 3.3), roof
-  raked from z 11.3, glazed front face z 15.1-17.0 (recess 0.32 m, 2 x 7 kit panes x0.7) and a
-  side band of 5 panes x0.58 each side.
+  raked from z 11.3, glazed front face z 15.1-17.0 (recess 0.32 m, one row of 5 kit panes at the
+  fleet size x1.0; the side bands are unglazed dark visor slots). Two fleet-size ports (kit port
+  x1.0) each side just ahead of the forward crew door (v14 scale pass: the v5 rows of 36 half-size
+  ports and the 24-pane bridge grid made the fighter read like a much bigger crewed ship).
 - Sponsons: chamfered octagon x 16.95-23.15, y -6.15..-0.55, z -13.7..0.2, nose to z 1.9; pylon
   hexagon lofts from z -13.5..2.5 at the flank to z -11.4..0.6 at the sponson. Twin railgun:
   mantlet z 1.6-5.4, sleeve, two barrels r 0.42 (y +-0.475 about -3.35) to z 14.6, slotted muzzle

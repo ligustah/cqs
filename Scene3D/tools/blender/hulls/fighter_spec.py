@@ -51,31 +51,23 @@ for i, (z, y) in enumerate(H.DOORS):
     P.append({"id": "crew doors in the flank bays (on the bay floor)" if i == 0 else None, "part": "door", "p": r([fX(z) - 0.32 * n[0], y, z - 0.32 * n[2]]), "n": n,
               "snap": False, "seat": {"check": False}, "mirrorX": True})
     P.append({"part": "floodlight", "p": r([fX(z), y + 2.05, z]), "n": n, "rot": 180, "mirrorX": True})
-# ---- ports: a row along the forward flank just under the chamfer, a row on the aft chamfer
-PS = 0.55
-zs = [11.2 + 2.25 * k for k in range(9)]
-for i, z in enumerate(zs):
-    y = H.prof(z)['FT'] - 0.72
-    P.append({"id": "flank ports (kit port x0.55), forward flank" if i == 0 else None, "part": "port", "p": r([fX(z), y, z]), "n": flank_n(z), "scale": PS, "mirrorX": True})
-chn = [0.8, 0.6, 0.0]
-P.append({"id": "flank ports, aft upper chamfer", "part": "port", "row": {"from": [12.33, 1.1, -17.4], "to": [12.33, 1.1, -1.4], "pitch": 2.0}, "n": chn, "scale": PS, "mirrorX": True})
-# ---- bridge glazing: two rows of kit panes x0.7 on the front recess back wall, one row x0.58 on
-# each side recess
+# ---- ports (v14 scale pass): only two per side, at the fleet's port size (kit port x1.0: 1.0 m glass in a 1.4 m
+# frame, the same port as the corvette, freighter, destroyer and carrier), on the forward flank just ahead of the
+# crew door, glass top level with the door head. The v5 rows of half-size ports (x0.55, 36 in all, two rows over
+# 47 m) read as the windows of a much bigger ship; a strike craft's crew lives behind a few ports, not a gallery.
+PS = 1.0
+for i, z in enumerate((11.4, 13.4)):
+    # (no snap: as for the doors, the snap ray from 8 m out would start inside the sponson railgun)
+    P.append({"id": "flank ports (kit port x1.0), forward flank beside the crew door" if i == 0 else None, "part": "port", "p": r([fX(z), -2.6, z]), "n": flank_n(z), "scale": PS, "snap": False, "mirrorX": True})
+# ---- bridge glazing: one row of five kit panes at the fleet pane size (x1.0: 1.0 x 1.2 m glass, 1.12 m pitch) on the
+# front recess back wall (5.6 m in the 6.2 m recess). The side recesses stay unglazed dark visor slots (a x1.0 pane
+# does not fit their 0.8 m band); v5's 2 x 7 + 2 x 5 grid of x0.7 / x0.58 panes read as a many-roomed block.
 c, fn, up = (V(t) for t in H.glazing_frame())
-S1 = 0.7
-pw, ph = 1.12 * S1, 1.32 * S1
-for k, s in enumerate((-0.5, 0.5)):
-    cc = c + up * (s * ph)
-    a = cc + V((1, 0, 0)) * (-3 * pw); b = cc + V((1, 0, 0)) * (3 * pw)
-    P.append({"id": "bridge glazing panes x0.7 (front recess, two rows)" if k == 0 else None, "part": "pane", "row": {"from": r(a), "to": r(b), "pitch": round(pw, 4)},
-              "n": r(fn, 4), "up": r(up, 4), "scale": S1, "seat": {"check": False}})
-S2 = 0.58
-g = H.SIDE_GLAZE
-wn = V(H.side_wall_n())
-cc = V((H.side_wall_x(g['y']), g['y'], g['z'])) - wn * H.SIDE_DEPTH
-pw2 = 1.12 * S2
-P.append({"id": "bridge side panes x0.58", "part": "pane", "row": {"from": r(cc + V((0, 0, -2 * pw2))), "to": r(cc + V((0, 0, 2 * pw2))), "pitch": round(pw2, 4)},
-          "n": r(wn, 4), "up": [0, 1, 0], "scale": S2, "mirrorX": True, "seat": {"check": False}})
+S1 = 1.0
+pw = 1.12 * S1
+a = c + V((1, 0, 0)) * (-2 * pw); b = c + V((1, 0, 0)) * (2 * pw)
+P.append({"id": "bridge glazing panes x1.0 (front recess, one row of five)", "part": "pane", "row": {"from": r(a), "to": r(b), "pitch": round(pw, 4)},
+          "n": r(fn, 4), "up": r(up, 4), "scale": S1, "seat": {"check": False}})
 # ---- RCS quads: modelled on the hull (fighter.py rcs_quads), not the kit block
 # ---- nav light housings (module lights at the lens, 0.23 m out)
 P += [

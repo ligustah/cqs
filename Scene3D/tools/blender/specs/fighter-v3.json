@@ -205,180 +205,53 @@
    "mirrorX": true
   },
   {
-   "id": "flank ports (kit port x0.55), forward flank",
+   "id": "flank ports (kit port x1.0), forward flank beside the crew door",
    "part": "port",
    "p": [
-    11.987,
-    -1.919,
-    11.2
+    11.958,
+    -2.6,
+    11.4
    ],
    "n": [
     0.9896,
     0.0,
     0.1438
    ],
-   "scale": 0.55,
+   "scale": 1.0,
+   "snap": false,
    "mirrorX": true
   },
   {
    "part": "port",
    "p": [
-    11.661,
-    -2.345,
-    13.45
+    11.668,
+    -2.6,
+    13.4
    ],
    "n": [
     0.9896,
     0.0,
     0.1438
    ],
-   "scale": 0.55,
+   "scale": 1.0,
+   "snap": false,
    "mirrorX": true
   },
   {
-   "part": "port",
-   "p": [
-    10.706,
-    -2.566,
-    15.7
-   ],
-   "n": [
-    0.9766,
-    0.0,
-    0.2149
-   ],
-   "scale": 0.55,
-   "mirrorX": true
-  },
-  {
-   "part": "port",
-   "p": [
-    10.211,
-    -2.521,
-    17.95
-   ],
-   "n": [
-    0.977,
-    0.0,
-    0.2135
-   ],
-   "scale": 0.55,
-   "mirrorX": true
-  },
-  {
-   "part": "port",
-   "p": [
-    9.725,
-    -2.52,
-    20.2
-   ],
-   "n": [
-    0.9775,
-    0.0,
-    0.2111
-   ],
-   "scale": 0.55,
-   "mirrorX": true
-  },
-  {
-   "part": "port",
-   "p": [
-    9.276,
-    -2.696,
-    22.45
-   ],
-   "n": [
-    0.9811,
-    0.0,
-    0.1933
-   ],
-   "scale": 0.55,
-   "mirrorX": true
-  },
-  {
-   "part": "port",
-   "p": [
-    8.833,
-    -2.898,
-    24.7
-   ],
-   "n": [
-    0.9811,
-    0.0,
-    0.1933
-   ],
-   "scale": 0.55,
-   "mirrorX": true
-  },
-  {
-   "part": "port",
-   "p": [
-    8.389,
-    -3.101,
-    26.95
-   ],
-   "n": [
-    0.9811,
-    0.0,
-    0.1933
-   ],
-   "scale": 0.55,
-   "mirrorX": true
-  },
-  {
-   "part": "port",
-   "p": [
-    7.946,
-    -3.303,
-    29.2
-   ],
-   "n": [
-    0.9811,
-    0.0,
-    0.1933
-   ],
-   "scale": 0.55,
-   "mirrorX": true
-  },
-  {
-   "id": "flank ports, aft upper chamfer",
-   "part": "port",
-   "row": {
-    "from": [
-     12.33,
-     1.1,
-     -17.4
-    ],
-    "to": [
-     12.33,
-     1.1,
-     -1.4
-    ],
-    "pitch": 2.0
-   },
-   "n": [
-    0.8,
-    0.6,
-    0.0
-   ],
-   "scale": 0.55,
-   "mirrorX": true
-  },
-  {
-   "id": "bridge glazing panes x0.7 (front recess, two rows)",
+   "id": "bridge glazing panes x1.0 (front recess, one row of five)",
    "part": "pane",
    "row": {
     "from": [
-     -2.352,
-     3.654,
-     16.078
+     -2.24,
+     4.02,
+     15.796
     ],
     "to": [
-     2.352,
-     3.654,
-     16.078
+     2.24,
+     4.02,
+     15.796
     ],
-    "pitch": 0.784
+    "pitch": 1.12
    },
    "n": [
     0.0,
@@ -390,69 +263,7 @@
     0.7926,
     -0.6097
    ],
-   "scale": 0.7,
-   "seat": {
-    "check": false
-   }
-  },
-  {
-   "part": "pane",
-   "row": {
-    "from": [
-     -2.352,
-     4.386,
-     15.515
-    ],
-    "to": [
-     2.352,
-     4.386,
-     15.515
-    ],
-    "pitch": 0.784
-   },
-   "n": [
-    0.0,
-    0.6097,
-    0.7926
-   ],
-   "up": [
-    0.0,
-    0.7926,
-    -0.6097
-   ],
-   "scale": 0.7,
-   "seat": {
-    "check": false
-   }
-  },
-  {
-   "id": "bridge side panes x0.58",
-   "part": "pane",
-   "row": {
-    "from": [
-     3.218,
-     5.57,
-     10.251
-    ],
-    "to": [
-     3.218,
-     5.57,
-     12.849
-    ],
-    "pitch": 0.6496
-   },
-   "n": [
-    0.9929,
-    0.1192,
-    0.0
-   ],
-   "up": [
-    0,
-    1,
-    0
-   ],
-   "scale": 0.58,
-   "mirrorX": true,
+   "scale": 1.0,
    "seat": {
     "check": false
    }
