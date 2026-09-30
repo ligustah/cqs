@@ -24,21 +24,44 @@ export const asset = {
   rotate: [0, 0, 0],
   hullNodes: ["hull"],
   // remodel paint is lighter than the generated textures: gain 0.05 matches the fleet grey. v11: lit cabins behind the
-  // ports and bridge panes (warm, varied per compartment, a few dark, a few flickering)
-  livery: { gain: 0.05, glassGlow: [0.52, 0.42, 0.28], glassLit: 0.5, glassFlicker: 0.12 },
+  // ports and bridge panes (warm, varied per compartment, a few dark, a few flickering).
+  // v14 scale pass (fleet lighting standard): a warship's lit share (0.45, flicker 0.08); only the kit ports and panes
+  // glow (glassParts: the turret sights and hull stencils stay dark, no cabin window on a gun); compartment grid 5.1 m
+  // with phase 0.54 so no cell edge crosses a 1 m port (the old grid split 40 of 86 into two-tone half windows, which
+  // read half size and made the flank read bigger); the bridge glazing band and the tower glazing are each one steady,
+  // dim compartment (a bridge runs dark at night)
+  livery: {
+    gain: 0.05, glassGlow: [0.52, 0.42, 0.28], glassLit: 0.45, glassFlicker: 0.08, glassCell: 5.1, glassPhase: 0.54,
+    glassParts: ['port', 'pane'],
+    glassZones: [
+      { box: [[-10.5, 0.2, 10.5], [10.5, 2.7, 25.5]], gain: 0.5, uniform: true },  // bridge glazing band
+      { box: [[-8, 10.5, -18], [8, 12.5, -3]], gain: 0.5, uniform: true },         // tower glazing
+    ],
+  },
   // v11 lightscape (src/lib/lightscape.js); v12: the hierarchy turned round to the concept's: a few short amber bars in
   // real recesses and at block corners (door jambs, the bow torpedo frame, the pod radiator bay, the flank's forward
   // corner, vent floors, the deckhouse base) carry the look; crease pins are sparse background texture (no white pins
-  // on the key-lit top, none on louvres or glazing)
+  // on the key-lit top, none on louvres or glazing).
+  // v14 scale pass: lamps are fleet-size fixtures (pins 0.2-0.3 m, bars 0.14-0.2 m wide) and only where a fixture has a
+  // job (door, block corner, torpedo and stern frames, drive status, deck edge, mast); no row runs beside or at the pitch
+  // of the 2.5 m port grid (a dotted row there reads as another deck of windows); warm is an interior colour, so the
+  // exterior is amber with a little white; the uncrewed drive pods are dark machinery with corner lamps only
   lightscape: {
     seed: 21,
-    creases: { angle: 35, minLen: 3, pitch: 6, share: 0.2, run: [1, 2], runPitch: 1.1, corners: 0.3, spacing: 2.0, size: [0.17, 0.25], intensity: [0.45, 0.75], mix: { amber: 0.75, warm: 0.25 }, max: 120, blinkShare: 0.03 },
-    slits: { angle: 35, minLen: 1.5, share: 0.65, every: 8, len: [0.7, 1.2], width: 0.2, radiance: [1.0, 1.4], spacing: 4, max: 48, mix: { amber: 0.85, warm: 0.15 }, corner: { radiance: [1.1, 1.5], len: [0.8, 1.2], width: 0.2 } },
+    creases: { angle: 35, minLen: 3, pitch: 6, share: 0.2, run: [1, 2], runPitch: 1.1, corners: 0.3, spacing: 2.0, size: [0.2, 0.25], intensity: [0.45, 0.75], mix: { amber: 0.85, white: 0.15 }, max: 40, blinkShare: 0.03 },
+    slits: { angle: 35, minLen: 1.5, share: 0.65, every: 8, len: [0.7, 1.2], width: 0.2, radiance: [1.0, 1.4], spacing: 4, max: 30, mix: { amber: 1 }, corner: { radiance: [1.1, 1.5], len: [0.8, 1.2], width: 0.2 } },
     cool: { radius: 1.8, depth: 2.5 },
     // first matching box wins (ship frame; mirrorX adds the starboard twin)
     zones: [
       // pod radiator bay (0.45 m recess x 34.0..34.45, y -17.05..-12.85, z -22.6..-9.4, fins at 0.3 m): no confetti in the fins
       { box: [[33.4, -17.6, -23.1], [35.3, -12.3, -8.9]], mirrorX: true, creases: null, slits: null },
+      // v14: the rest of each drive pod (uncrewed machinery, 10 x 10.5 x 29 m): no automatic pins; the authored corner
+      // lamps, bay bars, status bar and sidelight mark it. A fine scatter here read as portholes on a crewed module and
+      // made the pod, and so the ship, read bigger
+      { box: [[24.2, -20.8, -29.2], [35.0, -9.1, -0.3]], mirrorX: true, creases: null },
+      // v14: stern frame side walls: the authored and corner bars mark the frame; crease pins stacked a column of dots
+      // up the wall between them
+      { box: [[12.0, -18.0, -50.2], [16.0, -1.5, -48.8]], mirrorX: true, creases: null },
       // shoulder vent bays (0.3 m recesses with slanted louvres) and the ribbed launcher tubes
       { box: [[12.5, -5.2, 5.6], [17.2, -0.6, 17.4]], mirrorX: true, creases: null, slits: null },
       { box: [[12.2, -5.2, -47.0], [16.9, -0.6, -39.8]], mirrorX: true, creases: null, slits: null },
@@ -51,43 +74,53 @@ export const asset = {
       { box: [[7.5, -12.4, 21.0], [16.0, -10.6, 54.0]], mirrorX: true, slits: null },
       // bow cap: only a few block corners
       { box: [[-20.0, -25.0, 41.5], [20.0, -1.0, 52.2]], creases: { share: 0.08, run: [1, 1], corners: 0.25 } },
+      // v14: clear of the flank port grid (frames x 15.6..16.5, y -10.5..-6.1, z 0.3..19.2 and -43.4..-27.1) up to the
+      // shoulder crease (y -4.4): pins on the belt top 1 m under the lower ports and a run along the shoulder crease
+      // 2.4 m over the upper ports lined up as two more decks of windows, and a bar on the aft door head read as a lit
+      // transom
+      { box: [[15.2, -12.3, -44.9], [17.2, -3.8, 20.7]], mirrorX: true, creases: null, slits: null },
       // armour belt ledge (0.22 m proud): too shallow to read as a recess, so only the odd bar
       { box: [[15.9, -12.2, -49.5], [16.9, -10.9, 21.0]], mirrorX: true, slits: { share: 0.15 } },
+      // v14: bridge tower and mast above the deckhouse: a mast carries a few lamps (sensor-block top, yardarm tips), not
+      // the glitter of every rail corner, which made the 13 m tower read as a much wider block. No automatic bar here:
+      // every one landed on a glazing sill or lintel, and the platform-corner pins sat at the corners of the lit band;
+      // both read as more windows (exclude: 1.5 m round the panes, x +-6.9, y 10.9..12.1, z -14.6..-4.8)
+      { box: [[-8, 10, -18], [8, 30, -3]], creases: { share: 0, corners: 0.15, exclude: [{ box: [[-8.5, 9.4, -16.2], [8.5, 13.7, -3.2]] }] }, slits: null },
       // key-lit top (deck, walkways, deckhouse, tower): sparse, the studio key washes pins there
       { box: [[-20.0, -2.0, -50.0], [20.0, 30.0, 50.0]], creases: { share: 0.12, corners: 0.2 } },
     ],
     patterns: [
-      // tower glazing: lit sill
-      { surface: 'tower-glazing', edge: 'bottom', inset: 0.2, lift: 0.1, pitch: 0.8, color: 'warm', size: 0.16, intensity: 0.55, keep: true },
-      // armour belt top and shoulder bottom: sparse amber marks (were dotted lines)
-      { surface: 'belt-port', edge: 'top', inset: 0.3, pitch: 7, color: 'amber', size: 0.22, intensity: 0.8, skip: 0.45, mirrorX: true },
-      { surface: 'shoulder-port', edge: 'bottom', inset: 0.2, pitch: 8, color: 'amber', size: 0.2, intensity: 0.7, skip: 0.45, mirrorX: true },
+      // (v14: the tower glazing sill row, 11 pins at 0.86 m under 9 panes at 1.12 m, is gone: twice the real window
+      // frequency made the bridge read twice as wide. The dim tower panes carry the tower.)
+      // armour belt: sparse amber marks on its lower edge (y about -16.5), well clear of the port grid; v14: moved off
+      // the belt top and the shoulder row dropped, since specks 1.8 m from the port rows read as two more window decks
+      { surface: 'belt-port', edge: 'bottom', inset: 0.3, pitch: 10, color: 'amber', size: 0.22, intensity: 0.8, skip: 0.45, mirrorX: true },
       // deckhouse base / walkway junction (concave corner at x 10.37, y -1.44): short amber bars
-      { slitRow: [[10.43, -1.34, -27.0], [10.43, -1.34, 3.0]], pitch: 7.5, u: [0, 0, 1], n: [0.52, 0.85, 0], len: 1.1, width: 0.2, radiance: 1.5, color: 'amber', skip: 0.3, keep: true, mirrorX: true },
+      { slitRow: [[10.43, -1.34, -27.0], [10.43, -1.34, 3.0]], pitch: 7.5, u: [0, 0, 1], n: [0.52, 0.85, 0], len: 1.1, width: 0.2, radiance: 1.5, color: 'amber', skip: 0.3, mirrorX: true },
       // crew-door bays (z 1.5 / 9.9 / -39.5, recess y -15.2..-12.2): short lamps at the head and foot of the aft jamb
-      // wall (faces forward), inside the recess
-      { slit: [16.285, -12.75, 0.555], u: [0, 1, 0], n: [0, 0, 1], len: 0.6, width: 0.14, radiance: 1.5, color: 'amber', keep: true, mirrorX: true },
+      // wall (faces forward), inside the recess: the human ruler beside a 1 x 2 m door
+      { slit: [16.285, -12.75, 0.555], u: [0, 1, 0], n: [0, 0, 1], len: 0.6, width: 0.14, radiance: 1.5, color: 'amber', mirrorX: true },
       { slit: [16.285, -14.65, 0.555], u: [0, 1, 0], n: [0, 0, 1], len: 0.5, width: 0.14, radiance: 1.2, color: 'amber', mirrorX: true },
       { slit: [16.285, -12.75, 8.955], u: [0, 1, 0], n: [0, 0, 1], len: 0.6, width: 0.14, radiance: 1.5, color: 'amber', mirrorX: true },
-      { slit: [15.81, -12.75, -40.445], u: [0, 1, 0], n: [0, 0, 1], len: 0.6, width: 0.14, radiance: 1.5, color: 'amber', keep: true, mirrorX: true },
+      { slit: [15.81, -12.75, -40.445], u: [0, 1, 0], n: [0, 0, 1], len: 0.6, width: 0.14, radiance: 1.5, color: 'amber', mirrorX: true },
       { slit: [15.81, -14.65, -40.445], u: [0, 1, 0], n: [0, 0, 1], len: 0.5, width: 0.14, radiance: 1.2, color: 'amber', mirrorX: true },
-      // forward flank: corner bars 0.4 m inside the block edge where the flat flank meets the bow taper (z 19.2), and
-      // one at the foot of the tapered bow flank by the torpedo frame lip (z 54.05)
-      { slit: [16.16, -10.4, 18.8], u: [0, 1, 0], n: [1, 0, 0], len: 1.0, width: 0.17, radiance: 1.5, color: 'amber', keep: true, mirrorX: true },
-      { slit: [16.16, -5.7, 18.8], u: [0, 1, 0], n: [1, 0, 0], len: 0.8, width: 0.17, radiance: 1.3, color: 'amber', mirrorX: true },
+      // forward flank: a corner bar 0.4 m inside the block edge where the flat flank meets the bow taper (z 19.2), above
+      // the first port column (v14: moved up clear of its frame, and the bar beside the lower port dropped: a bar at a
+      // window reads as a door-jamb lamp), and one at the foot of the tapered bow flank by the torpedo frame lip (z 54.05)
+      { slit: [16.16, -5.0, 18.8], u: [0, 1, 0], n: [1, 0, 0], len: 0.8, width: 0.17, radiance: 1.3, color: 'amber', mirrorX: true },
       { slit: [8.47, -12.9, 52.9], u: [0, 1, 0], n: [0.975, 0, 0.222], len: 1.0, width: 0.17, radiance: 1.4, color: 'amber', keep: true, mirrorX: true },
       // pod radiator bay: short corner bars in the open slots between the end walls and the first / last fin (in the
-      // face plane, x 34.4: the fins hide anything deeper at oblique views), and dim warm lamps along its sill and head
+      // face plane, x 34.4: the fins hide anything deeper at oblique views). v14: the warm sill and amber head rows are
+      // gone (a lamp rim round the bay read as a lit hangar mouth on an uncrewed pod)
       { slit: [34.4, -13.6, -9.56], u: [0, 1, 0], n: [1, 0, 0], len: 0.8, width: 0.17, radiance: 1.5, color: 'amber', keep: true, mirrorX: true },
       { slit: [34.4, -16.3, -22.49], u: [0, 1, 0], n: [1, 0, 0], len: 0.8, width: 0.17, radiance: 1.4, color: 'amber', keep: true, mirrorX: true },
-      { row: [[34.5, -16.85, -21.4], [34.5, -16.85, -10.6]], pitch: 1.8, color: 'warm', size: 0.2, intensity: 0.7, skip: 0.25, mirrorX: true },
-      { row: [[34.5, -13.05, -20.5], [34.5, -13.05, -11.5]], pitch: 3.0, color: 'amber', size: 0.18, intensity: 0.55, skip: 0.3, mirrorX: true },
-      // pod extremities: lamps at the outboard face corners (fore steady, aft slow pulse)
-      { points: [[34.56, -11.45, -2.4], [34.56, -18.45, -2.4]], color: 'amber', size: 0.42, intensity: 1.5, keep: true, mirrorX: true },
-      { points: [[34.56, -11.45, -26.3], [34.56, -18.45, -26.3]], color: 'amber', size: 0.42, intensity: 1.5, keep: true, pulse: 4.2, mirrorX: true },
-      // drive pods: blue-white status strip on the outboard faces, amber below
-      { surface: 'pod-outboard-port', edge: 'top', inset: 0.4, pitch: 1.4, color: 'cool', size: 0.2, intensity: 0.85, mirrorX: true },
-      { surface: 'pod-outboard-port', edge: 'bottom', inset: 0.4, pitch: 1.8, color: 'amber', size: 0.22, intensity: 0.8, mirrorX: true },
+      // pod extremities: fleet-size lamps (0.3 m) at the outboard face corners (fore steady, aft slow pulse)
+      { points: [[34.56, -11.45, -2.4], [34.56, -18.45, -2.4]], color: 'amber', size: 0.3, intensity: 1.5, keep: true, mirrorX: true },
+      { points: [[34.56, -11.45, -26.3], [34.56, -18.45, -26.3]], color: 'amber', size: 0.3, intensity: 1.5, pulse: 4.2, mirrorX: true },
+      // drive pods: one cool drive-status bar on the flat outboard face between the radiator bay and the strap at z -5
+      // (0.12 m proud), above the sidelight (2.5 m clear). v14: it replaces a cool row at 1.4 m and an amber row at
+      // 1.8 m, which read as rows of portholes where no crew can be
+      { slit: [34.47, -12.4, -6.2], u: [0, 0, 1], n: [1, 0, 0], len: 0.8, width: 0.15, radiance: 1.1, color: 'cool', mirrorX: true },
       // bow torpedo frame: upright bars on the inner side walls (x 7.6, facing in), one under the deck lintel, lamps at the lip's shoulder corners
       { slit: [7.57, -9.6, 53.4], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.19, radiance: 1.6, color: 'amber', keep: true, mirrorX: true },
       { slit: [7.57, -13.8, 53.4], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.19, radiance: 1.6, color: 'amber', keep: true, mirrorX: true },
@@ -96,11 +129,15 @@ export const asset = {
       // stern frame (0.3 m inner wall, lip z -49.53, plate -49.24): short bars either side of the drive chaser
       { slit: [14.68, -6.6, -49.39], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.17, radiance: 1.4, color: 'amber', mirrorX: true },
       { slit: [14.895, -14.0, -49.39], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.17, radiance: 1.4, color: 'amber', mirrorX: true },
-      // shoulder vent bays: warm glow on the recess floor between the slanted louvres (mid-gap, fins at z0 + 0.6 + k 1.15)
-      { slitRow: [[14.627, -3.147, 7.375], [14.627, -3.147, 16.575]], pitch: 1.15, u: [0, 0, 1], n: [0.752, 0.659, 0], len: 0.55, width: 0.14, radiance: 0.8, color: 'warm', skip: 0.45, mirrorX: true },
+      // shoulder vent bays: amber lamps on the recess floor between the slanted louvres (mid-gap, fins at z0 + 0.6 +
+      // k 1.15). v14: the fore bays keep only the two end slots, as recess-corner lamps; a lit slot every 1.15 m read as a
+      // third deck of letterbox windows at half the port pitch, in a machinery vent with no crew
+      { slit: [14.627, -3.147, 7.375], u: [0, 0, 1], n: [0.752, 0.659, 0], len: 0.55, width: 0.14, radiance: 0.9, color: 'amber', mirrorX: true },
+      { slit: [14.627, -3.147, 16.575], u: [0, 0, 1], n: [0.752, 0.659, 0], len: 0.55, width: 0.14, radiance: 0.9, color: 'amber', mirrorX: true },
       { slitRow: [[14.18, -3.075, -45.225], [14.18, -3.075, -41.775]], pitch: 1.15, u: [0, 0, 1], n: [0.751, 0.66, 0], len: 0.55, width: 0.14, radiance: 0.9, color: 'amber', skip: 0.4, mirrorX: true },
-      // stern plate: drive status chaser; the bow deck: two slow beacons
-      { surface: 'stern-plate', edge: 'centre', inset: 0.4, pitch: 0.6, color: 'cool', size: 0.18, intensity: 0.85, chase: 2.6 },
+      // stern plate (x +-4): drive status chaser, a short run each side outboard of the stern light, 2.4 m clear of it
+      // (v14: it ran through the light at 0.6 m pitch, 14 lamps in 8 m); the bow deck: two slow beacons
+      { row: [[2.4, -2.88, -49.34], [3.6, -2.88, -49.34]], pitch: 1.2, color: 'cool', size: 0.2, intensity: 0.85, chase: 2.6, mirrorX: true },
       { surface: 'bow-deck', edge: 'left', inset: 0.5, pitch: 7, color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.4 },
       { surface: 'bow-deck', edge: 'right', inset: 0.5, pitch: 7, color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.4 },
     ],
@@ -132,12 +169,13 @@ export const asset = {
     {p: [-29.55, -14.925, -34.586], radius: 3.5, depth: 4.725, throat: 1.75, wall: [[0.675, 3.447], [1.35, 3.316], [2.025, 3.119], [2.7, 2.861], [3.375, 2.545], [4.05, 2.174]]},
   ],
   lights: [
+    // v14: every nav light is the fleet's 0.4 m fixture (the kit housing), the same lamp on every hull
     // steady sidelights on the flat outboard face of each pod (the beam extremity): red port, green starboard
-    {p: [34.68, -14.925, -6.986], color: "red", size: 0.6},
-    {p: [-34.68, -14.925, -6.986], color: "green", size: 0.6},
+    {p: [34.68, -14.925, -6.986], color: "red", size: 0.4},
+    {p: [-34.68, -14.925, -6.986], color: "green", size: 0.4},
     // anti-collision strobes, alternating: keel and masthead (top of the sensor block)
-    {p: [0.0, -23.305, 0.014], color: "white", size: 0.5, blink: {period: 1.3, duty: 0.1, phase: 0.5}},
-    {p: [0.0, 23.325, -11.486], color: "white", size: 0.5, blink: {period: 1.3, duty: 0.1}},
+    {p: [0.0, -23.305, 0.014], color: "white", size: 0.4, blink: {period: 1.3, duty: 0.1, phase: 0.5}},
+    {p: [0.0, 23.325, -11.486], color: "white", size: 0.4, blink: {period: 1.3, duty: 0.1}},
     // steady stern light on the stern plate above the centre bell
     {p: [0.0, -3.075, -49.466], color: "white", size: 0.4},
     // (v10 amber running lights on bare plating removed in v12: the lightscape's recess bars replace them)

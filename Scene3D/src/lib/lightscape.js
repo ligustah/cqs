@@ -1,7 +1,7 @@
 // Lightscape: the many small lights that make a dark hull read as inhabited and operating
 // (v11). Nav lights (red / green / strobes) stay in the module's `lights`; this adds
-//   - pins: small amber / warm-white / cool points (0.2-0.4 m) along the hull's real chines and
-//     block corners, and authored rows, rings and window runs;
+//   - pins: small amber / warm-white / cool points (0.2-0.3 m: fleet standard, v14 STANDARD section 2; window points
+//     0.5 m) along the hull's real chines and block corners, and authored rows, rings and window runs;
 //   - slits: short, dimmer glowing bars tucked into concave corners (recesses, vents, the gaps
 //     between armour blocks) and authored bars.
 // Both are generated once per ship prototype (buildGLBShip) and drawn by effects.js: every pin in
@@ -22,9 +22,14 @@
 //   louvre      { minFamily: 4, pitch: 1.0, lenTol: 0.15 } | false (also accepted as creases.louvre): families of
 //               parallel, same-length, same-facing creases side by side (grilles, louvres, radiator fins) get no
 //               pins and no slits
-//   (slits carry a rank too: corner bars 0-0.5, recess bars 0-1, authored / animated 0; mirror twins share it)
+//   (slits carry a rank too: corner bars 0-0.5, recess bars 0-1, authored `keep` / animated 0, other authored
+//   hashed 0-1; mirror twins share it. effects.js thins bars by rank with the ship's screen size, as it does pins,
+//   and rank-0 bars keep at least 0.45 of their radiance far off, the rest 0.2)
 //   (every pin carries a distance-thinning rank for effects.js: crease-end corner pins 0.02-0.47, authored
-//   rows 0.1-0.5, port rows 0.15-0.65, crease-run pins 0.4-1: corners and authored rows are the last left far off)
+//   rows 0.1-0.5, port rows 0.15-0.65, crease-run pins 0.4-1: corners and authored rows are the last left far off.
+//   Far-field energy floor by type: `keep` and animated pins 0.4, plain lamps 0.25, port* window points fade with
+//   their area to 0.05; the module's `lights[]` (nav path) is never dimmed or thinned, so it holds nav, red
+//   obstruction and white outline lights only: amber running lights and window points belong here)
 //   zones       [{ box, mirrorX, creases: {...overrides} | null, slits: {...} | null }]: inside the box the
 //               overrides apply (null: none there), e.g. a warmer, denser hangar interior or a vent grille kept dark
 //   cool        { radius, depth (x the bell radius) }: crease pins round a drive housing turn blue-white

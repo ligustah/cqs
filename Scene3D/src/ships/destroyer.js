@@ -51,65 +51,120 @@ export const asset = {
   rotate: [0, 0, 0],
   hullNodes: ["hull"],
   // v11: lit cabins behind the 1 m ports and the bridge / CIC slits (warm, varied per compartment, a few flickering)
-  livery: {"gain": 0.05, "glassGlow": [0.52, 0.42, 0.28], "glassLit": 0.5, "glassFlicker": 0.12, "mark": 0.18, "markSat": 0.3},
+  // v14 (fleet lighting scale standard): the 1 m ports are the ship's true ruler, so they are the only lit glass;
+  // a warship's share, 0.45 lit, little flicker. Dark glass (boxes span the hull where they hold no other glass, so
+  // the 8 livery box slots cover everything): the bow shoulder ports under the two point-defence mounts (a gun the
+  // size of a window reads wrong both ways); a 7.5 x 7.5 m panel round each sidelight, which sits in the engine
+  // flank's port grid (a red or green 'window' otherwise; edges between port columns, so no port is cut); and the
+  // sights and vision blocks of the 12 turrets (kit turret-M glass, found by the livery glass test on the part
+  // texture: a lit 1 m 'window' on a gun house makes it a building). The bridge slit (x +-7.5, y 11.2-12.0, z -47 to
+  // the front) and the CIC slit (x +-8.7, y 8.4-9.0, z -37.6 to the front, ray-cast) run as one steady compartment
+  // at half the cabin glow. The door vision panels and floodlight lenses keep their light (human-scale cues).
+  livery: {"gain": 0.05, "glassGlow": [0.52, 0.42, 0.28], "glassLit": 0.45, "glassFlicker": 0.08, "mark": 0.18, "markSat": 0.3,
+    glassDark: [
+      [[-16.5, -4.5, 75], [16.5, -1, 83]],          // under the bow point-defence mounts (ports x +-14.15, y -2.64)
+      [[-29.0, -16.6, -54.5], [29.0, -9.1, -47.0]], // sidelight panels (port columns z -48.25, -50.75, -53.25)
+      [[-5, 2.5, 63.5], [3.5, 10, 81]],             // bow turrets A / B
+      [[-3.5, 4.5, -80.5], [5, 12, -63.5]],         // aft turrets X / Y
+      [[-5, -37.5, -80.5], [3.5, -29.5, -63.5]],    // ventral turrets X' / Y'
+    ],
+    glassZones: [
+      { box: [[-9.2, 8.0, -47.6], [9.2, 12.4, -32]], gain: 0.5, uniform: true },  // bridge and CIC slits
+      { box: [[16.8, -1.2, -60], [24.2, 7.6, 16]], mirrorX: true, gain: 0 },       // sponson S1 / S2 and bastion turrets
+    ]},
   // v11 lightscape (src/lib/lightscape.js): crease pins, recess bars, drive status lights and authored runs.
   // v12: the concept's signature is a few bright short slits at block corners and in the gaps between armour
   // blocks, so the budget moved from pins to authored bars (every bar ray-snapped to its plate, ship frame):
   // bow cheek corners, the gun-gap corners, the engine block's joint bands and its forward corner, the stern plate.
   // Crease pins are thinner; the bore, the grilles and louvre bays stay dark; the keel is sparse.
+  // v14 (fleet lighting scale standard, user: small scattered lights read as windows and make a ship look too big):
+  // every lamp is at the fleet's one fixture size (pins 0.2-0.28 m, recess bars 0.2 m wide, joint strips 0.26 m),
+  // never scaled with the hull; lamps sit only where a fixture has a job (block corners and chines of the crewed
+  // hull, doors, the boat hatch, the drive, deck edges), no warm (interior) colour outside, and the uncrewed
+  // weapons deck, spine, mast and bow roof are dark but for their corners (zones below). Caps 120 / 30 keep the
+  // freed budget from refilling the port flanks.
   lightscape: {
     seed: 41,
-    creases: { angle: 35, minLen: 3.5, pitch: 7, share: 0.2, run: [1, 2], runPitch: 1.2, corners: 0.4, spacing: 2.0, size: [0.24, 0.34], intensity: [0.65, 1.0], mix: { amber: 0.72, warm: 0.18, white: 0.1 }, max: 190, blinkShare: 0.03 },
-    slits: { angle: 35, minLen: 1.5, share: 0.3, every: 8, len: [1.1, 2.0], width: 0.32, radiance: [0.9, 1.4], spacing: 5, max: 44, mix: { amber: 0.8, warm: 0.2 }, corner: { width: 0.32, radiance: [1.1, 1.6] } },
+    creases: { angle: 35, minLen: 3.5, pitch: 7, share: 0.2, run: [1, 2], runPitch: 1.2, corners: 0.4, spacing: 2.0, size: [0.2, 0.28], intensity: [0.65, 1.0], mix: { amber: 0.85, white: 0.15 }, max: 120, blinkShare: 0.03 },
+    slits: { angle: 35, minLen: 1.5, share: 0.3, every: 8, len: [1.1, 2.0], width: 0.2, radiance: [0.9, 1.4], spacing: 5, max: 30, mix: { amber: 1 }, corner: { width: 0.2, radiance: [1.1, 1.6] } },
     cool: { radius: 1.8, depth: 2.2 },
     zones: [
       // the gun gap keeps its own muted machinery: no crease pins on the exposed barrel (its corner bars are authored)
       { box: [[-12, -21, 43], [12, -3.5, 55]], creases: null, slits: null },
       // the railgun shroud and bore: no lamps inside a gun barrel (the cool MUZZLE_RIM fixtures draw the octagon)
       { box: [[-9.4, -17.6, 84], [9.4, -4.8, 103]], creases: null, slits: null },
-      // engine-block forward taper: the recessed intake louvre stays dark (one warm glow bar at its outer end)
+      // engine-block forward taper: the recessed intake louvre stays dark (one deep-amber process glow at its outer end)
       { box: [[16.5, -18, -35.6], [27.6, -8.5, -25]], mirrorX: true, creases: null, slits: null },
       // shoulder louvre bays on the upper chamfer: no pins on the fins (their end-wall recess bars stay)
       { box: [[15.5, -5, -49.8], [25, 2.5, -40.2]], mirrorX: true, creases: null },
       { box: [[15.5, -5, -74.8], [25, 2.5, -65.2]], mirrorX: true, creases: null },
       // keel and ventral faces: rarely seen, kept sparse
       { box: [[-30, -32, -102], [30, -20, 103]], creases: { share: 0.12, corners: 0.2 }, slits: { share: 0.1, corner: { share: 0.1 } } },
+      // v14: no lamp on glass: the bridge and CIC slit lips and the bridge sill read as creases (4 pins on the visor edge, 3 on
+      // the CIC lip, a bar on the side sill), and one crease pin sat on a deckhouse front port (x 5.5, y 5.16, z -13)
+      { box: [[-9.6, 8.2, -48], [9.6, 12.45, -32]], creases: null, slits: null },
+      { box: [[-7.2, 4.0, -13.8], [7.2, 6.4, -12.0]], creases: null, slits: null },
+      // engine flank port field (three port decks between the chines): no crease pin among the ports (the chines above and
+      // below keep theirs; the joint strips are authored)
+      { box: [[26.5, -16.9, -82], [29.5, -8.8, -37]], mirrorX: true, creases: null },
+      // v14: the dorsal weapons deck is uncrewed machinery; lamps there read as lit buildings (the capacitor banks as
+      // small blocks of flats) and the ship as a city. Corners only.
+      // railgun spine: capacitor banks, rails, saddles, clamp bands, cooling ridge (the catwalk keeps its deck lights)
+      { box: [[-12, -1.5, -13], [12, 4.5, 44]], creases: { share: 0.04, corners: 0.08 }, slits: { share: 0.08, corner: { share: 0.1 } } },
+      // the spine where it bridges the gun gap into the bow block (saddle ends, rail roots): corners only, no bars
+      { box: [[-12, -3.5, 44], [12, 4.5, 57]], creases: { share: 0.04, corners: 0.08 }, slits: null },
+      // deckhouse roof (VLS)
+      { box: [[-10, 8.5, -31], [10, 12, -12.5]], creases: { share: 0.04, corners: 0.08 }, slits: null },
+      // engine deck aft of the command block: X / Y barbettes, VLS
+      { box: [[-16, 2, -84], [16, 10, -60]], creases: { share: 0.05, corners: 0.1 }, slits: { share: 0.1, corner: { share: 0.1 } } },
+      // bow block roof above the deck-edge chine: A / B barbettes, VLS
+      { box: [[-11, 1.6, 55], [11, 6, 101]], creases: { share: 0.05, corners: 0.1 }, slits: null },
+      // lattice sensor mast: lit bars inside an open lattice can only be windows of a tower (the masthead strobe and
+      // the gallery obstruction lights are nav lights)
+      { box: [[-4.5, 14, -57], [4.5, 33, -45]], creases: null, slits: null },
+      // forward-taper port row: the port's recess lip reads as a concave crease and put an amber brow on one window
+      { box: [[13, -17.5, 22], [16.8, -14.5, 41.8]], mirrorX: true, slits: null },
     ],
     patterns: [
       // ---- authored corner / gap bars (the concept's bright slits), all mirrored ----
+      // v14: fleet joint strips, 0.26 m wide (was 0.29-0.38: lamps sized with the hull, as on a scale model); the lengths
+      // follow the armour joints. 24 of them are `keep` (the class budget): they are what a 203 m hull shows at range.
       // bow cheeks: three short horizontal bars stacked on the forward nose-side facet, beside the dark shroud
-      { slitRow: [[12.71, -9.0, 98.84], [12.71, -13.2, 98.84]], pitch: 2.1, u: [-0.36, 0, 0.933], n: [0.933, 0, 0.36], len: 1.8, width: 0.35, radiance: [1.44, 1.73], color: 'amber', keep: true, mirrorX: true },
-      // gun gap: upright bars at the forward corner of the mid hull's taper, a warm one on the gap face beside the barrel,
+      { slitRow: [[12.71, -9.0, 98.84], [12.71, -13.2, 98.84]], pitch: 2.1, u: [-0.36, 0, 0.933], n: [0.933, 0, 0.36], len: 1.8, width: 0.26, radiance: [1.44, 1.73], color: 'amber', keep: true, mirrorX: true },
+      // gun gap: upright bars at the forward corner of the mid hull's taper, one on the gap face beside the barrel,
       // and a pair on the bow block's aft facet across the gap
-      { slitRow: [[13.51, -11.0, 42.31], [13.51, -14.4, 42.31]], pitch: 3.4, u: [0, 1, 0], n: [0.983, 0, 0.185], len: 2.4, width: 0.38, radiance: [1.66, 1.87], color: 'amber', keep: true, mirrorX: true },
-      { slit: [12.15, -12.8, 42.93], u: [0, 1, 0], n: [0, 0, 1], len: 2.0, width: 0.29, radiance: 1.15, color: 'amber', keep: true, mirrorX: true },
-      { slitRow: [[13.6, -9.4, 55.42], [13.6, -12.7, 55.42]], pitch: 3.3, u: [0, 1, 0], n: [0.65, 0, -0.76], len: 2.4, width: 0.38, radiance: [1.58, 1.8], color: 'amber', keep: true, mirrorX: true },
+      { slitRow: [[13.51, -11.0, 42.31], [13.51, -14.4, 42.31]], pitch: 3.4, u: [0, 1, 0], n: [0.983, 0, 0.185], len: 2.4, width: 0.26, radiance: [1.66, 1.87], color: 'amber', keep: true, mirrorX: true },
+      { slit: [12.15, -12.8, 42.93], u: [0, 1, 0], n: [0, 0, 1], len: 2.0, width: 0.26, radiance: 1.15, color: 'amber', mirrorX: true },
+      { slitRow: [[13.6, -9.4, 55.42], [13.6, -12.7, 55.42]], pitch: 3.3, u: [0, 1, 0], n: [0.65, 0, -0.76], len: 2.4, width: 0.26, radiance: [1.58, 1.8], color: 'amber', keep: true, mirrorX: true },
       // engine block: upright pairs on the raised joint bands of the flank (forward end, mid seam), one bar on the aft band,
-      // a dim warm glow at the back of the intake recess, horizontal bars on the stern plate outboard of the corner bells
-      { slitRow: [[27.91, -10.6, -36.0], [27.91, -15.1, -36.0]], pitch: 4.5, u: [0, 1, 0], n: [1, 0, 0], len: 2.6, width: 0.38, radiance: [1.66, 1.87], color: 'amber', keep: true, mirrorX: true },
-      { slitRow: [[27.91, -10.6, -57.5], [27.91, -15.1, -57.5]], pitch: 4.5, u: [0, 1, 0], n: [1, 0, 0], len: 2.6, width: 0.38, radiance: [1.58, 1.8], color: 'amber', keep: true, mirrorX: true },
-      { slit: [27.91, -12.84, -81.95], u: [0, 1, 0], n: [1, 0, 0], len: 3.0, width: 0.38, radiance: 1.66, color: 'amber', keep: true, mirrorX: true },
-      { slit: [26.23, -12.5, -35.06], u: [0, 1, 0], n: [0.687, 0, 0.726], len: 4.5, width: 0.35, radiance: 1.1, color: 'warm', keep: true, mirrorX: true },
-      { slitRow: [[20.75, -6.6, -85.02], [20.75, -18.1, -85.02]], pitch: 11.5, u: [1, 0, 0], n: [0, 0, -1], len: 2.2, width: 0.38, radiance: [1.44, 1.73], color: 'amber', keep: true, mirrorX: true },
-      // command block: a brow band of short bars along the foot of the sloped casemate front (was two rows of pearls)
-      { slitRow: [[-4.5, 9.63, -33.62], [4.5, 9.63, -33.62]], pitch: 1.5, u: [1, 0, 0], n: [0, 0.445, 0.896], len: 0.8, width: 0.32, radiance: [1.3, 1.66], color: 'amber', keep: true },
+      // a dim deep-amber process glow at the back of the intake recess, horizontal bars on the stern plate outboard of the
+      // corner bells
+      { slitRow: [[27.91, -10.6, -36.0], [27.91, -15.1, -36.0]], pitch: 4.5, u: [0, 1, 0], n: [1, 0, 0], len: 2.6, width: 0.26, radiance: [1.66, 1.87], color: 'amber', keep: true, mirrorX: true },
+      { slitRow: [[27.91, -10.6, -57.5], [27.91, -15.1, -57.5]], pitch: 4.5, u: [0, 1, 0], n: [1, 0, 0], len: 2.6, width: 0.26, radiance: [1.58, 1.8], color: 'amber', mirrorX: true },
+      { slit: [27.91, -12.84, -81.95], u: [0, 1, 0], n: [1, 0, 0], len: 3.0, width: 0.26, radiance: 1.66, color: 'amber', keep: true, mirrorX: true },
+      { slit: [26.23, -12.5, -35.06], u: [0, 1, 0], n: [0.687, 0, 0.726], len: 4.5, width: 0.26, radiance: 1.1, color: 'amberDeep', mirrorX: true },
+      { slitRow: [[20.75, -6.6, -85.02], [20.75, -18.1, -85.02]], pitch: 11.5, u: [1, 0, 0], n: [0, 0, -1], len: 2.2, width: 0.26, radiance: [1.44, 1.73], color: 'amber', keep: true, mirrorX: true },
+      // v14: the command block's brow band (7 bars at the bridge mullions' 1.5 m rhythm) is gone: between the lit CIC and
+      // bridge slits it read as a third window deck on a two-deck casemate. The two slits carry the block.
       // ---- pins ----
-      // mid flank under the S2 sponson: a sparse amber run over the port band (the engine and bow flanks carry the v10 lights)
-      { surface: 'mid-flank-port', edge: 'top', inset: 0.3, pitch: 5, color: 'amber', size: 0.26, intensity: 0.85, skip: 0.3, mirrorX: true },
-      // boat hatch: an amber chaser along its sill (a docking area), cool status lights over it
-      { surface: 'boat-hatch-port', edge: 'bottom', inset: 0.1, lift: 0.15, pitch: 0.6, color: 'amber', size: 0.26, intensity: 1.15, chase: 2.2, mirrorX: true },
-      { surface: 'boat-hatch-port', edge: 'top', inset: 0.1, lift: 0.15, pitch: 1.4, color: 'cool', size: 0.2, intensity: 0.8, mirrorX: true },
-      // command block: sparse white work lights over the aft doors, a beacon on the roof
-      { surface: 'command-aft', edge: 'top', inset: 0.2, pitch: 1.6, color: 'white', size: 0.18, intensity: 0.6, skip: 0.3 },
+      // v14: the mid-flank amber run (between the two port rows) is gone: a lamp row beside a port row reads as another deck.
+      // boat hatch: an amber chaser along its sill (a docking area, 1 m pitch: 6 lamps), two cool status lights over it
+      { surface: 'boat-hatch-port', edge: 'bottom', inset: 0.1, lift: 0.15, pitch: 1.0, color: 'amber', size: 0.26, intensity: 1.15, chase: 2.2, mirrorX: true },
+      { surface: 'boat-hatch-port', edge: 'top', inset: 0.1, lift: 0.15, pitch: 5.6, color: 'cool', size: 0.2, intensity: 0.8, mirrorX: true },
+      // command block: one white work light over each aft door, a beacon on the roof
+      { surface: 'command-aft', edge: 'top', inset: 0.2, pitch: 4.6, color: 'white', size: 0.22, intensity: 0.6 },
       { surface: 'command-roof', edge: 'left', inset: 0.3, pitch: 1.5, color: 'amber', size: 0.24, intensity: 0.9, pulse: 3.6 },
-      // spine catwalk: a sparse run of white deck lights; stern plate: drive status chaser
+      // spine catwalk: a sparse run of white deck lights (a walkway: deck-lighting practice)
       { surface: 'spine-top', edge: 'left', inset: 0.2, pitch: 4, color: 'white', size: 0.2, intensity: 0.6, skip: 0.2 },
       { surface: 'spine-top', edge: 'right', inset: 0.2, pitch: 4, color: 'white', size: 0.2, intensity: 0.6, skip: 0.2 },
-      { surface: 'stern-plate', edge: 'centre', inset: 0.4, pitch: 0.6, color: 'cool', size: 0.2, intensity: 0.85, chase: 2.6 },
-      { surface: 'engine-deck', edge: 'left', inset: 0.2, pitch: 1.0, color: 'cool', size: 0.2, intensity: 0.8 },
-      { surface: 'engine-deck', edge: 'right', inset: 0.2, pitch: 1.0, color: 'cool', size: 0.2, intensity: 0.8 },
-      // gun gap face: a short warm run over the exposed barrel
-      { surface: 'gap-face-mid', edge: 'top', inset: 0.2, pitch: 1.0, color: 'warm', size: 0.2, intensity: 0.7 },
+      // stern plate: drive status chaser, two lamps a side outboard of the stern light (3 m clear of it; it used to run
+      // through the light), ray-cast on the plate (z -84.98)
+      { row: [[3.0, -0.64, -85.08], [4.6, -0.64, -85.08]], pitch: 1.6, color: 'cool', size: 0.2, intensity: 0.85, chase: 2.6, mirrorX: true },
+      // engine deck: two cool status lamps a side
+      { surface: 'engine-deck', edge: 'left', inset: 0.2, pitch: 3.0, color: 'cool', size: 0.2, intensity: 0.8 },
+      { surface: 'engine-deck', edge: 'right', inset: 0.2, pitch: 3.0, color: 'cool', size: 0.2, intensity: 0.8 },
+      // gun gap face: two amber lamps over the exposed barrel
+      { surface: 'gap-face-mid', edge: 'top', inset: 0.2, pitch: 2.5, color: 'amber', size: 0.2, intensity: 0.7 },
     ],
   },
   detail: {"set": "hull", "tile": 6, "normalStrength": 0.6, "roughAmount": 0.5, "cavity": 0.2},
@@ -156,15 +211,11 @@ export const asset = {
     {p: [0.0, -29.672, -49.984], color: "white", size: 0.4, blink: { ...STROBE, phase: 0.5 }},
     // steady stern light on the stern plate above the centre dish
     {p: [0.0, -0.442, -85.214], color: "white", size: 0.4},
-    // v10 amber running lights along the hull lines: the top of the engine-block flanks, the mid flank and the bow block
-    { p: [27.73, -8.84, -39.98], color: 'amber', size: 0.3, mirrorX: true },
-    { p: [27.73, -8.84, -52.98], color: 'amber', size: 0.3, mirrorX: true },
-    { p: [27.72, -8.84, -61.98], color: 'amber', size: 0.3, mirrorX: true },
-    { p: [27.72, -8.84, -78.98], color: 'amber', size: 0.3, mirrorX: true },
-    { p: [17.54, -11.74, -8.98], color: 'amber', size: 0.3, mirrorX: true },
-    { p: [17.54, -11.74, 5.02], color: 'amber', size: 0.3, mirrorX: true },
-    { p: [17.19, -6.84, 60.52], color: 'amber', size: 0.3, mirrorX: true },
-    { p: [17.15, -6.84, 80.52], color: 'amber', size: 0.3, mirrorX: true },
+    // v14: lights[] is the never-dimmed nav path only. The 16 v10 amber running lights are gone: they sat 0.4-1.4 m
+    // from the port rows and, never thinning with range, were the brightest 'windows' on the hull (the chine crease
+    // pins mark the hull lines). Two red obstruction lights on the mast gallery rail posts (ray-cast: rail top y 23.49)
+    // mark the mast's height, 8 m under the masthead strobe.
+    { p: [2.1, 23.62, -50.45], color: 'red', size: 0.28, mirrorX: true },
   ],
   anchors: {
     // Railgun, re-measured on the assembled hull: p = centre of the hexagonal bore opening on the barrel boss

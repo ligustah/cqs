@@ -306,7 +306,10 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
     const gate = cfg.interiorLights?.length && cfg.interiorLightGate;
     const scheme = cfg.liveryScheme ?? LIVERY_SCHEME;
     const zoned = !!(scheme && cfg.livery && cfg.liveryZones?.length && (role.hull || cfg.liveryZoneParts));
-    const keyOf = (m) => (cfg.liveryKeep || gate || cfg.detail?.interior || FINISH || zoned || cfg.livery?.glassGlow ? `${m.uuid}|${zoned ? 'z' : ''}|${o.matrixWorld.elements.map((e) => e.toFixed(6)).join(',')}` : m);
+    // livery.glassParts: kit part names whose glass may glow (real windows); hull texels and every other part keep the
+    // dark glass look but no interior light (stencils, sensor lenses, gun sights, containers). Unset: all glass glows
+    const glassOff = !!(cfg.livery?.glassGlow && cfg.livery.glassParts && !(role.part && cfg.livery.glassParts.includes(role.part)));
+    const keyOf = (m) => (cfg.liveryKeep || gate || cfg.detail?.interior || FINISH || zoned || cfg.livery?.glassGlow ? `${m.uuid}|${zoned ? 'z' : ''}${glassOff ? 'g' : ''}|${o.matrixWorld.elements.map((e) => e.toFixed(6)).join(',')}` : m);
     const next = mats.map((m) => {
       if (upgraded.has(keyOf(m))) return upgraded.get(keyOf(m));
       const mm = m.clone();
@@ -318,8 +321,9 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
       if (over.emissiveBoost && mm.emissiveMap) mm.emissiveIntensity = over.emissiveBoost;
       // true-scale ports and panes are a few texels wide: keep them sharp at grazing angles
       for (const t of [mm.map, mm.normalMap, mm.roughnessMap]) if (t) t.anisotropy = 8;
+      const liv = glassOff ? { ...cfg.livery, glassGlow: null } : cfg.livery;
       // two-tone scheme (?livery=tone|bone): the module's liveryZones, on the hull (and on kit parts if liveryZoneParts)
-      if (cfg.livery) applyLivery(mm, cfg.livery, zoned ? { scheme, zones: cfg.liveryZones, toShip: o.matrixWorld } : { toShip: o.matrixWorld });
+      if (cfg.livery) applyLivery(mm, liv, zoned ? { scheme, zones: cfg.liveryZones, toShip: o.matrixWorld } : { toShip: o.matrixWorld });
       if (cfg.livery && cfg.liveryKeep) keeps.forEach((kp, k) => keepInterior(mm, kp, o.matrixWorld, k));
       if (gate) gateInteriorLights(mm, gate, o.matrixWorld, cfg.interiorBounce || null);
       if (detailSet) {
@@ -446,6 +450,12 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
     if (!l.mirrorX) return [one];
     return [one, { ...one, p: new V3(-l.p[0], l.p[1], l.p[2]), color: l.mirrorColor ?? one.color }];
   });
+  // lights[] is the never-dimmed, never-thinned conspicuity path (v14 STANDARD R10): nav lights, red obstruction
+  // lights and (ships of 500 m or more) white outline markers only. Amber running lights, window points and deck
+  // lamps belong in the lightscape, where they fade and thin with range
+  { const cap = (cfg.length ?? 0) >= 500 ? 30 : 12;
+    const bad = lights.filter((l) => !['red', 'green', 'white'].includes(l.color) || l.size < 0.25 || l.size > 0.45);
+    if (bad.length || lights.length > cap) console.warn(`[glbship] ${cfg.name}: lights[] is the never-dimmed nav path (STANDARD R10): ${lights.length} entries (cap ${cap}), ${bad.length} not a red / green / white 0.25-0.45 m nav light`); }
   // v11 lightscape (lightscape.js): many small pins along the hull's creases and authored rows, and short
   // glowing slits in its recesses, generated once per prototype on the hull meshes in the ship frame
   let scape = { pins: [], slits: [] };

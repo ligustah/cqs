@@ -95,6 +95,8 @@ function plumeMaterial(color, seed) {
 // A point never draws below uMinPx pixels so it stays visible at fleet range; a lightscape pin that
 // is really smaller than that is dimmed toward its true energy (never below its `floor`), so a
 // thousand pins on a distant carrier read as a fine scatter of crisp points, not a glittering haze.
+// Floors by type (attachEffects; a pin's own `floor` wins): nav lights 1; `keep` and animated pins 0.4;
+// plain lamps 0.25; window points (colour port*) fade with their area, floor 0.05.
 const PIN_SPRITE = 2.0;
 // Lightscape emissive gain (pins and slits, not nav lights). main.js raises it a little in the studio, whose key
 // and fill light the dark hull far more than the orbital sun does; orbit / fleet stay at 1.
@@ -136,7 +138,11 @@ const lightVS = /* glsl */`
     // sprites never draw below uMinPx (3 px, a soft Gaussian footprint: no coverage popping as a pin crosses pixel
     // boundaries); energy and thinning are measured against a 2 px reference
     float px = max(uMinPx, truePx);
-    float energy = floorE >= 1.0 ? 1.0 : max(floorE, min(1.0, truePx / 2.0));
+    // floorE: 1 nav (full energy, never thinned); 0.4 keep and animated pins (beacons, chasers: the signs of life);
+    // 0.25 plain lamps; < 0 a window point (an area source) fades with its area, (truePx / 2)^2, down to -floorE, so a
+    // distant 1 m port never draws as a 5-10 m blob (v14 STANDARD R11)
+    float e = min(1.0, truePx / 2.0);
+    float energy = floorE >= 1.0 ? 1.0 : floorE < 0.0 ? max(-floorE, e * e) : max(floorE, e);
     // far off, a hull's pins would crowd into a solid glitter: keep a share that shrinks with their true size and
     // with the whole ship's size on screen (a 150 px ship keeps about a sixth), by a fixed per-pin rank: block
     // corners and authored rows rank low (lightscape.js) and are the last to go, crease-run pins go first
@@ -175,9 +181,12 @@ const lightFS = /* glsl */`
 // Lightscape slits: short glowing bars in recesses (one InstancedMesh per ship), plus a soft halo quad per bar
 // (a second InstancedMesh on the same instances: the warm pool the bar throws on its recess walls). Unlit colour =
 // radiance x SLIT_GAIN; anim as blink above (chasers). The concept's hierarchy has the slits as the brightest thing
-// on a hull at every range, so far off a bar is widened to at least 1.3 px and stretched to at least 3 px along its
-// length; the widening dims it only by its square root, never below 0.45 of its near radiance, and the stretch not
-// at all (a distant bar reads as a short bright dash; pins, by contrast, are thinned and fade toward their true energy).
+// on a hull at every range, but a distant bar must never turn into a window (v14 STANDARD R11): far off a bar is
+// widened to at least 1.3 px; a bar still >= 1.5 px long is stretched toward a 3:1 dash (at most 2.5x, so it is a
+// short dash, not a lit slot), and a shorter one is drawn as a 1.3 px dot, never a 3 x 1.3 px window-shaped box.
+// Its energy follows its true area (drawn / true = grow x stretch, dimmed by the square root of that): signature
+// bars (rank 0: `keep` and animated) keep at least 0.45 of their radiance, so they stay the brightest marks at
+// range, every other bar at least 0.2. Bars also thin with the ship's screen size by rank (slitKeep), like pins.
 const slitGeometry = new THREE.BoxGeometry(1, 1, 1);
 const haloGeometry = new THREE.PlaneGeometry(1, 1);
 const slitCommon = /* glsl */`
@@ -185,11 +194,13 @@ const slitCommon = /* glsl */`
   uniform float uTime; uniform float uScale; uniform float uGain; uniform float uShipLen;
   varying vec3 vC; varying vec2 vL;
   ${blinkGLSL}
-  // a small ship on screen keeps only its lowest-ranked bars (corner bars first): about a quarter on a 70 px fighter,
-  // all of them from ~250 px up. Pins thin far harder, so the bars carry the read at range
+  // a small ship on screen keeps only its lowest-ranked bars, by the pins' own shipPx / 900 rule: all of them from
+  // ~900 px up; below that corner and keep bars last (keep / animated bars, rank 0, never go; a ship under ~135 px
+  // keeps the bars ranked under ~0.15-0.23: about a third of its corner bars and a sixth of its recess bars), so a
+  // distant hull does not carry every bar and the class order of marks holds at equal framing
   float slitKeep() {
     float shipPx = length((modelViewMatrix * vec4(uShipLen, 0.0, 0.0, 0.0)).xyz) * uScale / max(-(modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0)).z, 1e-3);
-    return clamp((clamp(shipPx / 250.0, 0.25, 1.0) - iRank) / 0.08 + 1.0, 0.0, 1.0);
+    return clamp((clamp(shipPx / 900.0, 0.15, 1.0) - iRank) / 0.08 + 1.0, 0.0, 1.0);
   }
   // on-screen size of a bar: width / length in px at its centre's distance d
   void slitPx(out float d, out float wPx, out float lPx) {
@@ -205,10 +216,15 @@ const slitVS = /* glsl */`
     float on = blinkOn(iAnim, uTime) * slitKeep();
     float d, wPx, lPx; slitPx(d, wPx, lPx);
     float grow = min(max(1.0, 1.3 / max(wPx, 1e-4)), 8.0);
-    float stretch = min(max(1.0, 3.0 / max(lPx, 1e-4)), 6.0);
+    // a bar that cannot hold >= 3:1 on screen is drawn as a 1.3 px dot (never a window-shaped 3 x 1.3 px box); the
+    // stretch is capped at 2.5x, so a far bar is a short dash or a dot, not a lit slot
+    float stretch = lPx >= 1.5 ? min(max(1.0, 3.9 / lPx), 2.5) : max(1.0, 1.3 / max(lPx, 1e-4));
+    // energy follows the bar's true area (drawn / true = grow * stretch): signature bars (rank 0: keep, animated) keep
+    // at least 0.45 of their radiance, the rest 0.2
+    float fade = clamp(inversesqrt(grow * stretch), iRank < 0.01 ? 0.45 : 0.2, 1.0);
     vec3 p = position; p.y *= grow; p.x *= stretch;
     vL = position.xy * 2.0; // -1..1 along and across the bar
-    vC = iColor * on * uGain * max(inversesqrt(grow), 0.4);
+    vC = iColor * on * uGain * fade;
     vec4 mv = modelViewMatrix * instanceMatrix * vec4(p, 1.0);
     mv.xyz *= 1.0 - min(0.5, (0.02 + 0.0003 * d) / d);
     gl_Position = projectionMatrix * mv;
@@ -315,7 +331,7 @@ export function attachEffects(group, { power = 1, plumeScale = 1, spill = true }
 
   // nav lights and the lightscape's pins: ONE Points object per ship
   const shipLen = info.envelope ? Math.max(info.envelope.size.x, info.envelope.size.y, info.envelope.size.z) : 100;
-  const allPts = [...info.lights.map((l) => ({ ...l, floor: 1, intensity: 1, nav: true })), ...(info.pins || []).map((l) => ({ ...l, floor: l.floor ?? 0.4 }))];
+  const allPts = [...info.lights.map((l) => ({ ...l, floor: 1, intensity: 1, nav: true })), ...(info.pins || []).map((l) => ({ ...l, floor: l.floor ?? (/^port/.test(l.color) ? -0.05 : l.keep || l.blink?.period > 0 ? 0.4 : 0.25) }))];
   if (allPts.length) {
     const n = allPts.length;
     const pos = new Float32Array(n * 3), col = new Float32Array(n * 3), size = new Float32Array(n), blink = new Float32Array(n * 4), floorE = new Float32Array(n), rank = new Float32Array(n);

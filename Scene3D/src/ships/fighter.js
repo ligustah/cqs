@@ -16,7 +16,7 @@ export const meta = {
   "name": "Petrel-class fighter",
   "designation": "F-402",
   "crew": "about 40",
-  "blurb": "Heavy space-superiority fighter: a faceted armoured pod with a low bridge block glazed in a band of small panes, twin fusion bells in an armoured stern block and a twin railgun on each flank sponson, each sponson ending in a small secondary drive bell."
+  "blurb": "Heavy space-superiority fighter: a faceted armoured pod with a low bridge block and a five-pane canopy, twin fusion bells in an armoured stern block and a twin railgun on each flank sponson, each sponson ending in a small secondary drive bell."
 };
 
 export const asset = {
@@ -26,22 +26,32 @@ export const asset = {
   beauty: "./assets/concepts/fighter-beauty.webp",
   rotate: [0, 0, 0],
   hullNodes: ["hull"],
-  // v11: lit cabins behind the ports and the bridge glazing (warm, varied per compartment, a few dark, a few flickering)
-  // v12: 2.2 m compartment cells so single ports and bridge panes vary (some dark, some dim), bridge a touch dimmer
-  livery: {"gain": 0.05, "glassGlow": [0.46, 0.37, 0.245], "glassLit": 0.45, "glassFlicker": 0.15, "glassCell": 2.2,
-    "glassDark": [[[-15, -11, 32.5], [15, 9, 40]]]}, // the bow sensor lenses stay dark glass
+  // v14 (fleet lighting scale standard, R8/R9): a combat craft shows almost no lit glass. Only the kit glass parts
+  // glow (the 5 canopy panes at x1.0 and the 2 x 1.0 m ports per side beside the crew door); the bow sensor lenses
+  // and every other hull-texture glass stay dark without boxes. All of it is one steady, dim compartment at 0.45x
+  // the fleet cabin glow: a combat bridge runs dark, and a varied, flickering grid would read as several rooms.
+  livery: {"gain": 0.05, "glassGlow": [0.52, 0.42, 0.28], "glassFlicker": 0, "glassParts": ["port", "pane"],
+    "glassZones": [{ box: [[-13, -4, 10], [13, 5, 17]], gain: 0.45, uniform: true }]},
   // v11 lightscape (src/lib/lightscape.js): pins on the hull's convex creases (block corners and chines), short
   // amber bars in its recesses, blue-white status lights round the drive housings, and authored runs.
   // v12 (concept pass): far fewer pins, favouring block corners; short amber bars, not tubes; authored lamp-heads on
   // the sponson ends, the bow bezel posts, the bridge sill and the crew door lintel; the radiator bays kept dark.
+  // v14 (scale pass): a 71.7 m strike craft is lit like an aircraft, not a ship. A fine scatter of small lamps and
+  // evenly spaced rows read as deck lighting and windows on a hull 1.3-1.8x this size, so: no automatic crease pins
+  // (small craft are authored, R4), no rows, a handful of amber bars at the block extremities and joints (the
+  // concept's slits), one lamp per door, 2 beacons, a 2-lamp drive status and the aircraft nav set. Every lamp
+  // is fleet size (pins 0.2-0.3 m, bars 0.14-0.2 m wide), so it does not scale with the hull. 30 lamps (8 pins,
+  // 22 bars), 8 of them `keep` (the sponson heads and bow bezels: all that is left of it at fleet range).
   lightscape: {
     seed: 11,
-    creases: { angle: 35, minLen: 2.5, pitch: 7, share: 0.25, run: [1, 2], runPitch: 1.0, corners: 0.62, spacing: 2.2, size: [0.16, 0.3], intensity: [0.45, 1.0], mix: { amber: 0.8, warm: 0.2 }, max: 80, blinkShare: 0.03 },
-    slits: { angle: 35, minLen: 1.2, share: 0.6, every: 5, len: [0.8, 1.4], width: 0.22, radiance: [1.0, 1.5], spacing: 2.5, max: 36, mix: { amber: 0.85, warm: 0.15 }, corner: { share: 0.5, width: 0.22, len: [0.8, 1.3], radiance: [1.2, 1.6] } },
+    creases: null,
+    // a few amber recess and corner bars, all on the stern block's aft corners (the recess cap is 2: with a third
+    // pair the next candidate is a bar on the railgun muzzle block), amber only: a cream bar reads as a window
+    slits: { angle: 35, minLen: 1.2, share: 0.6, every: 5, len: [0.8, 1.4], width: 0.2, radiance: [1.0, 1.5], spacing: 2.5, max: 2, mix: { amber: 1 }, corner: { share: 0.3, width: 0.2, len: [0.8, 1.3], radiance: [1.2, 1.6], max: 4 } },
     cool: { radius: 1.9, depth: 2.5 },
     zones: [
-      // dorsal spine and its two radiator/louvre bays (x +-4.5..7, z -17..-5.5): no crease pins, no bars (the pulse
-      // beacons and the shoulder rows below are authored)
+      // dorsal spine and its two radiator/louvre bays (x +-4.5..7, z -17..-5.5): no bars (its two pulse beacons are
+      // authored below)
       { box: [[-7.8, 6.4, -19.2], [7.8, 7.4, -0.8]], creases: null, slits: null },
       // stern block: a few corner accents, not a glitter
       { box: [[-14, -9, -27.5], [14, 6, -24]], creases: { share: 0.12, corners: 0.35 } },
@@ -49,35 +59,38 @@ export const asset = {
       { box: [[-13, -10, 34], [13, 6, 37]], creases: null, slits: null },
       // crew door (flank z 7.3..9.9): its lintel lamp only
       { box: [[11.2, -6.5, 7.0], [13.6, -1.6, 10.2]], mirrorX: true, slits: null },
-      // bridge glazing recess: its auto bars dim, so the warm panes lead
-      { box: [[-3.6, 2.6, 14.6], [3.6, 5.4, 17.4]], slits: { radiance: [0.7, 0.9], width: 0.17 } },
-      // pylon (x 13..17.5, y -6.5..-0.3): few crease pins; its junction lamps are authored (the pylon and hull are
-      // overlapping solids, so the recess corner has no mesh crease for the automatic bars)
+      // aft (engine-room) door on the stern-block flank (z -17.0..-15.6): its lintel lamp only, the same fixture as
+      // the crew door's (an automatic jamb bar here was a larger 0.8 x 0.2 m bar: two sizes of door lamp)
+      { box: [[12.2, -4.3, -17.8], [13.7, -0.2, -14.8]], mirrorX: true, slits: null },
+      // bridge glazing recess: no bar inside the glazing (a lit bar there reads as one more pane)
+      { box: [[-3.6, 2.6, 14.6], [3.6, 5.4, 17.4]], slits: null },
+      // pylon (x 13..17.5, y -6.5..-0.3): the pylon and hull are overlapping solids, so the junction has no mesh
+      // crease for the automatic bars (v14: its warm riser row is gone; at 4.5 m pitch it read as a window row)
       { box: [[11.5, -7.5, -14.5], [17.8, 0.6, 2.8]], mirrorX: true, creases: { share: 0.1, corners: 0.4 } },
     ],
     patterns: [
-      // bridge: two warm sill lamps on the proud sill face under the glazing recess (y 2.9..3.35, z 16.7..17.0)
-      { slit: [1.5, 3.13, 16.89], u: [1, 0, 0], n: [0, 0.607, 0.795], len: 0.6, width: 0.14, radiance: 1.2, color: 'amber', keep: true, mirrorX: true },
-      // upper chamfer: running lights on its real shoulder crease (x 8.0, y 6.72) with a slow beacon at each end
-      { row: [[8.07, 6.80, -16.4], [8.07, 6.80, -5.1]], pitch: 4.5, color: 'amber', size: 0.22, intensity: 0.8, mirrorX: true },
-      { points: [[8.07, 6.80, -18.0], [8.07, 6.80, -3.5]], color: 'amber', size: 0.28, intensity: 1.0, pulse: 3.2, mirrorX: true },
-      // forward flank: a sparse run along the lower chine, and a warm lintel lamp over the crew door (z 8.6)
-      { row: [[12.86, -6.17, 5.7], [11.58, -5.03, 14.59]], pitch: 2.8, color: 'amber', size: 0.2, intensity: 0.7, skip: 0.2, mirrorX: true },
-      { slit: [12.44, -1.98, 8.62], u: [-0.143, 0, 0.99], n: [0.99, 0, 0.143], len: 1.2, width: 0.19, radiance: 1.6, color: 'warm', keep: true, mirrorX: true },
-      // pylon / hull junction: warm lamps in the 0.3 m riser where the pylon top meets the hull flank (x 13.0, y -0.33..0)
-      { slitRow: [[13.03, -0.17, -9.5], [13.03, -0.17, -0.5]], pitch: 4.5, u: [0, 0, 1], n: [1, 0, 0], len: 1.0, width: 0.19, radiance: 1.6, color: 'warm', keep: true, mirrorX: true },
+      // bridge: two amber sill lamps on the proud sill face under the canopy (y 2.9..3.35, z 16.7..17.0); not kept,
+      // so they go with the ship's screen size
+      { slit: [1.5, 3.13, 16.89], u: [1, 0, 0], n: [0, 0.607, 0.795], len: 0.6, width: 0.14, radiance: 1.2, color: 'amber', mirrorX: true },
+      // crew door (z 7.3..9.9): one amber F10 door lamp at the lintel (under the kit floodlight housing), the human
+      // ruler beside the 2.4 m door
+      { slit: [12.44, -1.98, 8.62], u: [-0.143, 0, 0.99], n: [0.99, 0, 0.143], len: 0.6, width: 0.14, radiance: 1.4, color: 'amber', mirrorX: true },
+      // aft door (z -17.0..-15.6): the same lamp under its floodlight housing (x 12.96..13.44, y -0.76..-0.41)
+      { slit: [13.03, -0.88, -16.28], u: [0, 0, 1], n: [1, 0, 0], len: 0.6, width: 0.14, radiance: 1.4, color: 'amber', mirrorX: true },
+      // extremity markers, like an aircraft's formation lights: the chin and the forward belly chine
+      { points: [[4.67, 0.28, 32.41], [10.61, -8.35, 10.20]], color: 'amber', size: 0.24, intensity: 0.9, mirrorX: true },
+      // mid-block forward corner: one amber bar in the recess corner where the chamfer meets the step face (z 15.5),
+      // the concept's hard slit at a block joint (2.9 m clear of the door ports)
+      { slit: [9.45, 0.51, 15.55], u: [-0.49, 0.87, 0], n: [0.80, 0.45, 0.40], len: 1.3, width: 0.2, radiance: 1.3, color: 'amber', mirrorX: true },
       // sponsons: upright lamp-heads on the bevelled ends (aft outboard / inboard, forward outboard), the concept's
       // nacelle-corner bars
       { slit: [22.74, -3.35, -13.55], u: [0, 1, 0], n: [0.318, 0, -0.948], len: 1.8, width: 0.2, radiance: 1.7, color: 'amber', keep: true, mirrorX: true },
       { slit: [17.36, -3.35, -13.55], u: [0, 1, 0], n: [-0.318, 0, -0.948], len: 1.4, width: 0.2, radiance: 1.4, color: 'amber', keep: true, mirrorX: true },
       { slit: [22.78, -3.35, 0.65], u: [0, 1, 0], n: [0.717, 0, 0.697], len: 1.4, width: 0.2, radiance: 1.6, color: 'amber', keep: true, mirrorX: true },
-      // sponsons: blue-white status lights on the outboard faces
-      { surface: 'sponson-outboard-port', edge: 'top', inset: 0.25, pitch: 0.5, color: 'cool', size: 0.18, intensity: 0.8, mirrorX: true },
       // bow: a short upright lamp on each outer bezel post (x 6.1..6.5)
       { slit: [6.31, -3.3, 35.92], u: [0, 1, 0], n: [0, 0, 1], len: 1.1, width: 0.19, radiance: 1.6, color: 'amber', keep: true, mirrorX: true },
-      // stern plate: a short chaser for the drive status; main bell lips: idle status ring
-      { surface: 'stern-plate', edge: 'centre', inset: 0.3, pitch: 0.5, color: 'cool', size: 0.16, intensity: 0.8, chase: 2.4 },
-      { ring: { c: [5.9, -0.05, -35.80], axis: [0, 0, 1], r: 3.72 }, n: 8, color: 'cool', size: 0.16, intensity: 0.55, mirrorX: true },
+      // stern plate: drive status, one slow cool lamp each side of the white stern light (2.1 m clear of it)
+      { points: [[2.1, 3.95, -26.13]], color: 'cool', size: 0.2, intensity: 0.8, pulse: 2.4, mirrorX: true },
       // dorsal deck: two slow amber beacons at the hatch rows
       { points: [[1.9, 6.95, -3.6], [-1.9, 6.95, -16.3]], color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.2 },
     ],
@@ -111,7 +124,7 @@ export const asset = {
     {p: [0.0, -10.349, -0.978], color: "white", size: 0.4, blink: {period: 1.3, duty: 0.1, phase: 0.5}},
     // steady stern light on the stern plate between the bell sockets
     {p: [0.0, 3.951, -26.258], color: "white", size: 0.4},
-    // (v12: the v10 amber running lights mid-panel on the chamfer and flank moved into lightscape: shoulder beacons, door lintel)
+    // (v12: the v10 amber running lights moved into lightscape; v14: the red sidelight stands alone, no lamp within 2 m)
   ],
   anchors: {
     // railgun muzzles (twin-bore muzzle block face, z 17.86 in the model frame), fire along +Z
@@ -126,7 +139,7 @@ export const asset = {
       'chamfer-stbd': { centre: [-10.71, 3.15, -8.48], normal: [-0.796, 0.605, -0.001], u: [0.001, -0.001, -1.0], width: 16.0, height: 5.0, flat: 1.0 },
       'dorsal-deck': { centre: [0.0, 6.82, -9.98], normal: [0.0, 1.0, 0.006], u: [0.0, -0.006, 1.0], width: 5.0, height: 14.0, flat: 0.79 }, // dorsal spine between the radiator bays (six hatches)
       'bow-deck': { centre: [0.0, 1.52, 25.03], normal: [0.0, 0.983, 0.183], u: [0.0, -0.183, 0.983], width: 9.0, height: 12.0, flat: 1.0 }, // sloping forward deck ahead of the bridge
-      'bridge-glazing': { centre: [0.0, 3.91, 15.86], normal: [0.0, 0.61, 0.792], u: [1.0, 0.0, 0.0], width: 5.5, height: 1.6, flat: 1.0 }, // bridge glazing recess on the raked front face, kit panes x0.7
+      'bridge-glazing': { centre: [0.0, 3.91, 15.86], normal: [0.0, 0.61, 0.792], u: [1.0, 0.0, 0.0], width: 5.5, height: 1.6, flat: 1.0 }, // bridge glazing recess on the raked front face, kit panes x1.0 (five)
       'belly': { centre: [0.0, -10.13, -1.98], normal: [0.0, -1.0, 0.0], u: [0.0, 0.0, 1.0], width: 16.0, height: 10.0, flat: 0.97 }, // flat belly
       'stern-plate': { centre: [0.0, 3.95, -26.03], normal: [0.0, 0.0, -1.0], u: [-1.0, 0.0, 0.0], width: 5.0, height: 1.2, flat: 1.0 }, // recessed stern plate above the bell sockets
       'sponson-outboard-port': { centre: [23.15, -3.4, -6.78], normal: [1.0, 0.0, 0.0], u: [0.0, 0.0, 1.0], width: 1.6, height: 2.8, flat: 1.0 }, // sponson outboard face between the vent bay and the equipment box

@@ -16,8 +16,27 @@
 //     (roughness 0.08), dielectric and darker, so they catch the planet and the sun;
 //   - opt-in (glassGlow, off by default so every other ship shades exactly as before): glass
 //     texels also get a dim, warm interior light (lit cabins behind the ports and bridge panes), its
-//     level varying smoothly between compartments (value noise on ~7 m cells in object space), so
-//     kit windows read as glass rather than flat dark plates when they reflect only black space;
+//     level varying smoothly between compartments (value noise on ~5 m cells in the ship frame), so
+//     kit windows read as glass rather than flat dark plates when they reflect only black space.
+//     Livery glass fields (all opt-in; ship frame metres, bow +Z, dorsal +Y, port +X):
+//       glassGlow    [r, g, b] linear radiance of a lit cabin (fleet cabin value [0.52, 0.42, 0.28])
+//       glassLit     share of compartments lit (default 0.6)
+//       glassFlicker share of compartments with a faint unsteady light (default 0)
+//       glassCell    compartment size, m: a number or [x, y, z] per axis (default 5)
+//       glassPhase   compartment grid offset in cells: a number or [x, y, z] (default 0.37); a compartment edge
+//                    sits where p / glassCell + glassPhase is an integer, so a grid aligned to the decks and port
+//                    columns never splits a port into two-tone halves (v14 STANDARD section 3.4)
+//       glassDark    [box, ...] boxes [[x0, y0, z0], [x1, y1, z1]] where glass stays dark (no interior light)
+//       glassZones   [{ box, mirrorX = false, gain = 1, uniform = false, lit }]: regions of the glass with their
+//                    own light. gain multiplies the glow (0 = dark, as glassDark); uniform: true makes the whole
+//                    box one steady compartment (every pane lit, level 1, no flicker, neutral-warm tint: bridges,
+//                    cockpits, CIC at gain 0.45-0.5); lit (0..1) replaces glassLit inside the box (ignored when
+//                    uniform). glassDark and glassZones share one list of up to MAX_GLASS_ZONES (8) boxes,
+//                    glassDark first (each dark box is a zone of gain 0); the first box containing a texel wins
+//       glassParts   (read by glbship.js) kit part names whose glass may glow, e.g. ['port', 'pane']: the hull
+//                    texture and every other part keep the dark glass look without interior light (stencils,
+//                    sensor lenses, gun sights, containers). Unset: all glass glows
+//     glassDark and glassZones need the mesh's ship-frame matrix (glbship.js passes it).
 //   - roughness is pushed toward matte (matte 0.35: a broad, dim sheen only at grazing angles,
 //     never a glossy highlight), and metalness is scaled down: the hull is paint (a
 //     dielectric), not bare metal.
@@ -46,6 +65,8 @@ export const SCHEMES = {
   bone: { base: 0.004, gain: 0.62, tint: '#ece6dc', mark: 3.2 },
 };
 export const MAX_ZONES = 16;
+// glassDark + glassZones: one list of boxes in the glass shader
+export const MAX_GLASS_ZONES = 8;
 // Shared clock for the lit-window flicker (effects.js sets it every frame).
 export const LIVERY_TIME = { value: 0 };
 
@@ -65,7 +86,8 @@ export function zoneUniforms(zones = []) {
 
 /** Repaint a MeshStandard/Physical material in place. opts: a LIVERIES key or an object
  *  (merged over 'dark'); glassGlow: [r, g, b] linear radiance of lit interiors behind glass
- *  texels (opt-in), glassLit: share of compartments lit (default 0.6). */
+ *  texels (opt-in), glassLit: share of compartments lit (default 0.6); the other glass fields
+ *  (glassCell, glassPhase, glassDark, glassZones) are listed in the header. */
 export function applyLivery(material, opts = 'dark', { scheme = null, zones = null, toShip = null } = {}) {
   const o = { ...LIVERIES.dark, ...(typeof opts === 'string' ? LIVERIES[opts] : opts) };
   // two-tone scheme: only with zones and the mesh's object -> ship-frame matrix
@@ -83,16 +105,27 @@ export function applyLivery(material, opts = 'dark', { scheme = null, zones = nu
   const glow = o.glassGlow ? new THREE.Vector3(...o.glassGlow) : null;
   // v11: glassFlicker = share of compartments with a faint unsteady light; glassTint = [warm, cool] radiance
   // multipliers the compartments vary between (most warm, about one in five neutral / cool)
-  if (glow) Object.assign(uniforms, { uLivGlassGlow: { value: glow }, uLivGlassLit: { value: o.glassLit ?? 0.6 }, uLivFlicker: { value: o.glassFlicker ?? 0 }, uLivTime: LIVERY_TIME, uLivCell: { value: o.glassCell ?? 5 } });
-  // glassDark: ship-frame boxes where glass stays dark (sensor lenses and optics, not cabins); needs toShip
-  const dark = glow && o.glassDark?.length && toShip ? o.glassDark.slice(0, 4) : null;
+  // glassCell / glassPhase: a number (splatted) or [x, y, z] per axis
+  const vec3Of = (v, d) => (Array.isArray(v) ? new THREE.Vector3(...v) : new THREE.Vector3().setScalar(v ?? d));
+  if (glow) Object.assign(uniforms, { uLivGlassGlow: { value: glow }, uLivGlassLit: { value: o.glassLit ?? 0.6 }, uLivFlicker: { value: o.glassFlicker ?? 0 }, uLivTime: LIVERY_TIME, uLivCell: { value: vec3Of(o.glassCell, 5) }, uLivPhase: { value: vec3Of(o.glassPhase, 0.37) } });
+  // glass zones (needs toShip): glassDark boxes (gain 0: sensor lenses and optics, not cabins) first, then glassZones
+  // (mirrorX adds the reflected box); the first box containing a texel wins
+  const mirrorBox = ([a, b]) => [[-b[0], a[1], a[2]], [-a[0], b[1], b[2]]];
+  const zoneList = glow && toShip ? [
+    ...(o.glassDark || []).map((box) => ({ box, gain: 0 })),
+    ...(o.glassZones || []).flatMap((z) => (z.mirrorX ? [z, { ...z, box: mirrorBox(z.box) }] : [z])),
+  ] : [];
+  if (zoneList.length > MAX_GLASS_ZONES) console.warn(`[livery] glassDark + glassZones: ${zoneList.length} boxes, only the first ${MAX_GLASS_ZONES} are used`);
+  const gz = zoneList.length ? zoneList.slice(0, MAX_GLASS_ZONES) : null;
   // compartments are laid out in the ship frame (metres) when the mesh's matrix is known: the GLB's own object
   // space is quantised (a node scale of tens to hundreds), where a 7 m cell would span the whole hull
   if (glow && toShip) Object.assign(uniforms, { uLivShipM: { value: toShip.clone() } });
-  if (dark) Object.assign(uniforms, {
-    uLivDarkN: { value: dark.length },
-    uLivDarkMin: { value: Array.from({ length: 4 }, (_, i) => new THREE.Vector3(...(dark[i] ? dark[i][0] : [0, 0, 0]))) },
-    uLivDarkMax: { value: Array.from({ length: 4 }, (_, i) => new THREE.Vector3(...(dark[i] ? dark[i][1] : [0, 0, 0]))) },
+  if (gz) Object.assign(uniforms, {
+    uLivZoneN: { value: gz.length },
+    uLivZoneMin: { value: Array.from({ length: MAX_GLASS_ZONES }, (_, i) => new THREE.Vector3(...(gz[i] ? gz[i].box[0] : [0, 0, 0]))) },
+    uLivZoneMax: { value: Array.from({ length: MAX_GLASS_ZONES }, (_, i) => new THREE.Vector3(...(gz[i] ? gz[i].box[1] : [0, 0, 0]))) },
+    // (gain, lit or -1 = glassLit, uniform 0 / 1, unused)
+    uLivZoneP: { value: Array.from({ length: MAX_GLASS_ZONES }, (_, i) => (gz[i] ? new THREE.Vector4(gz[i].gain ?? 1, gz[i].lit ?? -1, gz[i].uniform ? 1 : 0, 0) : new THREE.Vector4(1, -1, 0, 0))) },
   });
   if (sc) {
     const z = zoneUniforms(zones);
@@ -169,8 +202,8 @@ export function applyLivery(material, opts = 'dark', { scheme = null, zones = nu
         .replace('#include <begin_vertex>', `#include <begin_vertex>\nvLivPos = ${toShip ? '(uLivShipM * vec4(transformed, 1.0)).xyz' : 'position'};`);
       shader.fragmentShader = shader.fragmentShader
         .replace('#include <common>', `#include <common>
-          varying vec3 vLivPos; uniform vec3 uLivGlassGlow; uniform float uLivGlassLit, uLivFlicker, uLivTime, uLivCell;${dark ? `
-          uniform int uLivDarkN; uniform vec3 uLivDarkMin[4], uLivDarkMax[4];` : ''}
+          varying vec3 vLivPos; uniform vec3 uLivGlassGlow, uLivCell, uLivPhase; uniform float uLivGlassLit, uLivFlicker, uLivTime;${gz ? `
+          uniform int uLivZoneN; uniform vec3 uLivZoneMin[${MAX_GLASS_ZONES}], uLivZoneMax[${MAX_GLASS_ZONES}]; uniform vec4 uLivZoneP[${MAX_GLASS_ZONES}];` : ''}
           float livHash(vec3 p) { return fract(sin(dot(p, vec3(12.9898, 78.233, 45.164))) * 43758.5453); }
           float livNoise(vec3 p) {
             vec3 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
@@ -179,17 +212,25 @@ export function applyLivery(material, opts = 'dark', { scheme = null, zones = nu
           }`)
         .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
           {
+            // glass zones (glassDark = gain 0, glassZones): the first box containing the texel sets the gain, the lit
+            // share and whether it is one uniform compartment
+            float zGain = 1.0, zLit = uLivGlassLit, zUni = 0.0;
+            ${gz ? `for (int i = 0; i < ${MAX_GLASS_ZONES}; i++) {
+              if (i >= uLivZoneN) break;
+              vec3 dd = min(vLivPos - uLivZoneMin[i], uLivZoneMax[i] - vLivPos);
+              if (min(dd.x, min(dd.y, dd.z)) > 0.0) { zGain = uLivZoneP[i].x; if (uLivZoneP[i].y >= 0.0) zLit = uLivZoneP[i].y; zUni = uLivZoneP[i].z; break; }
+            }` : ''}
             float n = livNoise(vLivPos / uLivCell);
-            float lit = smoothstep(1.0 - uLivGlassLit - 0.12, 1.0 - uLivGlassLit + 0.12, n);
+            float lit = smoothstep(1.0 - zLit - 0.12, 1.0 - zLit + 0.12, n);
             // compartments differ: most burn warm, some neutral-cool, levels vary; a few flicker faintly
-            vec3 cell = floor(vLivPos / uLivCell + 0.37);
+            vec3 cell = floor(vLivPos / uLivCell + uLivPhase);
             float h1 = livHash(cell + 3.1), h2 = livHash(cell + 17.7);
             // (v12: cool cells rarer and dimmer, like screens; no lit cell sits near the albedo level)
             vec3 tint = h1 > 0.93 ? vec3(0.7, 0.85, 1.1) * 0.7 : h1 > 0.45 ? vec3(1.0, 0.95, 0.86) : vec3(1.14, 0.9, 0.64);
             float level = 0.55 + 0.85 * livHash(cell + 9.3);
             float fl = h2 < uLivFlicker ? 0.84 + 0.16 * sin(uLivTime * (5.0 + 9.0 * h1) + h2 * 60.0) * sin(uLivTime * 1.9 + h1 * 20.0) : 1.0;
-            float glassOn = 1.0;
-            ${dark ? `for (int i = 0; i < 4; i++) { if (i >= uLivDarkN) break; vec3 dd = min(vLivPos - uLivDarkMin[i], uLivDarkMax[i] - vLivPos); if (min(dd.x, min(dd.y, dd.z)) > 0.0) glassOn = 0.0; }` : ''}
+            // a uniform zone (bridge, cockpit, CIC): one steady compartment, every pane lit, neutral-warm
+            if (zUni > 0.5) { tint = vec3(1.0, 0.95, 0.86); level = 1.0; fl = 1.0; lit = 1.0; }
             // the kit's port and pane glass is only partly caught by the glass test (its texels sit near the
             // thresholds): a lit window glows across its whole pane, so the partial mask is saturated here
             float pane = smoothstep(0.15, 0.6, livGlass);
@@ -209,12 +250,12 @@ export function applyLivery(material, opts = 'dark', { scheme = null, zones = nu
               pane *= 1.0 - smoothstep(0.32, 0.5, satNear);
             }
             #endif
-            totalEmissiveRadiance += uLivGlassGlow * tint * pane * glassOn * (0.06 + 0.94 * lit * level * fl);
+            totalEmissiveRadiance += uLivGlassGlow * tint * pane * zGain * (0.06 + 0.94 * lit * level * fl);
           }`);
     }
   };
   const prevKey = material.customProgramCacheKey.bind(material);
-  material.customProgramCacheKey = () => `livery${glow ? (toShip ? '-glowS' : '-glow') : ''}${dark ? `-dark${dark.length}` : ''}${sc ? `-${scheme}` : ''}|${prevKey()}`;
+  material.customProgramCacheKey = () => `livery${glow ? (toShip ? '-glowS' : '-glow') : ''}${gz ? `-zones${gz.length}` : ''}${sc ? `-${scheme}` : ''}|${prevKey()}`;
   material.needsUpdate = true;
   return material;
 }
