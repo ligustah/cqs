@@ -23,7 +23,33 @@ export const asset = {
   beauty: "./assets/concepts/corvette-beauty.webp",
   rotate: [0, 0, 0],
   hullNodes: ["hull"],
-  livery: { gain: 0.05, glassGlow: [0.06, 0.055, 0.046], glassLit: 0.3 }, // remodel paint is lighter than the generated textures: gain 0.05 matches the fleet grey
+  // remodel paint is lighter than the generated textures: gain 0.05 matches the fleet grey. v11: lit cabins behind the
+  // ports and bridge panes (warm, varied per compartment, a few dark, a few flickering)
+  livery: { gain: 0.05, glassGlow: [0.52, 0.42, 0.28], glassLit: 0.5, glassFlicker: 0.12 },
+  // v11 lightscape (src/lib/lightscape.js): crease pins, recess bars, drive status lights and authored runs
+  lightscape: {
+    seed: 21,
+    creases: { angle: 35, minLen: 3, pitch: 6, share: 0.4, run: [1, 3], runPitch: 1.1, corners: 0.45, spacing: 1.5, size: [0.22, 0.34], intensity: [0.65, 1.0], mix: { amber: 0.7, warm: 0.18, white: 0.12 }, max: 230, blinkShare: 0.03 },
+    slits: { angle: 35, minLen: 1.5, share: 0.45, every: 9, len: [0.8, 1.8], width: 0.15, radiance: [0.9, 1.5], spacing: 4, max: 40, mix: { amber: 0.8, warm: 0.2 } },
+    cool: { radius: 1.8, depth: 2.5 },
+    patterns: [
+      // bridge and tower glazing: lit sills
+      { surface: 'bridge-glazing', edge: 'bottom', inset: 0.15, lift: 0.08, pitch: 0.7, color: 'warm', size: 0.16, intensity: 0.55, keep: true },
+      { surface: 'tower-glazing', edge: 'bottom', inset: 0.2, lift: 0.1, pitch: 0.8, color: 'warm', size: 0.16, intensity: 0.55, keep: true },
+      // armour belt: amber pins along its top edge; deck walkways: white edge lights
+      { surface: 'belt-port', edge: 'top', inset: 0.3, pitch: 3.2, color: 'amber', size: 0.24, intensity: 0.85, skip: 0.3, mirrorX: true },
+      { surface: 'deck-walk-port', edge: 'top', inset: 0.2, pitch: 5.5, color: 'white', size: 0.2, intensity: 0.6, skip: 0.2, mirrorX: true },
+      { surface: 'shoulder-port', edge: 'bottom', inset: 0.2, pitch: 4.5, color: 'amber', size: 0.22, intensity: 0.8, skip: 0.35, mirrorX: true },
+      { surface: 'deckhouse-side-port', edge: 'bottom', inset: 0.25, pitch: 3.5, color: 'warm', size: 0.2, intensity: 0.6, skip: 0.4, mirrorX: true },
+      // drive pods: blue-white status lights on the outboard faces
+      { surface: 'pod-outboard-port', edge: 'top', inset: 0.4, pitch: 0.9, color: 'cool', size: 0.2, intensity: 0.85, mirrorX: true },
+      { surface: 'pod-outboard-port', edge: 'bottom', inset: 0.4, pitch: 1.8, color: 'amber', size: 0.22, intensity: 0.8, mirrorX: true },
+      // stern plate: drive status chaser; the bow deck: two slow beacons
+      { surface: 'stern-plate', edge: 'centre', inset: 0.4, pitch: 0.6, color: 'cool', size: 0.18, intensity: 0.85, chase: 2.6 },
+      { surface: 'bow-deck', edge: 'left', inset: 0.5, pitch: 7, color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.4 },
+      { surface: 'bow-deck', edge: 'right', inset: 0.5, pitch: 7, color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.4 },
+    ],
+  },
   detail: {"set": "hull", "tile": 6, "normalStrength": 0.6, "roughAmount": 0.5, "cavity": 0.2},
   // Two-tone armour zones (?livery=tone|bone, livery.js SCHEMES; ship frame, metres): the outrigger drive pods, the
   // chamfered bow cap (forward of the deck slope, z 41.5) and the stern block below the main deck (aft of the

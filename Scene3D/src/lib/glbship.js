@@ -9,6 +9,7 @@ import { toCreasedNormals, mergeVertices, mergeGeometries } from 'three/addons/u
 import { addDetailLayer } from './patina.js';
 import { applyLivery } from './livery.js';
 import { FINISH, addWornFinish } from './finish.js';
+import { buildLightscape } from './lightscape.js';
 
 // Two-tone livery scheme for every GLB ship built from now on (main.js: ?livery=tone|bone), or null.
 // The module's own livery (dark / civil) stays the base; its liveryZones take the light paint.
@@ -239,7 +240,9 @@ function interiorLight(spec) {
  *              how far inside the lip the throat plate sits, throat = radius of the hot throat
  *              there, wall = optional measured inner-wall points [[depth, radius], ...] between
  *              the lip and the throat (the glowing lining follows them)
- *   lights     [{ p, color, size, blink }]
+ *   lights     [{ p, color, size, blink }]  (nav and running lights: never thinned, full brightness at any range)
+ *   lightscape optional v11 small-lights spec (see lightscape.js): crease pins, recess slits, authored rows /
+ *              rings / window runs / chasers; generated here on the hull meshes, drawn by effects.js
  *   anchors    { name: { p, ...extra } }
  *   interiorLights  optional lights carried inside the hull, e.g. hangar floodlights
  *              [{ p, color, intensity (cd), distance, kind: 'spot'|'point', angle, penumbra, target | dir, castShadow }]
@@ -303,7 +306,7 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
     const gate = cfg.interiorLights?.length && cfg.interiorLightGate;
     const scheme = cfg.liveryScheme ?? LIVERY_SCHEME;
     const zoned = !!(scheme && cfg.livery && cfg.liveryZones?.length && (role.hull || cfg.liveryZoneParts));
-    const keyOf = (m) => (cfg.liveryKeep || gate || cfg.detail?.interior || FINISH || zoned ? `${m.uuid}|${zoned ? 'z' : ''}|${o.matrixWorld.elements.map((e) => e.toFixed(6)).join(',')}` : m);
+    const keyOf = (m) => (cfg.liveryKeep || gate || cfg.detail?.interior || FINISH || zoned || cfg.livery?.glassGlow ? `${m.uuid}|${zoned ? 'z' : ''}|${o.matrixWorld.elements.map((e) => e.toFixed(6)).join(',')}` : m);
     const next = mats.map((m) => {
       if (upgraded.has(keyOf(m))) return upgraded.get(keyOf(m));
       const mm = m.clone();
@@ -316,7 +319,7 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
       // true-scale ports and panes are a few texels wide: keep them sharp at grazing angles
       for (const t of [mm.map, mm.normalMap, mm.roughnessMap]) if (t) t.anisotropy = 8;
       // two-tone scheme (?livery=tone|bone): the module's liveryZones, on the hull (and on kit parts if liveryZoneParts)
-      if (cfg.livery) applyLivery(mm, cfg.livery, zoned ? { scheme, zones: cfg.liveryZones, toShip: o.matrixWorld } : {});
+      if (cfg.livery) applyLivery(mm, cfg.livery, zoned ? { scheme, zones: cfg.liveryZones, toShip: o.matrixWorld } : { toShip: o.matrixWorld });
       if (cfg.livery && cfg.liveryKeep) keeps.forEach((kp, k) => keepInterior(mm, kp, o.matrixWorld, k));
       if (gate) gateInteriorLights(mm, gate, o.matrixWorld, cfg.interiorBounce || null);
       if (detailSet) {
@@ -443,6 +446,14 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
     if (!l.mirrorX) return [one];
     return [one, { ...one, p: new V3(-l.p[0], l.p[1], l.p[2]), color: l.mirrorColor ?? one.color }];
   });
+  // v11 lightscape (lightscape.js): many small pins along the hull's creases and authored rows, and short
+  // glowing slits in its recesses, generated once per prototype on the hull meshes in the ship frame
+  let scape = { pins: [], slits: [] };
+  if (cfg.lightscape) {
+    const hullMeshes = [];
+    model.traverse((o) => { if (o.isMesh && o.userData.hull) hullMeshes.push({ geometry: o.geometry, matrix: o.matrixWorld }); });
+    scape = buildLightscape(cfg, hullMeshes, engines);
+  }
   const anchors = {};
   for (const [k, a] of Object.entries(cfg.anchors || {})) anchors[k] = { ...a, ...(a.p ? { p: new V3(...a.p) } : {}), ...(a.dir ? { dir: new V3(...a.dir) } : {}) };
   // lights inside the hull (hangar floodlights): real light sources, children of the ship
@@ -458,7 +469,7 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
     source: { glb: cfg.glb, generator: cfg.generator, concept: cfg.concept, beauty: cfg.beauty, gameId: cfg.gameId || null },
     envelope: { min: env.min.clone(), max: env.max.clone(), size, center: env.getCenter(new V3()) },
     envelopeVolume: size.x * size.y * size.z,
-    engines, lights, anchors, interiorLights,
+    engines, lights, anchors, interiorLights, pins: scape.pins, slits: scape.slits,
     triangles: Math.round(triangles),
     drawCalls: meshes,
   };

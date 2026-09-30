@@ -95,7 +95,47 @@ export const asset = {
   ],
   // remodel paint is lighter than the generated textures: gain 0.05 matches the fleet grey; kit and hull glass get a
   // dim warm interior light (livery.js glassGlow, opt-in)
-  livery: { gain: 0.05, glassGlow: [0.06, 0.055, 0.046], glassLit: 0.35 },
+  livery: { gain: 0.05, glassGlow: [0.52, 0.42, 0.28], glassLit: 0.5, glassFlicker: 0.1 },
+  // v11 lightscape (src/lib/lightscape.js): crease pins over the whole hull (block corners, chines, frame edges), recess
+  // bars, blue-white status lights round the drive collars; inside the hangar (the zone) a denser, warmer set, plus
+  // authored deck, lane and ceiling lights, and chasers along the launch lane toward the bow mouth
+  lightscape: {
+    seed: 51,
+    creases: { angle: 35, minLen: 7, pitch: 16, share: 0.42, run: [1, 4], runPitch: 1.8, corners: 0.4, spacing: 3.2, size: [0.35, 0.55], intensity: [0.65, 1.0], mix: { amber: 0.68, warm: 0.2, white: 0.12 }, max: 1500, blinkShare: 0.02 },
+    slits: { angle: 35, minLen: 3, share: 0.4, every: 18, len: [1.2, 3.2], width: 0.25, radiance: [0.9, 1.5], spacing: 9, max: 220, mix: { amber: 0.75, warm: 0.25 } },
+    cool: { radius: 1.7, depth: 4.5 },
+    zones: [
+      // the vent grilles on the upper chamfers above the bays: their bars are long creases, so only a few pins there
+      { box: [[100, -1, -262], [140, 24, 277]], mirrorX: true, creases: { share: 0.06, corners: 0.05 }, slits: null },
+      // hangar interior (the cavity and the open bays out to the flank plating): warmer, denser work lights
+      { box: [[-121, -97.5, -277], [121, -0.2, 421]],
+        creases: { minLen: 5, pitch: 10, share: 0.5, run: [1, 3], runPitch: 1.5, corners: 0.5, spacing: 2.6, mix: { warm: 0.55, amber: 0.3, white: 0.15 }, intensity: [0.6, 0.95] },
+        slits: { minLen: 3, share: 0.55, every: 12, spacing: 7, mix: { warm: 0.6, amber: 0.4 } } },
+    ],
+    patterns: [
+      // launch lane edges on the long deck (x +-25): white deck lights every 8 m; amber lane lights in the bow section
+      // run as chasers toward the mouth
+      { row: [[25.5, -96.25, -160], [25.5, -96.25, 176]], pitch: 8, color: 'white', size: 0.34, intensity: 0.75, mirrorX: true },
+      { row: [[25.5, -90.87, 280], [25.5, -90.87, 414]], pitch: 6, color: 'amber', size: 0.4, intensity: 1.0, chase: 3.0, duty: 0.18, mirrorX: true },
+      { row: [[25.5, -93.51, 205], [25.5, -93.51, 274]], pitch: 6, color: 'amber', size: 0.4, intensity: 1.0, chase: 3.0, duty: 0.18, chaseSpan: 0.5, mirrorX: true },
+      { row: [[25.5, -92.35, -254], [25.5, -92.35, -192]], pitch: 8, color: 'white', size: 0.34, intensity: 0.75, mirrorX: true },
+      // bay deck edges (x +-93.5): sparse amber pins at the open flank
+      { row: [[93.2, -96.25, -160], [93.2, -96.25, 176]], pitch: 12, color: 'amber', size: 0.34, intensity: 0.8, skip: 0.25, mirrorX: true },
+      // bay ceilings: two rows of warm work lights either side of the centre strip
+      { row: [[45, -1.0, -258], [45, -1.0, 412]], pitch: 11, color: 'warm', size: 0.4, intensity: 0.8, skip: 0.3, mirrorX: true },
+      { row: [[80, -1.0, -258], [80, -1.0, 412]], pitch: 13, color: 'white', size: 0.36, intensity: 0.7, skip: 0.4, mirrorX: true },
+      // bow-section walls: amber guidance lights at deck height and a white row above
+      { row: [[94.8, -88.5, 282], [94.8, -88.5, 414]], pitch: 7, color: 'amber', size: 0.36, intensity: 0.9, mirrorX: true },
+      { row: [[94.8, -20, 282], [94.8, -20, 414]], pitch: 12, color: 'white', size: 0.34, intensity: 0.7, skip: 0.2, mirrorX: true },
+      // the open flank bays: warm lights up the bay-facing sides of the frames, along the lintels and the deck sills,
+      // so each opening reads as a lit working space from outside (as in the concept)
+      ...FRAME_FACES.map(([z, s]) => ({ row: [[127.5, -90, z + s * 0.12], [127.5, -8, z + s * 0.12]], pitch: 7, mix: { warm: 0.6, amber: 0.4 }, size: 0.45, intensity: 0.85, skip: 0.2, mirrorX: true, seed: Math.round(z) })),
+      ...BAY_CEILINGS.slice(0, 6).map(([z0, z1]) => ({ row: [[120, -0.72, z0 + 3], [120, -0.72, z1 - 3]], pitch: 8, color: 'warm', size: 0.45, intensity: 0.8, skip: 0.2, mirrorX: true, seed: Math.round(z0) })),
+      ...BAY_CEILINGS.slice(0, 6).map(([z0, z1]) => ({ row: [[119.5, -96.24, z0 + 3], [119.5, -96.24, z1 - 3]], pitch: 7, color: 'amber', size: 0.45, intensity: 0.9, skip: 0.15, mirrorX: true, seed: Math.round(z1) })),
+      // mouth lip: an amber chaser across the sill
+      { row: [[-88, -94.4, 421.6], [88, -94.4, 421.6]], pitch: 8, color: 'amber', size: 0.4, intensity: 1.0, chase: 2.4, duty: 0.2 },
+    ],
+  },
   // the operational repaint stops at the hangar: inside the cavity box the texture keeps its own plating (x 0.14, 8 %
   // saturation), so the deck and walls read as lit grey steel instead of the near-black hull paint
   liveryKeep: { box: [[-100.5, -97.5, -277], [100.5, -0.3, 414]], gain: 0.14, saturation: 0.08, feather: 1.5 },

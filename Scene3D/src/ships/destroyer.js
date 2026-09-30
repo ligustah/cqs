@@ -50,7 +50,42 @@ export const asset = {
   beauty: "./assets/concepts/destroyer-beauty.webp",
   rotate: [0, 0, 0],
   hullNodes: ["hull"],
-  livery: {"gain": 0.05, "glassGlow": [0.06, 0.055, 0.046], "glassLit": 0.35, "mark": 0.18, "markSat": 0.3},
+  // v11: lit cabins behind the 1 m ports and the bridge / CIC slits (warm, varied per compartment, a few flickering)
+  livery: {"gain": 0.05, "glassGlow": [0.52, 0.42, 0.28], "glassLit": 0.5, "glassFlicker": 0.12, "mark": 0.18, "markSat": 0.3},
+  // v11 lightscape (src/lib/lightscape.js): crease pins, recess bars, drive status lights and authored runs
+  lightscape: {
+    seed: 41,
+    creases: { angle: 35, minLen: 3.5, pitch: 7, share: 0.4, run: [1, 3], runPitch: 1.2, corners: 0.45, spacing: 1.8, size: [0.24, 0.36], intensity: [0.65, 1.0], mix: { amber: 0.7, warm: 0.18, white: 0.12 }, max: 330, blinkShare: 0.03 },
+    slits: { angle: 35, minLen: 1.5, share: 0.45, every: 10, len: [0.9, 2.2], width: 0.18, radiance: [0.9, 1.5], spacing: 5, max: 60, mix: { amber: 0.8, warm: 0.2 } },
+    cool: { radius: 1.8, depth: 2.2 },
+    // the gun gap keeps its own muted machinery: no crease pins on the exposed barrel
+    zones: [{ box: [[-12, -21, 43], [12, -3.5, 55]], creases: null, slits: null }],
+    patterns: [
+      // flank port bands: amber pins along the top of each, white work lights under them
+      { surface: 'engine-flank-port', edge: 'top', inset: 0.3, pitch: 3.5, color: 'amber', size: 0.26, intensity: 0.85, skip: 0.25, mirrorX: true },
+      { surface: 'engine-flank-aft-port', edge: 'top', inset: 0.3, pitch: 3.5, color: 'amber', size: 0.26, intensity: 0.85, skip: 0.25, mirrorX: true },
+      { surface: 'engine-flank-aft-port', edge: 'bottom', inset: 0.3, pitch: 5.5, color: 'white', size: 0.22, intensity: 0.6, skip: 0.3, mirrorX: true },
+      { surface: 'mid-flank-port', edge: 'top', inset: 0.3, pitch: 3.2, color: 'amber', size: 0.24, intensity: 0.85, skip: 0.3, mirrorX: true },
+      { surface: 'bow-flank-port', edge: 'top', inset: 0.3, pitch: 3.5, color: 'amber', size: 0.26, intensity: 0.85, skip: 0.25, mirrorX: true },
+      { surface: 'bow-flank-port', edge: 'bottom', inset: 0.3, pitch: 6, color: 'warm', size: 0.22, intensity: 0.6, skip: 0.3, mirrorX: true },
+      // boat hatch: an amber chaser along its sill (a docking area), cool status lights over it
+      { surface: 'boat-hatch-port', edge: 'bottom', inset: 0.1, lift: 0.15, pitch: 0.6, color: 'amber', size: 0.22, intensity: 0.95, chase: 2.2, mirrorX: true },
+      { surface: 'boat-hatch-port', edge: 'top', inset: 0.1, lift: 0.15, pitch: 1.4, color: 'cool', size: 0.2, intensity: 0.8, mirrorX: true },
+      // command block: lit sills round the casemate front and aft face, a beacon on the roof
+      { surface: 'command-front', edge: 'bottom', inset: 0.1, lift: 0.08, pitch: 0.6, color: 'warm', size: 0.18, intensity: 0.6, keep: true },
+      { surface: 'command-front', edge: 'top', inset: 0.1, lift: 0.08, pitch: 0.6, color: 'warm', size: 0.18, intensity: 0.6, keep: true },
+      { surface: 'command-aft', edge: 'top', inset: 0.2, pitch: 0.8, color: 'white', size: 0.18, intensity: 0.6 },
+      { surface: 'command-roof', edge: 'left', inset: 0.3, pitch: 1.5, color: 'amber', size: 0.24, intensity: 0.9, pulse: 3.6 },
+      // spine catwalk: a sparse run of white deck lights; stern plate: drive status chaser
+      { surface: 'spine-top', edge: 'left', inset: 0.2, pitch: 4, color: 'white', size: 0.2, intensity: 0.6, skip: 0.2 },
+      { surface: 'spine-top', edge: 'right', inset: 0.2, pitch: 4, color: 'white', size: 0.2, intensity: 0.6, skip: 0.2 },
+      { surface: 'stern-plate', edge: 'centre', inset: 0.4, pitch: 0.6, color: 'cool', size: 0.2, intensity: 0.85, chase: 2.6 },
+      { surface: 'engine-deck', edge: 'left', inset: 0.2, pitch: 1.0, color: 'cool', size: 0.2, intensity: 0.8 },
+      { surface: 'engine-deck', edge: 'right', inset: 0.2, pitch: 1.0, color: 'cool', size: 0.2, intensity: 0.8 },
+      // gun gap face: a warm run over the exposed barrel
+      { surface: 'gap-face-mid', edge: 'top', inset: 0.2, pitch: 0.8, color: 'warm', size: 0.2, intensity: 0.7 },
+    ],
+  },
   detail: {"set": "hull", "tile": 6, "normalStrength": 0.6, "roughAmount": 0.5, "cavity": 0.2},
   // The exposed barrel in the gun gap keeps a muted version of its copper coils and bus bars instead of the
   // grey repaint, a little above the hull's value, so it reads as its own machinery (box stops short of the gap faces).

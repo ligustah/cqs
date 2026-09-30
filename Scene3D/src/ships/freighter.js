@@ -36,7 +36,28 @@ export const asset = {
   beauty: './assets/concepts/freighter-beauty.webp',
   rotate: [0, 0, 0],
   hullNodes: ['hull'],
-  livery: { ...LIVERIES.civil, gain: 0.05, glassGlow: [0.06, 0.055, 0.046], glassLit: 0.45 }, // civil grey; the remodel paint is lighter than the generated textures (gain 0.05); lit cabins behind the ports
+  livery: { ...LIVERIES.civil, gain: 0.05, glassGlow: [0.52, 0.42, 0.28], glassLit: 0.55, glassFlicker: 0.14 }, // civil grey; the remodel paint is lighter than the generated textures (gain 0.05); lit cabins behind the ports (v11: warm, varied, a few flickering)
+  // v11 lightscape (src/lib/lightscape.js): crease pins (fewer, whiter: civil), recess bars, drive status lights
+  lightscape: {
+    seed: 31,
+    creases: { angle: 35, minLen: 3, pitch: 7, share: 0.34, run: [1, 2], runPitch: 1.2, corners: 0.4, spacing: 1.6, size: [0.22, 0.34], intensity: [0.6, 0.95], mix: { amber: 0.5, warm: 0.25, white: 0.25 }, max: 190, blinkShare: 0.03 },
+    slits: { angle: 35, minLen: 1.5, share: 0.35, every: 10, len: [0.8, 1.8], width: 0.15, radiance: [0.8, 1.3], spacing: 5, max: 30, mix: { amber: 0.6, warm: 0.4 } },
+    cool: { radius: 1.7, depth: 2 },
+    // radiator panels: fins are long creases; keep them nearly dark (their top edges carry authored pins)
+    zones: [{ box: [[18.5, -30, -52], [32, 2.9, -18]], mirrorX: true, creases: { share: 0.04, corners: 0.03 }, slits: null }],
+    patterns: [
+      // crew module: white deck-edge lights along the walkway ledge, amber under the flank band
+      { surface: 'cm-ledge-port', edge: 'top', inset: 0.1, pitch: 2.5, color: 'white', size: 0.22, intensity: 0.65, mirrorX: true },
+      { surface: 'cm-flank-port', edge: 'bottom', inset: 0.3, pitch: 3, color: 'amber', size: 0.24, intensity: 0.8, skip: 0.3, mirrorX: true },
+      { surface: 'cm-roof', edge: 'left', inset: 0.3, pitch: 5, color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.8 },
+      // reactor block: blue-white status run on the flank, amber on the roof edge
+      { surface: 'reactor-flank-port', edge: 'top', inset: 0.4, pitch: 0.9, color: 'cool', size: 0.2, intensity: 0.8, mirrorX: true },
+      { surface: 'reactor-flank-port', edge: 'bottom', inset: 0.4, pitch: 2.2, color: 'amber', size: 0.22, intensity: 0.8, skip: 0.2, mirrorX: true },
+      // radiator panels: amber pins along the top edges (the beam extremity carries the sidelights)
+      { surface: 'radiator-top-port', edge: 'top', inset: 0.3, pitch: 2.5, color: 'amber', size: 0.24, intensity: 0.85, mirrorX: true },
+    ],
+  },
+
   detail: { set: 'hull', tile: 6, normalStrength: 0.6, roughAmount: 0.5, cavity: 0.2 }, // the hull carries its own seams: runtime PATINA turned down
   length: 134.122, // 134.12 x 54.68 x 38.16 m assembled (L x B x H), 4 slots
   // Two-tone zones (?livery=tone|bone, livery.js SCHEMES; ship frame, metres): the crew module (aft bulkhead z 34 to
@@ -94,6 +115,26 @@ export const variants = {
     beauty: './assets/concepts/freighter-troops-beauty.webp',
     rotate: [0, 0, 0],
     length: 128.843, // 128.84 x 57.74 x 37.66 m assembled (L x B x H), 4 slots
+    // v11 lightscape (src/lib/lightscape.js): crease pins (fewer, whiter: civil), recess bars, drive status lights
+    lightscape: {
+      seed: 37,
+      creases: { angle: 35, minLen: 3, pitch: 7, share: 0.34, run: [1, 2], runPitch: 1.2, corners: 0.4, spacing: 1.6, size: [0.22, 0.34], intensity: [0.6, 0.95], mix: { amber: 0.5, warm: 0.25, white: 0.25 }, max: 190, blinkShare: 0.03 },
+      slits: { angle: 35, minLen: 1.5, share: 0.35, every: 10, len: [0.8, 1.8], width: 0.15, radiance: [0.8, 1.3], spacing: 5, max: 30, mix: { amber: 0.6, warm: 0.4 } },
+      cool: { radius: 1.7, depth: 2 },
+      zones: [{ box: [[19.5, -30, -50], [33, 3.0, -16]], mirrorX: true, creases: { share: 0.04, corners: 0.03 }, slits: null }],
+      patterns: [
+        // crew module: white deck-edge lights along the walkway ledge, amber under the flank band
+        { surface: 'cm-ledge-port', edge: 'top', inset: 0.1, pitch: 2.5, color: 'white', size: 0.22, intensity: 0.65, mirrorX: true },
+        { surface: 'cm-flank-port', edge: 'bottom', inset: 0.3, pitch: 3, color: 'amber', size: 0.24, intensity: 0.8, skip: 0.3, mirrorX: true },
+        { surface: 'cm-roof', edge: 'left', inset: 0.3, pitch: 5, color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.8 },
+        // reactor block: blue-white status run on the flank, amber on the roof edge
+        { surface: 'reactor-flank-port', edge: 'top', inset: 0.4, pitch: 0.9, color: 'cool', size: 0.2, intensity: 0.8, mirrorX: true },
+        { surface: 'reactor-flank-port', edge: 'bottom', inset: 0.4, pitch: 2.2, color: 'amber', size: 0.22, intensity: 0.8, skip: 0.2, mirrorX: true },
+        // radiator panels: amber pins along the top edges (the beam extremity carries the sidelights)
+        { surface: 'radiator-top-port', edge: 'top', inset: 0.3, pitch: 2.5, color: 'amber', size: 0.24, intensity: 0.85, mirrorX: true },
+      ],
+    },
+
     // two-tone zones as on the cargo ship, at the troop hull's stations (crew module from z 31.4, reactor z -30.5..-20.5)
     liveryZones: [
       { box: [[-12.0, -14.0, 31.4], [12.0, 11.0, 64.9]] },

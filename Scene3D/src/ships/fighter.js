@@ -26,7 +26,30 @@ export const asset = {
   beauty: "./assets/concepts/fighter-beauty.webp",
   rotate: [0, 0, 0],
   hullNodes: ["hull"],
-  livery: {"gain": 0.05, "glassGlow": [0.06, 0.055, 0.046], "glassLit": 0.3},
+  // v11: lit cabins behind the ports and the bridge glazing (warm, varied per compartment, a few dark, a few flickering)
+  livery: {"gain": 0.05, "glassGlow": [0.52, 0.42, 0.28], "glassLit": 0.5, "glassFlicker": 0.12,
+    "glassDark": [[[-15, -11, 32.5], [15, 9, 40]]]}, // the bow sensor lenses stay dark glass
+  // v11 lightscape (src/lib/lightscape.js): pins on the hull's convex creases (block corners and chines), short
+  // amber bars in its recesses, blue-white status lights round the drive housings, and authored runs
+  lightscape: {
+    seed: 11,
+    creases: { angle: 35, minLen: 2.5, pitch: 5, share: 0.42, run: [1, 3], runPitch: 1.0, corners: 0.45, spacing: 1.3, size: [0.2, 0.32], intensity: [0.65, 1.0], mix: { amber: 0.7, warm: 0.18, white: 0.12 }, max: 170, blinkShare: 0.03 },
+    slits: { angle: 35, minLen: 1.2, share: 0.45, every: 8, len: [0.7, 1.6], width: 0.14, radiance: [0.9, 1.5], spacing: 3.5, max: 28, mix: { amber: 0.8, warm: 0.2 } },
+    cool: { radius: 1.9, depth: 2.5 },
+    patterns: [
+      // bridge: a lit sill under the glazing band
+      { surface: 'bridge-glazing', edge: 'bottom', inset: 0.15, lift: 0.08, pitch: 0.7, color: 'warm', size: 0.16, intensity: 0.55, keep: true },
+      // stencil chamfer: a run of amber pins along its upper edge, and a slow beacon pair
+      { surface: 'chamfer-port', edge: 'top', inset: 0.3, pitch: 2.2, color: 'amber', size: 0.22, intensity: 0.8, skip: 0.25, mirrorX: true },
+      { surface: 'flank-fore-port', edge: 'bottom', inset: 0.3, pitch: 1.6, color: 'amber', size: 0.2, intensity: 0.7, skip: 0.3, mirrorX: true },
+      // sponsons: blue-white status lights on the outboard faces
+      { surface: 'sponson-outboard-port', edge: 'top', inset: 0.25, pitch: 0.5, color: 'cool', size: 0.18, intensity: 0.8, mirrorX: true },
+      // stern plate: a short chaser for the drive status
+      { surface: 'stern-plate', edge: 'centre', inset: 0.3, pitch: 0.5, color: 'cool', size: 0.16, intensity: 0.8, chase: 2.4 },
+      // dorsal deck: two slow amber beacons at the hatch rows
+      { points: [[1.9, 6.95, -3.6], [-1.9, 6.95, -16.3]], color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.2 },
+    ],
+  },
   detail: {"set": "hull", "tile": 6, "normalStrength": 0.6, "roughAmount": 0.5, "cavity": 0.2},
   // Two-tone armour zones (?livery=tone|bone, livery.js SCHEMES; ship frame, metres): the flank sponsons, the
   // stern engine block (aft deck and flanks, z -26.4..-18.5 step) and the forward flank cheeks (hull stations
