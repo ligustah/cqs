@@ -22,9 +22,11 @@
 //   exit planes on z -450, in collars on the stern plate; depth / throat / wall = the kit's engine entry x scale.
 // - Lights sit 8 cm proud of the surface. Nav path (lights[]): the five nav lights and white outline markers on the
 //   deck-edge chamfer every 75 m. Amber lamps every 25 m between them, at mid-height (y -50) on the frame posts'
-//   capital band and the end blocks, and on the sponsons' outer faces (lightscape). Lit ports: grouped runs of 1 m
-//   window points on real glass (ray-cast) on the flank port grids of the stern block and bow section and on the keel
-//   wedge; the island is lit by its own glass (livery).
+//   capital band and the end blocks, and on the sponsons' outer faces (lightscape); eleven slow amber beacons on the
+//   dorsal centreline, block tops, sponsons and island roofs; a cool drive-status bar and amber corner strips on the
+//   stern plate. Lit ports: grouped runs of 1 m window points on real glass (ray-cast) on the flank port grids of the
+//   stern block and bow section and on the keel wedge; the island is lit by its own glass (livery). No automatic lamp
+//   sits within 1.5 m of glass (zones): a lamp on a port band's lip reads as one more, larger window.
 // - v14 fleet lighting scale standard (one fixture, one size on every hull; lamps where a fixture has a job; windows
 //   only on real glass at the 1 m port size). The carrier's lamps had been scaled up with the hull (pins 0.45-0.7 m,
 //   bars 0.65-1.4 m wide): a 0.87 m bright band in a recess reads as a row of 1 m windows and the 130 m bow face shrinks
@@ -57,13 +59,12 @@ const EDGE_RUN = [[100.16, 20.92, -355.0], [-100.16, 20.92, -355.0], [100.16, 20
 const FLANK = [[202.83, -50.0, -300.0], [-202.83, -50.0, -300.0], [131.9, -50.0, -268.0], [-131.9, -50.0, -268.0], [131.06, -50.0, -176.2], [-131.06, -50.0, -176.2], [131.06, -50.0, -85.75], [-131.06, -50.0, -85.75], [131.06, -50.0, 6.97], [-131.06, -50.0, 6.97], [131.06, -50.0, 99.51], [-131.06, -50.0, 99.51], [131.06, -50.0, 190.1], [-131.06, -50.0, 190.1], [131.06, -50.0, 290.0], [-131.06, -50.0, 290.0], [131.06, -50.0, 350.0], [-131.06, -50.0, 350.0], [131.06, -50.0, 410.0], [-131.06, -50.0, 410.0]];
 const SPONSON_RUN = [[202.83, -46.0, -330.0], [-202.83, -46.0, -330.0], [202.83, -46.0, -290.0], [-202.83, -46.0, -290.0]];
 
-// hangar: 1 m gallery ports on every bay-facing face (frame posts, stern block, bow section): two rows (y -32 / -64)
-// of four per side; ports every 12.5 m along the bow section's inner walls; amber lamps along the mouth's lintel.
-// (v14: window points, dim and half of them dark (skip), so the 24 faces do not carry one identical fully lit grid
-// that reads as LED decoration; the mouth's sill lamps went: they sat on the sill chaser's own lamps)
+// hangar: ports every 12.5 m along the bow section's inner walls; amber lamps along the mouth's lintel.
+// (v14: window points, dim and half of them dark (skip); the mouth's sill lamps went: they sat on the sill chaser's own
+// lamps. The bay-facing frame faces' gallery ports carry no window points: the livery already lights 40 % of that
+// glass, and a second lit layer on it is the double lighting that took ISLAND_PORTS out)
 const FRAME_FACES = [[-261.02, 1], [-188.09, -1], [-164.27, 1], [-98.0, -1], [-73.49, 1], [-5.24, -1], [19.21, 1], [87.42, -1], [111.6, 1], [178.09, -1], [202.12, 1], [275.99, -1]];
 const POSTS = [-176.2, -85.75, 6.97, 99.51, 190.1]; // frame post centres (z)
-const GALLERY = FRAME_FACES.flatMap(([z, s]) => [105, 111, 117, 123, -105, -111, -117, -123].flatMap((x) => [-32, -64].map((y) => [x, y, z + s * 0.08])));
 const BOW_WALL = Array.from({ length: 11 }, (_, i) => 285 + i * 12.5).flatMap((z) => [[94.93, -48, z], [-94.93, -48, z]]);
 const MOUTH_RIM = [-80, -40, 0, 40, 80].map((x) => [x, -3, 421.5]);
 
@@ -88,7 +89,10 @@ const STRIPS = [
 // hangar floodlights: under the five frame rings (ray-cast ring ceilings) and in the bow section
 // (v12: ~3500 K sodium-warm work light instead of #fff3e8, 52000 -> 36000 cd, a narrower cone with a long penumbra
 // (64 -> 46 deg, 0.55 -> 0.85) so each lamp throws a pool on the deck with dimmer deck between the pools)
-const FLOOD = { kind: 'spot', color: '#ffc68c', intensity: 36000, distance: 240, angle: 46, penumbra: 0.85, fixture: 1.5 };
+// (v14: the emissive lens is the fleet floodlight housing, 0.5 m across (fixture = its radius); at 3 m it was the one
+// lamp still scaled with the hull, a spotlight head as long as the 2 m ceiling lamps beside it that shrank the 85 m
+// hangar ceiling. The pools on the deck are unchanged)
+const FLOOD = { kind: 'spot', color: '#ffc68c', intensity: 36000, distance: 240, angle: 46, penumbra: 0.85, fixture: 0.25 };
 const RING_CEIL = [[-176.2, -5.71], [-85.75, -5.71], [6.97, -5.71], [99.51, -5.71], [190.1, -5.71]];
 
 // v12 apply: lit compartments on the stern block's and bow section's flank port grids (1.1 x 0.9 m ports, 2.5 m apart,
@@ -110,11 +114,38 @@ const WINDOW_RUNS = PORT_RUNS.flatMap(([cols, runs]) => runs.flatMap(([y, i0, n]
 // glass every 2.5 m on one lattice z = -311.45 + 2.5 k, row A k 0-210, row B k 3-207; ray-cast) had every fourth port
 // lit, all of them, over the livery glow of the glass between: two unbroken dotted lines 520 m long that read as rope
 // lights on a small hull. The keel glass is dark now (livery glassDark) and a few compartments are lit instead, like the
-// flanks: runs of 3-5 neighbouring ports on one deck, [row, first k, count], the starboard side mirrored end for end
+// flanks: runs of 3-5 neighbouring ports on one deck, [row, first k, count], the starboard side mirrored end for end.
+// (fix: 12 runs a side, the rows alternating, 15-17 slots (38-43 m) between run starts: 92 ports, 11 % of the 832, lit as
+// the flank runs are (port, 1.25); every slot checked on the hull texture's glass on both sides)
 const KEEL_ROWS = [[90.21, -125.21], [82.21, -133.21]];
-const KEEL_RUNS = [[0, 14, 4], [1, 38, 3], [0, 61, 5], [1, 84, 4], [0, 107, 5], [1, 129, 4], [0, 152, 4], [1, 178, 5]];
+const KEEL_RUNS = [[1, 15, 3], [0, 31, 4], [1, 46, 5], [0, 63, 4], [1, 80, 3], [0, 95, 5], [1, 111, 4], [0, 128, 4], [1, 145, 3], [0, 160, 5], [1, 176, 3], [0, 191, 3]];
 const KEEL_PORTS = KEEL_RUNS.flatMap(([r, k0, n]) => Array.from({ length: n }, (_, i) => [
   [KEEL_ROWS[r][0], KEEL_ROWS[r][1], -311.45 + 2.5 * (k0 + i)], [-KEEL_ROWS[r][0], KEEL_ROWS[r][1], -311.45 + 2.5 * (210 - k0 - i)]]).flat());
+
+// island roof edges (fix): the only places on the island where an automatic pin is 1.5 m or more from its glass. Each
+// tier's 1 m window ribbons (3 m deck pitch) run up to 2-4 m under its roof, and the next tier's lowest ribbon sits right
+// at that roof, so every wall crease is a lit sill in a window band. A pin may sit on a roof's outer edge only: from
+// 1.6 m over the tier's top ribbon to its parapet, and 1.6 m clear of the next tier's walls (tiers from
+// tools/blender/hulls/carrier_dims.py; ribbons from the hull texture). [y0, y1, tier [half-width, z0, z1], next tier]
+const ISLAND_ROOFS = [
+  [35.6, 41.5, [46, -250, 22], [33, -218, -18]], // plinth (ribbons up to y 34), round t1
+  [55.6, 60, [34, -219, -17], [25, -196, -46]], // t1 (to 54), round t2
+  [76.6, 81, [26, -197, -45], [22, -183, -65]], // t2 (to 75), round t3
+  [98, 102, [23, -184, -92.6], [18, -171, -85]], // t3 (to 96.5), round t4; its front lies under the hammerhead bridge
+  [122.4, 124.5, [19, -172, -84], [12, -156, -106]], // t4's parapet (its top ribbon is at the roof, 121), round t5
+  [133.6, 137.5, [13, -157, -105], [6.5, -142, -124]], // t5 (to 132), round t6
+];
+const ISLAND_ROOF_EDGES = ISLAND_ROOFS.flatMap(([y0, y1, [w, z0, z1], [wn, zn0, zn1]]) => [
+  { box: [[wn + 1.6, y0, z0], [w, y1, z1]], mirrorX: true },
+  { box: [[-w, y0, z0], [w, y1, zn0 - 1.6]] },
+  ...(zn1 + 1.6 < z1 ? [{ box: [[-w, y0, zn1 + 1.6], [w, y1, z1]] }] : []),
+]);
+
+// signs of life (R12: the carrier keeps 8-16 slow amber beacons): the dorsal centreline over frame rings F4 and F5, the
+// bow section and stern block tops, the sponson roofs and the island's tier roofs (t1 fore, t2 and t3 aft of the tier
+// above). Ray-cast, 8 cm proud; the sponson pair is 31 m from the sidelights, all are far from the strobes
+const BEACONS = [[0, 23.06, 99.51], [0, 23.06, 190.1], [90, 23.9, 405], [-90, 23.9, 405], [90, 23.06, -320], [-90, 23.06, -320],
+  [185, -29.91, -310], [-185, -29.91, -310], [0, 58.5, -30], [0, 79.49, -190], [0, 100.48, -180]];
 
 export const asset = {
   glb: './assets/ships/carrier.glb', generator: 'tools/blender/hulls/carrier.py (remodel of the tripo3d/h3.1/multiview-to-3d hull) + tools/blender/assemble.py',
@@ -142,9 +173,12 @@ export const asset = {
   // (v14: a working warship's lit share, 0.4 (the island: 40 decks, mostly dark) and warship flicker 0.08; the keel
   // wedge's glass is dark too (its lit compartments are KEEL_PORTS); the hammerhead bridge (x +-32, y 100-112,
   // z -91..-57, two 1.6 m pane bands) is one steady compartment at half the cabin glow: bridges run dark)
+  // (fix: the lower louvre chamfer under the bays (y -97.5..-123) is machinery, but its dark grille paint passes the
+  // glass test and glowed as a dotted sheet from below: dark. It holds no crew glass: the keel rows are at y -125 / -133
+  // and the hangar deck is above -97.5. Seven of the eight glass boxes are used)
   livery: { gain: 0.05, glassGlow: [0.52, 0.42, 0.28], glassLit: 0.4, glassFlicker: 0.08,
     glassDark: [[[95.5, -126, 276.5], [140, 26, 460]], [[-140, -126, 276.5], [-95.5, 26, 460]], [[124, -126, -460], [210, 26, -261.5]], [[-210, -126, -460], [-124, 26, -261.5]],
-      [[-125, -150, -320], [125, -112, 220]]],
+      [[-125, -150, -320], [125, -112, 220]], [[-127, -123, -262], [127, -97.5, 277]]],
     glassZones: [{ box: [[-33, 102, -91.2], [33, 109.5, -56]], gain: 0.5, uniform: true }] },
   // v11 lightscape (src/lib/lightscape.js): crease pins over the whole hull (block corners, chines, frame edges), recess
   // bars, blue-white status lights round the drive collars; inside the hangar (the zone) a denser, warmer set, plus
@@ -162,13 +196,34 @@ export const asset = {
   // parked in the hangar are 0.2-0.3 m, so the carrier's lamps now match them size for size. No warm lamp outside the
   // hangar and bays (warm is lit interior); the keep set is the 54 signature bars (brow, chin, waist, corners, frame
   // gaps, end blocks, ice) that must survive to fleet range; everything else thins and fades with range.
+  // v14 fix (review): no automatic lamp within 1.5 m of glass (zones: the flank port grids, the keel port rows, the
+  // island's window bands, the hangar's back-wall window and bow-wall gallery) and none on the stern plate's grilles;
+  // the frame faces' gallery glass is lit by the livery alone;
+  // signs of life for a 20,000-crew ship (R12): eleven slow amber beacons, a drive-status bar and amber corner strips on
+  // the stern plate, which had no light at all; the keel's lit compartments are 12 runs a side at the flank ports'
+  // brightness (they had faded to nothing in the dark)
   lightscape: {
     seed: 51,
     creases: { angle: 35, minLen: 7, pitch: 16, share: 0.2, run: [1, 3], runPitch: 1.8, corners: 0.35, spacing: 5, size: [0.22, 0.28], intensity: [0.8, 1.1], mix: { amber: 0.85, white: 0.15 }, max: 560, blinkShare: 0.02 },
     slits: { angle: 35, minLen: 3, share: 0.3, every: 24, len: [1.2, 2.4], width: 0.2, radiance: [1.0, 1.5], spacing: 16, max: 120, mix: { amber: 1 },
       corner: { share: 0.4, len: [1.4, 2.4], width: 0.2, radiance: [1.2, 1.7], inset: 0.8, spacing: 14, max: 60 } },
+    // (no crease on this hull falls inside it: the drive-status fixture is the authored cool bar on the stern plate)
     cool: { radius: 1.7, depth: 4.5 },
     zones: [
+      // (fix) no automatic lamp within 1.5 m of glass: the flank port grids of the bow section and the stern block
+      // (1 m port ribbons at y -13.5..-37 and -70..-92; bow z 279-410, stern z -366..-265) and the keel wedge's two port
+      // rows (x 82 / 90). A crease pin on a port band's lip or a recess bar in its foot is a lit sill in a row of windows,
+      // a window-shaped light twice the port size. The block-corner pins above and below the bands (y -10.3, -94.7) and
+      // every authored lamp (patterns ignore zones) stay
+      { box: [[125, -38, 277], [137, -12, 412]], mirrorX: true, creases: null, slits: null },
+      { box: [[125, -93.5, 277], [137, -68.5, 412]], mirrorX: true, creases: null, slits: null },
+      { box: [[125, -31.5, -368], [137, -12, -262.5]], mirrorX: true, creases: null, slits: null },
+      { box: [[125, -93.5, -368], [137, -74.5, -262.5]], mirrorX: true, creases: null, slits: null },
+      { box: [[79, -136, -308], [93, -122, 212]], mirrorX: true, creases: null, slits: null },
+      // (fix) the stern plate's three louvred grilles between the bells (2 m-deep recesses: x +-19, y 1..17 and -98..-110;
+      // the centre grille x +-27, y -34..-67): uncrewed machinery, no lamps (30 pins and bars sat round its ribs, rows at
+      // every rib end); the plate's amber is its authored corner strips, its status fixture the cool bar under the grille
+      { box: [[-30, -112, -372], [30, 18, -368.5]], creases: null, slits: null },
       // (v14) the stern sponsons' aft recess (x 153.2-176.8, y -50.5, z -339.9) and forward intake recess: a lit bar at
       // each end of a rectangular recess turned it into a vehicle's side window or visor (a 60 m sponson read as a pod)
       { box: [[140, -70, -345], [210, -30, -275]], mirrorX: true, slits: null },
@@ -183,15 +238,25 @@ export const asset = {
       { box: [[119, -95, -262], [133, -2, 277]], mirrorX: true, creases: { share: 0.1, run: [1, 1], corners: 0.6 } },
       // the bow face: corner accents, no speckle (its brow and waist bars are authored)
       { box: [[-126, -116, 416], [126, 18, 423]], creases: { share: 0.12, corners: 0.7 } },
-      // the flat dorsal deck: block and hatch corners, not a sparkle over the plates
-      { box: [[-100, 14, -262], [100, 24, 421]], creases: { share: 0.1, run: [1, 2], corners: 0.6 } },
       // the island: its window glow already lights it (v14: corners only, about 70 pins instead of 186 fairy lights on
       // its parapets; a working superstructure, not a hotel at night)
-      { box: [[-50, 23, -250], [50, 160, 25]], creases: { share: 0.06, corners: 0.12 }, slits: { share: 0.05 } },
+      // (fix: and only on the tiers' roof edges, ISLAND_ROOF_EDGES; no bars at all: 19 of its 21 sat in the window
+      // bands, lit slivers in a row of panes)
+      { box: [[-50, 23, -250], [50, 160, 25]], creases: { share: 0.06, corners: 0.3, only: ISLAND_ROOF_EDGES }, slits: null },
+      // the flat dorsal deck: block and hatch corners, not a sparkle over the plates
+      { box: [[-100, 14, -262], [100, 24, 421]], creases: { share: 0.1, run: [1, 2], corners: 0.6 } },
+      // (fix) the hangar's back wall (z -276.3): its long control-room window (x +-60, y -14..-17) takes no lamp on its
+      // lip: a bar along its top edge read as a lit transom over the window
+      { box: [[-62, -19, -280], [62, -12, -275.5]], creases: null, slits: null },
+      // and the bow section's inner walls: the glazed gallery strip at y -60.3..-61.9 (x +-92..95, z 278-412)
+      { box: [[85, -63.5, 277], [97, -58.5, 416]], mirrorX: true, creases: null, slits: null },
       // hangar interior (the cavity and the open bays out to the flank plating): warmer work lights on girder and wall
       // corners, not on the plate seams
+      // (fix: share 0.25 -> 0.2, corners 0.7 -> 0.3. The pins the glass zones above freed would otherwise refill here (the
+      // crease cap is global) and push the hangar past its 900-lamp budget; fewer loose warm dots in the dark bays, which
+      // hinted at a lit tower facade, and the freed share goes back to the exterior's block corners)
       { box: [[-121, -97.5, -277], [121, -0.2, 421]],
-        creases: { minLen: 5, pitch: 16, share: 0.25, run: [1, 2], runPitch: 1.5, corners: 0.7, spacing: 4, mix: { warm: 0.55, amber: 0.3, white: 0.15 }, intensity: [0.6, 0.95] },
+        creases: { minLen: 5, pitch: 16, share: 0.2, run: [1, 2], runPitch: 1.5, corners: 0.3, spacing: 4, mix: { warm: 0.55, amber: 0.3, white: 0.15 }, intensity: [0.6, 0.95] },
         slits: { minLen: 3, share: 0.35, every: 16, spacing: 12, mix: { warm: 0.6, amber: 0.4 } } },
     ],
     patterns: [
@@ -224,10 +289,20 @@ export const asset = {
       // recess keeps one upright amber strip on its floor along the aft jamb (z -8.01 from the post centre; seen from the
       // bow quarter, where the forward jamb would hide it): a lamp washing the recess, not a glazed opening)
       ...POSTS.map((zc) => ({ slit: [130.05, -24.0, zc - 7.6], u: [0, 1, 0], n: [1, 0, 0], len: 6, width: 0.26, color: 'amber', radiance: 1.5, mirrorX: true })),
+      // ---- stern plate (z -371.01, ray-cast; fix: every aft view had no amber at all): joint strips at the block's
+      // upper and lower outboard corners and one up its outboard edge, all outside the drive collars and 100 m from the
+      // stern light; and the drive-status fixture, a cool bar on the centreline level with the upper drives' axis,
+      // between their collars and 4 m under the upper grille's recess (the plate at y 1..17 is that 2 m-deep grille)
+      { slit: [100, 10, -371.09], u: [1, 0, 0], n: [0, 0, -1], len: 6, width: 0.3, color: 'amber', radiance: 1.8, mirrorX: true },
+      { slit: [100, -108, -371.09], u: [1, 0, 0], n: [0, 0, -1], len: 6, width: 0.3, color: 'amber', radiance: 1.8, mirrorX: true },
+      { slit: [123, -50, -371.09], u: [0, 1, 0], n: [0, 0, -1], len: 6, width: 0.3, color: 'amber', radiance: 1.8, mirrorX: true },
+      { slit: [0, -3.2, -371.09], u: [1, 0, 0], n: [0, 0, -1], len: 2.4, width: 0.15, color: 'cool', radiance: 1.0 },
+      // ---- beacons (BEACONS): slow amber pulses, the sign of life that lasts to fleet range (animated: rank 0, floor 0.4)
+      { points: BEACONS, color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.9 },
       // ---- lit compartments on the flank port grids (grouped runs, see WINDOW_RUNS) and the keel wedge (KEEL_PORTS):
       // window points at the glass size, not keep (a lit port far off fades with its area)
       { points: WINDOW_RUNS, color: 'port', size: 0.5, intensity: 1.25 },
-      { points: KEEL_PORTS, ...WIN },
+      { points: KEEL_PORTS, color: 'port', size: 0.5, intensity: 1.25 },
       // ---- running lamps (v14: out of the never-dimmed nav path, lights[]): amber on the deck-edge chamfer every 25 m
       // between the white outline markers, at mid-height on the frame posts' capital band, the end blocks and the
       // sponsons, and along the mouth's lintel
@@ -259,9 +334,8 @@ export const asset = {
       { row: [[94.8, -20, 282], [94.8, -20, 414]], pitch: 12, color: 'white', size: 0.26, intensity: 0.7, skip: 0.2, mirrorX: true },
       // mouth lip: an amber chaser across the sill
       { row: [[-88, -94.4, 421.6], [88, -94.4, 421.6]], pitch: 8, color: 'amber', size: 0.26, intensity: 1.0, chase: 2.4, duty: 0.2 },
-      // gallery ports on the bay-facing faces and the bow section's inner walls (window points, half of them dark; a
-      // seed per list so the faces do not repeat one pattern)
-      { points: GALLERY, ...WIN, skip: 0.5, seed: 7 },
+      // ports on the bow section's inner walls (window points, half of them dark; the frame faces' gallery ports are
+      // lit by the livery alone)
       { points: BOW_WALL, ...WIN, skip: 0.5, seed: 13 },
     ],
   },

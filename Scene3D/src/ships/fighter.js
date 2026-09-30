@@ -29,18 +29,17 @@ export const asset = {
   // v14 (fleet lighting scale standard, R8/R9): a combat craft shows almost no lit glass. Only the kit glass parts
   // glow (the 5 canopy panes at x1.0 and the 2 x 1.0 m ports per side beside the crew door); the bow sensor lenses
   // and every other hull-texture glass stay dark without boxes. Each is one steady uniform compartment, and both
-  // run below R8's 0.45x: on this hull the canopy faces the hero camera, and at 0.45x the glass was the ship's
-  // brightest mark at every range (a lit window block, the "windows" read); the amber lamps carry the life.
-  // - glassDark: the canopy's upper lights (y 4.12..4.47, 0.44 m tall: the kit pane's glazing bar at 60 % height
-  //   splits each pane) stay dark. Lit, they made a 5 x 2 grid of small windows, two storeys of bridge; dark, the
-  //   canopy is one row of 5 lights of 1.0 x 0.67 m (armoured-slit size) under a dark visor band.
-  // - canopy lower lights at 0.23x (a shade over the bridge plating), the door ports at 0.15x: a dim cockpit and a
-  //   faint crew space, never brighter than the door lamp beside them.
+  // run well below R8's 0.45x: on this hull the canopy faces the hero camera, and any glass clearly brighter than
+  // the plating round it reads as a lit window (at 0.45x the canopy was the ship's brightest mark at every range).
+  // - canopy at 0.15x, whole panes (no glassDark): each pane glows as one fleet-size 1.0 x 1.15 m pane, the glazing
+  //   bar only a hairline, barely over the bridge plating: a cockpit running dark. (A dark band over the upper lights
+  //   left 0.67 m cells between black mullions, under the 0.8 m minimum of lit glass: a dotted window row at range.)
+  // - door ports at 0.07x (about 1.3x the flank at the hero): a faint crew space; the amber door lamp beside them is
+  //   the ruler.
   livery: {"gain": 0.05, "glassGlow": [0.52, 0.42, 0.28], "glassFlicker": 0, "glassParts": ["port", "pane"],
-    "glassDark": [[[-3.0, 4.105, 15.2], [3.0, 4.8, 16.6]]],
     "glassZones": [
-      { box: [[-3.6, 2.6, 14.6], [3.6, 5.4, 17.4]], gain: 0.23, uniform: true },                 // canopy (lower lights)
-      { box: [[11.0, -3.9, 10.2], [13.0, -1.4, 14.6]], mirrorX: true, gain: 0.15, uniform: true }, // door ports
+      { box: [[-3.6, 2.6, 14.6], [3.6, 5.4, 17.4]], gain: 0.15, uniform: true },                 // canopy
+      { box: [[11.0, -3.9, 10.2], [13.0, -1.4, 14.6]], mirrorX: true, gain: 0.07, uniform: true }, // door ports
     ]},
   // v11 lightscape (src/lib/lightscape.js): pins on the hull's convex creases (block corners and chines), short
   // amber bars in its recesses, blue-white status lights round the drive housings, and authored runs.
@@ -49,20 +48,23 @@ export const asset = {
   // v14 (scale pass): a 71.7 m strike craft is lit like an aircraft, not a ship. A fine scatter of small lamps and
   // evenly spaced rows read as deck lighting and windows on a hull 1.3-1.8x this size, so: no automatic crease pins
   // (small craft are authored, R4), no rows, a handful of amber bars at the block extremities and joints (the
-  // concept's slits), one lamp per door, 2 beacons, a 2-lamp drive status and the aircraft nav set; no lone pins
+  // concept's slits; at each stern-block corner a chamfer bar over a vertical corner bar), one lamp per door,
+  // 2 masthead beacons on the dorsal centreline, a 2-lamp drive status and the aircraft nav set; no other lone pins
   // on open plating (a single dot on a flat reads as a small window or a random light). Every lamp is fleet size
   // (pins 0.2-0.3 m, bars 0.14-0.2 m wide), so it does not scale with the hull. 26 lamps (4 pins, 22 bars), 8 of
   // them `keep` (the sponson heads and bow bezels: all that is left of it at fleet range).
   lightscape: {
     seed: 11,
     creases: null,
-    // a few amber recess and corner bars, all on the stern block's aft chamfers (the caps are 2 + 2: with a third
-    // recess pair the next candidate is a bar on the railgun muzzle block), amber only: a cream bar reads as a window
-    slits: { angle: 35, minLen: 1.2, share: 0.6, every: 5, len: [0.8, 1.4], width: 0.2, radiance: [1.0, 1.5], spacing: 2.5, max: 2, mix: { amber: 1 }, corner: { share: 0.3, width: 0.2, len: [0.8, 1.3], radiance: [1.2, 1.6], max: 2 } },
+    // four automatic amber corner bars, all at the stern-block corners: the upper chamfer bar over the vertical lower
+    // corner bar, a 2-bar stack each side (caps: no recess bars, 4 corner bars; the first recess pair was a grazing
+    // bar on the inboard-facing stern frame, a thin orange seam from the stern quarters); amber only: a cream bar
+    // reads as a window
+    slits: { angle: 35, minLen: 1.2, share: 0.6, every: 5, len: [0.8, 1.4], width: 0.2, radiance: [1.0, 1.5], spacing: 2.5, max: 0, mix: { amber: 1 }, corner: { share: 0.3, width: 0.2, len: [0.8, 1.3], radiance: [1.2, 1.6], max: 4 } },
     cool: { radius: 1.9, depth: 2.5 },
     zones: [
-      // dorsal spine and its two radiator/louvre bays (x +-4.5..7, z -17..-5.5): no bars (its two pulse beacons are
-      // authored below)
+      // dorsal spine and its two radiator/louvre bays (x +-4.5..7, z -17..-5.5): no bars (its two masthead beacons
+      // are authored below)
       { box: [[-7.8, 6.4, -19.2], [7.8, 7.4, -0.8]], creases: null, slits: null },
       // stern block: a few corner accents, not a glitter
       { box: [[-14, -9, -27.5], [14, 6, -24]], creases: { share: 0.12, corners: 0.35 } },
@@ -101,8 +103,9 @@ export const asset = {
       { slit: [6.31, -3.3, 35.92], u: [0, 1, 0], n: [0, 0, 1], len: 1.1, width: 0.19, radiance: 1.6, color: 'amber', keep: true, mirrorX: true },
       // stern plate: drive status, one slow cool lamp each side of the white stern light (2.1 m clear of it)
       { points: [[2.1, 3.95, -26.13]], color: 'cool', size: 0.2, intensity: 0.8, pulse: 2.4, mirrorX: true },
-      // dorsal deck: two slow amber beacons at the hatch rows
-      { points: [[1.9, 6.95, -3.6], [-1.9, 6.95, -16.3]], color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.2 },
+      // dorsal centreline: two slow amber masthead beacons (F6), clear of the hatch covers at x +-1.9 and 4.7 m forward
+      // of the dorsal strobe; off the hatch rows they read as the craft's beacons, not as a hatch lamp
+      { points: [[0, 6.95, -3.6], [0, 6.95, -12.0]], color: 'amber', size: 0.3, intensity: 1.0, pulse: 3.2 },
     ],
   },
   detail: {"set": "hull", "tile": 6, "normalStrength": 0.6, "roughAmount": 0.5, "cavity": 0.2},

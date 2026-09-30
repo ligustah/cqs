@@ -97,8 +97,11 @@ export const asset = {
       // armour belt: sparse amber marks on its lower edge (y about -16.5), well clear of the port grid; v14: moved off
       // the belt top and the shoulder row dropped, since specks 1.8 m from the port rows read as two more window decks
       { surface: 'belt-port', edge: 'bottom', inset: 0.3, pitch: 10, color: 'amber', size: 0.22, intensity: 0.8, skip: 0.45, mirrorX: true },
-      // deckhouse base / walkway junction (concave corner at x 10.37, y -1.44): short amber bars
-      { slitRow: [[10.43, -1.34, -27.0], [10.43, -1.34, 3.0]], pitch: 7.5, u: [0, 0, 1], n: [0.52, 0.85, 0], len: 1.1, width: 0.2, radiance: 1.5, color: 'amber', skip: 0.3, mirrorX: true },
+      // deckhouse base / walkway junction (concave corner at x 10.37, y -1.44): short amber bars in the gaps of the
+      // deckhouse port row (glass x 8.94..9.72, y 0.37..1.35), each 2.6-3.1 m from the nearest port and at an uneven
+      // spacing (7.1 / 11.9 m, with the third bar last in the list): v14 fix2: the old row at 7.5 m put 5 of its 6 bars
+      // right under a port, a lamp-under-window pairing that reads as a lit sill and doubles the window count
+      { slitRow: [[10.43, -1.34, -12.5], [10.43, -1.34, -0.6]], pitch: 11.9, u: [0, 0, 1], n: [0.52, 0.85, 0], len: 1.1, width: 0.2, radiance: 1.5, color: 'amber', skip: 0, mirrorX: true },
       // crew-door bays (z 1.5 / 9.9 / -39.5, recess y -15.2..-12.2): short lamps at the head and foot of the aft jamb
       // wall (faces forward), inside the recess: the human ruler beside a 1 x 2 m door
       { slit: [16.285, -12.75, 0.555], u: [0, 1, 0], n: [0, 0, 1], len: 0.6, width: 0.14, radiance: 1.5, color: 'amber', mirrorX: true },
@@ -110,13 +113,13 @@ export const asset = {
       // flat flank's edge (z 19.2) and 2.3 m clear of the port grid (v14: the bars beside and above the first port
       // column are gone: a lamp at a window reads as a door-jamb lamp or a lit transom, a human-scale cue that doubles
       // the window count), and one at the foot of the tapered bow flank by the torpedo frame lip (z 54.05)
-      { slit: [15.67, -12.0, 21.18], u: [0, 1, 0], n: [0.974, 0, 0.225], len: 0.8, width: 0.17, radiance: 1.3, color: 'amber', mirrorX: true },
-      { slit: [8.47, -12.9, 52.9], u: [0, 1, 0], n: [0.975, 0, 0.222], len: 1.0, width: 0.17, radiance: 1.4, color: 'amber', keep: true, mirrorX: true },
+      { slit: [15.67, -12.0, 21.18], u: [0, 1, 0], n: [0.974, 0, 0.225], len: 0.8, width: 0.2, radiance: 1.3, color: 'amber', mirrorX: true },
+      { slit: [8.47, -12.9, 52.9], u: [0, 1, 0], n: [0.975, 0, 0.222], len: 1.0, width: 0.2, radiance: 1.4, color: 'amber', keep: true, mirrorX: true },
       // pod radiator bay: short corner bars in the open slots between the end walls and the first / last fin (in the
       // face plane, x 34.4: the fins hide anything deeper at oblique views). v14: the warm sill and amber head rows are
       // gone (a lamp rim round the bay read as a lit hangar mouth on an uncrewed pod)
-      { slit: [34.4, -13.6, -9.56], u: [0, 1, 0], n: [1, 0, 0], len: 0.8, width: 0.17, radiance: 1.5, color: 'amber', keep: true, mirrorX: true },
-      { slit: [34.4, -16.3, -22.49], u: [0, 1, 0], n: [1, 0, 0], len: 0.8, width: 0.17, radiance: 1.4, color: 'amber', keep: true, mirrorX: true },
+      { slit: [34.4, -13.6, -9.56], u: [0, 1, 0], n: [1, 0, 0], len: 0.8, width: 0.2, radiance: 1.5, color: 'amber', keep: true, mirrorX: true },
+      { slit: [34.4, -16.3, -22.49], u: [0, 1, 0], n: [1, 0, 0], len: 0.8, width: 0.2, radiance: 1.4, color: 'amber', keep: true, mirrorX: true },
       // pod extremities: fleet-size lamps (0.3 m) at the outboard face corners (fore steady, aft slow pulse)
       { points: [[34.56, -11.45, -2.4], [34.56, -18.45, -2.4]], color: 'amber', size: 0.3, intensity: 1.5, keep: true, mirrorX: true },
       { points: [[34.56, -11.45, -26.3], [34.56, -18.45, -26.3]], color: 'amber', size: 0.3, intensity: 1.5, pulse: 4.2, mirrorX: true },
@@ -125,13 +128,13 @@ export const asset = {
       // 1.8 m, which read as rows of portholes where no crew can be
       { slit: [34.47, -12.4, -6.2], u: [0, 0, 1], n: [1, 0, 0], len: 0.8, width: 0.15, radiance: 1.1, color: 'cool', mirrorX: true },
       // bow torpedo frame: upright bars on the inner side walls (x 7.6, facing in), one under the deck lintel, lamps at the lip's shoulder corners
-      { slit: [7.57, -9.6, 53.4], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.19, radiance: 1.6, color: 'amber', keep: true, mirrorX: true },
-      { slit: [7.57, -13.8, 53.4], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.19, radiance: 1.6, color: 'amber', keep: true, mirrorX: true },
-      { slit: [3.2, -5.76, 53.4], u: [1, 0, 0], n: [0, -1, 0], len: 1.0, width: 0.17, radiance: 1.4, color: 'amber', mirrorX: true },
+      { slit: [7.57, -9.6, 53.4], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.2, radiance: 1.6, color: 'amber', keep: true, mirrorX: true },
+      { slit: [7.57, -13.8, 53.4], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.2, radiance: 1.6, color: 'amber', keep: true, mirrorX: true },
+      { slit: [3.2, -5.76, 53.4], u: [1, 0, 0], n: [0, -1, 0], len: 1.0, width: 0.2, radiance: 1.4, color: 'amber', mirrorX: true },
       { points: [[8.25, -8.4, 54.16]], color: 'amber', size: 0.3, intensity: 1.1, keep: true, mirrorX: true },
       // stern frame (0.3 m inner wall, lip z -49.53, plate -49.24): short bars either side of the drive chaser
-      { slit: [14.68, -6.6, -49.39], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.17, radiance: 1.4, color: 'amber', mirrorX: true },
-      { slit: [14.895, -14.0, -49.39], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.17, radiance: 1.4, color: 'amber', mirrorX: true },
+      { slit: [14.68, -6.6, -49.39], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.2, radiance: 1.4, color: 'amber', mirrorX: true },
+      { slit: [14.895, -14.0, -49.39], u: [0, 1, 0], n: [-1, 0, 0], len: 1.0, width: 0.2, radiance: 1.4, color: 'amber', mirrorX: true },
       // shoulder vent bays: amber lamps on the recess floor between the slanted louvres (mid-gap, fins at z0 + 0.6 +
       // k 1.15). v14: the fore bays keep only the two end slots, as recess-corner lamps; a lit slot every 1.15 m read as a
       // third deck of letterbox windows at half the port pitch, in a machinery vent with no crew
@@ -147,7 +150,10 @@ export const asset = {
       // at the block extremity 2.2 m below the tower glass (bottom y 10.93): the command block keeps the concept's amber
       // without a lamp on the glazing sill or lip, where one reads as another window (last in the list, so the pattern
       // seeds above, and with them the aft vent skips and beacon phases, stay as they were)
-      { slit: [5.5, 8.3, -6.16], u: [0, 1, 0], n: [0.707, 0, 0.707], len: 0.8, width: 0.17, radiance: 1.3, color: 'amber', mirrorX: true },
+      { slit: [5.5, 8.3, -6.16], u: [0, 1, 0], n: [0.707, 0, 0.707], len: 0.8, width: 0.2, radiance: 1.3, color: 'amber', mirrorX: true },
+      // deckhouse base: the third bar of the deckhouse-base set (see the slitRow above), between the ports at z -15.5
+      // and -26 (3.1 m from glass), 1.0 m clear of the ladder foot at z -21.2
+      { slit: [10.43, -1.34, -19.6], u: [0, 0, 1], n: [0.52, 0.85, 0], len: 1.1, width: 0.2, radiance: 1.5, color: 'amber', mirrorX: true },
     ],
   },
   detail: {"set": "hull", "tile": 6, "normalStrength": 0.6, "roughAmount": 0.5, "cavity": 0.2},
