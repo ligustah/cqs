@@ -317,6 +317,7 @@ npm install                     # three, playwright-core, gltf-transform, sharp 
 node tools/scale-check.mjs      # envelope vs. game size for every ship + hangar loads
 node tools/shoot.mjs "mode=ship&ship=destroyer&az=35&el=18" shots/destroyer.png
 node tools/render-glb.mjs any/where/ship.glb shots/ship --rot 0,-90,0   # GLB inspection stills + contact sheet + mesh info
+node tools/thumbs/thumbs.mjs shots/thumbs.png "Fighter=a.png" "Vehicle=b.png"   # icon readability test: 80 / 40 px squares on the game UI panel
 node tools/ingest-fal.mjs results.json   # download fal outputs: concepts, meshes (optimised), PATINA maps
 node tools/build-artifact.mjs   # single-page package for sharing (+ lite copies for phones)
 PY=<venv>/bin/python tools/blender/hulls/build.sh corvette /tmp/work   # rebuild a hull (bpy 5.0)
