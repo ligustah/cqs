@@ -53,3 +53,22 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
 16. **Workflows.** Multi-agent reviews were thorough but slow: on 4 CPUs, 2 agents at a time, and 49
     agents took about 11 h. Container restarts killed runs. Checkpoint-commit as work lands, keep
     final checks short and inline, and schedule check-ins.
+17. **Vehicles drawn too big.** nano-banana-pro draws armoured vehicles 1.2-1.6x too big against a
+    1.8 m figure. Metric sizes and "roof 0.7 m above his head" did not fix it. What helped:
+    - the figure standing ahead of the nose, clear of the vehicle;
+    - body cues tied to the figure ("he could reach up and touch the roof edge", "tyre tops just below
+      his hip", "3.5 times his height long").
+
+    The remodel builds to the brief's size anyway.
+18. **References leak their content.** The art bible leaked the old 50 m freighter, rainbow containers
+    and a miniature carrier into station images. The full parts-kit sheet put its weapon row onto
+    station piers as guns. The superseded destroyer concept brought back the tall tower the user
+    rejected (correction 4). Use the **current remodel renders** of sister assets and task-specific
+    kit crops as references, not the bible or superseded concepts.
+19. **Relative scale between two objects** in one image (carrier and freighter, about 0.15) is not
+    reached with words: freighters came out at about 0.45 of the carrier. A reference that fills its
+    own frame makes its object big. Pass a lineup image at one scale, or no reference for the smaller
+    object.
+20. **Marking hue drift:** station and yard images took the references' salmon orange (hue about 22°),
+    not the style's amber (about 34°). At remodel every mark uses the style's amber material, not the
+    image colour.

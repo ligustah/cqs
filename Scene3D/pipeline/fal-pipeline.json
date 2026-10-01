@@ -1,267 +1,660 @@
 {
-  "about": "Asset pipeline for the CQS reboot orbital fleet. All ship meshes, their textures and the tiling PBR materials are generated with fal.ai (fal MCP connector). three.js then plays Blender's role: import, orient, scale to game data, material upgrade, lighting and rendering. Designs are original; no legacy art is used as input.",
-  "style": "Photorealistic spacecraft in a credible near-future 'naval-industrial' design language, as in a high-end aerospace concept photograph: faceted hard-surface hull with chamfered edges and layered armour plates, off-white thermal-control paint with realistic weathering, scuffs and panel-to-panel colour variation, signal-orange hazard and identification markings and stencilled hull numbers like on real naval ships, small cobalt-blue identification bands, bare brushed-metal and gunmetal structural frames, gold and silver multi-layer insulation blankets on sensor and electronics boxes, dark ceramic heat tiles on the belly, radiator panels, RCS thruster quads, antennas and hand rails at human scale, large fusion-drive engine bells with magnetic-nozzle coils, heavy radiation shielding between the drive and the crew sections. Physically based materials, real-world engineering logic, no aerodynamic wings, no neon, no glowing trim, not a video game, not stylised, not a toy. Original design, not based on any existing franchise.",
-  "stages": {
-    "A_concept": {
-      "model": "fal-ai/nano-banana-pro",
-      "editModel": "fal-ai/nano-banana-pro/edit",
-      "bible": {
-        "params": {
-          "aspect_ratio": "16:9",
-          "resolution": "2K",
-          "num_images": 2,
-          "output_format": "png"
-        },
-        "prompt": "A professional concept art design sheet for an original science-fiction space fleet on a clean neutral light-grey studio background. Five ship classes arranged in a tidy grid, each large enough to read its details (not to scale), each with a small clean sans-serif caption: FIGHTER (compact single-seat space-superiority strike craft about 16 m long with a bubble canopy, a boarding ladder and access hatches, twin engines and forked stabiliser blades carrying cannons), CORVETTE (short, wide armoured escort gunship about 31 m long with two dorsal twin-barrel turrets, bow torpedo tubes, outrigger engine pods, a row of small bridge windows and crew airlock hatches), CIVIL FREIGHTER (long lean spine ship about 50 m long with a forward crew module with small windows and a docking hatch, a truss keel carrying stacked colourful cargo containers in orange, cobalt, teal, yellow and crimson, and an aft reactor and engine block), DESTROYER (long heavy warship about 67 m long with a blunt, faceted, armoured bow block, squared-off and not pointed, housing the recessed muzzle of a spinal mass-driver, three turrets, a stepped command tower with rows of small windows, big radiator panels and a cluster of engines, tiny hatches and ladders showing its size), FLEET CARRIER (huge slab-sided carrier about 260 m long with a wide open hangar bay in the bow lit by interior floodlights with tiny parked craft and deck crew visible for scale, a command island offset to one side with many rows of small windows, dark unlit matte-grey warp-field emitter vanes made of ribbed metal and ceramic with exposed cabling and mounting brackets, point-defence turrets and a massive engine cluster). Photorealistic spacecraft in a credible near-future 'naval-industrial' design language, as in a high-end aerospace concept photograph: faceted hard-surface hull with chamfered edges and layered armour plates, off-white thermal-control paint with realistic weathering, scuffs and panel-to-panel colour variation, signal-orange hazard and identification markings and stencilled hull numbers like on real naval ships, small painted cobalt-blue identification bands, bare brushed-metal and gunmetal structural frames, gold and silver multi-layer insulation blankets on sensor and electronics boxes, dark ceramic heat tiles on the belly, radiator panels, RCS thruster quads, antennas and hand rails at human scale, hatches, ladders and small windows that make each ship read as a real engineered object at its true size, large fusion-drive engine bells with magnetic-nozzle coils, heavy radiation shielding between the drive and the crew sections. Physically based materials, real-world engineering logic, no aerodynamic wings, no neon, no glowing trim, no glowing panel lines, no emissive strips, engines and emitters switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. Photorealistic, like a professional studio photograph of highly detailed physical models, soft even studio lighting, three-quarter views, natural materials and wear.",
-        "note": "2 candidates judged by a 3-agent panel (originality, realism, consistency); candidate 0 chosen. The panel flagged the fighter as reading like a franchise fighter, so the fighter was redesigned (ships.fighter below) and generated with the approved corvette as an extra family reference."
-      },
-      "isolatedTemplate": "Using the attached concept sheet only as the design-language reference, render ONLY the {class} as one isolated object: {description} Three-quarter view from the front-left and slightly above (camera about 35 degrees off the bow, 20 degrees up). The entire ship is visible and centred with generous empty margin, filling about 70% of the frame. Plain seamless light-grey studio background, soft even lighting, no floor, no cast shadow, no environment, no stars, no text, no labels, no engine exhaust plumes, no motion blur. Photorealistic, like a studio photograph of a highly detailed physical model with real materials and subtle weathering, sharp focus, suitable for 3D reconstruction. {style}",
-      "isolatedParams": {
-        "aspect_ratio": "4:3",
-        "resolution": "2K",
-        "num_images": 2,
-        "output_format": "png"
-      },
-      "ships": {
-        "fighter": "a 16 m single-seat space-superiority fighter with a compact, non-aerodynamic layout: one elongated faceted armoured fuselage shaped like a flattened hexagonal pod, a small framed cockpit canopy set low and flush into the upper forward hull (not a bubble on a stalk), a heavy armoured engine block at the stern with two large fusion engine bells side by side, a dorsal spine carrying two short trapezoidal radiator panels laid flat along the hull, two compact weapon sponsons hugging the lower flanks each carrying a single long railgun barrel that runs forward alongside the nose, small missile bays with hatch doors on the belly, RCS thruster quads on the four corners of the hull, a sensor blister under the nose. No wings, no wingtip guns, no tail fins, no S-foils, nothing projecting outward from the sides. Bone-white thermal paint with signal-orange squadron bands, a small cobalt identification band and stencilled hull number F-402.",
-        "corvette": "a 32 m armoured escort corvette gunship: short, wide wedge hull, stepped bridge with a window band, two dorsal twin-barrel railgun turrets, four bow torpedo tube doors, two outrigger engine pods on armoured pylons, radiator panels, a sensor mast with gold-foil boxes, hull number K-214 in orange.",
-        "freighter": "a 50 m civil freighter: long lean spine ship with a compact forward crew module with windows, a boxed truss keel carrying two rows of stacked standard cargo containers in signal orange, cobalt, teal, sun-yellow, crimson and white, an aft shielded reactor module with radiators and two engines, teal civilian stripe and registry number CT-4.",
-        "destroyer": "a 68 m heavy destroyer: long armoured hull with a blunt faceted armoured bow block (not a triangular wedge) housing a large spinal mass-driver muzzle, three dorsal gun turrets with long barrels, a stepped command tower with a window band, sensor masts, big radiator panels along the flanks, a heavy engine block with four large plasma nozzles, hull number DD-12 in orange.",
-        "carrier": "a 260 m fleet carrier: huge slab-sided armoured hull with a wide open brightly lit hangar bay mouth in the bow showing a deck inside, a command island superstructure offset to the starboard side, dark metallic, unlit warp-field emitter vanes along the flanks, point-defence turrets, radiator arrays, a massive engine cluster of six nozzles at the stern, hull number CV-50 in orange.",
-        "freighter-troops": "a 50 m civil troop transport, the passenger variant of the same freighter family: identical compact forward crew module with windows, the same boxed truss keel, aft shielded reactor module, radiators and two engines, but instead of cargo containers the keel carries a row of three long pressurised cylindrical troop habitat modules, off-white with rows of small round windows, boarding hatches, docking collars and hand rails, teal civilian stripe and registry number CT-7."
-      },
-      "beautyTemplate": "Using the attached image as the exact ship design, create a photorealistic photograph of this {class} under thrust in low orbit above an Earth-like planet: its fusion drive firing a long, intensely bright blue-white plasma exhaust plume with faint shock diamonds, lit by a single hard sunlight from the upper right with deep realistic shadows and blue planet-shine from below, shot with a long lens like a real orbital photograph, natural camera exposure, no lens-flare spam, cinematic but believable, not a video game. {style}",
-      "beautyParams": {
-        "aspect_ratio": "16:9",
-        "resolution": "2K",
-        "num_images": 1,
-        "output_format": "png"
-      },
-      "variantReferences": {
-        "freighter-troops": [
-          "bible",
-          "freighter (approved isolated image)"
-        ],
-        "fighter": [
-          "bible",
-          "corvette (approved isolated image)"
-        ]
-      },
-      "beautyNote": "fighter beauty was regenerated once with an extra clause: only the two rear bells fire, straight aft as one collimated jet; nothing else glows.",
-      "shipsNote": "The ships.* prompts below are the original concept prompts as sent (sizes from the superseded 800 m^3 slot). The final designs differ: see finalDesigns. Sizes in these prompts are not the scene's scale; the scene's scale comes from src/lib/scale.js (1 slot = 3,200 m^3) and is verified by tools/scale-check.mjs.",
-      "finalDesigns": {
-        "scale": "1 hangar slot = 3,200 m^3 of axis-aligned parking envelope (UnitEnum.getSize(): fighter 1, civil 4, corvette 5, destroyer 12; CARRIER spaceTransport 50). Every class is uniformly scaled so its envelope volume is size x 3,200 m^3; the carrier is a 900 m design length.",
-        "fighter": "F-402: 25.5 m, crew 3, wingless faceted pod with two stern bells and two flank railgun sponsons (redesigned after the originality panel flagged the first fighter; generated with the approved corvette as a family reference, see variantReferences).",
-        "corvette": "36.6 m armoured escort gunship.",
-        "freighter": "CT-4 cargo: 48.4 m truss-keel civil ship with twenty-foot containers.",
-        "freighter-troops": "CT-7 troop transport: 42.9 m, same family with pressurised habitat cylinders; game groundTransport 750 (ground-unit sizes, not people).",
-        "destroyer": "DD-12: 71.7 m, redesigned around a massive spinal railgun (user direction): a blunt, faceted, stepped octagonal bow shroud housing the muzzle, the rail channel with copper coil rings and conduits exposed between the bow block and the mid hull, five stern bells.",
-        "carrier": "CV-50: 900 m, redesigned from the 260 m bow-hangar carrier into a slab-sided box hull around one through-deck hangar that opens at the bow mouth and through six framed open bays along each flank, a stepped island, spine and sponson turrets, six stern bells.",
-        "redesignPrompts": "The verbatim edit prompts of the destroyer (spinal railgun) and carrier (through-deck, open flank bays) redesigns were not recorded in this file at the time; the design intent above is the record. Future regenerations should use nano-banana-pro/edit with the approved concept as the reference and state the final length explicitly.",
-        "scaleJudge": "After the multiview meshes were ingested, a scale-judge pass compared each ship against the game data: sizes are set only by scale.js, and human-scale details (0.4 m nav lights on every hull, 6 m PATINA plating, 1 m windows and 2 m hatches) are kept physically consistent across classes so bigger ships read bigger.",
-        "pendingRegeneration": "carrier-beauty.webp still shows swept-wing fighters (~30-90 m) parked in the hangar; it should be regenerated with nano-banana-pro/edit using the approved fighter.webp and corvette.webp as references: parked craft are the wingless 25 m F-402 pods (1/36 of the carrier) and 36.6 m corvettes. The carrier island (pagoda tiers) is flagged for an originality review; if regenerated, favour a lower slab-sided flight-control tower with sensor masts."
-      }
+ "about": "Asset pipeline for the CQS reboot orbital fleet. All ship meshes, their textures and the tiling PBR materials are generated with fal.ai (fal MCP connector). three.js then plays Blender's role: import, orient, scale to game data, material upgrade, lighting and rendering. Designs are original; no legacy art is used as input.",
+ "style": "Photorealistic spacecraft in a credible near-future 'naval-industrial' design language, as in a high-end aerospace concept photograph: faceted hard-surface hull with chamfered edges and layered armour plates, off-white thermal-control paint with realistic weathering, scuffs and panel-to-panel colour variation, signal-orange hazard and identification markings and stencilled hull numbers like on real naval ships, small cobalt-blue identification bands, bare brushed-metal and gunmetal structural frames, gold and silver multi-layer insulation blankets on sensor and electronics boxes, dark ceramic heat tiles on the belly, radiator panels, RCS thruster quads, antennas and hand rails at human scale, large fusion-drive engine bells with magnetic-nozzle coils, heavy radiation shielding between the drive and the crew sections. Physically based materials, real-world engineering logic, no aerodynamic wings, no neon, no glowing trim, not a video game, not stylised, not a toy. Original design, not based on any existing franchise.",
+ "stages": {
+  "A_concept": {
+   "model": "fal-ai/nano-banana-pro",
+   "editModel": "fal-ai/nano-banana-pro/edit",
+   "bible": {
+    "params": {
+     "aspect_ratio": "16:9",
+     "resolution": "2K",
+     "num_images": 2,
+     "output_format": "png"
     },
-    "B_mesh": {
-      "primary": {
-        "model": "tripo3d/p2/image-to-3d",
-        "params": {
-          "texture": true,
-          "pbr": true,
-          "texture_quality": "detailed",
-          "delight": true,
-          "export_uv": true,
-          "face_limit_max": 50000
-        }
-      },
-      "comparison": {
-        "model": "fal-ai/hunyuan-3d/v3.1/pro/image-to-3d",
-        "params": {
-          "enable_pbr": true,
-          "generate_type": "Normal",
-          "face_count": 300000
-        },
-        "note": "bake-off on the fighter only"
-      },
-      "faceLimits": {
-        "fighter": 50000,
-        "corvette": 50000,
-        "freighter": 50000,
-        "destroyer": 50000,
-        "carrier": 50000
-      },
-      "bakeoff": {
-        "subject": "fighter",
-        "result": "tripo3d/p2/image-to-3d (2 of 3 judges)",
-        "tripo": "49,860 tris native, crisp and correct hull number and livery, CAD-like planar topology, no decimation loss; hull slightly rounded by smooth vertex normals",
-        "hunyuan": "sharper hull chamfers (geometry judge preferred it) but garbled and mirrored hull numbers, messy stern needing remodelling, 176k tris decimated to 60k",
-        "judges": [
-          {
-            "lens": "geometry",
-            "winner": "hunyuan",
-            "scores": {
-              "tripo": 6.3,
-              "hunyuan": 7.6
-            }
-          },
-          {
-            "lens": "texture/PBR",
-            "winner": "tripo",
-            "scores": {
-              "tripo": 7.5,
-              "hunyuan": 6
-            }
-          },
-          {
-            "lens": "production",
-            "winner": "tripo",
-            "scores": {
-              "tripo": 8,
-              "hunyuan": 6
-            }
-          }
-        ]
-      },
-      "used": "tripo3d/h3.1/multiview-to-3d for every final ship (the earlier tripo3d/p2/image-to-3d meshes were superseded)",
-      "final": {
-        "model": "tripo3d/h3.1/multiview-to-3d",
-        "inputs": "image_urls [front, left (port), back, right (starboard)] cropped from one 4K nano-banana-pro/edit orthographic turnaround sheet of the approved concept (one image keeps the views consistent)",
-        "params": {
-          "texture": true,
-          "pbr": true,
-          "texture_quality": "detailed",
-          "geometry_quality": "detailed",
-          "face_limit": "per class, see faceLimitsFinal"
-        },
-        "faceLimitsFinal": {
-          "fighter": 80000,
-          "corvette": 100000,
-          "freighter": 120000,
-          "destroyer": 150000,
-          "carrier": 250000
-        },
-        "why": "Pilot on fighter + destroyer (3 judges each: geometry, texture/PBR, production) ranked H3.1 multiview first on both (Borda 10 and 12), ahead of H3.1 single-view, Hunyuan3D v3.1 Pro multiview and the P2 single-view meshes: crisper facets, legible non-mirrored hull numbers on both flanks, a real stern and belly instead of hallucinated ones, cleaner topology at the budget; also cheaper ($0.60 per model with detailed geometry + textures vs $1.20 for P2).",
-        "turnaroundPrompt": "Technical orthographic turnaround sheet of EXACTLY this spacecraft (same design, proportions, livery, markings, weathering). Six views in a clean 3 x 2 grid of equal cells on a plain seamless light-grey background: top row: FRONT view (straight at the bow, camera level), PORT SIDE view (straight at the left side, bow pointing left), STERN view (straight at the engines from behind, camera level); bottom row: STARBOARD SIDE view (straight at the right side, bow pointing right), TOP view (plan view straight down, bow pointing up), BOTTOM view (straight up at the belly, bow pointing up). Orthographic long-lens projection, every view at the same scale, centred in its cell with margin, soft even studio lighting, no cast shadows, no floor, no text, no labels, no captions, no grid lines, no engine exhaust. Photorealistic studio photograph of a detailed physical model."
-      },
-      "pilot": {
-        "ships": [
-          "fighter",
-          "destroyer"
-        ],
-        "borda": {
-          "fighter": {
-            "h31multi": 10,
-            "h31single": 9,
-            "hunmulti": 6,
-            "p2": 5
-          },
-          "destroyer": {
-            "h31multi": 12,
-            "h31single": 7,
-            "p2": 7,
-            "hunmulti": 4
-          }
-        }
-      }
-    },
-    "C_optimise": {
-      "tool": "tools/optimize-glb.mjs",
-      "tris": {
-        "fighter": 80000,
-        "corvette": 100000,
-        "freighter": 120000,
-        "destroyer": 150000,
-        "carrier": 250000
-      },
-      "texture": {
-        "fighter": 4096,
-        "corvette": 4096,
-        "freighter": 4096,
-        "destroyer": 4096,
-        "carrier": 4096,
-        "carrier_note": "carrier.glb base colour and normal were re-baked at 8192 in v5 (see v5_detail); re-ingesting would drop them to 4096"
-      }
-    },
-    "D_materials": {
-      "model": "fal-ai/patina/material",
-      "params": {
-        "image_size": "square_hd",
-        "maps": [
-          "basecolor",
-          "normal",
-          "roughness",
-          "metalness",
-          "height"
-        ],
-        "upscale_factor": 2,
-        "tiling_mode": "both",
-        "output_format": "png"
-      },
-      "sets": {
-        "hull": "Photoreal off-white spacecraft thermal-control paint over composite hull panels, rectangular panels of varied sizes with thin recessed seams, flush fasteners, small access hatches, realistic weathering, scuffs, slight panel-to-panel colour variation, seamless",
-        "orange": "Signal-orange glossy painted spacecraft hull panels with thin recessed seams, small stencilled maintenance markings, light wear on edges, seamless",
-        "armor": "Gunmetal grey heavy warship armour plating, thick bolted plates with chamfered edges, weld seams, worn edges showing bare steel, seamless",
-        "ceramic": "Dark charcoal ceramic heat-shield tiles, square tiles with narrow gaps, slightly uneven, faint scorch streaks, seamless",
-        "foil": "Crinkled gold multi-layer insulation foil blanket for spacecraft, reflective metallic gold with creases and stitched seams, seamless",
-        "deck": "Spaceship hangar deck plating, dark grey non-slip tread steel plates with painted yellow safety lines and recessed tie-down points, seamless",
-        "radiator": "Spacecraft radiator panel, dense parallel cooling fins, dark anodised metal with faint blue heat discolouration, seamless"
-      },
-      "use": "hull/orange/armor as tri-planar detail layers on the generated meshes; all sets as full materials for scene-built parts (hangar deck, engine bells, scale-lineup props)"
-    },
-    "D_materials_v2": {
-      "model": "fal-ai/patina/material",
-      "params": "same as D_materials (square_hd, all five maps, upscale_factor 2, tiling_mode both, png)",
-      "why": "v8 look-dev: the hulls read as clean CG (uniform albedo, one dull matte sheen on every plate, no micro-surface, parts without contact shadow). Opt-in behind ?finish=worn (src/lib/finish.js) and ?ao=1 until the defaults are flipped.",
-      "sets": {
-        "hullWear": {
-          "request_id": "01a0e55a-dddc-76a0-9f9d-8f6004437755",
-          "use": "macro albedo tone (+-7.5 % per scale at one sigma, clamped +-20 %) and roughness breakup (0.55-0.95, mean 0.78) read tri-planar in the ship frame at ~46 m and ~190 m tiles (axes swapped between scales)"
-        },
-        "hullGrit": {
-          "request_id": "01a0e55a-ded9-7eb1-a16e-feb5c6badf8b",
-          "use": "0.8 m micro-surface: normal faded in only where a tile spans >= 40-220 px (no aliasing), roughness breakup at every distance"
-        },
-        "sootStreak": {
-          "request_id": "01a0e55a-dfaa-7b30-a731-217c838f7423",
-          "use": "breakup of the drive soot stain round each bell lip (engines from the ship module)"
-        }
-      },
-      "runtime": "each set ships a packed pack.webp (hullWear/sootStreak: z-normalised luminance, warm-cool chroma, soft luminance; hullGrit: normal xy + roughness) listed as runtimeMaps; manifest load:'finish' keeps them from loading unless the finish is on. The sets are deliberately low-contrast and PATINA's roughness/height for them came back flat (height a synthetic dither grid), so roughness is driven from the chroma and soft-luminance fields instead.",
-      "screenAO": "three GTAOPass computed before the main render (lit opaque meshes only) and applied inside MeshStandard/Physical materials: indirect light fully, direct light 45 %; radius 2.5 % of the camera distance (1.5-14 m); off on the phone tier.",
-      "lighting": "reviewed, unchanged: one hard sun, PMREM planet-shine at albedo 0.3 (shadow sides ~40 % of the lit side in sRGB, as in orbital photography with a sunlit planet below), exposure 1.7.",
-      "cost": "3 PATINA jobs, about $0.35 (list price $0.01 per megapixel; the first build's 11 sets were about $1.20)"
+    "prompt": "A professional concept art design sheet for an original science-fiction space fleet on a clean neutral light-grey studio background. Five ship classes arranged in a tidy grid, each large enough to read its details (not to scale), each with a small clean sans-serif caption: FIGHTER (compact single-seat space-superiority strike craft about 16 m long with a bubble canopy, a boarding ladder and access hatches, twin engines and forked stabiliser blades carrying cannons), CORVETTE (short, wide armoured escort gunship about 31 m long with two dorsal twin-barrel turrets, bow torpedo tubes, outrigger engine pods, a row of small bridge windows and crew airlock hatches), CIVIL FREIGHTER (long lean spine ship about 50 m long with a forward crew module with small windows and a docking hatch, a truss keel carrying stacked colourful cargo containers in orange, cobalt, teal, yellow and crimson, and an aft reactor and engine block), DESTROYER (long heavy warship about 67 m long with a blunt, faceted, armoured bow block, squared-off and not pointed, housing the recessed muzzle of a spinal mass-driver, three turrets, a stepped command tower with rows of small windows, big radiator panels and a cluster of engines, tiny hatches and ladders showing its size), FLEET CARRIER (huge slab-sided carrier about 260 m long with a wide open hangar bay in the bow lit by interior floodlights with tiny parked craft and deck crew visible for scale, a command island offset to one side with many rows of small windows, dark unlit matte-grey warp-field emitter vanes made of ribbed metal and ceramic with exposed cabling and mounting brackets, point-defence turrets and a massive engine cluster). Photorealistic spacecraft in a credible near-future 'naval-industrial' design language, as in a high-end aerospace concept photograph: faceted hard-surface hull with chamfered edges and layered armour plates, off-white thermal-control paint with realistic weathering, scuffs and panel-to-panel colour variation, signal-orange hazard and identification markings and stencilled hull numbers like on real naval ships, small painted cobalt-blue identification bands, bare brushed-metal and gunmetal structural frames, gold and silver multi-layer insulation blankets on sensor and electronics boxes, dark ceramic heat tiles on the belly, radiator panels, RCS thruster quads, antennas and hand rails at human scale, hatches, ladders and small windows that make each ship read as a real engineered object at its true size, large fusion-drive engine bells with magnetic-nozzle coils, heavy radiation shielding between the drive and the crew sections. Physically based materials, real-world engineering logic, no aerodynamic wings, no neon, no glowing trim, no glowing panel lines, no emissive strips, engines and emitters switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. Photorealistic, like a professional studio photograph of highly detailed physical models, soft even studio lighting, three-quarter views, natural materials and wear.",
+    "note": "2 candidates judged by a 3-agent panel (originality, realism, consistency); candidate 0 chosen. The panel flagged the fighter as reading like a franchise fighter, so the fighter was redesigned (ships.fighter below) and generated with the approved corvette as an extra family reference."
+   },
+   "isolatedTemplate": "Using the attached concept sheet only as the design-language reference, render ONLY the {class} as one isolated object: {description} Three-quarter view from the front-left and slightly above (camera about 35 degrees off the bow, 20 degrees up). The entire ship is visible and centred with generous empty margin, filling about 70% of the frame. Plain seamless light-grey studio background, soft even lighting, no floor, no cast shadow, no environment, no stars, no text, no labels, no engine exhaust plumes, no motion blur. Photorealistic, like a studio photograph of a highly detailed physical model with real materials and subtle weathering, sharp focus, suitable for 3D reconstruction. {style}",
+   "isolatedParams": {
+    "aspect_ratio": "4:3",
+    "resolution": "2K",
+    "num_images": 2,
+    "output_format": "png"
+   },
+   "ships": {
+    "fighter": "a 16 m single-seat space-superiority fighter with a compact, non-aerodynamic layout: one elongated faceted armoured fuselage shaped like a flattened hexagonal pod, a small framed cockpit canopy set low and flush into the upper forward hull (not a bubble on a stalk), a heavy armoured engine block at the stern with two large fusion engine bells side by side, a dorsal spine carrying two short trapezoidal radiator panels laid flat along the hull, two compact weapon sponsons hugging the lower flanks each carrying a single long railgun barrel that runs forward alongside the nose, small missile bays with hatch doors on the belly, RCS thruster quads on the four corners of the hull, a sensor blister under the nose. No wings, no wingtip guns, no tail fins, no S-foils, nothing projecting outward from the sides. Bone-white thermal paint with signal-orange squadron bands, a small cobalt identification band and stencilled hull number F-402.",
+    "corvette": "a 32 m armoured escort corvette gunship: short, wide wedge hull, stepped bridge with a window band, two dorsal twin-barrel railgun turrets, four bow torpedo tube doors, two outrigger engine pods on armoured pylons, radiator panels, a sensor mast with gold-foil boxes, hull number K-214 in orange.",
+    "freighter": "a 50 m civil freighter: long lean spine ship with a compact forward crew module with windows, a boxed truss keel carrying two rows of stacked standard cargo containers in signal orange, cobalt, teal, sun-yellow, crimson and white, an aft shielded reactor module with radiators and two engines, teal civilian stripe and registry number CT-4.",
+    "destroyer": "a 68 m heavy destroyer: long armoured hull with a blunt faceted armoured bow block (not a triangular wedge) housing a large spinal mass-driver muzzle, three dorsal gun turrets with long barrels, a stepped command tower with a window band, sensor masts, big radiator panels along the flanks, a heavy engine block with four large plasma nozzles, hull number DD-12 in orange.",
+    "carrier": "a 260 m fleet carrier: huge slab-sided armoured hull with a wide open brightly lit hangar bay mouth in the bow showing a deck inside, a command island superstructure offset to the starboard side, dark metallic, unlit warp-field emitter vanes along the flanks, point-defence turrets, radiator arrays, a massive engine cluster of six nozzles at the stern, hull number CV-50 in orange.",
+    "freighter-troops": "a 50 m civil troop transport, the passenger variant of the same freighter family: identical compact forward crew module with windows, the same boxed truss keel, aft shielded reactor module, radiators and two engines, but instead of cargo containers the keel carries a row of three long pressurised cylindrical troop habitat modules, off-white with rows of small round windows, boarding hatches, docking collars and hand rails, teal civilian stripe and registry number CT-7."
+   },
+   "beautyTemplate": "Using the attached image as the exact ship design, create a photorealistic photograph of this {class} under thrust in low orbit above an Earth-like planet: its fusion drive firing a long, intensely bright blue-white plasma exhaust plume with faint shock diamonds, lit by a single hard sunlight from the upper right with deep realistic shadows and blue planet-shine from below, shot with a long lens like a real orbital photograph, natural camera exposure, no lens-flare spam, cinematic but believable, not a video game. {style}",
+   "beautyParams": {
+    "aspect_ratio": "16:9",
+    "resolution": "2K",
+    "num_images": 1,
+    "output_format": "png"
+   },
+   "variantReferences": {
+    "freighter-troops": [
+     "bible",
+     "freighter (approved isolated image)"
+    ],
+    "fighter": [
+     "bible",
+     "corvette (approved isolated image)"
+    ]
+   },
+   "beautyNote": "fighter beauty was regenerated once with an extra clause: only the two rear bells fire, straight aft as one collimated jet; nothing else glows.",
+   "shipsNote": "The ships.* prompts below are the original concept prompts as sent (sizes from the superseded 800 m^3 slot). The final designs differ: see finalDesigns. Sizes in these prompts are not the scene's scale; the scene's scale comes from src/lib/scale.js (1 slot = 3,200 m^3) and is verified by tools/scale-check.mjs.",
+   "finalDesigns": {
+    "scale": "1 hangar slot = 3,200 m^3 of axis-aligned parking envelope (UnitEnum.getSize(): fighter 1, civil 4, corvette 5, destroyer 12; CARRIER spaceTransport 50). Every class is uniformly scaled so its envelope volume is size x 3,200 m^3; the carrier is a 900 m design length.",
+    "fighter": "F-402: 25.5 m, crew 3, wingless faceted pod with two stern bells and two flank railgun sponsons (redesigned after the originality panel flagged the first fighter; generated with the approved corvette as a family reference, see variantReferences).",
+    "corvette": "36.6 m armoured escort gunship.",
+    "freighter": "CT-4 cargo: 48.4 m truss-keel civil ship with twenty-foot containers.",
+    "freighter-troops": "CT-7 troop transport: 42.9 m, same family with pressurised habitat cylinders; game groundTransport 750 (ground-unit sizes, not people).",
+    "destroyer": "DD-12: 71.7 m, redesigned around a massive spinal railgun (user direction): a blunt, faceted, stepped octagonal bow shroud housing the muzzle, the rail channel with copper coil rings and conduits exposed between the bow block and the mid hull, five stern bells.",
+    "carrier": "CV-50: 900 m, redesigned from the 260 m bow-hangar carrier into a slab-sided box hull around one through-deck hangar that opens at the bow mouth and through six framed open bays along each flank, a stepped island, spine and sponson turrets, six stern bells.",
+    "redesignPrompts": "The verbatim edit prompts of the destroyer (spinal railgun) and carrier (through-deck, open flank bays) redesigns were not recorded in this file at the time; the design intent above is the record. Future regenerations should use nano-banana-pro/edit with the approved concept as the reference and state the final length explicitly.",
+    "scaleJudge": "After the multiview meshes were ingested, a scale-judge pass compared each ship against the game data: sizes are set only by scale.js, and human-scale details (0.4 m nav lights on every hull, 6 m PATINA plating, 1 m windows and 2 m hatches) are kept physically consistent across classes so bigger ships read bigger.",
+    "pendingRegeneration": "carrier-beauty.webp still shows swept-wing fighters (~30-90 m) parked in the hangar; it should be regenerated with nano-banana-pro/edit using the approved fighter.webp and corvette.webp as references: parked craft are the wingless 25 m F-402 pods (1/36 of the carrier) and 36.6 m corvettes. The carrier island (pagoda tiers) is flagged for an originality review; if regenerated, favour a lower slab-sided flight-control tower with sensor masts."
+   }
+  },
+  "B_mesh": {
+   "primary": {
+    "model": "tripo3d/p2/image-to-3d",
+    "params": {
+     "texture": true,
+     "pbr": true,
+     "texture_quality": "detailed",
+     "delight": true,
+     "export_uv": true,
+     "face_limit_max": 50000
     }
-  },
-  "realism": "Futuristic but physically believable, never a cheap video-game look: real aerospace/naval engineering proportions and function, physically based materials (weathered white thermal paint, brushed and anodised aluminium, titanium, carbon composite, gold and silver MLI blankets, ceramic tiles), fine wear and grime, no neon trim, no glowing panel lines, no toy/cartoon/stylised shapes. Propulsion is fusion torch drives: large magnetic-nozzle engine bells whose exhaust is an intensely bright, long, blue-white plasma plume with faint shock diamonds; the plume is rendered in-scene, so 3D-reconstruction images show the engines unlit. Lighting reads like real photography: one hard sun, deep shadows, planet-shine, bloom only from genuinely bright sources.",
-  "v5_detail": {
-    "why": "Small details must be crisp and at true human scale for the ships' size to read: crew doors 2 x 1 m, ~1 m windows in rows one ~3 m deck apart, 1 m rails, 20-ft ISO containers.",
-    "method": {
-      "fighter/corvette/destroyer/freighter family": "fal-ai/nano-banana-pro/edit of the approved v4 concept (4K, prompts name each oversized element; the fighter needed 'remove the canopy, plate it over, add a strip of small windows'; civil ships used crop-and-blend edits of the crew module), then a 4K turnaround, tripo3d/h3.1/multiview-to-3d (detailed geometry and texture), ingest (fighter/corvette textures now 4096) and a hull-number re-projection where the mesh garbled it (DD-12, CT-7).",
-      "carrier": "nano-banana drew ~4 m windows at 900 m scale, so three fal-ai/patina/material tiles (flank ports, island ribbon panes, 2.7 m deck plating) sized from measured pixels are baked into an 8192 base-colour and normal texture by a texel-to-world lookup (dominant-axis projection per facet); geometry, UVs, hangar cavity and drive bells unchanged."
+   },
+   "comparison": {
+    "model": "fal-ai/hunyuan-3d/v3.1/pro/image-to-3d",
+    "params": {
+     "enable_pbr": true,
+     "generate_type": "Normal",
+     "face_count": 300000
     },
-    "lengths_m": {
-      "fighter": 71.54,
-      "corvette": 107.11,
-      "freighter": 134.15,
-      "freighter:troops": 128.82,
-      "destroyer": 202.68,
-      "carrier": 900
+    "note": "bake-off on the fighter only"
+   },
+   "faceLimits": {
+    "fighter": 50000,
+    "corvette": 50000,
+    "freighter": 50000,
+    "destroyer": 50000,
+    "carrier": 50000
+   },
+   "bakeoff": {
+    "subject": "fighter",
+    "result": "tripo3d/p2/image-to-3d (2 of 3 judges)",
+    "tripo": "49,860 tris native, crisp and correct hull number and livery, CAD-like planar topology, no decimation loss; hull slightly rounded by smooth vertex normals",
+    "hunyuan": "sharper hull chamfers (geometry judge preferred it) but garbled and mirrored hull numbers, messy stern needing remodelling, 176k tris decimated to 60k",
+    "judges": [
+     {
+      "lens": "geometry",
+      "winner": "hunyuan",
+      "scores": {
+       "tripo": 6.3,
+       "hunyuan": 7.6
+      }
+     },
+     {
+      "lens": "texture/PBR",
+      "winner": "tripo",
+      "scores": {
+       "tripo": 7.5,
+       "hunyuan": 6
+      }
+     },
+     {
+      "lens": "production",
+      "winner": "tripo",
+      "scores": {
+       "tripo": 8,
+       "hunyuan": 6
+      }
+     }
+    ]
+   },
+   "used": "tripo3d/h3.1/multiview-to-3d for every final ship (the earlier tripo3d/p2/image-to-3d meshes were superseded)",
+   "final": {
+    "model": "tripo3d/h3.1/multiview-to-3d",
+    "inputs": "image_urls [front, left (port), back, right (starboard)] cropped from one 4K nano-banana-pro/edit orthographic turnaround sheet of the approved concept (one image keeps the views consistent)",
+    "params": {
+     "texture": true,
+     "pbr": true,
+     "texture_quality": "detailed",
+     "geometry_quality": "detailed",
+     "face_limit": "per class, see faceLimitsFinal"
     },
-    "measured": "bridge panes 0.5-0.8 m, ports 0.65-0.95 m, rails 1-1.8 m, hull numbers 2.2-2.3 m (carrier 15 m); still over target: some crew doors 3-4 m (destroyer flank boat hatch 5 x 9.5 m), civil containers ~1.5x ISO.",
-    "cost_usd": 15.7
-  },
-  "v6_repair": {
-    "what": "Texture-only repair of details the image model would not shrink: oversized crew doors repainted as plating + a 1.0 x 2.0 m door (fal-ai/nano-banana-pro door and boat-hatch decals, projected texel -> world -> view with a depth test); civil container stacks baked with two fal-ai/patina/material container tiles at true ISO size; corvette bridge emblem that read like a national flag painted out; opt-in magenta livery band for the civil ships.",
-    "cost_usd": 0.7
-  },
-  "v7_remodel": {
-    "what": "Every hull rebuilt as clean parametric hard-surface geometry in headless Blender (bpy 5.0) with the fal/Tripo mesh as the blueprint; small parts from two kits (assets/parts: fal nano-banana-pro + Tripo H3.1, 24 parts; assets/parts-blender: procedural, 31 parts) assembled by tools/blender/assemble.py. See README 'Remodel (v7)' and tools/blender/hulls/README*.md.",
-    "fal_cost_usd": {
-      "parts_kit_small": 10.5,
-      "parts_kit_weapons_engines": 9.0,
-      "corvette_clean_blueprint": 3.0,
-      "worn_finish_patina": 0.35
+    "faceLimitsFinal": {
+     "fighter": 80000,
+     "corvette": 100000,
+     "freighter": 120000,
+     "destroyer": 150000,
+     "carrier": 250000
     },
-    "total_usd_all_rounds": 78
+    "why": "Pilot on fighter + destroyer (3 judges each: geometry, texture/PBR, production) ranked H3.1 multiview first on both (Borda 10 and 12), ahead of H3.1 single-view, Hunyuan3D v3.1 Pro multiview and the P2 single-view meshes: crisper facets, legible non-mirrored hull numbers on both flanks, a real stern and belly instead of hallucinated ones, cleaner topology at the budget; also cheaper ($0.60 per model with detailed geometry + textures vs $1.20 for P2).",
+    "turnaroundPrompt": "Technical orthographic turnaround sheet of EXACTLY this spacecraft (same design, proportions, livery, markings, weathering). Six views in a clean 3 x 2 grid of equal cells on a plain seamless light-grey background: top row: FRONT view (straight at the bow, camera level), PORT SIDE view (straight at the left side, bow pointing left), STERN view (straight at the engines from behind, camera level); bottom row: STARBOARD SIDE view (straight at the right side, bow pointing right), TOP view (plan view straight down, bow pointing up), BOTTOM view (straight up at the belly, bow pointing up). Orthographic long-lens projection, every view at the same scale, centred in its cell with margin, soft even studio lighting, no cast shadows, no floor, no text, no labels, no captions, no grid lines, no engine exhaust. Photorealistic studio photograph of a detailed physical model."
+   },
+   "pilot": {
+    "ships": [
+     "fighter",
+     "destroyer"
+    ],
+    "borda": {
+     "fighter": {
+      "h31multi": 10,
+      "h31single": 9,
+      "hunmulti": 6,
+      "p2": 5
+     },
+     "destroyer": {
+      "h31multi": 12,
+      "h31single": 7,
+      "p2": 7,
+      "hunmulti": 4
+     }
+    }
+   }
+  },
+  "C_optimise": {
+   "tool": "tools/optimize-glb.mjs",
+   "tris": {
+    "fighter": 80000,
+    "corvette": 100000,
+    "freighter": 120000,
+    "destroyer": 150000,
+    "carrier": 250000
+   },
+   "texture": {
+    "fighter": 4096,
+    "corvette": 4096,
+    "freighter": 4096,
+    "destroyer": 4096,
+    "carrier": 4096,
+    "carrier_note": "carrier.glb base colour and normal were re-baked at 8192 in v5 (see v5_detail); re-ingesting would drop them to 4096"
+   }
+  },
+  "D_materials": {
+   "model": "fal-ai/patina/material",
+   "params": {
+    "image_size": "square_hd",
+    "maps": [
+     "basecolor",
+     "normal",
+     "roughness",
+     "metalness",
+     "height"
+    ],
+    "upscale_factor": 2,
+    "tiling_mode": "both",
+    "output_format": "png"
+   },
+   "sets": {
+    "hull": "Photoreal off-white spacecraft thermal-control paint over composite hull panels, rectangular panels of varied sizes with thin recessed seams, flush fasteners, small access hatches, realistic weathering, scuffs, slight panel-to-panel colour variation, seamless",
+    "orange": "Signal-orange glossy painted spacecraft hull panels with thin recessed seams, small stencilled maintenance markings, light wear on edges, seamless",
+    "armor": "Gunmetal grey heavy warship armour plating, thick bolted plates with chamfered edges, weld seams, worn edges showing bare steel, seamless",
+    "ceramic": "Dark charcoal ceramic heat-shield tiles, square tiles with narrow gaps, slightly uneven, faint scorch streaks, seamless",
+    "foil": "Crinkled gold multi-layer insulation foil blanket for spacecraft, reflective metallic gold with creases and stitched seams, seamless",
+    "deck": "Spaceship hangar deck plating, dark grey non-slip tread steel plates with painted yellow safety lines and recessed tie-down points, seamless",
+    "radiator": "Spacecraft radiator panel, dense parallel cooling fins, dark anodised metal with faint blue heat discolouration, seamless"
+   },
+   "use": "hull/orange/armor as tri-planar detail layers on the generated meshes; all sets as full materials for scene-built parts (hangar deck, engine bells, scale-lineup props)"
+  },
+  "D_materials_v2": {
+   "model": "fal-ai/patina/material",
+   "params": "same as D_materials (square_hd, all five maps, upscale_factor 2, tiling_mode both, png)",
+   "why": "v8 look-dev: the hulls read as clean CG (uniform albedo, one dull matte sheen on every plate, no micro-surface, parts without contact shadow). Opt-in behind ?finish=worn (src/lib/finish.js) and ?ao=1 until the defaults are flipped.",
+   "sets": {
+    "hullWear": {
+     "request_id": "01a0e55a-dddc-76a0-9f9d-8f6004437755",
+     "use": "macro albedo tone (+-7.5 % per scale at one sigma, clamped +-20 %) and roughness breakup (0.55-0.95, mean 0.78) read tri-planar in the ship frame at ~46 m and ~190 m tiles (axes swapped between scales)"
+    },
+    "hullGrit": {
+     "request_id": "01a0e55a-ded9-7eb1-a16e-feb5c6badf8b",
+     "use": "0.8 m micro-surface: normal faded in only where a tile spans >= 40-220 px (no aliasing), roughness breakup at every distance"
+    },
+    "sootStreak": {
+     "request_id": "01a0e55a-dfaa-7b30-a731-217c838f7423",
+     "use": "breakup of the drive soot stain round each bell lip (engines from the ship module)"
+    }
+   },
+   "runtime": "each set ships a packed pack.webp (hullWear/sootStreak: z-normalised luminance, warm-cool chroma, soft luminance; hullGrit: normal xy + roughness) listed as runtimeMaps; manifest load:'finish' keeps them from loading unless the finish is on. The sets are deliberately low-contrast and PATINA's roughness/height for them came back flat (height a synthetic dither grid), so roughness is driven from the chroma and soft-luminance fields instead.",
+   "screenAO": "three GTAOPass computed before the main render (lit opaque meshes only) and applied inside MeshStandard/Physical materials: indirect light fully, direct light 45 %; radius 2.5 % of the camera distance (1.5-14 m); off on the phone tier.",
+   "lighting": "reviewed, unchanged: one hard sun, PMREM planet-shine at albedo 0.3 (shadow sides ~40 % of the lit side in sRGB, as in orbital photography with a sunlit planet below), exposure 1.7.",
+   "cost": "3 PATINA jobs, about $0.35 (list price $0.01 per megapixel; the first build's 11 sets were about $1.20)"
   }
+ },
+ "realism": "Futuristic but physically believable, never a cheap video-game look: real aerospace/naval engineering proportions and function, physically based materials (weathered white thermal paint, brushed and anodised aluminium, titanium, carbon composite, gold and silver MLI blankets, ceramic tiles), fine wear and grime, no neon trim, no glowing panel lines, no toy/cartoon/stylised shapes. Propulsion is fusion torch drives: large magnetic-nozzle engine bells whose exhaust is an intensely bright, long, blue-white plasma plume with faint shock diamonds; the plume is rendered in-scene, so 3D-reconstruction images show the engines unlit. Lighting reads like real photography: one hard sun, deep shadows, planet-shine, bloom only from genuinely bright sources.",
+ "v5_detail": {
+  "why": "Small details must be crisp and at true human scale for the ships' size to read: crew doors 2 x 1 m, ~1 m windows in rows one ~3 m deck apart, 1 m rails, 20-ft ISO containers.",
+  "method": {
+   "fighter/corvette/destroyer/freighter family": "fal-ai/nano-banana-pro/edit of the approved v4 concept (4K, prompts name each oversized element; the fighter needed 'remove the canopy, plate it over, add a strip of small windows'; civil ships used crop-and-blend edits of the crew module), then a 4K turnaround, tripo3d/h3.1/multiview-to-3d (detailed geometry and texture), ingest (fighter/corvette textures now 4096) and a hull-number re-projection where the mesh garbled it (DD-12, CT-7).",
+   "carrier": "nano-banana drew ~4 m windows at 900 m scale, so three fal-ai/patina/material tiles (flank ports, island ribbon panes, 2.7 m deck plating) sized from measured pixels are baked into an 8192 base-colour and normal texture by a texel-to-world lookup (dominant-axis projection per facet); geometry, UVs, hangar cavity and drive bells unchanged."
+  },
+  "lengths_m": {
+   "fighter": 71.54,
+   "corvette": 107.11,
+   "freighter": 134.15,
+   "freighter:troops": 128.82,
+   "destroyer": 202.68,
+   "carrier": 900
+  },
+  "measured": "bridge panes 0.5-0.8 m, ports 0.65-0.95 m, rails 1-1.8 m, hull numbers 2.2-2.3 m (carrier 15 m); still over target: some crew doors 3-4 m (destroyer flank boat hatch 5 x 9.5 m), civil containers ~1.5x ISO.",
+  "cost_usd": 15.7
+ },
+ "v6_repair": {
+  "what": "Texture-only repair of details the image model would not shrink: oversized crew doors repainted as plating + a 1.0 x 2.0 m door (fal-ai/nano-banana-pro door and boat-hatch decals, projected texel -> world -> view with a depth test); civil container stacks baked with two fal-ai/patina/material container tiles at true ISO size; corvette bridge emblem that read like a national flag painted out; opt-in magenta livery band for the civil ships.",
+  "cost_usd": 0.7
+ },
+ "v7_remodel": {
+  "what": "Every hull rebuilt as clean parametric hard-surface geometry in headless Blender (bpy 5.0) with the fal/Tripo mesh as the blueprint; small parts from two kits (assets/parts: fal nano-banana-pro + Tripo H3.1, 24 parts; assets/parts-blender: procedural, 31 parts) assembled by tools/blender/assemble.py. See README 'Remodel (v7)' and tools/blender/hulls/README*.md.",
+  "fal_cost_usd": {
+   "parts_kit_small": 10.5,
+   "parts_kit_weapons_engines": 9.0,
+   "corvette_clean_blueprint": 3.0,
+   "worn_finish_patina": 0.35
+  },
+  "total_usd_all_rounds": 78
+ },
+ "v16_concepts_vehicle_shipyard_spaceport": {
+  "what": "model-forge stage 2: concept spreads (4 directions each, one fix round) for the Vehicle (base jeep chassis), the planetside Shipyard and the orbital Spaceport, style cqs-fleet. Sheets: style-library/styles/cqs-fleet/images/spread-*-r1*.jpg; briefs in style-library/styles/cqs-fleet/briefs/.",
+  "images": 21,
+  "approx_usd": 3.15,
+  "jobs": [
+   {
+    "asset": "vehicle",
+    "round": "r1",
+    "direction": "A",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f50a-bc77-7f10-b26e-a3f185cff754",
+    "output": null,
+    "refs": null,
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached images only as design-language references: image 1 is the fleet's concept sheet and image 2 a sister ship from the same shipyards (copy their paint, markings, materials, weathering and engineering realism, not their shapes); image 3 is the fleet's parts kit at true relative size (reuse its hatches, rails, lamps, vents and ladders at that true human scale). Render ONLY one isolated ground vehicle: an original fast, armoured, all-terrain combat vehicle for a crew of 2 to 4, built by the same shipyards as the fleet, designed as one modular platform that carries a rocket battery module and bolt-on add-on armour plating. TRUE SIZE: 6.5 m long, 2.6 m wide, 2.5 m tall to the roof; a 1.8 m crew member's head is about 0.7 m below the roof line. Human-scale fittings at true size: roof crew hatches about 0.8 m across, 1.1 m grab rails, 0.4 m lamp housings, a 1.2 x 0.8 m louvred engine vent, step plates and grab handles. DESIGN: Four large off-road wheels about 1.2 m in diameter with deep-tread tyres (the wheel tops reach the crew member's waist) on long-travel independent suspension with visible gunmetal wishbones and coil-over dampers, high ground clearance, a stance built for speed. A low, wide, faceted armoured body with a sharply chamfered wedge nose and angled lower plates; the crew cab sits forward with two flat armoured windscreen panes, each about 1.0 m wide, under a short armoured brow, and two roof hatches. Behind the cab, a walled rear deck carries the rocket battery: one compact armoured box launcher (about 1.8 x 1.2 x 0.7 m) with a 2 x 4 grid of capped round tubes about 0.25 m across, on a hydraulic elevating cradle, folded flat and facing forward. Bolt-on add-on armour plates with visible bolt heads and lifting eyes on the doors and flanks. Photorealistic ground vehicle in a credible near-future 'naval-industrial' design language, as in a high-end engineering concept photograph: faceted hard-surface armoured hull with chamfered edges and layered armour plates, light off-white matte paint (the fleet's concept paint), with realistic weathering, scuffs, light road dust on the lower hull and panel-to-panel colour variation, warm amber hazard and identification markings and the stencilled hull number V-31 like on real naval and military equipment, one small painted cobalt-blue identification band, bare brushed-metal and gunmetal structural frames, suspension parts and tow points, a small sensor box wrapped in gold multi-layer insulation foil, grab rails, hatches, lamp housings and vents at human scale that make it read as a real engineered object at its true size, an armoured engine deck with louvred grilles. Physically based materials, real-world engineering logic, no wings, no thrusters, no engine bells, no neon, no glowing trim, no glowing panel lines, no emissive strips, all lights switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. Isolated vehicle resting on its running gear, three-quarter view from the front-left and slightly above (about 35 degrees off the nose, 20 degrees up), the whole vehicle in frame with generous margin, plain seamless light-grey studio background, soft even light, no floor shadow, no environment; a 1.8 m crew member in a plain grey work suit standing a step to the left of the vehicle's nose for scale, not blocking the vehicle. Photorealistic, like a studio photograph of a highly detailed physical model, sharp focus. No text, no labels, no captions, no watermark; the only lettering is the stencilled hull number V-31 on the vehicle."
+   },
+   {
+    "asset": "vehicle",
+    "round": "r1",
+    "direction": "B",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f50b-2a6f-7303-9612-a3b030c1e57c",
+    "output": null,
+    "refs": null,
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached images only as design-language references: image 1 is the fleet's concept sheet and image 2 a sister ship from the same shipyards (copy their paint, markings, materials, weathering and engineering realism, not their shapes); image 3 is the fleet's parts kit at true relative size (reuse its hatches, rails, lamps, vents and ladders at that true human scale). Render ONLY one isolated ground vehicle: an original fast, armoured, all-terrain combat vehicle for a crew of 2 to 4, built by the same shipyards as the fleet, designed as one modular platform that carries a rocket battery module and bolt-on add-on armour plating. TRUE SIZE: 6.5 m long, 2.6 m wide, 2.5 m tall to the roof; a 1.8 m crew member's head is about 0.7 m below the roof line. Human-scale fittings at true size: roof crew hatches about 0.8 m across, 1.1 m grab rails, 0.4 m lamp housings, a 1.2 x 0.8 m louvred engine vent, step plates and grab handles. DESIGN: Two full-length rubber-band tracks, each running on five road wheels with a front drive sprocket and a rear idler, partly hidden behind hinged, layered armoured side skirts with bolted edges; the track tops reach the crew member's hip. A long, low, squat faceted hull with a steep chamfered glacis, the driver's two armoured vision blocks in the glacis, a flat engine deck at the rear with a louvred vent grille. On the roof, a small rotating cupola mount about 1.6 m across carries the rocket battery: two compact armoured box launchers, one either side of a small sensor head, each with a 2 x 2 grid of capped round tubes about 0.25 m across, angled slightly up. Two round roof crew hatches about 0.8 m across. Bolt-on add-on armour plates on the skirts and the glacis. Photorealistic ground vehicle in a credible near-future 'naval-industrial' design language, as in a high-end engineering concept photograph: faceted hard-surface armoured hull with chamfered edges and layered armour plates, light off-white matte paint (the fleet's concept paint), with realistic weathering, scuffs, light road dust on the lower hull and panel-to-panel colour variation, warm amber hazard and identification markings and the stencilled hull number V-31 like on real naval and military equipment, one small painted cobalt-blue identification band, bare brushed-metal and gunmetal structural frames, suspension parts and tow points, a small sensor box wrapped in gold multi-layer insulation foil, grab rails, hatches, lamp housings and vents at human scale that make it read as a real engineered object at its true size, an armoured engine deck with louvred grilles. Physically based materials, real-world engineering logic, no wings, no thrusters, no engine bells, no neon, no glowing trim, no glowing panel lines, no emissive strips, all lights switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. Isolated vehicle resting on its running gear, three-quarter view from the front-left and slightly above (about 35 degrees off the nose, 20 degrees up), the whole vehicle in frame with generous margin, plain seamless light-grey studio background, soft even light, no floor shadow, no environment; a 1.8 m crew member in a plain grey work suit standing a step to the left of the vehicle's nose for scale, not blocking the vehicle. Photorealistic, like a studio photograph of a highly detailed physical model, sharp focus. No text, no labels, no captions, no watermark; the only lettering is the stencilled hull number V-31 on the vehicle."
+   },
+   {
+    "asset": "vehicle",
+    "round": "r1",
+    "direction": "C",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f50b-9f88-7bd3-a0f1-7a107b09defa",
+    "output": null,
+    "refs": null,
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached images only as design-language references: image 1 is the fleet's concept sheet and image 2 a sister ship from the same shipyards (copy their paint, markings, materials, weathering and engineering realism, not their shapes); image 3 is the fleet's parts kit at true relative size (reuse its hatches, rails, lamps, vents and ladders at that true human scale). Render ONLY one isolated ground vehicle: an original fast, armoured, all-terrain combat vehicle for a crew of 2 to 4, built by the same shipyards as the fleet, designed as one modular platform that carries a rocket battery module and bolt-on add-on armour plating. TRUE SIZE: 6.5 m long, 2.6 m wide, 2.5 m tall to the roof; a 1.8 m crew member's head is about 0.7 m below the roof line. Human-scale fittings at true size: roof crew hatches about 0.8 m across, 1.1 m grab rails, 0.4 m lamp housings, a 1.2 x 0.8 m louvred engine vent, step plates and grab handles. DESIGN: Four independent triangular track pods, one at each corner, each about 1.4 m long and 0.9 m tall (a rubber track around a drive sprocket and two small idlers), on gunmetal swing arms with hydraulic dampers, giving high ground clearance and the articulation to climb a 60 percent slope. A compact, faceted armoured body slung between them, cab forward with two flat armoured windscreen panes about 1.0 m wide under an armoured brow, and a roof hatch. The rocket battery is split into two slim armoured sponson pods hugging the upper flanks of the body, each holding one row of four capped round tubes about 0.25 m across, facing forward. Bolt-on add-on armour plates along the lower body. Photorealistic ground vehicle in a credible near-future 'naval-industrial' design language, as in a high-end engineering concept photograph: faceted hard-surface armoured hull with chamfered edges and layered armour plates, warm sand-grey terrain-tone matte paint (a dusty light khaki-grey), with realistic weathering, scuffs, light road dust on the lower hull and panel-to-panel colour variation, warm amber hazard and identification markings and the stencilled hull number V-31 like on real naval and military equipment, one small painted cobalt-blue identification band, bare brushed-metal and gunmetal structural frames, suspension parts and tow points, a small sensor box wrapped in gold multi-layer insulation foil, grab rails, hatches, lamp housings and vents at human scale that make it read as a real engineered object at its true size, an armoured engine deck with louvred grilles. Physically based materials, real-world engineering logic, no wings, no thrusters, no engine bells, no neon, no glowing trim, no glowing panel lines, no emissive strips, all lights switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. Isolated vehicle resting on its running gear, three-quarter view from the front-left and slightly above (about 35 degrees off the nose, 20 degrees up), the whole vehicle in frame with generous margin, plain seamless light-grey studio background, soft even light, no floor shadow, no environment; a 1.8 m crew member in a plain grey work suit standing a step to the left of the vehicle's nose for scale, not blocking the vehicle. Photorealistic, like a studio photograph of a highly detailed physical model, sharp focus. No text, no labels, no captions, no watermark; the only lettering is the stencilled hull number V-31 on the vehicle."
+   },
+   {
+    "asset": "vehicle",
+    "round": "r1",
+    "direction": "D",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f50c-467b-7680-b100-80177d5ccfde",
+    "output": null,
+    "refs": null,
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached images only as design-language references: image 1 is the fleet's concept sheet and image 2 a sister ship from the same shipyards (copy their paint, markings, materials, weathering and engineering realism, not their shapes); image 3 is the fleet's parts kit at true relative size (reuse its hatches, rails, lamps, vents and ladders at that true human scale). Render ONLY one isolated ground vehicle: an original fast, armoured, all-terrain combat vehicle for a crew of 2 to 4, built by the same shipyards as the fleet, designed as one modular platform that carries a rocket battery module and bolt-on add-on armour plating. TRUE SIZE: 6.5 m long, 2.6 m wide, 2.5 m tall to the roof; a 1.8 m crew member's head is about 0.7 m below the roof line. Human-scale fittings at true size: roof crew hatches about 0.8 m across, 1.1 m grab rails, 0.4 m lamp housings, a 1.2 x 0.8 m louvred engine vent, step plates and grab handles. DESIGN: Six wheels about 1.1 m in diameter with deep-tread tyres on three evenly spaced axles, independent suspension. A faceted, wedge-fronted armoured crew cab taking the front 2.6 m of the length, with two flat armoured windscreen panes about 1.0 m wide under an armoured brow and a roof hatch; the cab's armour lines continue unbroken along the flanks of the bed. Behind it a flat mission bed with a raised gunmetal interface frame and four twist-lock corner castings; on it sits the rocket battery as a self-contained, low drop-in box module (about 2.4 x 2.0 x 0.9 m) with a 2 x 4 grid of capped round tubes about 0.25 m across, stowed flat and facing forward. Bolt-on add-on armour plate panels with visible bolt heads and lifting eyes on the cab sides and the bed sides. Photorealistic ground vehicle in a credible near-future 'naval-industrial' design language, as in a high-end engineering concept photograph: faceted hard-surface armoured hull with chamfered edges and layered armour plates, dark matte charcoal-grey operational paint (the fleet's dark livery), markings muted but legible: amber hazard stripes, the small cobalt band and the V-31 number in pale grey on a darker ID field, with realistic weathering, scuffs, light road dust on the lower hull and panel-to-panel colour variation, warm amber hazard and identification markings and the stencilled hull number V-31 like on real naval and military equipment, one small painted cobalt-blue identification band, bare brushed-metal and gunmetal structural frames, suspension parts and tow points, a small sensor box wrapped in gold multi-layer insulation foil, grab rails, hatches, lamp housings and vents at human scale that make it read as a real engineered object at its true size, an armoured engine deck with louvred grilles. Physically based materials, real-world engineering logic, no wings, no thrusters, no engine bells, no neon, no glowing trim, no glowing panel lines, no emissive strips, all lights switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. Isolated vehicle resting on its running gear, three-quarter view from the front-left and slightly above (about 35 degrees off the nose, 20 degrees up), the whole vehicle in frame with generous margin, plain seamless light-grey studio background, soft even light, no floor shadow, no environment; a 1.8 m crew member in a plain grey work suit standing a step to the left of the vehicle's nose for scale, not blocking the vehicle. Photorealistic, like a studio photograph of a highly detailed physical model, sharp focus. No text, no labels, no captions, no watermark; the only lettering is the stencilled hull number V-31 on the vehicle."
+   },
+   {
+    "asset": "shipyard",
+    "round": "r1",
+    "direction": "A",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f50a-8e02-73d0-9071-82bc70c2a45c",
+    "output": "https://v3b.fal.media/files/b/0aac9216/egKisO420YNXc-ji43ZU6_ZTRnrKbB.png",
+    "refs": [
+     "https://v3b.fal.media/files/b/0aac91f6/akM1plzkfx5V7SjdKGEzm_bible.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/08_rEp7pO2kjh6gWqnkcQ_destroyer.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/IFrLtn75MB5hIJuLK8vu9_kit-sheet-fal.webp"
+    ],
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached fleet concept sheet, the attached destroyer and the attached parts kit only as references for design language, materials, markings and true scale, create a new image of an original planetside SHIPYARD where this fleet's civilisation builds its ships: a vast heavy-industrial surface yard. Photorealistic heavy-industrial architecture in the same credible near-future 'naval-industrial' design language as the attached ships, as in a high-end architectural and aerospace concept photograph: faceted hard-surface buildings and structures with chamfered edges and layered, stepped cladding plates, off-white thermal-control paint with realistic weathering, scuffs, soot and panel-to-panel colour variation, signal-orange hazard and identification markings and large stencilled berth numbers like on real naval dockyards, small painted cobalt-blue identification bands, bare brushed-metal and gunmetal structural frames, gold and silver multi-layer insulation blankets on sensor and electronics boxes, dark ceramic heat tiles and scorched concrete wherever drive exhaust reaches, radiator panels, pipe racks, cable trays, stairs, ladders, hatches and 1.1 m hand rails at human scale, small amber lamp housings at building corners (switched off in daylight). Physically based materials, real-world engineering logic, no neon, no glowing trim, no glowing panel lines, no emissive strips, all lights and engines switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. True size: the whole site is about 1.3 km across. The largest berth is about 240 m long and 80 m wide with about 90 m of clear height, built for the 203 m destroyer; smaller berths serve 108 m corvettes and 72 m fighters. Around the launch area: long fabrication halls, a deuterium fuel farm of large spherical and cylindrical tanks, a faceted control tower, blocks of crew housing, and a logistics yard stacked with 20-ft containers. Human-scale rulers at true size everywhere: 2 m crew doors, 1 m windows in 3 m storey rows, 1.1 m rails, 6 x 4 m cargo hatches, 20-ft containers, 1.8 m figures, so every building reads as vast. Design direction A, open lift-off pads: ships leave the ground from open-air pads in powered launch cradles. Four large octagonal blast pits sunk into the ground in a row, each lined with dark scorched ceramic tiles and drained by two wide flame trenches, separated from each other and from the rest of the site by tall angular concrete blast berms with chamfered tops and orange-striped edges. Each pit is spanned by a heavy launch cradle: a low faceted off-white steel frame that holds the ship horizontally in padded clamp arms under its hull, with four squat downward-pointing lift-engine pods at the cradle corners over the pit. The destroyer rests in the cradle on the largest pad; a corvette and a fighter sit in smaller cradles on two others; one pad is empty, showing its pit. Wide heavy-haul crawlerways lead from long, low fabrication halls set far back behind the berms. Low, open, dispersed and blast-hardened, with lots of open ground between the structures. Framing: elevated aerial three-quarter view of the whole planetside facility (about 35 deg azimuth, 35 deg down), on flat neutral light-grey terrain like an architectural model photographed in daylight, the ground fading into a seamless light-grey backdrop at the far edge, with a 200 m destroyer of the reference design in one berth and small trucks, 20-ft containers and figures visible for scale. The destroyer keeps the attached design, off-white paint, orange markings and DD-12 hull number; it has aft fusion bells and no landing gear. Photorealistic, like a studio photograph of a highly detailed physical model, soft even daylight, sharp focus throughout. No text overlays, no captions, no labels, no exhaust plumes."
+   },
+   {
+    "asset": "shipyard",
+    "round": "r1",
+    "direction": "B",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f50b-3f45-7523-a718-6c2a4f5c86b0",
+    "output": "https://v3b.fal.media/files/b/0aac921b/SGj54QRokN0H0thlnSv6l_MWXpS38W.png",
+    "refs": [
+     "https://v3b.fal.media/files/b/0aac91f6/akM1plzkfx5V7SjdKGEzm_bible.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/08_rEp7pO2kjh6gWqnkcQ_destroyer.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/IFrLtn75MB5hIJuLK8vu9_kit-sheet-fal.webp"
+    ],
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached fleet concept sheet, the attached destroyer and the attached parts kit only as references for design language, materials, markings and true scale, create a new image of an original planetside SHIPYARD where this fleet's civilisation builds its ships: a vast heavy-industrial surface yard. Photorealistic heavy-industrial architecture in the same credible near-future 'naval-industrial' design language as the attached ships, as in a high-end architectural and aerospace concept photograph: faceted hard-surface buildings and structures with chamfered edges and layered, stepped cladding plates, off-white thermal-control paint with realistic weathering, scuffs, soot and panel-to-panel colour variation, signal-orange hazard and identification markings and large stencilled berth numbers like on real naval dockyards, small painted cobalt-blue identification bands, bare brushed-metal and gunmetal structural frames, gold and silver multi-layer insulation blankets on sensor and electronics boxes, dark ceramic heat tiles and scorched concrete wherever drive exhaust reaches, radiator panels, pipe racks, cable trays, stairs, ladders, hatches and 1.1 m hand rails at human scale, small amber lamp housings at building corners (switched off in daylight). Physically based materials, real-world engineering logic, no neon, no glowing trim, no glowing panel lines, no emissive strips, all lights and engines switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. True size: the whole site is about 1.3 km across. The largest berth is about 240 m long and 80 m wide with about 90 m of clear height, built for the 203 m destroyer; smaller berths serve 108 m corvettes and 72 m fighters. Around the launch area: long fabrication halls, a deuterium fuel farm of large spherical and cylindrical tanks, a faceted control tower, blocks of crew housing, and a logistics yard stacked with 20-ft containers. Human-scale rulers at true size everywhere: 2 m crew doors, 1 m windows in 3 m storey rows, 1.1 m rails, 6 x 4 m cargo hatches, 20-ft containers, 1.8 m figures, so every building reads as vast. Design direction B, mass-driver launch rail: ships are launched along a rail. One straight electromagnetic launch track about 1.2 km long dominates the site diagonally, starting at ground level and rising at a shallow, steady angle on a row of tall faceted concrete-and-steel pylons to about 250 m above the ground at its far end, built from repeated chamfered off-white coil housings with gunmetal rails, orange hazard bands and cable trays, with long capacitor and power buildings running alongside. At its foot the destroyer lies horizontally on a heavy faceted launch sled at the loading station, fed straight out of a line of long assembly halls aligned with the track; a transfer table beside it holds a corvette waiting its turn. The whole yard is one linear composition along a single axis. Framing: elevated aerial three-quarter view of the whole planetside facility (about 35 deg azimuth, 35 deg down), on flat neutral light-grey terrain like an architectural model photographed in daylight, the ground fading into a seamless light-grey backdrop at the far edge, with a 200 m destroyer of the reference design in one berth and small trucks, 20-ft containers and figures visible for scale. The destroyer keeps the attached design, off-white paint, orange markings and DD-12 hull number; it has aft fusion bells and no landing gear. Photorealistic, like a studio photograph of a highly detailed physical model, soft even daylight, sharp focus throughout. No text overlays, no captions, no labels, no exhaust plumes."
+   },
+   {
+    "asset": "shipyard",
+    "round": "r1",
+    "direction": "C",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f50b-ab66-7ec3-b70f-3d9c576bb296",
+    "output": "https://v3b.fal.media/files/b/0aac921d/47jFEdJ2FhLm5tQcYnaD5_dsI346Q5.png",
+    "refs": [
+     "https://v3b.fal.media/files/b/0aac91f6/akM1plzkfx5V7SjdKGEzm_bible.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/08_rEp7pO2kjh6gWqnkcQ_destroyer.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/IFrLtn75MB5hIJuLK8vu9_kit-sheet-fal.webp"
+    ],
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached fleet concept sheet, the attached destroyer and the attached parts kit only as references for design language, materials, markings and true scale, create a new image of an original planetside SHIPYARD where this fleet's civilisation builds its ships: a vast heavy-industrial surface yard. Photorealistic heavy-industrial architecture in the same credible near-future 'naval-industrial' design language as the attached ships, as in a high-end architectural and aerospace concept photograph: faceted hard-surface buildings and structures with chamfered edges and layered, stepped cladding plates, off-white thermal-control paint with realistic weathering, scuffs, soot and panel-to-panel colour variation, signal-orange hazard and identification markings and large stencilled berth numbers like on real naval dockyards, small painted cobalt-blue identification bands, bare brushed-metal and gunmetal structural frames, gold and silver multi-layer insulation blankets on sensor and electronics boxes, dark ceramic heat tiles and scorched concrete wherever drive exhaust reaches, radiator panels, pipe racks, cable trays, stairs, ladders, hatches and 1.1 m hand rails at human scale, small amber lamp housings at building corners (switched off in daylight). Physically based materials, real-world engineering logic, no neon, no glowing trim, no glowing panel lines, no emissive strips, all lights and engines switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. True size: the whole site is about 1.3 km across. The largest berth is about 240 m long and 80 m wide with about 90 m of clear height, built for the 203 m destroyer; smaller berths serve 108 m corvettes and 72 m fighters. Around the launch area: long fabrication halls, a deuterium fuel farm of large spherical and cylindrical tanks, a faceted control tower, blocks of crew housing, and a logistics yard stacked with 20-ft containers. Human-scale rulers at true size everywhere: 2 m crew doors, 1 m windows in 3 m storey rows, 1.1 m rails, 6 x 4 m cargo hatches, 20-ft containers, 1.8 m figures, so every building reads as vast. Design direction C, vertical assembly-and-launch tower: ships are built and launched standing upright. The destroyer stands vertically on its stern, nose to the sky, on a heavy octagonal launch mount, its aft fusion bells over a deep flame trench, beside a 260 m tall faceted service tower of gunmetal lattice and off-white enclosed work platforms with four swing arms reaching to the hull. Behind it a tall vertical assembly building about 230 m high, with a full-height slot door, stands at the end of a wide crawlerway to the pad. A second, smaller pad with a shorter tower holds an upright corvette. Everything else in the yard is low and spread out, so the tall verticals dominate the silhouette. Framing: elevated aerial three-quarter view of the whole planetside facility (about 35 deg azimuth, 35 deg down), on flat neutral light-grey terrain like an architectural model photographed in daylight, the ground fading into a seamless light-grey backdrop at the far edge, with a 200 m destroyer of the reference design in one berth and small trucks, 20-ft containers and figures visible for scale. The destroyer keeps the attached design, off-white paint, orange markings and DD-12 hull number; it has aft fusion bells and no landing gear. Photorealistic, like a studio photograph of a highly detailed physical model, soft even daylight, sharp focus throughout. No text overlays, no captions, no labels, no exhaust plumes."
+   },
+   {
+    "asset": "shipyard",
+    "round": "r1",
+    "direction": "D",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f50c-6160-7880-9546-f8c7683f118d",
+    "output": "https://v3b.fal.media/files/b/0aac9222/SDRYTpdbzuzfmEWX86ZT__cgQLfQ3n.png",
+    "refs": [
+     "https://v3b.fal.media/files/b/0aac91f6/akM1plzkfx5V7SjdKGEzm_bible.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/08_rEp7pO2kjh6gWqnkcQ_destroyer.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/IFrLtn75MB5hIJuLK8vu9_kit-sheet-fal.webp"
+    ],
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached fleet concept sheet, the attached destroyer and the attached parts kit only as references for design language, materials, markings and true scale, create a new image of an original planetside SHIPYARD where this fleet's civilisation builds its ships: a vast heavy-industrial surface yard. Photorealistic heavy-industrial architecture in the same credible near-future 'naval-industrial' design language as the attached ships, as in a high-end architectural and aerospace concept photograph: faceted hard-surface buildings and structures with chamfered edges and layered, stepped cladding plates, off-white thermal-control paint with realistic weathering, scuffs, soot and panel-to-panel colour variation, signal-orange hazard and identification markings and large stencilled berth numbers like on real naval dockyards, small painted cobalt-blue identification bands, bare brushed-metal and gunmetal structural frames, gold and silver multi-layer insulation blankets on sensor and electronics boxes, dark ceramic heat tiles and scorched concrete wherever drive exhaust reaches, radiator panels, pipe racks, cable trays, stairs, ladders, hatches and 1.1 m hand rails at human scale, small amber lamp housings at building corners (switched off in daylight). Physically based materials, real-world engineering logic, no neon, no glowing trim, no glowing panel lines, no emissive strips, all lights and engines switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. True size: the whole site is about 1.3 km across. The largest berth is about 240 m long and 80 m wide with about 90 m of clear height, built for the 203 m destroyer; smaller berths serve 108 m corvettes and 72 m fighters. Around the launch area: long fabrication halls, a deuterium fuel farm of large spherical and cylindrical tanks, a faceted control tower, blocks of crew housing, and a logistics yard stacked with 20-ft containers. Human-scale rulers at true size everywhere: 2 m crew doors, 1 m windows in 3 m storey rows, 1.1 m rails, 6 x 4 m cargo hatches, 20-ft containers, 1.8 m figures, so every building reads as vast. Design direction D, covered assembly halls opening onto a launch apron: ships are built under cover and rolled out. A row of three enormous enclosed assembly halls side by side, the largest about 260 m long, 90 m wide and 100 m high, with faceted chamfered roofs, stepped cladding, rooftop gantry-crane housings and giant multi-leaf end doors. The doors of the largest hall are open and the destroyer is half rolled out horizontally on a multi-axle crawler transporter onto a vast flat launch apron of dark ceramic tiles with recessed flame-trench grates and tall angled blast-deflector walls along its far side. Smaller identical halls for corvettes and fighters line the apron. Compact, enclosed and factory-like, built from repeated identical modules. Framing: elevated aerial three-quarter view of the whole planetside facility (about 35 deg azimuth, 35 deg down), on flat neutral light-grey terrain like an architectural model photographed in daylight, the ground fading into a seamless light-grey backdrop at the far edge, with a 200 m destroyer of the reference design in one berth and small trucks, 20-ft containers and figures visible for scale. The destroyer keeps the attached design, off-white paint, orange markings and DD-12 hull number; it has aft fusion bells and no landing gear. Photorealistic, like a studio photograph of a highly detailed physical model, soft even daylight, sharp focus throughout. No text overlays, no captions, no labels, no exhaust plumes."
+   },
+   {
+    "asset": "shipyard",
+    "round": "r1-fix",
+    "direction": "A",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f51e-b454-7a31-b2a0-d3da72de35fe",
+    "output": "https://v3b.fal.media/files/b/0aac929a/G9qoj4y2BO9VdvsJLHpc8_TALtcL0z.png",
+    "refs": [
+     "https://v3b.fal.media/files/b/0aac9291/5qmyJzN7SzXjUsAa4Zovm_ref-dd12-v9.jpg",
+     "https://v3b.fal.media/files/b/0aac91f6/XaUVik4vUgoTpVQff3pwK_corvette.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/IFrLtn75MB5hIJuLK8vu9_kit-sheet-fal.webp"
+    ],
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached images only as references (the dark render shows the exact shape of the DD-12 destroyer, the off-white ship is the K-214 corvette and shows the fleet's paint and markings, the parts sheet shows the fleet's hardware language), create a new image of an original planetside SHIPYARD where this fleet's civilisation builds its warships: a vast heavy-industrial surface yard, seen as a real full-size facility. Photorealistic heavy-industrial architecture in the same credible near-future 'naval-industrial' design language as the attached ships: faceted hard-surface buildings with chamfered edges and layered, stepped cladding plates, off-white thermal-control paint with realistic weathering, scuffs, soot and panel-to-panel colour variation, signal-orange hazard bands and crisp stencilled berth numbers on the buildings like on a real naval dockyard (hull numbers appear only on ships), small painted cobalt-blue identification bands, gunmetal structural frames, gold and silver insulation foil on sensor boxes, dark ceramic heat tiles and scorched concrete wherever drive exhaust reaches, pipe racks, cable trays, stairs and hand rails. Crew housing is 10 to 12 storey faceted chamfered blocks with stepped cladding and rows of small ports; the control centre is a squat armoured octagonal block like a ship's command block; the fuel farm is faceted off-white spheres and cylinders with orange and cobalt bands. Physically based materials, real-world engineering logic, no aerodynamic wings, no tail fins, no neon, no glowing trim, no emissive strips, all lights and engines switched off, not a video game, not stylised, not a toy, not a miniature. Original design, not based on any existing franchise. The DD-12 destroyer is exactly the attached render's shape: one long armoured hull with a blunt octagonal bow framing the spinal railgun muzzle, twin-gun turrets along the deck, broadside sponsons, a low sloped two-deck armoured command block with a short sensor mast and no tall tower, large aft fusion bells, no landing gear; painted in the corvette's off-white thermal paint with orange markings, one cobalt band and the hull number DD-12. True scale, stated as ratios: the whole site is about 1.3 km across and the 203 m destroyer spans only about one sixth of the image width. The destroyer is as long as 34 twenty-foot containers end to end and as long as 110 standing people; a 1.8 m person is a barely visible speck beside it, trucks are tiny specks, and containers are like grains of rice. Every tall wall carries storey bands every 3 m and long rows of small ports, so the buildings read as vast. No fighters and no winged craft anywhere. Design direction A, open lift-off pads: ships leave the ground horizontally from open-air pads in powered launch cradles. Three huge octagonal blast pits sunk into the ground in a row, the largest about 260 m across (longer than 40 containers end to end), each lined with dark scorched ceramic tiles and drained by two wide flame trenches that vent to open ground, separated from each other and from the rest of the site by tall angular concrete blast berms with chamfered tops and orange-striped edges. Each pit is spanned by a heavy launch cradle: a faceted off-white steel frame that holds the ship horizontally in padded clamp arms under its hull, with four massive downward-pointing lift-engine pods at its corners over the pit, each pod about 25 m across and as tall as an 8-storey building. The destroyer is clamped in the cradle over the largest pit; the K-214 corvette sits in a smaller cradle over the second; the third cradle is empty, showing its pit and lift pods. Long low fabrication halls stand far back behind the berms, each with a full-height end door about 70 m wide and 90 m tall, clearly wider than the destroyer, and a straight heavy-haul crawlerway from each door to a pad. Low, open, dispersed and blast-hardened, with wide open ground between the structures. Framing: elevated aerial three-quarter view of the whole site (about 35 deg azimuth, 35 deg down), like an aerial photograph from a helicopter of a real full-size facility on a flat, featureless pale-grey plain, the plain fading into a seamless light-grey haze at the horizon. Soft even overcast daylight, no hard cast shadows, deep focus with everything sharp, no tilt-shift blur. No text overlays, no captions, no labels, no exhaust plumes."
+   },
+   {
+    "asset": "shipyard",
+    "round": "r1-fix",
+    "direction": "B",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f51f-25eb-7910-ba33-46b7a01387fc",
+    "output": "https://v3b.fal.media/files/b/0aac929d/Oe5qwy9g0BWX7IMW7ImJC_x0tCwz6i.png",
+    "refs": [
+     "https://v3b.fal.media/files/b/0aac9291/5qmyJzN7SzXjUsAa4Zovm_ref-dd12-v9.jpg",
+     "https://v3b.fal.media/files/b/0aac91f6/XaUVik4vUgoTpVQff3pwK_corvette.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/IFrLtn75MB5hIJuLK8vu9_kit-sheet-fal.webp"
+    ],
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached images only as references (the dark render shows the exact shape of the DD-12 destroyer, the off-white ship is the K-214 corvette and shows the fleet's paint and markings, the parts sheet shows the fleet's hardware language), create a new image of an original planetside SHIPYARD where this fleet's civilisation builds its warships: a vast heavy-industrial surface yard, seen as a real full-size facility. Photorealistic heavy-industrial architecture in the same credible near-future 'naval-industrial' design language as the attached ships: faceted hard-surface buildings with chamfered edges and layered, stepped cladding plates, off-white thermal-control paint with realistic weathering, scuffs, soot and panel-to-panel colour variation, signal-orange hazard bands and crisp stencilled berth numbers on the buildings like on a real naval dockyard (hull numbers appear only on ships), small painted cobalt-blue identification bands, gunmetal structural frames, gold and silver insulation foil on sensor boxes, dark ceramic heat tiles and scorched concrete wherever drive exhaust reaches, pipe racks, cable trays, stairs and hand rails. Crew housing is 10 to 12 storey faceted chamfered blocks with stepped cladding and rows of small ports; the control centre is a squat armoured octagonal block like a ship's command block; the fuel farm is faceted off-white spheres and cylinders with orange and cobalt bands. Physically based materials, real-world engineering logic, no aerodynamic wings, no tail fins, no neon, no glowing trim, no emissive strips, all lights and engines switched off, not a video game, not stylised, not a toy, not a miniature. Original design, not based on any existing franchise. The DD-12 destroyer is exactly the attached render's shape: one long armoured hull with a blunt octagonal bow framing the spinal railgun muzzle, twin-gun turrets along the deck, broadside sponsons, a low sloped two-deck armoured command block with a short sensor mast and no tall tower, large aft fusion bells, no landing gear; painted in the corvette's off-white thermal paint with orange markings, one cobalt band and the hull number DD-12. True scale, stated as ratios: the whole site is about 1.3 km across and the 203 m destroyer spans only about one sixth of the image width. The destroyer is as long as 34 twenty-foot containers end to end and as long as 110 standing people; a 1.8 m person is a barely visible speck beside it, trucks are tiny specks, and containers are like grains of rice. Every tall wall carries storey bands every 3 m and long rows of small ports, so the buildings read as vast. No fighters and no winged craft anywhere. Design direction B, mass-driver launch ramp: ships are launched up a ramp. One straight, continuous open launch trough about 1.2 km long dominates the site diagonally: a faceted off-white U-section channel, open on top, its inner width about 70 m (clearly wider than the destroyer), lined inside with gunmetal rails and evenly spaced chamfered coil rings like open hoops every 10 m, with orange hazard bands. It starts at ground level at the loading station and climbs in one straight line at a steady 12 degree slope to about 250 m above the ground at its far end, carried on faceted concrete-and-steel trestles that grow steadily taller along its length, the last ones taller than any building on the site, so the ramp reads unmistakably as rising. The trough is empty except for the ship: at its foot the destroyer lies inside the trough, nose pointing up the slope, in a heavy faceted off-white launch sled. Long low capacitor and power buildings run alongside the lower half of the ramp. Behind the loading station a line of long assembly halls is aligned with the trough's axis, and a transfer table beside the station holds the K-214 corvette waiting its turn. The whole yard is one linear composition along a single axis. Framing: elevated aerial three-quarter view of the whole site (about 35 deg azimuth, 35 deg down), like an aerial photograph from a helicopter of a real full-size facility on a flat, featureless pale-grey plain, the plain fading into a seamless light-grey haze at the horizon. Soft even overcast daylight, no hard cast shadows, deep focus with everything sharp, no tilt-shift blur. No text overlays, no captions, no labels, no exhaust plumes."
+   },
+   {
+    "asset": "shipyard",
+    "round": "r1-fix",
+    "direction": "C",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f51f-d76d-7290-a889-fd66a614f31a",
+    "output": "https://v3b.fal.media/files/b/0aac92a1/jyBFoWphY24sh8Rf2MA1__v6duEIGs.png",
+    "refs": [
+     "https://v3b.fal.media/files/b/0aac9291/5qmyJzN7SzXjUsAa4Zovm_ref-dd12-v9.jpg",
+     "https://v3b.fal.media/files/b/0aac91f6/XaUVik4vUgoTpVQff3pwK_corvette.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/IFrLtn75MB5hIJuLK8vu9_kit-sheet-fal.webp"
+    ],
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached images only as references (the dark render shows the exact shape of the DD-12 destroyer, the off-white ship is the K-214 corvette and shows the fleet's paint and markings, the parts sheet shows the fleet's hardware language), create a new image of an original planetside SHIPYARD where this fleet's civilisation builds its warships: a vast heavy-industrial surface yard, seen as a real full-size facility. Photorealistic heavy-industrial architecture in the same credible near-future 'naval-industrial' design language as the attached ships: faceted hard-surface buildings with chamfered edges and layered, stepped cladding plates, off-white thermal-control paint with realistic weathering, scuffs, soot and panel-to-panel colour variation, signal-orange hazard bands and crisp stencilled berth numbers on the buildings like on a real naval dockyard (hull numbers appear only on ships), small painted cobalt-blue identification bands, gunmetal structural frames, gold and silver insulation foil on sensor boxes, dark ceramic heat tiles and scorched concrete wherever drive exhaust reaches, pipe racks, cable trays, stairs and hand rails. Crew housing is 10 to 12 storey faceted chamfered blocks with stepped cladding and rows of small ports; the control centre is a squat armoured octagonal block like a ship's command block; the fuel farm is faceted off-white spheres and cylinders with orange and cobalt bands. Physically based materials, real-world engineering logic, no aerodynamic wings, no tail fins, no neon, no glowing trim, no emissive strips, all lights and engines switched off, not a video game, not stylised, not a toy, not a miniature. Original design, not based on any existing franchise. The DD-12 destroyer is exactly the attached render's shape: one long armoured hull with a blunt octagonal bow framing the spinal railgun muzzle, twin-gun turrets along the deck, broadside sponsons, a low sloped two-deck armoured command block with a short sensor mast and no tall tower, large aft fusion bells, no landing gear; painted in the corvette's off-white thermal paint with orange markings, one cobalt band and the hull number DD-12. True scale, stated as ratios: the whole site is about 1.3 km across and the 203 m destroyer spans only about one sixth of the image width. The destroyer is as long as 34 twenty-foot containers end to end and as long as 110 standing people; a 1.8 m person is a barely visible speck beside it, trucks are tiny specks, and containers are like grains of rice. Every tall wall carries storey bands every 3 m and long rows of small ports, so the buildings read as vast. No fighters and no winged craft anywhere. Design direction C, upright launch stand: ships are launched standing on their stern. The destroyer stands upright on its stern, one single armoured hull, its blunt octagonal bow and spinal railgun muzzle pointing at the sky, its low armoured command block and broadside sponsons along its flank, no boosters, no stages, no fins, its aft fusion bells resting on a massive octagonal launch mount, with a flame trench cut directly beneath the bells through the mount and opening out to one side. Beside it stands a fully clad, faceted off-white service tower about 230 m tall, an armoured octagonal column of stacked chamfered enclosures with stepped cladding, orange hazard bands and cobalt bands, whose enclosed work decks close round the hull like clamshell doors; no open lattice, no crane jib. Ships are assembled lying flat in long low chamfered halls and brought to the stand lying flat on a heavy faceted erector-transporter that tilts them upright: at a second, smaller stand the K-214 corvette is half raised at 45 degrees on its erector-transporter. The upright destroyer is as tall as a 68-storey building. Everything else in the yard is low and spread out, so the upright ship and its clad tower dominate the silhouette. Framing: elevated aerial three-quarter view of the whole site (about 35 deg azimuth, 35 deg down), like an aerial photograph from a helicopter of a real full-size facility on a flat, featureless pale-grey plain, the plain fading into a seamless light-grey haze at the horizon. Soft even overcast daylight, no hard cast shadows, deep focus with everything sharp, no tilt-shift blur. No text overlays, no captions, no labels, no exhaust plumes."
+   },
+   {
+    "asset": "spaceport",
+    "round": "r1",
+    "direction": "A",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f513-473c-7881-ab87-abe95d0f1206",
+    "output": "https://v3b.fal.media/files/b/0aac924f/YqMvLrOQ9E3Kd6nvpipCj_hERc06Wn.png",
+    "refs": [
+     "https://v3b.fal.media/files/b/0aac91f6/akM1plzkfx5V7SjdKGEzm_bible.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/AuWiCxFP9JEpOmC3Ta70s_carrier.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/IFrLtn75MB5hIJuLK8vu9_kit-sheet-fal.webp"
+    ],
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached fleet concept sheet, the attached carrier and the attached parts kit only as references for design language, materials, markings and true scale, create a new image of an original orbital SPACEPORT where this fleet's civilisation builds its largest warp-capable ships: a vast industrial orbital shipbuilding station. Photorealistic orbital industrial structure in the same credible near-future 'naval-industrial' design language as the attached ships, as in a high-end aerospace concept photograph: faceted hard-surface modules and structures with chamfered edges and layered armour-like cladding plates, off-white thermal-control paint with realistic weathering, scuffs and panel-to-panel colour variation, signal-orange hazard and identification markings and large stencilled dock numbers like on real naval dockyards, small painted cobalt-blue identification bands, bare brushed-metal and gunmetal structural frames and trusses, gold and silver multi-layer insulation blankets on sensor and electronics boxes, large radiator panels and solar arrays, RCS thruster quads, antennas, docking clamps, airlocks, hatches and hand rails at human scale, heavy radiation shielding around the crew habitats, small amber lamp housings at block corners (switched off). Physically based materials, real-world engineering logic, no aerodynamic shapes, no wings, no neon, no glowing trim, no glowing panel lines, no emissive strips, all lights and engines switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. True size: the whole station is about 1.8 km across. Its main construction dock clears about 1,000 x 450 x 350 m around a 900 m carrier, so the carrier fills about half of the station. Around the dock: berths for 134 m freighters delivering material, fabrication modules, crew habitats for thousands of workers, a reactor block, solar arrays and radiators, and docking for the fleet. Human-scale rulers at true size everywhere: 2 m crew doors, 1 m windows in rows at 3 m deck pitch, 1.1 m rails, 20-ft containers, so at this distance the windows are tiny pinpoints in long fine rows and every module reads as vast. Construction scaffolding, gantries and work platforms are bare open gunmetal and galvanised lattice with orange-striped crane trolleys, clearly different from the finished plated hulls. Design direction A, open lattice dry dock: the carrier is built inside an open rectangular dry-dock frame about 1,050 m long, 480 m wide and 380 m high, made of heavy square-section box-girder trusses with chamfered corners, like a terrestrial shipbuilding dock or a bridge-building gantry rather than anything slender or curved. The frame is see-through on all sides; four travelling portal cranes ride on rails along its top longerons, and dozens of telescoping work arms and hanging work platforms reach in from the frame to the hull. At one end of the frame sits a compact faceted command and habitat block of stacked deck modules with fine window rows, a reactor module behind its radiation shield, and two long radiator arrays set edge-on; on one long side a row of short piers holds docked freighters beside stacked containers and fabrication modules. Open, skeletal, airy and industrial. Framing: three-quarter view of the whole orbital station (about 35 deg azimuth, 20 deg up) on a plain seamless light-grey studio background like a highly detailed physical model, with the 900 m carrier of the reference design under construction inside its dock (partly plated, scaffolding visible) and a 134 m freighter docked for scale. The carrier keeps the attached design and its off-white paint with orange markings: its forward two thirds are plated, its aft third is still bare frames, ribs and decks open to space with scaffolding and work platforms around them. The freighter is a lean truss-spine cargo ship with 20-ft containers, small next to the carrier. The whole station is visible and centred with generous empty margin. Photorealistic, like a studio photograph of a highly detailed physical model, soft even studio lighting, no cast shadow, no planet, no stars, sharp focus throughout. No text overlays, no captions, no labels, no exhaust plumes."
+   },
+   {
+    "asset": "spaceport",
+    "round": "r1",
+    "direction": "B",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f513-bd67-7151-b8a2-bab2f699dd14",
+    "output": "https://v3b.fal.media/files/b/0aac9252/5SBX-P0yTszIN7eeBqaBT_rjg7wnIo.png",
+    "refs": [
+     "https://v3b.fal.media/files/b/0aac91f6/akM1plzkfx5V7SjdKGEzm_bible.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/AuWiCxFP9JEpOmC3Ta70s_carrier.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/IFrLtn75MB5hIJuLK8vu9_kit-sheet-fal.webp"
+    ],
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached fleet concept sheet, the attached carrier and the attached parts kit only as references for design language, materials, markings and true scale, create a new image of an original orbital SPACEPORT where this fleet's civilisation builds its largest warp-capable ships: a vast industrial orbital shipbuilding station. Photorealistic orbital industrial structure in the same credible near-future 'naval-industrial' design language as the attached ships, as in a high-end aerospace concept photograph: faceted hard-surface modules and structures with chamfered edges and layered armour-like cladding plates, the fleet's dark matte charcoal-grey operational paint on the whole station structure, with realistic weathering, scuffs and panel-to-panel tone variation, the markings kept faint and low-visibility, signal-orange hazard and identification markings and large stencilled dock numbers like on real naval dockyards, small painted cobalt-blue identification bands, bare brushed-metal and gunmetal structural frames and trusses, gold and silver multi-layer insulation blankets on sensor and electronics boxes, large radiator panels and solar arrays, RCS thruster quads, antennas, docking clamps, airlocks, hatches and hand rails at human scale, heavy radiation shielding around the crew habitats, small amber lamp housings at block corners (switched off). Physically based materials, real-world engineering logic, no aerodynamic shapes, no wings, no neon, no glowing trim, no glowing panel lines, no emissive strips, all lights and engines switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. True size: the whole station is about 1.8 km across. Its main construction dock clears about 1,000 x 450 x 350 m around a 900 m carrier, so the carrier fills about half of the station. Around the dock: berths for 134 m freighters delivering material, fabrication modules, crew habitats for thousands of workers, a reactor block, solar arrays and radiators, and docking for the fleet. Human-scale rulers at true size everywhere: 2 m crew doors, 1 m windows in rows at 3 m deck pitch, 1.1 m rails, 20-ft containers, so at this distance the windows are tiny pinpoints in long fine rows and every module reads as vast. Construction scaffolding, gantries and work platforms are bare open gunmetal and galvanised lattice with orange-striped crane trolleys, clearly different from the finished plated hulls. Design direction B, enclosed pressurised dock hall: the carrier is built inside one enormous enclosed hangar hall about 1,100 m long, 500 m wide and 400 m high, a single monolithic block with an elongated octagonal cross-section, chamfered edges and stepped, layered armour-like cladding. One entire long flank of the hall is a row of giant segmented doors retracted upward and sideways, standing open, so the carrier inside is visible in the dimly lit interior with its scaffolding and gantry cranes; the bow end has giant clamshell doors standing half open. Clustered on the hall's roof and far end: a stack of heavily shielded crew habitat decks with fine window rows, fabrication modules, a reactor block and tall radiator fins set edge-on; a docking port on the near end holds the freighter at an airlock collar. Compact, enclosed, heavy and fortress-like. The carrier and the freighter keep their off-white reference paint, so they stand out against the dark hall. Framing: three-quarter view of the whole orbital station (about 35 deg azimuth, 20 deg up) on a plain seamless light-grey studio background like a highly detailed physical model, with the 900 m carrier of the reference design under construction inside its dock (partly plated, scaffolding visible) and a 134 m freighter docked for scale. The carrier keeps the attached design and its off-white paint with orange markings: its forward two thirds are plated, its aft third is still bare frames, ribs and decks open to space with scaffolding and work platforms around them. The freighter is a lean truss-spine cargo ship with 20-ft containers, small next to the carrier. The whole station is visible and centred with generous empty margin. Photorealistic, like a studio photograph of a highly detailed physical model, soft even studio lighting, no cast shadow, no planet, no stars, sharp focus throughout. No text overlays, no captions, no labels, no exhaust plumes."
+   },
+   {
+    "asset": "spaceport",
+    "round": "r1",
+    "direction": "C",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f514-2bd9-7a80-8629-22f83853c45e",
+    "output": "https://v3b.fal.media/files/b/0aac9255/A5SaMQzNbToFtFJ03bOVJ_ycyG5UlI.png",
+    "refs": [
+     "https://v3b.fal.media/files/b/0aac91f6/akM1plzkfx5V7SjdKGEzm_bible.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/AuWiCxFP9JEpOmC3Ta70s_carrier.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/IFrLtn75MB5hIJuLK8vu9_kit-sheet-fal.webp"
+    ],
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached fleet concept sheet, the attached carrier and the attached parts kit only as references for design language, materials, markings and true scale, create a new image of an original orbital SPACEPORT where this fleet's civilisation builds its largest warp-capable ships: a vast industrial orbital shipbuilding station. Photorealistic orbital industrial structure in the same credible near-future 'naval-industrial' design language as the attached ships, as in a high-end aerospace concept photograph: faceted hard-surface modules and structures with chamfered edges and layered armour-like cladding plates, off-white thermal-control paint with realistic weathering, scuffs and panel-to-panel colour variation, signal-orange hazard and identification markings and large stencilled dock numbers like on real naval dockyards, small painted cobalt-blue identification bands, bare brushed-metal and gunmetal structural frames and trusses, gold and silver multi-layer insulation blankets on sensor and electronics boxes, large radiator panels and solar arrays, RCS thruster quads, antennas, docking clamps, airlocks, hatches and hand rails at human scale, heavy radiation shielding around the crew habitats, small amber lamp housings at block corners (switched off). Physically based materials, real-world engineering logic, no aerodynamic shapes, no wings, no neon, no glowing trim, no glowing panel lines, no emissive strips, all lights and engines switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. True size: the whole station is about 1.8 km across. Its main construction dock clears about 1,000 x 450 x 350 m around a 900 m carrier, so the carrier fills about half of the station. Around the dock: berths for 134 m freighters delivering material, fabrication modules, crew habitats for thousands of workers, a reactor block, solar arrays and radiators, and docking for the fleet. Human-scale rulers at true size everywhere: 2 m crew doors, 1 m windows in rows at 3 m deck pitch, 1.1 m rails, 20-ft containers, so at this distance the windows are tiny pinpoints in long fine rows and every module reads as vast. Construction scaffolding, gantries and work platforms are bare open gunmetal and galvanised lattice with orange-striped crane trolleys, clearly different from the finished plated hulls. Design direction C, spine station with several berths: a single straight faceted central spine truss about 1.8 km long, a scaled-up version of the fleet's civil truss keel, carries everything as repeated modules. At one end of the spine: a reactor block behind a thick shadow shield with two long radiator arrays set edge-on and a pair of large square solar arrays. Along the spine: drum-shaped habitat modules with fine window rows, boxy fabrication modules and container racks. Perpendicular berth arms project from one side of the spine like piers: the largest berth holds the carrier alongside the spine in a cradle of heavy clamp arms, with gantry cranes on rails along the berth and scaffolding round its unfinished aft section; three smaller berths further along hold the freighter, a second freighter and an empty cradle sized for a 200 m destroyer. Long, linear, modular and logistic, like a port quay in space. Framing: three-quarter view of the whole orbital station (about 35 deg azimuth, 20 deg up) on a plain seamless light-grey studio background like a highly detailed physical model, with the 900 m carrier of the reference design under construction inside its dock (partly plated, scaffolding visible) and a 134 m freighter docked for scale. The carrier keeps the attached design and its off-white paint with orange markings: its forward two thirds are plated, its aft third is still bare frames, ribs and decks open to space with scaffolding and work platforms around them. The freighter is a lean truss-spine cargo ship with 20-ft containers, small next to the carrier. The whole station is visible and centred with generous empty margin. Photorealistic, like a studio photograph of a highly detailed physical model, soft even studio lighting, no cast shadow, no planet, no stars, sharp focus throughout. No text overlays, no captions, no labels, no exhaust plumes."
+   },
+   {
+    "asset": "spaceport",
+    "round": "r1",
+    "direction": "D",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f514-99a7-7c82-b00a-744f1f84c95d",
+    "output": "https://v3b.fal.media/files/b/0aac9258/fYXDNAXJiFlqwmITzgwyX_J64YwuhR.png",
+    "refs": [
+     "https://v3b.fal.media/files/b/0aac91f6/akM1plzkfx5V7SjdKGEzm_bible.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/AuWiCxFP9JEpOmC3Ta70s_carrier.webp",
+     "https://v3b.fal.media/files/b/0aac91f6/IFrLtn75MB5hIJuLK8vu9_kit-sheet-fal.webp"
+    ],
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached fleet concept sheet, the attached carrier and the attached parts kit only as references for design language, materials, markings and true scale, create a new image of an original orbital SPACEPORT where this fleet's civilisation builds its largest warp-capable ships: a vast industrial orbital shipbuilding station. Photorealistic orbital industrial structure in the same credible near-future 'naval-industrial' design language as the attached ships, as in a high-end aerospace concept photograph: faceted hard-surface modules and structures with chamfered edges and layered armour-like cladding plates, a two-tone scheme: dark matte charcoal-grey paint on the main structural ring, spokes and frames, and off-white thermal-control paint on the habitat, fabrication and dock modules, both with realistic weathering, scuffs and panel-to-panel colour variation, signal-orange hazard and identification markings and large stencilled dock numbers like on real naval dockyards, small painted cobalt-blue identification bands, bare brushed-metal and gunmetal structural frames and trusses, gold and silver multi-layer insulation blankets on sensor and electronics boxes, large radiator panels and solar arrays, RCS thruster quads, antennas, docking clamps, airlocks, hatches and hand rails at human scale, heavy radiation shielding around the crew habitats, small amber lamp housings at block corners (switched off). Physically based materials, real-world engineering logic, no aerodynamic shapes, no wings, no neon, no glowing trim, no glowing panel lines, no emissive strips, all lights and engines switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. True size: the whole station is about 1.8 km across. Its main construction dock clears about 1,000 x 450 x 350 m around a 900 m carrier, so the carrier fills about half of the station. Around the dock: berths for 134 m freighters delivering material, fabrication modules, crew habitats for thousands of workers, a reactor block, solar arrays and radiators, and docking for the fleet. Human-scale rulers at true size everywhere: 2 m crew doors, 1 m windows in rows at 3 m deck pitch, 1.1 m rails, 20-ft containers, so at this distance the windows are tiny pinpoints in long fine rows and every module reads as vast. Construction scaffolding, gantries and work platforms are bare open gunmetal and galvanised lattice with orange-striped crane trolleys, clearly different from the finished plated hulls. Design direction D, ring with radial docks: a large non-rotating faceted polygonal ring about 1.6 km across, built of sixteen straight chamfered segments, about 90 m thick, holding the habitat decks with fine window rows and the fabrication shops. The carrier's construction dock is an open box-girder cradle frame about 1,050 m long that lies across the middle of the ring along one diameter, joined to the ring at both ends and braced to it by straight lattice spokes, so the carrier lies across the centre of the ring held by clamp arms and gantries; the reactor block and its radiator arrays sit on top of the dock frame at its midpoint. Short radial docking piers project outward from the outer face of the ring at regular intervals, each ending in a docking clamp and airlock collar; the freighter is docked at one pier and two piers are empty. Radial, symmetric and ordered. Framing: three-quarter view of the whole orbital station (about 35 deg azimuth, 20 deg up) on a plain seamless light-grey studio background like a highly detailed physical model, with the 900 m carrier of the reference design under construction inside its dock (partly plated, scaffolding visible) and a 134 m freighter docked for scale. The carrier keeps the attached design and its off-white paint with orange markings: its forward two thirds are plated, its aft third is still bare frames, ribs and decks open to space with scaffolding and work platforms around them. The freighter is a lean truss-spine cargo ship with 20-ft containers, small next to the carrier. The whole station is visible and centred with generous empty margin. Photorealistic, like a studio photograph of a highly detailed physical model, soft even studio lighting, no cast shadow, no planet, no stars, sharp focus throughout. No text overlays, no captions, no labels, no exhaust plumes."
+   },
+   {
+    "asset": "spaceport",
+    "round": "r1-fix",
+    "direction": "A",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f52a-3d63-7f82-a80a-126757e07432",
+    "output": "https://v3b.fal.media/files/b/0aac92e6/Xck1VGKN8tL-Io7Tdrb3I_2NXgS5AO.png",
+    "refs": [
+     "https://v3b.fal.media/files/b/0aac91f6/AuWiCxFP9JEpOmC3Ta70s_carrier.webp",
+     "https://v3b.fal.media/files/b/0aac92dd/o2VSfH6t0Ar0RV90svf2G_ref-ct4-remodel.jpg",
+     "https://v3b.fal.media/files/b/0aac92dd/SdEJGjhstD8JfftWXzz5N_kit-civil.jpg"
+    ],
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached images only as references (the off-white ship is the fleet's CV-50 carrier and shows the fleet's paint and markings; the dark render shows only the shape of the CT-4 freighter, a cab block and a long truss keel packed with many small containers; the parts sheet shows the fleet's civil hardware at true size), create a new image of an original orbital SPACEPORT where this fleet's civilisation builds its largest warp-capable ships: a vast industrial shipbuilding station in orbit. Photorealistic orbital industrial structure in the same credible near-future 'naval-industrial' design language as the attached carrier: faceted hard-surface modules with chamfered edges and layered armour-like cladding plates, off-white thermal-control paint on the modules with realistic weathering, scuffs and panel-to-panel colour variation, signal-orange hazard chevrons and small painted cobalt-blue identification bands, bare brushed-metal and gunmetal structural trusses, thin crinkled gold and silver insulation foil only on small equipment boxes, flat radiator panels and solar arrays, RCS thruster quads, antennas, docking clamps, airlocks, hatches and hand rails at human scale, heavy radiation shielding around the crew habitats. The station is not a ship: no drive bells, no bow or stern shaping, no bridge tower, RCS quads only. The station is unarmed: no guns, no barrels, no turrets anywhere on it. Exactly one dock number, stencilled once on a dark ID field; no other text and no repeated numbers. Physically based materials, real-world engineering logic, no aerodynamic shapes, no wings, no neon, no glowing trim, no glowing panel lines, no emissive strips, not a video game, not stylised, not a toy, not a miniature. Original design, not based on any existing franchise. Design direction A, open lattice dry dock: the carrier floats inside an open rectangular dock frame about 1,050 m long, 480 m wide and 380 m high, four heavy straight longerons of square-section box-girder truss joined by square portal frames every 150 m. The frame's corner and node blocks are chamfered gunmetal armour castings with signal-orange hazard chevrons and a small cobalt band, and one corner block carries the dock number; the girders between them are bare galvanised lattice. The frame is see-through on all sides and fully open at its aft end as the launch exit. Off one long side of the frame, on a 400 m connecting truss, hang the station modules: a compact faceted habitat block of stacked decks with hairline window rows, a reactor block behind a shadow shield, two long radiator arrays set edge-on, two large square solar arrays, boxy fabrication modules, and two short berth piers ending in docking collars, one holding the freighter. Nothing sits in front of the carrier's bow or stern. Open, skeletal, airy and industrial. There is exactly one carrier and no other warship: the attached off-white carrier design (octagonal bow mouth, open-flank hangar, tall tiered island, deck turrets) with its orange markings, its forward two thirds plated, its aft third still bare frames, ribs and decks open to space, wrapped in scaffolding. The freighter has the CT-4 shape from the dark render, painted off-white. Weightless orbital construction: nothing stands on anything; no legs, no feet, no floor deck, no ground; nothing hangs on cables, no hooks, no tower cranes; gantry trolleys ride rails on the dock structure and hold hull plates with rigid telescoping arms; scaffolding and work platforms are bare galvanised lattice cantilevered from the dock structure, clearly different from the finished plated hulls. All lights switched off: hangar interiors unlit, no lit windows, no lit strips, no runway dashes; decks carry only painted yellow safety lines. True size: the whole station is about 1.8 km long and its dock clears about 1,000 x 450 x 350 m round the 900 m carrier. Scale cues stated as ratios: the freighter is a thin sliver about one seventh of the carrier's length, its containers a fine striped texture too small to count individually; crew habitat windows are hairline dotted rows read only as texture, with no individually visible windows; scaffold bays are too small to count; every station detail is finer than the carrier's own panel lines, so every module reads as vast. Framing: three-quarter view of the whole orbital station, camera about 35 deg off its long axis and only 20 deg above its main plane, the whole station visible and centred with generous empty margin, isolated on a plain seamless light-grey studio background. Photorealistic, like a high-end aerospace visualisation of a real full-size structure, soft even studio lighting, no cast shadow, no planet, no stars, deep focus, sharp throughout, no tilt-shift blur. No text overlays, no captions, no labels, no exhaust plumes."
+   },
+   {
+    "asset": "spaceport",
+    "round": "r1-fix",
+    "direction": "C",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f52a-daae-7d71-bd70-f950a55efc89",
+    "output": "https://v3b.fal.media/files/b/0aac92ea/TACsDXzkqZM7XMgxRIkKB_aMsfpddc.png",
+    "refs": [
+     "https://v3b.fal.media/files/b/0aac91f6/AuWiCxFP9JEpOmC3Ta70s_carrier.webp",
+     "https://v3b.fal.media/files/b/0aac92dd/o2VSfH6t0Ar0RV90svf2G_ref-ct4-remodel.jpg",
+     "https://v3b.fal.media/files/b/0aac92dd/SdEJGjhstD8JfftWXzz5N_kit-civil.jpg"
+    ],
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached images only as references (the off-white ship is the fleet's CV-50 carrier and shows the fleet's paint and markings; the dark render shows only the shape of the CT-4 freighter, a cab block and a long truss keel packed with many small containers; the parts sheet shows the fleet's civil hardware at true size), create a new image of an original orbital SPACEPORT where this fleet's civilisation builds its largest warp-capable ships: a vast industrial shipbuilding station in orbit. Photorealistic orbital industrial structure in the same credible near-future 'naval-industrial' design language as the attached carrier: faceted hard-surface modules with chamfered edges and layered armour-like cladding plates, off-white thermal-control paint on the modules with realistic weathering, scuffs and panel-to-panel colour variation, signal-orange hazard chevrons and small painted cobalt-blue identification bands, bare brushed-metal and gunmetal structural trusses, thin crinkled gold and silver insulation foil only on small equipment boxes, flat radiator panels and solar arrays, RCS thruster quads, antennas, docking clamps, airlocks, hatches and hand rails at human scale, heavy radiation shielding around the crew habitats. The station is not a ship: no drive bells, no bow or stern shaping, no bridge tower, RCS quads only. The station is unarmed: no guns, no barrels, no turrets anywhere on it. Exactly one dock number, stencilled once on a dark ID field; no other text and no repeated numbers. Physically based materials, real-world engineering logic, no aerodynamic shapes, no wings, no neon, no glowing trim, no glowing panel lines, no emissive strips, not a video game, not stylised, not a toy, not a miniature. Original design, not based on any existing franchise. Design direction C, spine station with berths: a single straight open lattice spine about 1.8 km long and 60 m thick, an octagonal box truss of bare gunmetal girders with off-white chamfered node blocks every 150 m, clearly visible along its whole length. All station modules are mounted on this spine: at its head end, faceted octagonal-prism habitat blocks with chamfered layered plates and hairline window rows, a reactor block behind a thick shadow shield, long flat radiator panels set edge-on and two large square solar arrays; along the spine, boxy fabrication modules and container racks. The carrier floats parallel to the spine about 150 m away, with a clear gap of open space between its hull and the truss, held only by six heavy rigid clamp arms reaching across from one long berth; gantry trolleys ride rails along that berth, and scaffolding is cantilevered from it round the carrier's bare aft third. The carrier leaves sideways, away from the spine. Further along, three short faceted berth piers ending in docking collars hold two freighters and one empty cradle sized for a 200 m destroyer. Long, linear, modular and logistic, like a port quay in space. There is exactly one carrier and no other warship: the attached off-white carrier design (octagonal bow mouth, open-flank hangar, tall tiered island, deck turrets) with its orange markings, its forward two thirds plated, its aft third still bare frames, ribs and decks open to space, wrapped in scaffolding. The freighter has the CT-4 shape from the dark render, painted off-white. Weightless orbital construction: nothing stands on anything; no legs, no feet, no floor deck, no ground; nothing hangs on cables, no hooks, no tower cranes; gantry trolleys ride rails on the dock structure and hold hull plates with rigid telescoping arms; scaffolding and work platforms are bare galvanised lattice cantilevered from the dock structure, clearly different from the finished plated hulls. All lights switched off: hangar interiors unlit, no lit windows, no lit strips, no runway dashes; decks carry only painted yellow safety lines. True size: the whole station is about 1.8 km long and its dock clears about 1,000 x 450 x 350 m round the 900 m carrier. Scale cues stated as ratios: the freighter is a thin sliver about one seventh of the carrier's length, its containers a fine striped texture too small to count individually; crew habitat windows are hairline dotted rows read only as texture, with no individually visible windows; scaffold bays are too small to count; every station detail is finer than the carrier's own panel lines, so every module reads as vast. Framing: three-quarter view of the whole orbital station, camera about 35 deg off its long axis and only 20 deg above its main plane, the whole station visible and centred with generous empty margin, isolated on a plain seamless light-grey studio background. Photorealistic, like a high-end aerospace visualisation of a real full-size structure, soft even studio lighting, no cast shadow, no planet, no stars, deep focus, sharp throughout, no tilt-shift blur. No text overlays, no captions, no labels, no exhaust plumes."
+   },
+   {
+    "asset": "spaceport",
+    "round": "r1-fix",
+    "direction": "D",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f52b-3e6d-7f20-a336-19df0aabc964",
+    "output": "https://v3b.fal.media/files/b/0aac92ec/tMn_q8Py-Ayzo7V4MHJKE_uZWpoSSz.png",
+    "refs": [
+     "https://v3b.fal.media/files/b/0aac91f6/AuWiCxFP9JEpOmC3Ta70s_carrier.webp",
+     "https://v3b.fal.media/files/b/0aac92dd/o2VSfH6t0Ar0RV90svf2G_ref-ct4-remodel.jpg",
+     "https://v3b.fal.media/files/b/0aac92dd/SdEJGjhstD8JfftWXzz5N_kit-civil.jpg"
+    ],
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "output_format": "png"
+    },
+    "prompt": "Using the attached images only as references (the off-white ship is the fleet's CV-50 carrier and shows the fleet's paint and markings; the dark render shows only the shape of the CT-4 freighter, a cab block and a long truss keel packed with many small containers; the parts sheet shows the fleet's civil hardware at true size), create a new image of an original orbital SPACEPORT where this fleet's civilisation builds its largest warp-capable ships: a vast industrial shipbuilding station in orbit. Photorealistic orbital industrial structure in the same credible near-future 'naval-industrial' design language as the attached carrier: faceted hard-surface modules with chamfered edges and layered armour-like cladding plates, a two-tone scheme: dark matte charcoal-grey paint on the main structural ring, spokes and frames, and off-white thermal-control paint on the habitat, fabrication and dock modules, both with realistic weathering, scuffs and panel-to-panel colour variation, signal-orange hazard chevrons and small painted cobalt-blue identification bands, bare brushed-metal and gunmetal structural trusses, thin crinkled gold and silver insulation foil only on small equipment boxes, flat radiator panels and solar arrays, RCS thruster quads, antennas, docking clamps, airlocks, hatches and hand rails at human scale, heavy radiation shielding around the crew habitats. The station is not a ship: no drive bells, no bow or stern shaping, no bridge tower, RCS quads only. The station is unarmed: no guns, no barrels, no turrets anywhere on it. Exactly one dock number, stencilled once on a dark ID field; no other text and no repeated numbers. Physically based materials, real-world engineering logic, no aerodynamic shapes, no wings, no neon, no glowing trim, no glowing panel lines, no emissive strips, not a video game, not stylised, not a toy, not a miniature. Original design, not based on any existing franchise. Design direction D, ring with radial docks: a large non-rotating faceted polygonal ring about 1.6 km across, built of sixteen straight segments, each a deep faceted prism about 90 m thick with chamfered edges and layered armour-like cladding, hairline rows of tiny windows on its inner faces (about 30 rows per face, read only as texture) and flat radiator panels set edge-on on its outer faces; no cushions, no pillow panels. The carrier's dock is an open box-girder cradle frame about 1,050 m long lying across the ring along one diameter, joined to the ring at both ends; four straight lattice spokes on two diameters brace the ring. The carrier lies unbroken along the cradle, held by rigid clamp arms and rail-riding gantries; the cradle is clear along its whole length and open above, nothing crosses over the carrier, and the carrier leaves upward out of the open cradle. The reactor block with its shadow shield sits on the ring opposite the freighter's pier, with two radiator arrays set edge-on, and two large square solar arrays stand off the ring's outer face. Radial docking piers are slender open square lattice gangways about 120 m long, each ending in a flat square docking collar with clamp arms and an airlock; the freighter is docked at one pier and the other piers are empty. Nothing points outward like a weapon. Polygonal and non-rotating, with no central hub and no sphere. Radial, symmetric and ordered. There is exactly one carrier and no other warship: the attached off-white carrier design (octagonal bow mouth, open-flank hangar, tall tiered island, deck turrets) with its orange markings, its forward two thirds plated, its aft third still bare frames, ribs and decks open to space, wrapped in scaffolding. The freighter has the CT-4 shape from the dark render, painted off-white. Weightless orbital construction: nothing stands on anything; no legs, no feet, no floor deck, no ground; nothing hangs on cables, no hooks, no tower cranes; gantry trolleys ride rails on the dock structure and hold hull plates with rigid telescoping arms; scaffolding and work platforms are bare galvanised lattice cantilevered from the dock structure, clearly different from the finished plated hulls. All lights switched off: hangar interiors unlit, no lit windows, no lit strips, no runway dashes; decks carry only painted yellow safety lines. True size: the whole station is about 1.8 km long and its dock clears about 1,000 x 450 x 350 m round the 900 m carrier. Scale cues stated as ratios: the freighter is a thin sliver about one seventh of the carrier's length, its containers a fine striped texture too small to count individually; crew habitat windows are hairline dotted rows read only as texture, with no individually visible windows; scaffold bays are too small to count; every station detail is finer than the carrier's own panel lines, so every module reads as vast. Framing: three-quarter view of the whole orbital station, camera about 35 deg off its long axis and only 20 deg above its main plane, the whole station visible and centred with generous empty margin, isolated on a plain seamless light-grey studio background. Photorealistic, like a high-end aerospace visualisation of a real full-size structure, soft even studio lighting, no cast shadow, no planet, no stars, deep focus, sharp throughout, no tilt-shift blur. No text overlays, no captions, no labels, no exhaust plumes."
+   },
+   {
+    "asset": "vehicle",
+    "round": "r1-fix",
+    "direction": "A",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f526-d773-7b82-893b-b221ac520902",
+    "output": "https://v3b.fal.media/files/b/0aac92cf/Dkvm0JP61YPXyEqM0fJZB_jqd1dpC9.png",
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3"
+    },
+    "prompt": "Using the attached images only as design-language references: image 1 is the fleet's concept sheet and image 2 a sister ship from the same shipyards (copy their paint, markings, materials, weathering and engineering realism, not their shapes); image 3 is the fleet's parts kit at true relative size (reuse its hatches, rails, lamps, vents and ladders at that true human scale). Render ONLY one isolated ground vehicle: an original fast, armoured, all-terrain combat vehicle for a crew of 2 to 4, built by the same shipyards as the fleet. It is one integral armoured chassis: a closed, fully armoured hull from nose to tail with layered faceted plates, no cargo bed, no open deck. Its only weapon is one small, low remote weapon station about 0.8 m across on the roof (a short single barrel beside a small sensor head), set back behind the hatches; no launchers, no rocket tubes, no missile boxes, no pods, no turret. TRUE SIZE: 6.5 m long, 2.6 m wide, hull roof 2.5 m high, about 0.7 m above the crew member's head; top of the weapon station about 2.9 m. Human-scale fittings at true size: round roof crew hatches about 0.8 m across, 1.1 m grab rails, small recessed rectangular 0.4 m lamp housings with armoured covers, a 1.2 x 0.8 m louvred engine vent, step plates and grab handles. DRIVE AND BODY (tall cab on wheels): four 1.2 m wheels with deep-tread tyres, the tyre tops level with the crew member's hip, on independent suspension with visible gunmetal wishbones and coil-over dampers inside faceted armoured wheel arches; ground clearance about 0.45 m, a wide planted stance, the body sitting low between the wheels, no lifted stance. A tall faceted crew cab forward whose flat roof line runs unbroken to the tail: one closed armoured volume from nose to tail, its upper side plates sloping inward so the hull has a chamfered octagonal cross-section like the fleet's hulls; a short, steeply chamfered nose over the front axle; two flat armoured vision panes under the brow and one small armoured side pane per door; a rear crew door in the tail; two round 0.8 m roof hatches with rails, the remote weapon station behind them. Fleet family cues, as on the fleet's ships: a dark gunmetal chamfered octagonal frame around the nose, like the fleet's bow collars; a dark gunmetal lower hull band along the belly; flat armoured vision panes about 1.0 x 1.2 m set deep in chamfered frames under an armoured brow, and small periscopes in the roof; one 0.4 m cube sensor box wrapped in crinkled gold foil on the roof (a foil-wrapped box, not a lamp). No wing mirrors, no windscreen wipers, no round headlamps, no radiator grille slats, no logos, no decals, no small text. Markings, few and bold: diagonal hatched amber hazard blocks at the two front corners and one vertical amber band on each flank, nothing else in amber; one small vertical cobalt-blue band about 0.3 m wide; the hull number V-31 once on each flank in an upright, condensed stencil font, not italic. Photorealistic ground vehicle in a credible near-future 'naval-industrial' design language, as in a high-end engineering concept photograph: faceted hard-surface armoured hull with chamfered edges and layered armour plates, light off-white matte paint (the fleet's concept paint), with realistic weathering, scuffs, light road dust only on the lower hull and panel-to-panel colour variation, worn but not dirty, bare brushed-metal and gunmetal structural frames, suspension parts and tow points, an armoured engine deck with a louvred grille. Physically based materials, real-world engineering logic, no wings, no thrusters, no engine bells, no neon, no glowing trim, no glowing panel lines, no emissive strips, all lights switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. Isolated vehicle resting on its running gear, three-quarter view from the front-left and slightly above (about 35 degrees off the nose, 20 degrees up), the whole vehicle in frame with generous margin, plain seamless light-grey studio background, soft even light, no floor shadow, no environment. A 1.8 m crew member in a plain grey work suit stands on the floor about 1 m in front of the vehicle's front-left corner, nearer the camera than the vehicle and not overlapping it, his feet on the same ground plane as the vehicle's running gear. Photorealistic, like a studio photograph of a highly detailed physical model, sharp focus. No text, no labels, no captions, no watermark; the only lettering is the stencilled hull number V-31 on the vehicle."
+   },
+   {
+    "asset": "vehicle",
+    "round": "r1-fix",
+    "direction": "B",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f529-56ac-7fd1-8ee9-1d5d9c0477fa",
+    "output": "https://v3b.fal.media/files/b/0aac92e0/QUlK86d7zb3p0tKmWjCol_WOaRWVVq.png",
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3"
+    },
+    "prompt": "Using the attached images only as design-language references: image 1 is the fleet's concept sheet and image 2 a sister ship from the same shipyards (copy their paint, markings, materials, weathering and engineering realism, not their shapes); image 3 is the fleet's parts kit at true relative size (reuse its hatches, rails, lamps, vents and ladders at that true human scale). Render ONLY one isolated ground vehicle: an original fast, armoured, all-terrain combat vehicle for a crew of 2 to 4, built by the same shipyards as the fleet. It is one integral armoured chassis: a closed, fully armoured hull from nose to tail with layered faceted plates, no cargo bed, no open deck. Its only weapon is one small, low remote weapon station about 0.8 m across on the roof (a short single barrel beside a small sensor head), set back behind the hatches; no launchers, no rocket tubes, no missile boxes, no pods, no turret. TRUE SIZE, a compact vehicle: 6.5 m long (only about three and a half times the crew member's height), 2.6 m wide, hull roof 2.2 m high, only about 0.4 m above the crew member's head; top of the weapon station about 2.7 m. Human-scale fittings at true size: round roof crew hatches about 0.8 m across, 1.1 m grab rails, small recessed rectangular 0.4 m lamp housings with armoured covers, a 1.2 x 0.8 m louvred engine vent, step plates and grab handles. DRIVE AND BODY (low wedge on tracks): two rubber-band tracks, each on four road wheels with a front drive sprocket and a rear idler, track ground length about 4.6 m, light hinged armoured skirts covering only the upper half of the road wheels; the track tops reach the crew member's hip. A long, low, squat faceted hull, 6.5 m overall including a long, steep chamfered glacis; the hull's upper side plates slope inward about 30 degrees, giving a chamfered octagonal cross-section like the fleet's hulls. A flat engine deck at the rear with the louvred vent, two round 0.8 m roof hatches with rails, the remote weapon station offset behind the hatches. Fleet family cues, as on the fleet's ships: a dark gunmetal chamfered octagonal frame around the nose, like the fleet's bow collars; a dark gunmetal lower hull band along the belly; the driver's flat armoured vision blocks set deep in chamfered frames in the upper glacis under an armoured brow, and small periscopes in the roof; one small 0.4 m cube sensor box wrapped in crinkled gold multi-layer insulation foil on the roof beside the weapon station (a gold foil-wrapped box, not a lamp). No wing mirrors, no windscreen wipers, no round headlamps, no radiator grille slats, no logos, no decals, no small text. Markings, few and bold: diagonal hatched amber hazard blocks at the two front corners and one vertical amber band on each flank, nothing else in amber; one small vertical cobalt-blue band about 0.3 m wide; the hull number V-31 once on each flank in an upright, condensed stencil font, not italic. Photorealistic ground vehicle in a credible near-future 'naval-industrial' design language, as in a high-end engineering concept photograph: faceted hard-surface armoured hull with chamfered edges and layered armour plates, light off-white matte paint (the fleet's concept paint), with realistic weathering, scuffs, light road dust only on the lower hull and panel-to-panel colour variation, worn but not dirty, bare brushed-metal and gunmetal structural frames, suspension parts and tow points, an armoured engine deck with a louvred grille. Physically based materials, real-world engineering logic, no wings, no thrusters, no engine bells, no neon, no glowing trim, no glowing panel lines, no emissive strips, all lights switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. Isolated vehicle resting on its running gear, three-quarter view from the front-left and slightly above (about 35 degrees off the nose, 20 degrees up), the whole vehicle in frame with generous margin, plain seamless light-grey studio background, soft even light, no floor shadow, no environment. A 1.8 m crew member in a plain grey work suit stands on the floor right beside the vehicle, one step to the left of its front-left corner, at the same distance from the camera as the nose, not overlapping the vehicle, his feet on the same ground plane as the running gear; next to him the vehicle looks compact: the track tops reach his hip, the glacis top is level with his shoulders and the roof is just above his head. Photorealistic, like a studio photograph of a highly detailed physical model, sharp focus. No text, no labels, no captions, no watermark; the only lettering is the stencilled hull number V-31 on the vehicle."
+   },
+   {
+    "asset": "vehicle",
+    "round": "r1-fix",
+    "direction": "C",
+    "model": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f52b-3a5d-7183-9f96-3bd6ed7285f2",
+    "output": "https://v3b.fal.media/files/b/0aac92ec/aUR592c61oC6kqbS_fnl6_yCMpkFoz.png",
+    "params": {
+     "num_images": 1,
+     "resolution": "2K",
+     "aspect_ratio": "4:3"
+    },
+    "prompt": "Using the attached images only as design-language references: image 1 is the fleet's concept sheet and image 2 a sister ship from the same shipyards (copy their paint, markings, materials, weathering and engineering realism, not their shapes); image 3 is the fleet's parts kit at true relative size (reuse its hatches, rails, lamps, vents and ladders at that true human scale). Render ONLY one isolated ground vehicle: an original fast, armoured, all-terrain combat vehicle for a crew of 2 to 4, built by the same shipyards as the fleet. It is one integral armoured chassis: a closed, fully armoured hull from nose to tail with layered faceted plates, no cargo bed, no open deck. Its only weapon is one small, low remote weapon station about 0.8 m across on the roof (a short single barrel beside a small sensor head), set back behind the hatches; no launchers, no rocket tubes, no missile boxes, no pods, no turret. TRUE SIZE, a compact vehicle: 6.5 m long (only about three and a half times the crew member's height), 2.6 m wide, hull roof 2.4 m high, only about half a metre above the crew member's head; top of the weapon station about 2.8 m. Human-scale fittings at true size: round roof crew hatches about 0.8 m across, 1.1 m grab rails, small recessed rectangular 0.4 m lamp housings with armoured covers, a 1.2 x 0.8 m louvred engine vent, step plates and grab handles. DRIVE AND BODY (sponsoned, hybrid drive): a hybrid running gear: two 1.2 m steering wheels on the front axle and a short track unit at each rear quarter (a drive sprocket, three road wheels and an idler, about 2.4 m long and 0.9 m tall), all tucked inside the 2.6 m body width, with gunmetal suspension arms and dampers visible; ground clearance about 0.45 m, no lifted stance. A compact, cab-forward faceted body with two flat armoured vision panes under an armoured brow. Two slim armoured stowage sponsons run along the upper flanks, flush with the body at front and rear: closed boxes with chamfered ends, hinged lids and lifting eyes, nothing protruding fore or aft, no tubes, no openings. One round 0.8 m roof hatch with rails, the remote weapon station behind it. Fleet family cues, as on the fleet's ships: a dark gunmetal chamfered octagonal frame around the nose, like the fleet's bow collars; a dark gunmetal lower hull band along the belly; flat armoured vision panes about 1.0 x 1.2 m set deep in chamfered frames under an armoured brow, and small periscopes in the roof; one small 0.4 m cube sensor box wrapped in crinkled gold multi-layer insulation foil on the roof beside the weapon station (a gold foil-wrapped box, not a lamp). No wing mirrors, no windscreen wipers, no round headlamps, no radiator grille slats, no logos, no decals, no small text. Markings, few and bold: diagonal hatched amber hazard blocks at the two front corners and one vertical amber band on each flank, nothing else in amber; one small vertical cobalt-blue band about 0.3 m wide; the hull number V-31 once on each flank in an upright, condensed stencil font, not italic. Photorealistic ground vehicle in a credible near-future 'naval-industrial' design language, as in a high-end engineering concept photograph: faceted hard-surface armoured hull with chamfered edges and layered armour plates, light off-white matte paint (the fleet's concept paint), with realistic weathering, scuffs, light road dust only on the lower hull and panel-to-panel colour variation, worn but not dirty, bare brushed-metal and gunmetal structural frames, suspension parts and tow points, an armoured engine deck with a louvred grille. Physically based materials, real-world engineering logic, no wings, no thrusters, no engine bells, no neon, no glowing trim, no glowing panel lines, no emissive strips, all lights switched off, not a video game, not stylised, not a toy. Original design, not based on any existing franchise. Isolated vehicle resting on its running gear, three-quarter view from the front-left and slightly above (about 35 degrees off the nose, 20 degrees up), the whole vehicle in frame with generous margin, plain seamless light-grey studio background, soft even light, no floor shadow, no environment. A 1.8 m crew member in a plain grey work suit stands on the floor just ahead of the vehicle's nose and to the left of it in the picture, about 1 m from the front bumper, not overlapping the vehicle, his feet on the same ground plane as the running gear. Next to him the vehicle is small and compact, not a big truck: the front tyre tops are just below his hip, the rear track units reach his upper thigh, the bottom of the vision panes is level with his chin, and the roof is only a little above his head, low enough that he could reach up and touch the roof edge. Photorealistic, like a studio photograph of a highly detailed physical model, sharp focus. No text, no labels, no captions, no watermark; the only lettering is the stencilled hull number V-31 on the vehicle."
+   }
+  ]
+ }
 }

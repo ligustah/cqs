@@ -82,3 +82,21 @@ Tripo H3.1 image-to-3D with texture and PBR on, detailed quality, `face_limit` 2
 - `radiator`: Spacecraft radiator panel, dense parallel cooling fins, dark anodised metal with faint
   blue heat discolouration, seamless.
 - Others (`orange`, `ceramic`, `foil`, `hullWear`, `hullGrit`, `sootStreak`): see the pipeline record.
+
+## Ground units and installations (v16 concept spreads)
+
+Every prompt and job id is in `Scene3D/pipeline/fal-pipeline.json` (`v16_concepts_vehicle_shipyard_spaceport`).
+
+- **The `{style}` block, adapted:** "ground vehicle" or "orbital station" in place of "spacecraft". Keep
+  the paint, markings, materials, engineering realism and "original design, not based on any existing
+  franchise".
+- **Vehicle:** an isolated three-quarter view on light grey with a 1.8 m crew member **in front of the
+  nose**, plus body cues tied to him (see lessons 17). List the fleet cues explicitly: a gunmetal
+  chamfered octagonal nose collar, a dark gunmetal belly band, hatched amber corner blocks, one
+  vertical amber band, a small cobalt square, the upright stencil V-31 and a gold-foil sensor cube.
+  Ban automotive cues: no mirrors, wipers, round lamps or grille slats.
+- **Shipyard:** an elevated aerial three-quarter view on flat light-grey terrain, like an
+  architectural model in overcast daylight. Put a true DD-12 in a berth, and use the **v9 remodel
+  render** as its reference. Use ratio rulers: "a semi-trailer is about 1/12 of the ship's length".
+- **Spaceport:** a studio three-quarter view on light grey. References: the CV-50 concept, the CT-4
+  remodel render and a civil-only crop of the fal kit (no weapon row). Leave the bible out.

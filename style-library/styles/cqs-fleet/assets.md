@@ -15,3 +15,11 @@ All of them are in `Scene3D/`. Each has its module in `src/ships/<id>.js`, its G
 
 Known open item: the reactor-flank CT-4 / CT-7 stencil reads like a row of small windows at steep
 angles. It needs a paint change in `freighter_paint.py` and a rebuild.
+
+## In design
+
+| Asset | Brief | Stage | Spread |
+|---|---|---|---|
+| V-31 ground vehicle (base "jeep" chassis) | `briefs/vehicle.md` | 2: concept spread r1 shown to the user | `images/spread-vehicle-r1.jpg` |
+| Planetside shipyard | `briefs/shipyard.md` | 2: concept spread r1 shown to the user | `images/spread-shipyard-r1.jpg` |
+| Orbital spaceport | `briefs/spaceport.md` | 2: concept spread r1 shown to the user | `images/spread-spaceport-r1.jpg` |
