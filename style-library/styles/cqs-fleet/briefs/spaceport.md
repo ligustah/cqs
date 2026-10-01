@@ -60,3 +60,6 @@ Its construction scaffolding and gantries must look different from the finished 
 
 **Form (correction 30):** a round enclosure. r3 A's shield, curved to wrap most of the way round the
 carrier along its length; lean, one side open.
+
+**Picked (correction 31): r5 C**, the offset half-shells (`images/spread-spaceport-r5-C.jpg`), made busier:
+docked CT-4 freighters at true scale (134 m, about 0.15 of the carrier), tugs, cargo.

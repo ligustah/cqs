@@ -71,6 +71,8 @@ are not opened.
   shadowed recesses and layered structure, not flat bright planes.
 - **Sized by what they build** (correction 25): lean structure, only modestly larger than the biggest
   ship; no mass that is several times the ship's size without a reason.
+- **Busy, not bulky** (corrections 25, 31): enclosures stay thin and broken up; life comes from activity
+  (docked freighters at true scale, tugs, cargo, cranes, lights), never from a massive continuous shell.
 - **Show the actual unit** (correction 26): the real fleet ship, part-built (the DD-12 in the shipyard,
   the CV-50 in the spaceport). At remodel, instance the real ship GLB, cut back to its build state.
 - **Light paint** (correction 27): buildings keep the light concept paint with dark accents.
