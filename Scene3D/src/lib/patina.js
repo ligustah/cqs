@@ -73,7 +73,9 @@ export function patinaMaterial(set, { color = '#ffffff', metalness = null, rough
  *    hull set's, and its basecolor luminance modulates the albedo by `albedo` (the set's
  *    painted markings are desaturated: a plated deck, not a repeated decal).
  */
-export function addDetailLayer(material, set, { unitsPerMetre = 1, tile = 4, normalStrength = 0.8, roughAmount = 0.5, cavity = 0.35, interior = null } = {}) {
+export function addDetailLayer(material, set, { unitsPerMetre = 1, tile = 4, normalStrength = 0.8, roughAmount = 0.5, cavity = 0.35, interior = null, skipGlass = false } = {}) {
+  // skipGlass (opt-in): glass texels found by the livery (livGlass) keep their own smooth normal (no scratched panes)
+  const noGlass = !!(skipGlass && material.userData.livery);
   const maps = set?.maps || {};
   if (!maps.normal && !maps.roughness && !maps.height) return material;
   const im = interior?.set?.maps || null;
@@ -157,7 +159,7 @@ export function addDetailLayer(material, set, { unitsPerMetre = 1, tile = 4, nor
     let frag = shader.fragmentShader
       .replace('#include <common>', '#include <common>\n' + detailFns)
       .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n' + rough)
-      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\nif (uDetStrength > 0.0) normal = detPerturb(normal, -vViewPosition);')
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\nif (uDetStrength > 0.0) normal = ' + (noGlass ? 'normalize(mix(detPerturb(normal, -vViewPosition), normal, smoothstep(0.3, 0.7, livGlass)));' : 'detPerturb(normal, -vViewPosition);'))
       .replace('#include <aomap_fragment>', '#include <aomap_fragment>\n' + cav);
     if (inner) {
       // plate-to-plate tone of the deck set (luminance only, normalised to its linear mean ~0.17):
@@ -187,7 +189,7 @@ export function addDetailLayer(material, set, { unitsPerMetre = 1, tile = 4, nor
     shader.fragmentShader = frag;
   };
   const prevKey = material.customProgramCacheKey.bind(material);
-  material.customProgramCacheKey = () => `patina-detail${inner ? '-in' : ''}|${prevKey()}`;
+  material.customProgramCacheKey = () => `patina-detail${inner ? '-in' : ''}${noGlass ? '-ng' : ''}|${prevKey()}`;
   material.needsUpdate = true;
   return material;
 }

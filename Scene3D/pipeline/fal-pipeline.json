@@ -1853,5 +1853,47 @@
     "cost_usd_est": 0.6
    }
   ]
+ },
+ "v23_vehicle_finish": {
+  "date": "2026-10-01",
+  "asset": "vehicle (V-31) look v2, correction 34 (\"way too smooth and clean. Too shiny\")",
+  "about": "One new PATINA set for ground units, groundPaint (scratched, scuffed worn armour paint, no seams or rivets), read tri-planar at a 1.5 m tile by the 'ground' finish preset (src/lib/finish.js). The existing sets did not fit: 'hull' and 'armor' carry ship-scale plate seams and bolt grids that cross the vehicle's own seams at a small tile, 'hullGrit' is featureless noise, 'hullWear' soft blotches.",
+  "approx_usd": 0.22,
+  "cap_usd": 0.5,
+  "jobs": [
+   {
+    "key": "groundPaint-try1",
+    "endpoint": "fal-ai/patina/material",
+    "requestId": "01a0f883-3983-7be1-9b76-d2a7775d00ae",
+    "status": "rejected",
+    "inputs": {
+     "prompt": "Worn matte military vehicle paint on armour steel, close-up surface: fine scratches and scuffs, tiny paint chips and flecks, shallow dents and hammer marks, slightly orange-peel spray texture, dust settled in micro-pits, uniform dark grey colour, no panel seams, no rivets, no bolts, no markings, seamless",
+     "image_size": "square_hd",
+     "upscale_factor": 2,
+     "tiling_mode": "both",
+     "output_format": "png",
+     "enable_prompt_expansion": false,
+     "seed": 3134
+    },
+    "why": "almost featureless (basecolor sd 1/255, height sd 1.3/255) with three isolated dents that would tile as rivets"
+   },
+   {
+    "key": "groundPaint",
+    "endpoint": "fal-ai/patina/material",
+    "requestId": "01a0f885-535e-7143-9ecc-33aa7e4d4856",
+    "status": "used",
+    "inputs": {
+     "prompt": "Close-up of heavily used painted steel armour plate of a military truck: dense random fine scratches in all directions, scuffs and abrasion marks, many small chipped paint spots showing bare metal, pitting, speckles of dried dust and grit, rough sandy textured paint, high detail everywhere, evenly distributed, no seams, no rivets, no bolts, no text",
+     "image_size": "square_hd",
+     "upscale_factor": 2,
+     "tiling_mode": "both",
+     "output_format": "png",
+     "enable_prompt_expansion": false,
+     "seed": 731
+    },
+    "output": "assets/materials/groundPaint/<map>.webp (1024 px); normal re-centred (PATINA's mean tilt removed), roughness and height z-normalised (0.45 / 0.6 +- 0.09 per sigma); manifest runtimeMaps normal, roughness, height"
+   }
+  ],
+  "lesson": "PATINA flattens 'subtle' prompts to nothing: ask for dense, evenly distributed damage and normalise the maps afterwards."
  }
 }

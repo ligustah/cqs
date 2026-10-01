@@ -46,6 +46,28 @@ export const AO_REQUESTED = aq ? aq === '1' : AO_DEFAULT;
 // luminance stats of the 'hull' set's base colour (green channel, linear), measured offline
 const PLATE_STAT = [0.7125, 0.0285];
 
+// Finish presets (a module picks one with asset.finish = 'ground' or { preset: 'ground', ...overrides }).
+//   ship   the fleet's worn hull (the original numbers: every ship shades exactly as before).
+//   ground ground units (correction 34: "way too smooth and clean. Too shiny"): the macro tone and grit are read at
+//          vehicle scale (2.5 m / 9 m wear, 0.35 m grit) instead of ship scale (24 m / 110 m, 0.8 m), roughness is
+//          matte (0.84-1.0, mean 0.92: no glossy highlight), scratches in the groundPaint detail set show lighter
+//          (paint scratched to primer), and a ground layer in TRUE albedo (after the livery, so it reads on any
+//          scheme and is continuous across the hull and every kit part): dust graded up from the ground (full to
+//          dustFull m, gone by dustTop m, ragged edge), clumped dried mud low down (to mudTop m), a light dust film
+//          on up-facing surfaces. groundY is the contact plane in the ship frame (glbship: anchors.ground.y).
+export const FINISH_PRESETS = {
+  ship: { scale: [24, 110], tone: [0.06, 0.08], rough: [0.78, 0.55, 0.95], grit: 0.8, gritNrm: 0.55, seam: 0.45, edge: [1.2, 0.5] },
+  ground: {
+    scale: [2.5, 9], tone: [0.07, 0.08], rough: [0.92, 0.84, 1.0], grit: 0.35, gritNrm: 0.6, seam: 0.6, edge: [1.5, 0.6],
+    ground: {
+      dust: [0.2, 0.165, 0.12], mud: [0.105, 0.08, 0.056],  // linear albedo: dry dust, dried mud
+      dustFull: 0.4, dustTop: 1.55, dustMax: 0.66,           // dust opacity: dustMax at the ground ... 0 at dustTop
+      mudTop: 0.75, mudMax: 0.85, film: 0.16,                 // mud clumps below mudTop; dust film on roofs and decks
+      scratch: 0.9,                                          // groundPaint scratches lighten the paint (0 = off)
+    },
+  },
+};
+
 /**
  * Chain the worn finish onto a MeshStandard/Physical material that may already carry the livery
  * (applyLivery) and the PATINA detail layer (addDetailLayer). Apply it LAST.
@@ -55,9 +77,16 @@ const PLATE_STAT = [0.7125, 0.0285];
  *   engines    [{ p: [x,y,z] | Vector3, dir, radius }] in the ship frame
  *   exclude    optional { box: [[x,y,z],[x,y,z]], feather }: no finish inside (a hangar interior)
  */
-export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, engines = [], exclude = null, plateTone = false } = {}) {
+export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, engines = [], exclude = null, plateTone = false, preset = 'ship', groundY = 0 } = {}) {
   const wear = lib.hullWear?.maps?.pack;
   if (!wear) return material;
+  // preset: a FINISH_PRESETS key, or { preset: key, ...overrides } (ground overrides merge into the preset's ground)
+  const pName = typeof preset === 'string' ? preset : preset?.preset || 'ship';
+  const pOver = typeof preset === 'object' && preset ? preset : {};
+  const F = { ...FINISH_PRESETS[pName] || FINISH_PRESETS.ship, ...pOver };
+  const G = F.ground ? { ...FINISH_PRESETS[pName]?.ground, ...pOver.ground } : null;
+  // the groundPaint scratches come from the detail layer's height map (addDetailLayer, chained before this)
+  const scratchOn = !!(G && G.scratch > 0 && material.userData.detail?.uDetHeight?.value);
   const wearStat = lib.hullWear.meta.stats;
   const grit = lib.hullGrit?.maps?.pack || null;
   const gritStat = lib.hullGrit?.meta.stats;
@@ -75,14 +104,14 @@ export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, e
     uFinAmt: { value: strength },
     uFinWear: { value: wear },
     uFinWearStat: { value: new THREE.Vector4(wearStat.lum[0], wearStat.lum[1], wearStat.rough[0], wearStat.rough[1]) },
-    uFinScale: { value: new THREE.Vector2(1 / 24, 1 / 110) },
-    uFinTone: { value: new THREE.Vector2(0.06, 0.08).multiplyScalar(tone) }, // per scale, at one sigma
-    uFinRough: { value: new THREE.Vector3(0.78, 0.55, 0.95) }, // mean, min, max of the re-derived roughness
+    uFinScale: { value: new THREE.Vector2(1 / F.scale[0], 1 / F.scale[1]) },
+    uFinTone: { value: new THREE.Vector2(...F.tone).multiplyScalar(tone) }, // per scale, at one sigma
+    uFinRough: { value: new THREE.Vector3(...F.rough) }, // mean, min, max of the re-derived roughness
     uFinGrit: { value: grit },
     uFinGritOn: { value: grit ? 1 : 0 },
-    uFinGritScale: { value: 1 / 0.8 },
+    uFinGritScale: { value: 1 / F.grit },
     uFinGritStat: { value: new THREE.Vector2(...(gritStat?.rough || [0.5, 0.1])) },
-    uFinGritNrm: { value: 0.55 },
+    uFinGritNrm: { value: F.gritNrm },
     uFinPlate: { value: plate },
     uFinPlateOn: { value: plate ? 1 : 0 },
     uFinPlateStat: { value: new THREE.Vector2(...PLATE_STAT) },
@@ -96,8 +125,14 @@ export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, e
     uFinExMax: { value: new V3(...(exclude?.box[1] || [0, 0, 0])) },
     uFinExFeather: { value: exclude?.feather ?? 2 },
     // v10 wear push: seam grime darkening, edge wear (x: lighten on dark paint, y: darken on light paint)
-    uFinSeam: { value: 0.45 * strength },
-    uFinEdge: { value: new THREE.Vector2(1.2, 0.5).multiplyScalar(strength) },
+    uFinSeam: { value: F.seam * strength },
+    uFinEdge: { value: new THREE.Vector2(...F.edge).multiplyScalar(strength) },
+    // ground layer (preset.ground): x groundY, y dustFull, z dustTop, w dustMax; (mudTop, mudMax, film, scratch)
+    ...(G ? {
+      uFinGround: { value: new THREE.Vector4(groundY, G.dustFull, G.dustTop, G.dustMax) },
+      uFinGround2: { value: new THREE.Vector4(G.mudTop, G.mudMax, G.film, G.scratch) },
+      uFinDust: { value: new THREE.Color().setRGB(...G.dust) }, uFinMud: { value: new THREE.Color().setRGB(...G.mud) },
+    } : {}),
   };
   material.userData.finish = uniforms;
   const prev = material.onBeforeCompile;
@@ -115,7 +150,8 @@ export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, e
       uniform vec4 uFinWearStat; uniform vec2 uFinTone, uFinScale, uFinGritStat, uFinPlateStat, uFinSootStat; uniform vec3 uFinRough;
       uniform sampler2D uFinWear, uFinGrit, uFinPlate, uFinSoot;
       uniform vec4 uFinEngP[8]; uniform vec3 uFinEngD[8];
-      uniform vec3 uFinExMin, uFinExMax;
+      uniform vec3 uFinExMin, uFinExMax;${G ? '\n      uniform vec4 uFinGround, uFinGround2; uniform vec3 uFinDust, uFinMud;' : ''}
+      float finGroundK = 0.0;
       float finMask, finSootK, finGritVis, finMark, finPlateZ; vec4 finA1, finA2, finGx, finGy, finGz; vec3 finDpx, finDpy;
       vec3 finW() { vec3 w = pow(abs(normalize(vFinN)), vec3(4.0)); return w / (w.x + w.y + w.z); }
       vec4 finTri(sampler2D t, vec3 p, vec3 w) { return texture2D(t, p.zy) * w.x + texture2D(t, p.xz) * w.y + texture2D(t, p.xy) * w.z; }
@@ -168,7 +204,7 @@ export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, e
         diffuseColor.rgb *= mix(1.0, (1.0 + tone) * (1.0 - 0.6 * sootAmt), finMask);
         ${hasLiv ? `{
           // seams and AO grime: the paint's darker texels, not its dark zones (belly, recess plates < ~0.15)
-          float grime = smoothstep(0.52, 0.3, finLL) * smoothstep(0.1, 0.2, finLL) * (1.0 - finMark) * finMask;
+          float grime = smoothstep(0.52, 0.3, finLL) * smoothstep(0.1, 0.2, finLL) * (1.0 - finMark) * finMask * (1.0 - livKeep);
           vec3 gcol = mix(vec3(1.0), vec3(0.86, 0.8, 0.72), finLZ) * (1.0 - uFinSeam * (0.6 + 0.4 * finLZ));
           diffuseColor.rgb *= mix(vec3(1.0), gcol, grime);
           float edge = 0.0;
@@ -176,8 +212,33 @@ export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, e
             float mt = texture2D(metalnessMap, vMetalnessMapUv).b;
             edge = smoothstep(0.03, 0.16, mt) * (1.0 - smoothstep(0.3, 0.38, mt));
           #endif
-          edge *= finMask * (1.0 - finMark);
+          edge *= finMask * (1.0 - finMark) * (1.0 - livKeep);
           diffuseColor.rgb *= mix(1.0, mix(1.0 + uFinEdge.x, 1.0 - uFinEdge.y, finLZ), edge);
+        }` : ''}
+        ${scratchOn ? `{
+          // groundPaint scratches (grooves in its height map, z < -1.2) show lighter: paint scratched to the primer
+          float hz = (detTri(uDetHeight) - 0.6) / 0.09;
+          diffuseColor.rgb *= 1.0 + 1.3 * smoothstep(-1.2, -2.8, hz) * uFinGround2.w * finMask * (1.0 - finMark)${hasLiv ? ' * (1.0 - livKeep)' : ''};
+        }` : ''}
+        ${G ? `{
+          // ground layer in true albedo: dust graded up from the ground plane, dried mud clumps low down, a dust film on
+          // up-facing surfaces. Ragged edges from the wear set at ~1.1 m and ~0.3 m (z-scored). Full strength on kit parts too
+          // (tyres, doors, suspension): the layer is continuous in the ship frame
+          vec3 wg = finW();
+          float hg = vFinP.y - uFinGround.x;
+          float nz1 = clamp((finTri(uFinWear, vFinP * 0.9, wg).r - uFinWearStat.x) / uFinWearStat.y, -2.5, 2.5);
+          float nz2 = clamp((finTri2(uFinWear, vFinP * 3.1, wg).b - uFinWearStat.x) / uFinWearStat.y, -2.5, 2.5);
+          float gx = finExclude() * (1.0 - ${liv});
+          float dust = uFinGround.w * (1.0 - smoothstep(uFinGround.y, uFinGround.z, hg + 0.16 * nz1 + 0.07 * nz2));
+          float up = smoothstep(0.55, 0.9, normalize(vFinN).y);
+          dust = max(dust, uFinGround2.z * up * clamp(0.6 + 0.35 * nz1, 0.0, 1.0)) * gx;
+          // a thinner film on up-facing glass (raked windscreens): dusty panes, not mirrors
+          dust = max(dust, 0.3 * uFinGround2.z * up * clamp(0.6 + 0.35 * nz1, 0.0, 1.0) * finExclude() * ${liv});
+          float mud = uFinGround2.y * (1.0 - smoothstep(uFinGround2.x * 0.45, uFinGround2.x, hg + 0.12 * nz1))
+                    * smoothstep(0.1, 0.9, 0.5 * nz2 + 0.35 * nz1 + 0.2) * gx;
+          finGroundK = max(dust, mud);
+          diffuseColor.rgb = mix(diffuseColor.rgb, uFinDust, dust);
+          diffuseColor.rgb = mix(diffuseColor.rgb, uFinMud, mud);
         }` : ''}
       }`;
     // roughness (after the livery's matte push and the detail layer)
@@ -200,9 +261,11 @@ export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, e
           r += 0.05 * clamp((gr - uFinGritStat.x) / uFinGritStat.y, -2.0, 2.0) + 0.03 * (1.0 - finGritVis);
         }
         r += 0.12 * finSootK;
+        ${scratchOn ? 'r += 0.3 * (detTri(uDetRough) - 0.45);' : ''}
         r = clamp(r, uFinRough.y, uFinRough.z);
         // only paint takes it: glass and the deliberately glossy texels keep their own roughness
         float k = finMask * smoothstep(0.35, 0.55, roughnessFactor);
+        ${G ? `k *= 1.0 - ${hasLiv ? 'livKeep' : '0.0'}; r = mix(r, 0.97, finGroundK); k = max(k, finGroundK);` : ''}
         roughnessFactor = mix(roughnessFactor, r, k);
       }`;
     const nrm = /* glsl */`
@@ -221,11 +284,11 @@ export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, e
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <common>', '#include <common>\n' + fns)
       .replace('#include <color_fragment>', albedo + '\n#include <color_fragment>')
-      .replace('#include <metalnessmap_fragment>', rough + '\n#include <metalnessmap_fragment>')
+      .replace('#include <metalnessmap_fragment>', rough + '\n#include <metalnessmap_fragment>' + (G ? '\nmetalnessFactor *= 1.0 - finGroundK;' : ''))
       .replace('#include <emissivemap_fragment>', nrm + '\n#include <emissivemap_fragment>');
   };
   const prevKey = material.customProgramCacheKey.bind(material);
-  material.customProgramCacheKey = () => `worn${plate ? '-p' : ''}${hasLiv ? '-l' : ''}|${prevKey()}`;
+  material.customProgramCacheKey = () => `worn${plate ? '-p' : ''}${hasLiv ? '-l' : ''}${G ? '-g' : ''}${scratchOn ? 's' : ''}|${prevKey()}`;
   material.needsUpdate = true;
   return material;
 }

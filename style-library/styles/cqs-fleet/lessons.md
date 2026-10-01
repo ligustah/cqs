@@ -135,3 +135,16 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
     (buildings only in their own view on phones), a `mini` tier (256-512 px) for every ship that is not
     the subject, lite building copies without small dressing, streaming base64 decode, ImageBitmaps
     closed after upload, a failure overlay. Check every view with `tools/phone-check.mjs` before publishing.
+35. **Ship finish on a ground unit read as clean and glossy** (correction 34: "way too smooth and clean. Too shiny").
+    Causes, measured: the ships' 6 m PATINA tile spanned the 6.5 m body (no surface texture at all), and the ship
+    finish's 24 m / 110 m wear scales were one flat value across it; paint roughness ~0.78 gave a broad key-light
+    sheen on the bonnet and flanks; no dirt anywhere; and through the dark livery a light-paint bake can only add grey
+    tone, never dust, mud or primer. Fix: a reusable `ground` finish preset (matte 0.84-1.0, wear at 2.5 / 9 m, grit
+    0.35 m, groundPaint detail at 1.5 m) with a true-albedo ground layer (dust graded up from the ground, mud clumps
+    low) applied after the livery so it is continuous over the hull and every kit part; plus baked chips, wheelhouse
+    mud, recess grime, run-off streaks and scuffed marks, written with base-colour alpha < 1 so the livery keeps their
+    colour (`keep: 1`). Two traps: paint.py's warm crease grime had shifted the recessed windscreen off blue, so the
+    livery never treated it as glass (it only looked dark because it was rough); once restored it mirrored the key
+    light, so ground units use hazy glass (`glassRough: 0.8`) and the scratch normals skip glass. And PATINA flattens
+    "subtle" prompts to nothing: ask for dense, evenly spread damage, then normalise the maps (its normals also carry
+    a mean tilt to remove). Ship shaders are untouched (every new option is opt-in; DD-12 studio PSNR 60.7 dB).

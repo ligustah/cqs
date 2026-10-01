@@ -28,7 +28,13 @@ export const asset = {
   // paint is lighter than the generated textures (gain 0.05, as the fighter); marks kept a little stronger than the
   // fleet default, like the destroyer (mark 0.18, markSat 0.3), so the amber band, the hatching and the cobalt square
   // still read as low-visibility tones (markSat 0.5: at 0.3 the amber band read tan-brown in the studio). No lit glass: a 2-4 crew vehicle keeps its armoured panes dark.
-  livery: { gain: 0.05, mark: 0.18, markSat: 0.5 },
+  // v2 (correction 34, "way too smooth and clean. Too shiny"): matte 0.75 (paint roughness ~0.9 before the finish, which
+  // re-derives it at 0.84-1.0), and keep: 1 so the chips (primer, bare metal), dust and mud that vehicle_paint.py bakes in
+  // true albedo (base-colour alpha < 1) are not repainted grey. glassRough 0.8: hazy, dusty armoured panes (dark, no glare).
+  livery: { gain: 0.05, mark: 0.18, markSat: 0.5, matte: 0.75, keep: 1, glassRough: 0.8 },
+  // ground-unit finish (finish.js FINISH_PRESETS.ground): vehicle-scale wear and grit, matte roughness, scratches from the
+  // groundPaint set, dust graded up from anchors.ground and dried mud low down, continuous over the hull and every kit part
+  finish: 'ground',
   // authored lights only (small-craft rule, R4): seven covered lamps at the kit markerLamp lenses, no automatic pins or
   // slits, no headlamps, no light bars. Pins are fleet size (0.2 m), never scaled to the vehicle.
   lightscape: {
@@ -45,7 +51,9 @@ export const asset = {
       { slit: [0, 0.836, -3.332], u: [1, 0, 0], n: [0, 0, -1], len: 0.16, width: 0.05, radiance: 0.6, color: 'white' },
     ],
   },
-  detail: { set: 'hull', tile: 6, normalStrength: 0.6, roughAmount: 0.5, cavity: 0.2 },
+  // v2: the ships' 6 m 'hull' tile spanned the whole 6.5 m body (no visible surface texture, and its 1.5 m plate grid
+  // ignored the vehicle's own seams). groundPaint (scratched, scuffed armour paint, no seams) at a 1.5 m tile
+  detail: { set: 'groundPaint', tile: 1.5, normalStrength: 1.4, roughAmount: 0.8, cavity: 0, skipGlass: true },
   // two-tone (opt-in ?livery=tone|bone): the cab flanks and the doors' band of the flank take the light paint
   liveryZones: [
     { box: [[1.0, -0.72, -3.3], [1.35, 0.73, 3.3]], mirrorX: true },

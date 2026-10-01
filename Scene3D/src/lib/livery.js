@@ -39,6 +39,11 @@
 //                    with its on-screen area once a port is under ~2 px (applyLivery kitGlass), as hull-texture
 //                    ports do through texture filtering
 //     glassDark and glassZones need the mesh's ship-frame matrix (glbship.js passes it).
+//   - opt-in keep (ground units, correction 34): keep = 1 lets texels whose base-colour ALPHA is below 1 keep their own
+//     texture colour, roughness and metalness (1 - alpha = how much): chipped paint showing primer and bare metal, dust
+//     and dried mud baked by the paint script in true albedo. Textures without alpha (every ship) read alpha 1: no change.
+//   - glassRough (opt-in, default 0.08): roughness of the glass texels. Ground units use 0.8: hazy, dusty armoured panes
+//     that stay dark instead of mirroring the key light (correction 34)
 //   - roughness is pushed toward matte (matte 0.35: a broad, dim sheen only at grazing angles,
 //     never a glossy highlight), and metalness is scaled down: the hull is paint (a
 //     dielectric), not bare metal.
@@ -102,7 +107,7 @@ export function applyLivery(material, opts = 'dark', { scheme = null, zones = nu
     // markSat magentaMarkSat, so a lilac-tinted paint reads as grey hull while vivid cargo colours stay
     uLivMagHue: { value: new THREE.Vector2(...(o.magentaHue || [285, 15])) }, uLivMagOn: { value: o.magentaSat ? 1 : 0 },
     uLivMagSat: { value: new THREE.Vector2(...(o.magentaSat || [o.sat0, o.sat1])) }, uLivMagMarkSat: { value: o.magentaMarkSat ?? o.markSat ?? 0.7 },
-    uLivMarkSat: { value: o.markSat ?? 0.7 }, uLivCyanSat: { value: o.cyanSat ?? o.markSat ?? 0.7 }, uLivMetal: { value: o.metal ?? 1 }, uLivCopperSat: { value: o.copperSat ?? o.markSat ?? 0.7 },
+    uLivKeep: { value: o.keep ?? 0 }, uLivGlassRough: { value: o.glassRough ?? 0.08 }, uLivMarkSat: { value: o.markSat ?? 0.7 }, uLivCyanSat: { value: o.cyanSat ?? o.markSat ?? 0.7 }, uLivMetal: { value: o.metal ?? 1 }, uLivCopperSat: { value: o.copperSat ?? o.markSat ?? 0.7 },
   };
   const glow = o.glassGlow ? new THREE.Vector3(...o.glassGlow) : null;
   // v11: glassFlicker = share of compartments with a faint unsteady light; glassTint = [warm, cool] radiance
@@ -143,7 +148,7 @@ export function applyLivery(material, opts = 'dark', { scheme = null, zones = nu
     prev?.call(material, shader, renderer);
     Object.assign(shader.uniforms, uniforms);
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform float uLivBase, uLivGain, uLivMark, uLivMatte, uLivMarkSat, uLivMetal, uLivCopperSat, uLivCyanSat; uniform vec3 uLivTint; uniform vec2 uLivSat, uLivMagHue, uLivMagSat; uniform float uLivMagOn, uLivMagMarkSat; float livGlass; float livL; float livZone;' + (sc ? `
+      .replace('#include <common>', '#include <common>\nuniform float uLivKeep, uLivGlassRough; float livKeep; uniform float uLivBase, uLivGain, uLivMark, uLivMatte, uLivMarkSat, uLivMetal, uLivCopperSat, uLivCyanSat; uniform vec3 uLivTint; uniform vec2 uLivSat, uLivMagHue, uLivMagSat; uniform float uLivMagOn, uLivMagMarkSat; float livGlass; float livL; float livZone;' + (sc ? `
         uniform int uLivZN; uniform vec3 uLivZMin[${MAX_ZONES}], uLivZMax[${MAX_ZONES}]; uniform vec2 uLivZTF[${MAX_ZONES}]; uniform vec3 uLivLight, uLivLightTint; varying vec3 vLivZP;
         float livZoneAt(vec3 p) {
           float z = 0.0;
@@ -187,12 +192,15 @@ export function applyLivery(material, opts = 'dark', { scheme = null, zones = nu
           vec3 mark = mix(vec3(l), c, mSat) * uLivMark; // dimmed low-visibility markings; copper keeps some hue
           ${sc ? 'mark *= mix(1.0, uLivLight.z, livZone * (1.0 - copper));' : ''}
           diffuseColor.rgb = mix(grey, mark, smoothstep(satWin.x, satWin.y, sat));
+          // keep (opt-in): texels with base-colour alpha < 1 keep their own colour (chips, primer, bare metal, dust)
+          livKeep = uLivKeep * (1.0 - diffuseColor.a);
+          diffuseColor.rgb = mix(diffuseColor.rgb, c, livKeep);
           // glass: dark, blue-tinted, not strongly saturated (cobalt paint is)
-          livGlass = smoothstep(1.12, 1.4, c.b / max(c.r, 1e-3)) * (1.0 - smoothstep(0.05, 0.12, l)) * (1.0 - smoothstep(0.55, 0.75, sat));
+          livGlass = smoothstep(1.12, 1.4, c.b / max(c.r, 1e-3)) * (1.0 - smoothstep(0.05, 0.12, l)) * (1.0 - smoothstep(0.55, 0.75, sat)) * (1.0 - livKeep);
           diffuseColor.rgb *= mix(1.0, 0.4, livGlass);
         }`)
-      .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(mix(roughnessFactor, 1.0, uLivMatte), 0.08, livGlass);')
-      .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor *= uLivMetal * (1.0 - livGlass);');
+      .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(mix(mix(roughnessFactor, 1.0, uLivMatte), uLivGlassRough, livGlass), roughnessFactor, livKeep);')
+      .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor *= mix(uLivMetal, 1.0, livKeep) * (1.0 - livGlass);');
     if (sc) {
       shader.vertexShader = shader.vertexShader
         .replace('#include <common>', '#include <common>\nuniform mat4 uLivZM; varying vec3 vLivZP;')

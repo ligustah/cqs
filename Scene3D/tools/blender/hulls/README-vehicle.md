@@ -69,6 +69,24 @@ nav-light housings to derive here: `src/ships/vehicle.js` is written by hand fro
   reads as light low-visibility grey (the fleet rule).
 - Studio stills (`mode=ship`) frame the vehicle too tight at dist 1 (the RWS and nose crop); use dist 1.5.
 
+## Look v2: matte, used ground unit (correction 34)
+
+"The vehicle looks way too smooth and clean. Too shiny." Same geometry, spec and envelope; rebuilt with the commands
+above (paint stage, then assemble, about 2.5 min; workdir of the accepted build: scratchpad `v23/m5`, maps.npz and
+the .blend copied from the v1 build).
+- `vehicle_paint.py` `weather()` runs after `paint.py` (`spec()['weather']`): sun-faded roof, recess grime, run-off
+  streaks from the roof edge, side vents and side panes, edge chips (curvature edge dilated ~4 cm, red-oxide primer
+  round bare steel), stone chips low and on the nose, dried mud in the wheelhouses, round the arch rims (more behind
+  each wheel) and on the belly, scuffed markings (decal wear raised; V-31 kept legible at 0.3). True-colour texels get
+  base-colour alpha < 1 (`keep.png` in the workdir); the alpha survives the contact bake, the glTF export (alphaMode
+  stays OPAQUE), optimize-glb and the lite / mini copies. It also restores the glass zone's blue-dark colour, which
+  paint.py's warm crease grime had shifted so far that the livery never detected the windscreen as glass.
+- Runtime (`src/ships/vehicle.js`): `finish: 'ground'`, `detail: { set: 'groundPaint', tile: 1.5, normalStrength: 1.4,
+  roughAmount: 0.8, cavity: 0, skipGlass: true }`, livery `matte: 0.75, keep: 1, glassRough: 0.8`. Dust and mud graded
+  up from `anchors.ground` come from the finish, so they run over the kit doors, wheels and suspension too.
+- Evidence: `style-library/styles/cqs-fleet/images/build-vehicle-v2.jpg`. GLB 2.18 MB (was 1.83; the RGBA base
+  colour), 40.4k tris, length 6.950 m, `dropped` empty.
+
 ## Integration
 
 Not applied (shared files belong to the integrating agent). Exact diffs:

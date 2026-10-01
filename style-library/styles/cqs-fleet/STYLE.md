@@ -108,7 +108,29 @@ are not opened.
   `sootStreak` (drive soot), plus GTAO.
 - **Hangar:** `deck` set, plus the same set 7.3x larger for panel tone that reads from a kilometre.
 - **Scene-built parts:** full sets `armor`, `orange`, `ceramic`, `foil`, `radiator`.
+- **Ground finish** (`finish.js` `FINISH_PRESETS.ground`, a module sets `finish: 'ground'`; the ships keep
+  `ship`): every ground unit uses it.
+  - Detail: set `groundPaint` (scratched worn armour paint, no seams) at a **1.5 m** tile, normalStrength 1.4,
+    roughAmount 0.8, cavity 0, `skipGlass: true`.
+  - Roughness 0.84-1.0 (mean 0.92); livery `matte: 0.75`, `glassRough: 0.8` (hazy panes, never mirrors).
+  - Wear tone at 2.5 / 9 m (ships 24 / 110 m), grit at 0.35 m (ships 0.8 m), scratches show lighter.
+  - Ground layer in true albedo over hull and every kit part, graded from `anchors.ground`: dust full to 0.4 m and
+    gone by 1.55 m (ragged edge, max 0.66), dried mud clumps below 0.75 m, a thin dust film on up-facing surfaces.
+  - Baked in the asset's paint script (`vehicle_paint.py` `weather()` is the template): edge chips (red-oxide primer
+    round bare steel), stone chips low and on the nose, mud in the wheelhouses, arch rims and belly, recess grime,
+    run-off streaks under the roof edge, vents and panes, a sun-faded roof, scuffed markings. True-colour texels are
+    written with base-colour **alpha < 1** and the livery's `keep: 1` leaves them unrepainted.
 - The prompts are in `prompts.md`; the files are in `Scene3D/assets/materials/` (`manifest.json`).
+
+## Ground units (correction 34)
+
+- Matte paint and visibly used: dust and dried mud on the lower body, wheels and arches; chipped and
+  worn edges; grime in recesses. Never glossy. The user: "way too smooth and clean. Too shiny."
+- Surface detail scaled to the asset: the ships' 6 m PATINA tile is far too coarse for a 6.5 m
+  vehicle. Tile the detail at a size that shows plate texture, scratches and grit at close range.
+- Worn and dirty, not a wreck: the marks (amber, cobalt, unit number) stay legible, the lamps and the
+  silhouette are untouched, and the dark livery stays the default. Recipe: the ground finish under
+  Materials (V-31 v2, `images/build-vehicle-v2.jpg`).
 
 ## Scale model and rulers
 

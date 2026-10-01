@@ -66,6 +66,14 @@ variants) gets more wheels or more hatches, never bigger ones. Mount +Z out of t
 | vehicleDoor | 1.00 x 1.40 x 0.14 | armoured vehicle door, 0.9 x 1.3 m leaf, surface-mounted frame, vision block; hinges -X (ground units: the ship's 1 x 2 m door does not fit a 2.5 m vehicle) |
 | wheel | 1.15 x 1.15 x 0.44 | road wheel, 1.15 m deep-tread tyre, 0.42 m wide, bead-lock rim; axle along +Z, origin = centre of the inner face (ground units) |
 
+**Ground finish (correction 34).** The kit parts of a ground unit take the module's finish, not their own: with
+`finish: 'ground'` (`finish.js` `FINISH_PRESETS.ground`) the dust graded up from `anchors.ground`, the dried mud low
+down and the matte roughness run continuously over the hull and every part (tyres and wheels dusty, door bottoms and
+suspension muddy). The part textures stay clean, so the same parts serve any later ground unit; weathering that
+needs the asset's own geometry (edge chips, wheelhouse mud, streaks under vents) is baked into its hull texture
+(`vehicle_paint.py` `weather()`), with true-colour texels marked by base-colour alpha < 1 (livery `keep: 1`). PATINA
+detail set for ground units: `groundPaint` at a 1.5 m tile (`STYLE.md`, Materials).
+
 ## fal kit: `Scene3D/assets/parts/` (nano-banana-pro/edit + Tripo H3.1, `tools/parts/`)
 
 | Part | Size w x h x d (m) | Notes |

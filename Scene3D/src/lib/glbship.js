@@ -277,6 +277,8 @@ function interiorLight(spec) {
  *              the small volume correction for the class's hangar slots
  *   detail     { set: 'hull', tile: 4, normalStrength, roughAmount, cavity }
  *   livery     optional repaint of the generated texture: 'dark' | 'civil' | {base, gain, mark, ...} (see livery.js)
+ *   finish     optional worn-finish preset (finish.js FINISH_PRESETS): 'ship' (default) | 'ground' (ground units: matte,
+ *              vehicle-scale wear, dust and mud graded up from anchors.ground.y) | { preset, ...overrides }
  *   materials  optional per-material overrides by GLB material name or '*'
  *   crease     optional angle in degrees: split vertex normals at sharper edges
  *              so faceted hard-surface hulls shade flat instead of rounded
@@ -391,7 +393,10 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
           .map((e) => ({ p: new THREE.Vector3(...e.p), dir: new THREE.Vector3(...(e.dir || [0, 0, -1])), radius: e.radius }));
         const exBox = cfg.detail?.interior ? (cfg.detail.interior.box || keeps[0]?.box) : null;
         // generated (Tripo) textures carry their own baked weathering: less added tone there
-        addWornFinish(mm, library, { toShip: o.matrixWorld, strength: role.hull ? 1 : 0.6, tone: cfg.hullNodes ? 1 : 0.6, engines, exclude: exBox ? { box: exBox, feather: 2 } : null });
+        // cfg.finish: a finish.js FINISH_PRESETS key ('ground' for ground units) or { preset, ...overrides }; the ground
+        // layer grades up from the module's ground anchor (ship frame)
+        addWornFinish(mm, library, { toShip: o.matrixWorld, strength: role.hull ? 1 : 0.6, tone: cfg.hullNodes ? 1 : 0.6, engines, exclude: exBox ? { box: exBox, feather: 2 } : null,
+          preset: cfg.finish || 'ship', groundY: cfg.anchors?.ground?.y ?? env.min.y });
       }
       upgraded.set(keyOf(m), mm);
       return mm;

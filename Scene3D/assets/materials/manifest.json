@@ -187,6 +187,23 @@
         ]
       },
       "use": "micro normal and roughness (0.8 m tile)"
+    },
+    "groundPaint": {
+      "maps": [
+        "basecolor",
+        "normal",
+        "roughness",
+        "metalness",
+        "height"
+      ],
+      "runtimeMaps": [
+        "normal",
+        "roughness",
+        "height"
+      ],
+      "request_id": "01a0f885-535e-7143-9ecc-33aa7e4d4856",
+      "prompt": "Close-up of heavily used painted steel armour plate of a military truck: dense random fine scratches in all directions, scuffs and abrasion marks, many small chipped paint spots showing bare metal, pitting, speckles of dried dust and grit, rough sandy textured paint, high detail everywhere, evenly distributed, no seams, no rivets, no bolts, no text",
+      "use": "ground units (finish preset ground): tri-planar detail at a 1.5 m tile; scratches lighten the paint (finish.js). 1024 px; normal re-centred (PATINA tilt removed), roughness and height z-normalised (roughness 0.45 +- 0.09, height 0.6 +- 0.09 per sigma)"
     }
   }
 }
