@@ -21,6 +21,10 @@ shipyards.
   are the existing models (instanced GLBs, kit parts, PATINA sets). New geometry only for what does not
   exist yet, and new parts go into the kit for the next asset.
 
+- **Phone first** (corrections 8, 33): the user views the preview on a phone. Every new asset gets a
+  phone budget, the scene loads only what the current view needs, and the phone tier is tested before
+  any publish.
+
 - **Scope:** unit module variants (speed / attack / defense: weapon pods, add-on armour, speed packs)
   are not modelled yet, for ships or ground units. Build the base chassis; the variants come later
   (correction 18).

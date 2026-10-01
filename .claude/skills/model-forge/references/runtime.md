@@ -18,7 +18,7 @@ In this repo: `Scene3D/src/`. A new project can copy the lib folder. The pieces 
 | `lib/lightscape.js` | Generates lights from the hull: crease pins, recess and corner slits (exposure-tested with a triangle grid), louvre filter, zones, authored patterns (row, surface, ring, points, slit, slitRow; chase, pulse, skip, keep, mirrorX). The header is the spec |
 | `lib/effects.js` | Draws them: Points for pins (Gaussian sprite, rank thinning), InstancedMesh for slits and halos (gain, saturation, far-field dash or dot), drive plumes and throat glow |
 | `env/lighting.js` | Studio rig (single-asset look-dev, the default in ship mode) and orbital rig |
-| `lib/device.js` | Phone tier: `LITE` loads `.lite` GLBs with capped textures, lower pixel ratio, fewer lights, no AO |
+| `lib/device.js` | Phone tier: `LITE` loads phone copies of the GLBs (`.lite` / `.mini`, capped textures), lower pixel ratio, fewer lights, no AO |
 | `lib/scale.js`, `tools/scale-check.mjs` | The scale model (slot volume), hangar fits; must PASS before commit |
 
 ## Module (per asset) essentials
@@ -32,14 +32,35 @@ number with its reason (what it is, and what was wrong before), in the file's st
 
 1. `node --check` every changed JS file; run `node tools/scale-check.mjs` and require
    `SCALE CHECK PASSED`.
-2. `tools/optimize-glb.mjs` (weld, simplify to budget, WebP, meshopt). Lite copies via
-   `tools/lite-glb.mjs`, with textures capped at 1024 for assets, 2048 for the biggest, 512 for parts.
-3. Artifact: `tools/build-artifact.mjs` writes the page and the file map.
+2. `tools/optimize-glb.mjs` (weld, simplify to budget, WebP, meshopt). Phone copies via
+   `tools/lite-glb.mjs` (made by the artifact build): see Phone budget below.
+3. Phone budget: `node tools/phone-check.mjs` on a fresh build; every view must pass (below).
+4. Artifact: `tools/build-artifact.mjs` writes the page and the file map.
    - GLBs go as base64 `.b64.txt`.
    - Limits: 16 MB per file and 64 MB per publish, so republish only what changed and split big sets.
    - List the published files first; a publish of files not yet seen is refused.
-4. Commit and push after each accepted step. Checkpoint commits are fine on a feature branch; write
+5. Commit and push after each accepted step. Checkpoint commits are fine on a feature branch; write
    honest messages ("reviews pending").
+
+## Phone budget (every asset, every view)
+
+A desktop-only check once shipped a page that crashed phones: a new building added its station,
+a clipped carrier and four freighters to the default view, on top of ~600 MB of ship textures.
+
+- **Every new asset gets a phone budget** before it is integrated: its phone copy (texture cap,
+  dressing parts dropped if it is a building, triangle count) and its cost in each view it appears
+  in. Write it next to the asset (module comment, README "Phone budget" table).
+- **Scenes load per view.** A view fetches and builds only what it shows; a heavy asset gets its
+  own view and is not added to the default view on phones. Models reused by another asset come
+  from the one GLB cache (same url and tier), never a second copy.
+- **Tier per role, not per file**: the subject of a studio view loads a 1024 px copy, anything in
+  a crowd (fleet, lineup, parked loads, ships inside a building) a 256 px one; buildings 512 px.
+- **Budget**: on the phone tier each view stays well under 300 MB of retained heap + GPU estimate
+  (textures with mips + geometry + render targets) and about 25 MB fetched.
+- **Check the phone tier before publishing** (`tools/phone-check.mjs`: emulated mid-range phone,
+  the artifact's own base64 files, every view). A view that fails the budget blocks the publish.
+- CPU work at load (clipping, welding) grows typed arrays and skips meshes it does not change;
+  decoded images are released once on the GPU; the page shows a message on a lost WebGL context.
 
 ## Known runtime pitfalls
 

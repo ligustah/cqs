@@ -18,7 +18,7 @@ import { loadPatinaLibrary, proceduralStandIn } from './lib/patina.js';
 import { setLiveryScheme } from './lib/glbship.js';
 import { panelSet } from './lib/textures.js';
 import { createLighting, createStudioLighting, studioDir, STUDIO, SUN_DIR } from './env/lighting.js';
-import { TIER } from './lib/device.js';
+import { TIER, LITE } from './lib/device.js';
 import { AO_REQUESTED, createScreenAO } from './lib/finish.js';
 import { createSky } from './env/sky.js';
 import { createPlanet } from './env/planet.js';
@@ -99,9 +99,12 @@ const studioParked = mode === 'ship' && studioShip === 'carrier' ? params.get('p
 const onlyShip = mode === 'building' ? []
   : mode === 'ship' && !studioParked && studioShip !== 'carrier' ? [studioShip]
     : mode === 'lineup' || mode === 'check' ? LINEUP : ORDER;
-await loadShips(onlyShip);
-// buildings: the one on view, or those the fleet scene places (BUILDINGS[id].fleet)
-const fleetBuildings = Object.keys(BUILDINGS).filter((id) => BUILDINGS[id].fleet);
+// Phone tier (device.js LITE): the studio's subject loads its '.lite' copy (1024 px textures), every ship in a crowd
+// (the fleet, the lineup, the carrier's parked load) its '.mini' copy (256 px; README "Phone budget")
+await loadShips(onlyShip, mode === 'ship' ? (cls) => (cls === studioShip ? 'lite' : 'mini') : 'mini');
+// buildings: the one on view, or those the fleet scene places (BUILDINGS[id].fleet). Phones keep the fleet scene to the
+// ships: a building's assets load only when its own view (#<building>) opens.
+const fleetBuildings = LITE ? [] : Object.keys(BUILDINGS).filter((id) => BUILDINGS[id].fleet);
 if (buildingId) await loadBuildings([buildingId]);
 else if (mode === 'fleet') await loadBuildings(fleetBuildings);
 
@@ -144,6 +147,11 @@ if (mode === 'check') {
 function start() {
   const container = document.getElementById('app') || document.body;
   const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
+  // a phone that runs out of graphics memory drops the context: say so (index.html __fail) instead of a frozen or
+  // white canvas. Not restored: the phone tier has released its texture images after upload (glbship.js).
+  renderer.domElement.addEventListener('webglcontextlost', () => {
+    window.__fail?.('Graphics memory ran out', 'The browser dropped the 3D view (WebGL context lost). Reload, or open a lighter view such as a single ship.');
+  });
   const w = parseInt(params.get('w')) || container.clientWidth || innerWidth;
   const h = parseInt(params.get('h')) || container.clientHeight || innerHeight;
   renderer.setPixelRatio(still ? 1 : Math.min(devicePixelRatio, TIER.pixelRatio));

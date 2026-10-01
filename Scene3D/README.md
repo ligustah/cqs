@@ -190,8 +190,66 @@ default (`?finish=off`, `?ao=0`).
 
 Phones: the full scene holds ~2 GB of GPU textures, which mobile browsers kill. A lite
 tier (`src/lib/device.js`, automatic on touch / low-memory devices, `?lite=1|0` to force)
-loads copies with textures capped at 1024 px (carrier 2048, PATINA 512), a lower pixel
-ratio and shadow map, no AO, and widens the lens on portrait screens.
+loads phone copies of every GLB (see Phone budget), a lower pixel ratio and shadow map,
+no AO, and widens the lens on portrait screens.
+
+### Phone budget
+
+Every view must load on a mid-range phone. Budget per view on the lite tier: retained JS
+heap + GPU estimate (textures with mips + geometry buffers + render targets) **under
+300 MB**, about 25 MB fetched, ready in seconds. Check before every publish:
+
+```bash
+node tools/build-artifact.mjs && node tools/phone-check.mjs   # every view, 390x844 DPR 3 touch, base64 GLBs from dist/
+```
+
+How the phone tier stays inside it:
+
+- **Load per view.** The default fleet view on a phone places the ships only; a building's
+  assets load only when its own view (`#shipyard`, `#spaceport`) opens. Desktop keeps the
+  spaceport in the fleet scene.
+- **Two phone copies per ship** (`tools/build-artifact.mjs` via `tools/lite-glb.mjs`):
+  `.lite` (1024 px textures) for the subject of a ship studio, `.mini` (256 px, carrier
+  512 px) for ships in a crowd: the fleet, the lineup, the carrier's parked load and the
+  ships inside a building scene. `loadShips(ids, tier)` / `loadGLB(url, tier)` pick one;
+  desktop always loads the full GLB.
+- **Buildings**: one `.lite` copy, 512 px textures and the small dressing parts left out
+  (`LITE_BUILDINGS`: shipyard ladders, rails, vents, workers 244k -> 180k tris; spaceport
+  rails 266k -> 220k). The build fails if a drop moves the bbox the runtime frames on.
+- **One GLB cache.** `loadGLB` caches per (url, tier); the spaceport's carrier and
+  freighters and the shipyard's destroyer are the registry's own parsed GLBs. The
+  spaceport's four docked freighters are one prototype instanced four times.
+- **Decode once, keep nothing twice.** Base64 is decoded straight into bytes (no `atob`
+  binary string), the parser and its GLB buffer are dropped after parse, and on phones each
+  texture's decoded ImageBitmap is closed once it is on the GPU.
+- **Clip in place.** The build-state cuts (shipyard DD-12, spaceport CV-50,
+  `src/lib/clip.js`) keep meshes wholly in front of the cut as they are and grow the split
+  ones in typed arrays.
+- **Fail visibly.** A load error or a lost WebGL context shows a message with Reload and a
+  lighter view (index.html `__fail`), never a white page.
+- Not shipped: the parts kits (`assets/parts*`): nothing loads them at runtime.
+
+Measured with `tools/phone-check.mjs` (headless Chromium, SwiftShader, so times are
+relative). Before = commit 73c9ec2 (vehicle, shipyard, spaceport added); after = this fix.
+GPU = textures + geometry + render targets; heap = retained after GC / transient peak.
+
+| view (phone) | fetched MB | textures MB | GPU MB | triangles | heap MB after | heap + GPU MB after | ready s |
+|---|---|---|---|---|---|---|---|
+| fleet (default) | 36.8 → 24.0 | 608 → 98 | 737 → 204 | 3824k → 3067k | 15 / 113 | 219 | 44 → 20 |
+| lineup | 33.1 → 25.4 | 625 → 105 | 732 → 212 | 1404k | 16 / 79 | 229 | 43 → 24 |
+| fighter studio | 4.0 | 61 | 132 | 72k | 7 / 22 | 139 | 6 |
+| corvette studio | 6.4 | 94 | 169 | 145k | 7 / 17 | 176 | 7 → 6 |
+| freighter studio | 8.6 | 80 | 153 | 100k | 7 / 31 | 160 | 9 → 7 |
+| destroyer studio | 7.0 | 85 | 160 | 191k | 7 / 22 | 167 | 7 → 6 |
+| carrier studio (+ parked) | 31.2 → 24.9 | 496 → 153 | 596 → 253 | 748k | 12 / 111 | 264 | 30 → 17 |
+| vehicle studio | 3.3 | 48 | 118 | 40k | 6 / 10 | 124 | 6 |
+| shipyard | 15.0 → 10.8 | 210 → 59 | 292 → 141 | 355k → 291k | 8 / 28 | 149 | 11 → 10 |
+| spaceport | 19.9 → 15.9 | 282 → 67 | 377 → 160 | 757k → 712k | 10 / 104 | 170 | 22 → 12 |
+
+Renderer + GPU process memory (RSS) for the default fleet view: 1.71 GB before the new
+assets (b0d3f39), 1.84 GB at 73c9ec2, 1.05 GB after. The transient heap peaks (80-110 MB in
+the big views) are the crease weld and lightscape passes at build time; they are garbage
+collected before the first frame.
 
 ## Scale model
 
@@ -318,6 +376,7 @@ Scene3D/
   src/env/*.js          lighting rig, sky, sun, planet
   src/lib/finish.js     worn hull finish and screen-space AO
   src/lib/device.js     phone (lite) tier
+  src/lib/clip.js       build-state clipping (shipyard, spaceport)
   assets/parts*/        parts kits (fal and procedural Blender, incl. the ground-unit parts; parts-yard/ and
                         parts-spaceport/: the building kits)
   tools/blender/        Blender pipeline: kit.py, parts_ground.py, hulls/ (remodel per ship and the vehicle),
@@ -334,7 +393,8 @@ node tools/shoot.mjs "mode=ship&ship=destroyer&az=35&el=18" shots/destroyer.png
 node tools/render-glb.mjs any/where/ship.glb shots/ship --rot 0,-90,0   # GLB inspection stills + contact sheet + mesh info
 node tools/thumbs/thumbs.mjs shots/thumbs.png "Fighter=a.png" "Vehicle=b.png"   # icon readability test: 80 / 40 px squares on the game UI panel
 node tools/ingest-fal.mjs results.json   # download fal outputs: concepts, meshes (optimised), PATINA maps
-node tools/build-artifact.mjs   # single-page package for sharing (+ lite copies for phones; ships, vehicle, buildings, building kits)
+node tools/build-artifact.mjs   # single-page package for sharing (+ phone copies: ships .lite/.mini, buildings .lite)
+node tools/phone-check.mjs      # phone budget per view (needs a fresh dist/); --desktop, --still --shots <dir>
 node tools/shoot.mjs "mode=building&building=shipyard" shots/shipyard.png
 PY=<venv>/bin/python tools/blender/hulls/build.sh corvette /tmp/work   # rebuild a hull (bpy 5.0)
 ```

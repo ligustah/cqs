@@ -39,22 +39,70 @@ function throatTexture() {
   return throatTex;
 }
 
-// Artifact hosting does not serve .glb, so tools/build-artifact.mjs ships each GLB as
-// base64 text (<name>.glb.b64.txt) and sets window.__glbB64; decode it here.
-async function loadB64(url) {
-  // the phone tier loads a copy with downscaled textures (tools/lite-glb.mjs via build-artifact)
-  const file = `${url}${LITE ? '.lite' : ''}.b64.txt`;
-  const r = await fetch(file);
-  if (!r.ok) throw new Error(`${r.status} ${file}`);
-  const bin = atob((await r.text()).trim());
-  const buf = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
-  return loader.parseAsync(buf.buffer, '');
+// base64 alphabet -> 6-bit values
+const B64 = new Uint8Array(128);
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'.split('').forEach((c, i) => { B64[c.charCodeAt(0)] = i; });
+/**
+ * Decode base64 text (one line, as build-artifact writes it) straight into bytes: no intermediate binary string (atob)
+ * next to the text and the buffer, so a 10 MB GLB costs its text and its bytes, nothing else.
+ */
+function decodeB64(text) {
+  if (typeof Uint8Array.fromBase64 === 'function') return Uint8Array.fromBase64(text.trim());
+  let end = text.length;
+  while (end > 0 && (text.charCodeAt(end - 1) <= 32 || text.charCodeAt(end - 1) === 61)) end--; // whitespace, '='
+  const out = new Uint8Array(Math.floor((end * 3) / 4));
+  let o = 0, i = 0;
+  for (const full = end - (end % 4); i < full; i += 4) {
+    const n = (B64[text.charCodeAt(i)] << 18) | (B64[text.charCodeAt(i + 1)] << 12) | (B64[text.charCodeAt(i + 2)] << 6) | B64[text.charCodeAt(i + 3)];
+    out[o++] = n >> 16; out[o++] = (n >> 8) & 255; out[o++] = n & 255;
+  }
+  if (end - i === 2) { const n = (B64[text.charCodeAt(i)] << 18) | (B64[text.charCodeAt(i + 1)] << 12); out[o++] = n >> 16; }
+  else if (end - i === 3) { const n = (B64[text.charCodeAt(i)] << 18) | (B64[text.charCodeAt(i + 1)] << 12) | (B64[text.charCodeAt(i + 2)] << 6); out[o++] = n >> 16; out[o++] = (n >> 8) & 255; }
+  return out;
 }
 
-export function loadGLB(url) {
-  if (!cache.has(url)) cache.set(url, globalThis.__glbB64 ? loadB64(url) : loader.loadAsync(url));
-  return cache.get(url);
+// Phone tier (device.js LITE): the GPU keeps every texture, so the decoded ImageBitmap the loader holds on the CPU side
+// is a second copy of it. Release it once the texture is on the GPU (nothing in the scene reads texture pixels back).
+function releaseImagesAfterUpload(gltf) {
+  gltf.scene.traverse((o) => {
+    for (const m of [].concat(o.material || [])) {
+      for (const t of Object.values(m)) {
+        if (!t?.isTexture || t.userData.releaseOnUpload) continue;
+        t.userData.releaseOnUpload = true;
+        const img = t.image;
+        t.userData.size = [img?.width || 0, img?.height || 0]; // kept for budget checks (tools/phone-check.mjs)
+        t.onUpdate = () => { if (typeof t.image?.close === 'function') t.image.close(); };
+      }
+    }
+  });
+}
+
+// Artifact hosting does not serve .glb, so tools/build-artifact.mjs ships each GLB as
+// base64 text (<name>.glb.b64.txt) and sets window.__glbB64; decode it here.
+// Phone tier copies (tools/lite-glb.mjs via build-artifact): '.lite' (the subject of a studio or building view:
+// textures capped at 1024 px, buildings 512 px and without small dressing parts) and '.mini' (ships in a crowd: the
+// fleet, the lineup, the carrier's parked load, ships inside a building scene: 256 px, the carrier 512 px).
+async function loadB64(url, tier) {
+  const file = `${url}${LITE ? `.${tier}` : ''}.b64.txt`;
+  const r = await fetch(file);
+  if (!r.ok) throw new Error(`${r.status} ${file}`);
+  let bytes = decodeB64(await r.text()); // the text is dropped right here
+  const gltf = await loader.parseAsync(bytes.buffer, '');
+  bytes = null;
+  delete gltf.parser; // the parser caches the whole GLB buffer; only the scene graph is used
+  if (LITE) releaseImagesAfterUpload(gltf);
+  return gltf;
+}
+
+/**
+ * Load a GLB once per (url, tier): every module that reuses a model (the spaceport's carrier and freighters, the
+ * shipyard's destroyer) shares this cache with the ship registry, so a model is fetched and parsed once per view.
+ * tier: 'lite' | 'mini' picks the phone copy (ignored on desktop, where every view loads the full GLB).
+ */
+export function loadGLB(url, tier = 'lite') {
+  const key = LITE ? `${url}|${tier}` : url;
+  if (!cache.has(key)) cache.set(key, globalThis.__glbB64 ? loadB64(url, tier) : loader.loadAsync(url));
+  return cache.get(key);
 }
 
 /** A SpotLight whose target is its own child, so clones (buildShip instances) aim correctly. */

@@ -34,16 +34,25 @@ let CONTEXT = { library: {} };
 /** Shared build context (e.g. the PATINA material library). */
 export function setShipContext(ctx) { CONTEXT = { ...CONTEXT, ...ctx }; }
 
-/** Load ship modules (all, or a subset). Safe to call more than once. */
-export async function loadShips(only = ORDER) {
+/**
+ * Load ship modules (all, or a subset). Safe to call more than once (a class keeps the copy it was first loaded with).
+ * tier: the phone-tier copy of the GLBs (glbship.js loadGLB; desktop always loads the full GLB): 'lite' for the
+ * subject of a view, 'mini' for ships in a crowd (fleet, lineup, parked loads, ships in a building scene). A string
+ * applies to every class, a function (cls) => tier picks per class.
+ */
+export async function loadShips(only = ORDER, tier = 'lite') {
+  const tierOf = typeof tier === 'function' ? tier : () => tier;
   await Promise.all(only.map(async (cls) => {
     if (SHIPS[cls]) return;
     try {
       const mod = await import(`./${cls}.js`);
       // generated ships: preload the fal GLB (and optional variants)
       if (mod.asset) {
-        GLTFS[cls] = await loadGLB(mod.asset.glb);
-        for (const [v, a] of Object.entries(mod.variants || {})) if (a.glb) GLTFS[`${cls}:${v}`] = await loadGLB(a.glb);
+        const t = tierOf(cls);
+        const [main, ...vars] = await Promise.all([mod.asset.glb, ...Object.values(mod.variants || {}).map((a) => a.glb)]
+          .map((u) => (u ? loadGLB(u, t) : null)));
+        GLTFS[cls] = main;
+        Object.keys(mod.variants || {}).forEach((v, i) => { if (vars[i]) GLTFS[`${cls}:${v}`] = vars[i]; });
         // parts kit instances the module places on its hull (and its variants')
         const placements = [mod.asset, ...Object.values(mod.variants || {})].flatMap((a) => a.parts || []);
         if (placements.length) Object.assign(PARTS, await loadParts(placements));

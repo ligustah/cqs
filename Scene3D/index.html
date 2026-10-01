@@ -35,6 +35,10 @@
   #loading b { font: 800 34px/1 var(--display); letter-spacing: 0.06em; text-transform: uppercase; }
   #loading span { color: var(--muted); font: 500 12px var(--mono); }
   #loading.done { opacity: 0; pointer-events: none; }
+  #loading.failed { opacity: 1; pointer-events: auto; z-index: 20; padding: 16px; }
+  #loading.failed span { max-width: 34em; line-height: 1.5; }
+  #loading .actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 8px; }
+  #loading .actions a { color: var(--void); background: var(--bone); border-radius: 4px; padding: 9px 12px; font: 600 12px/1 var(--body); letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; }
   .ship-label.row { text-align: left; justify-items: start; }
   /* scale chart annotation (src/lib/chart.js): neutral technical-drawing callouts and ruler */
   .chart { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
@@ -138,6 +142,32 @@
 </head>
 <body>
 <div id="loading" aria-live="polite"><b>Assembling fleet</b><span>Generating hulls, plating and planet…</span></div>
+<script>
+  // Fail visibly, never as a blank page: a load error, an uncaught error before the first frame, or a lost WebGL
+  // context (src/main.js; phones drop it when graphics memory runs out) shows a message with a way out.
+  window.__fail = function (title, detail) {
+    if (window.__fatal) return;
+    window.__fatal = title + (detail ? ': ' + detail : '');
+    var el = document.getElementById('loading');
+    if (!el) return;
+    el.className = 'failed';
+    el.hidden = false;
+    var b = document.createElement('b'), s = document.createElement('span'), a = document.createElement('div');
+    b.textContent = title;
+    s.textContent = detail || '';
+    a.className = 'actions';
+    a.innerHTML = '<a href="#" id="fail-reload">Reload</a><a href="?#fighter">Open a single ship</a>';
+    el.replaceChildren(b, s, a);
+    document.getElementById('fail-reload').onclick = function (e) { e.preventDefault(); location.reload(); };
+  };
+  var early = function (msg) { if (!window.__ready) window.__fail('The 3D view could not load', String(msg || 'unknown error')); };
+  // script errors, and a module script that fails to load (an image or font that fails is not fatal)
+  window.addEventListener('error', function (e) {
+    if (e instanceof ErrorEvent) early(e.message);
+    else if (e.target && e.target.tagName === 'SCRIPT') early('could not load ' + e.target.src);
+  }, true);
+  window.addEventListener('unhandledrejection', function (e) { early(e.reason && (e.reason.message || e.reason)); });
+</script>
 <div id="app"></div>
 <div id="ui">
   <header>

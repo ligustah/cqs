@@ -20,6 +20,7 @@
 // userData.ship record, so attachEffects() draws them in one pass.
 import * as THREE from 'three';
 import { loadGLB, buildGLBShip } from '../lib/glbship.js';
+import { clipMesh } from '../lib/clip.js';
 import * as CARRIER from '../ships/carrier.js';
 import * as FREIGHTER from '../ships/freighter.js';
 
@@ -125,59 +126,13 @@ function centred(cfg, c = CENTRE) {
   };
 }
 
-// buildGLBShip needs the parsed glTFs synchronously: preload() fills this cache
+// buildGLBShip needs the parsed glTFs synchronously: preload() fills this cache. loadGLB keeps one cache per page, so
+// in the desktop fleet scene the carrier and freighter GLBs are the very objects the ship registry loaded (fetched and
+// parsed once). Phone tier: the station's '.lite' copy (small dressing parts left out), the ships' '.mini' copies.
 const SYNC = {};
 /** Preload the station and the two reused ship GLBs (index.js calls it before build). */
 export async function preload() {
-  await Promise.all([station.glb, CARRIER.asset.glb, FREIGHTER.asset.glb].map(async (url) => { SYNC[url] = await loadGLB(url); }));
-}
-
-/** Read any (possibly quantised / normalised) attribute as float components. */
-function readAttr(attr) {
-  const n = attr.count, k = attr.itemSize, out = new Float32Array(n * k);
-  for (let i = 0; i < n; i++) for (let c = 0; c < k; c++) out[i * k + c] = attr.getComponent(i, c);
-  return out;
-}
-
-/**
- * Clip a mesh geometry to the half-space f(p) >= 0, where f is linear in local position: f = dot(w, p) + w0.
- * Triangles are split along the plane (Sutherland-Hodgman per triangle, every attribute interpolated), so the
- * cut is a straight line, not a ragged triangle edge. Returns a new non-indexed geometry (or null if empty).
- */
-export function clipGeometry(geom, w, w0) {
-  const g = geom.index ? geom.toNonIndexed() : geom;
-  const names = Object.keys(g.attributes);
-  const src = {}, size = {};
-  for (const nm of names) { src[nm] = readAttr(g.attributes[nm]); size[nm] = g.attributes[nm].itemSize; }
-  const P = src.position;
-  const out = Object.fromEntries(names.map((nm) => [nm, []]));
-  const f = (i) => w.x * P[i * 3] + w.y * P[i * 3 + 1] + w.z * P[i * 3 + 2] + w0;
-  const tri = g.attributes.position.count / 3;
-  const vert = (i) => ({ i, t: null });
-  const emit = (v) => {
-    for (const nm of names) {
-      const k = size[nm], a = src[nm];
-      if (v.t === null) for (let c = 0; c < k; c++) out[nm].push(a[v.i * k + c]);
-      else for (let c = 0; c < k; c++) out[nm].push(a[v.a * k + c] + (a[v.b * k + c] - a[v.a * k + c]) * v.t);
-    }
-  };
-  for (let t = 0; t < tri; t++) {
-    const ids = [t * 3, t * 3 + 1, t * 3 + 2];
-    const d = ids.map(f);
-    if (d[0] >= 0 && d[1] >= 0 && d[2] >= 0) { ids.forEach((i) => emit(vert(i))); continue; }
-    if (d[0] < 0 && d[1] < 0 && d[2] < 0) continue;
-    const poly = [];
-    for (let e = 0; e < 3; e++) {
-      const a = ids[e], b = ids[(e + 1) % 3], da = d[e], db = d[(e + 1) % 3];
-      if (da >= 0) poly.push(vert(a));
-      if ((da >= 0) !== (db >= 0)) poly.push({ a, b, t: da / (da - db) });
-    }
-    for (let k = 1; k + 1 < poly.length; k++) { emit(poly[0]); emit(poly[k]); emit(poly[k + 1]); }
-  }
-  if (!out.position.length) return null;
-  const res = new THREE.BufferGeometry();
-  for (const nm of names) res.setAttribute(nm, new THREE.Float32BufferAttribute(out[nm], size[nm]));
-  return res;
+  await Promise.all([[station.glb, 'lite'], [CARRIER.asset.glb, 'mini'], [FREIGHTER.asset.glb, 'mini']].map(async ([url, tier]) => { SYNC[url] = await loadGLB(url, tier); }));
 }
 
 /** Cut a built carrier group (buildGLBShip) back to its build state: keep design z >= cutZ. */
@@ -187,16 +142,15 @@ function cutCarrier(group, cutZ) {
   const zCut = cutZ + toDesign;                   // in the group frame
   group.updateMatrixWorld(true);
   const inv = new THREE.Matrix4().copy(group.matrixWorld).invert();
+  const keepAft = [[{ n: [0, 0, -1], d: -zCut }]]; // group frame: keep z >= zCut
   const drop = [];
   group.traverse((o) => {
     if (!o.isMesh) return;
     if (o.name === 'nozzle-glow' || o.name === 'nozzle-lining') { drop.push(o); return; }
-    // z in the group frame as a linear function of local position: row 2 of (inv(group) * mesh.matrixWorld)
-    const m = new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld).elements;
-    const w = new THREE.Vector3(m[2], m[6], m[10]);
-    const g = clipGeometry(o.geometry, w, m[14] - zCut);
-    if (!g) drop.push(o);
-    else { g.computeBoundingBox(); g.computeBoundingSphere(); o.geometry = g; }
+    // src/lib/clip.js: meshes wholly forward of the cut keep their geometry, wholly aft ones go, split ones are clipped
+    const g = clipMesh(o.geometry, new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld), keepAft);
+    if (g === 'drop') drop.push(o);
+    else if (g !== 'keep') o.geometry = g;
   });
   for (const o of drop) o.parent.remove(o);
   // interior floodlights aft of the cut go dark with their hangar
@@ -239,11 +193,15 @@ export function build(palette, opts = {}) {
   cv.position.copy(at(DOCK.carrier.p));
   cv.name = 'spaceport-carrier';
   group.add(cv);
+  // one docked CT-4, instanced four times (shared geometry and materials, like buildShip's prototypes)
+  const proto = buildGLBShip(SYNC[FREIGHTER.asset.glb], { name: 'freighter', ...FREIGHTER.asset }, { palette, library });
+  for (const c of [...proto.children]) if (c.name === 'nozzle-glow' || c.name === 'nozzle-lining') proto.remove(c); // docked: drives cold
+  const frRecord = { ...proto.userData.ship, engines: [] };
   const fr = [];
   for (const f of DOCK.freighters) {
-    const g = buildGLBShip(SYNC[FREIGHTER.asset.glb], { name: 'freighter', ...FREIGHTER.asset }, { palette, library });
-    for (const c of [...g.children]) if (c.name === 'nozzle-glow' || c.name === 'nozzle-lining') g.remove(c); // docked: drives cold
-    g.userData.ship = { ...g.userData.ship, engines: [] };
+    const g = new THREE.Group();
+    for (const c of proto.children) g.add(c.clone());
+    g.userData.ship = frRecord;
     g.position.copy(at(f.p));
     g.rotation.set(0, toRad(f.yaw), 0);
     g.name = `spaceport-freighter-${f.name}`;

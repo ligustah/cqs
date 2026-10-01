@@ -130,3 +130,8 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
 34. **Turnaround sheets ignore "no labels" and the view count.** The 4K vehicle sheet came back with five views
     and captions; front, left, back and right were still consistent, so they were cropped at one common scale and fed
     to H3.1 rather than paying for a retry.
+32. **Phone tier was already over budget.** Lite copies at 1024-2048 px held about 584 MB of GPU
+    textures in the default view; the spaceport in the fleet view tipped it over. Fix: per-view loading
+    (buildings only in their own view on phones), a `mini` tier (256-512 px) for every ship that is not
+    the subject, lite building copies without small dressing, streaming base64 decode, ImageBitmaps
+    closed after upload, a failure overlay. Check every view with `tools/phone-check.mjs` before publishing.

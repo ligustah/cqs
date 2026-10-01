@@ -24,6 +24,7 @@
 import * as THREE from 'three';
 import { loadGLB, buildGLBShip } from '../lib/glbship.js';
 import { loadShips, buildShip } from '../ships/index.js';
+import { clipMesh } from '../lib/clip.js';
 
 export const meta = {
   name: 'Shipyard',
@@ -39,7 +40,7 @@ const DATA = {"shipT":[0.0,38.8,10.0],"cut":{"forward":20.0,"aft":-34.0,"step":-
 export const asset = {
   glb: './assets/buildings/shipyard.glb',
   generator: 'tools/blender/buildings/ (yard_kit.py, shipyard.py, shipyard_spec.py) + tools/blender/assemble.py',
-  concept: '../style-library/styles/cqs-fleet/images/shipyard-r3-A-fixed.jpg',
+  concept: './assets/concepts/shipyard.webp', // style-library/styles/cqs-fleet/images/shipyard-r3-A-fixed.jpg
   rotate: [0, 0, 0],
   hullNodes: ['hull'],
   // buildings keep their light concept paint (correction 27): no livery repaint; the fleet's PATINA detail layer and
@@ -107,58 +108,6 @@ function keepRegions(cut) {
     [P(0, 0, 1, cut.step), P(0, 0, -1, -cut.aft), P(0, 1, 0, cut.plateAft)],                  // aft <= z < step, y <= plateAft
   ];
 }
-const inside = (r, p) => r.every((h) => h.n[0] * p[0] + h.n[1] * p[1] + h.n[2] * p[2] <= h.d + 1e-5);
-
-/** Clip a geometry (positions in `toModel` space) to the keep regions; returns a new non-indexed geometry or null. */
-function clipGeometry(geom, toModel, regions) {
-  const g = geom.index ? geom.toNonIndexed() : geom;
-  const names = Object.keys(g.attributes);
-  const attrs = names.map((k) => g.attributes[k]);
-  const sizes = attrs.map((a) => a.itemSize);
-  const stride = sizes.reduce((a, b) => a + b, 0);
-  const pos = g.attributes.position;
-  const n = pos.count;
-  const mp = new Float32Array(n * 3);
-  const v = new THREE.Vector3();
-  for (let i = 0; i < n; i++) { v.fromBufferAttribute(pos, i).applyMatrix4(toModel); mp[i * 3] = v.x; mp[i * 3 + 1] = v.y; mp[i * 3 + 2] = v.z; }
-  const vert = (i) => { const o = new Float32Array(stride + 3); let k = 0; attrs.forEach((a, j) => { for (let c = 0; c < sizes[j]; c++) o[k++] = a.array[i * sizes[j] + c]; }); o[stride] = mp[i * 3]; o[stride + 1] = mp[i * 3 + 1]; o[stride + 2] = mp[i * 3 + 2]; return o; };
-  const out = [];
-  const mpOf = (q) => [q[stride], q[stride + 1], q[stride + 2]];
-  const dist = (h, q) => h.n[0] * q[stride] + h.n[1] * q[stride + 1] + h.n[2] * q[stride + 2] - h.d;
-  const lerpV = (a, b, t) => { const o = new Float32Array(stride + 3); for (let k = 0; k < stride + 3; k++) o[k] = a[k] + (b[k] - a[k]) * t; return o; };
-  let kept = 0;
-  for (let t = 0; t < n; t += 3) {
-    const tri = [vert(t), vert(t + 1), vert(t + 2)];
-    for (const r of regions) {
-      if (tri.every((q) => inside(r, mpOf(q)))) { out.push(...tri); kept++; break; }
-      let poly = tri;
-      for (const h of r) {
-        if (poly.length < 3) break;
-        const next = [];
-        for (let i = 0; i < poly.length; i++) {
-          const a = poly[i], b = poly[(i + 1) % poly.length];
-          const da = dist(h, a), db = dist(h, b);
-          if (da <= 0) next.push(a);
-          if ((da < 0 && db > 0) || (da > 0 && db < 0)) next.push(lerpV(a, b, da / (da - db)));
-        }
-        poly = next;
-      }
-      for (let i = 1; i + 1 < poly.length; i++) out.push(poly[0], poly[i], poly[i + 1]);
-    }
-  }
-  if (!out.length) return null;
-  const res = new THREE.BufferGeometry();
-  let off = 0;
-  names.forEach((k, j) => {
-    const arr = new Float32Array(out.length * sizes[j]);
-    out.forEach((q, i) => { for (let c = 0; c < sizes[j]; c++) arr[i * sizes[j] + c] = q[off + c]; });
-    const src = attrs[j];
-    res.setAttribute(k, new THREE.BufferAttribute(src.array instanceof Float32Array ? arr : new src.array.constructor(arr), sizes[j], src.normalized));
-    off += sizes[j];
-  });
-  return res;
-}
-
 const INNER = new THREE.MeshStandardMaterial({ color: '#1b1d20', roughness: 0.85, metalness: 0.1, side: THREE.BackSide });
 
 /** Cut an instanced DD-12 (buildShip clone) back to its build state, in place. */
@@ -173,12 +122,14 @@ function buildState(ship, cut) {
   model.traverse((o) => { if (o.isMesh) meshes.push(o); });
   let before = 0, after = 0;
   for (const m of meshes) {
-    const M = toModelOf(m);
-    before += (m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position.count) / 3;
-    const g = clipGeometry(m.geometry, M, regions);
-    if (!g) { m.visible = false; m.geometry = new THREE.BufferGeometry(); continue; }
+    const tris = (g) => (g.index ? g.index.count : g.attributes.position.count) / 3;
+    before += tris(m.geometry);
+    // src/lib/clip.js: meshes wholly forward of the cut keep their (shared) geometry; split ones get a clipped copy
+    const g = clipMesh(m.geometry, toModelOf(m), regions);
+    if (g === 'drop') { m.visible = false; m.geometry = new THREE.BufferGeometry(); continue; }
+    if (g === 'keep') { after += tris(m.geometry); continue; }
     m.geometry = g;
-    after += g.attributes.position.count / 3;
+    after += tris(g);
     // the cut leaves the plating open: its inner face in dark primer
     const inner = new THREE.Mesh(g, INNER);
     inner.name = `${m.name || 'mesh'}-inner`;
@@ -190,10 +141,13 @@ function buildState(ship, cut) {
 }
 
 let GLTF = null;
-/** Load the yard GLB and the destroyer (through the ship registry). */
+/**
+ * Load the yard GLB and the destroyer (through the ship registry, so the GLB cache is shared). Phone tier: the yard's
+ * '.lite' copy (512 px textures, small dressing parts left out: tools/build-artifact.mjs LITE_BUILDINGS) and the
+ * destroyer's '.mini' copy (256 px), in parallel.
+ */
 export async function load() {
-  GLTF = await loadGLB(asset.glb);
-  await loadShips(['destroyer']);
+  [GLTF] = await Promise.all([loadGLB(asset.glb, 'lite'), loadShips(['destroyer'], 'mini')]);
 }
 
 /**
