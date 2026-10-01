@@ -95,3 +95,14 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
     hull, toy rings, or a boom projecting past the station. Either show the bay empty, or describe a
     keel lying flat inside the station's outline. Station scale still reads 3-10x too small (coarse
     window rows, big flat panels): unsolved at concept stage. The remodel builds to true size.
+25. **Ship-replacement edit.** A "ship under construction in a yard" still came out as a sea-going
+    warship, even with the DD-12 reference. Cheaper than regenerating: keep the yard image and edit only
+    the ship ("Edit image 1. Keep image 1 exactly as it is... Change ONLY the ship... the DD-12 SPACESHIP
+    of image 2... nothing of a sea ship"), refs [yard, DD-12 render, lineup]. It kept the yard almost
+    pixel-for-pixel and restored the octagonal bow every time.
+26. **Dusk lighting wording** worked first time (prompts.md, Round 3). A dark ground close to the UI
+    panel colour (#222d35) loses the icon's outline at 40 px: the icon needs its own lit backdrop.
+27. **Lean stations vs icons.** Sizing the station to about 1.2-1.3x the carrier fixed the bulk, but the
+    carrier then owns the silhouette and the icons run 1.55-1.73 wide. Anchoring words ("resting on its
+    frames", "held only at its stern", "no frame, no ring, no portal surrounds the carrier") stop frames
+    returning round the hull.

@@ -114,3 +114,16 @@ prompts are in `scratchpad/v17/<asset>/prompts.json` and the fix prompts in `...
 - **Station refs:** one turret-free CV-50 flank crop, hue-shifted to amber (lesson 23). No ship docked.
 - **Lettering:** ask for "the number exactly once". The model otherwise adds words like "BERTH 01" or
   "ORBITAL DOCK".
+
+## Round 3 (v18)
+
+Full prompts: `scratchpad/v18/<asset>/jobs.json`; records in `fal-pipeline.json` (`v18_...`).
+- **Dusk, lights on (installations):** "a dim overcast dusk, low overall exposure, deep shadows; strong
+  depth from layered structure... working lights ON: white floods on slim masts, small hard-edged deep
+  golden-amber lamps at corners, crane cabs and jib tips, a few warm lit windows, two or three tiny
+  welding sparks. Small crisp fixtures with soft spill: not neon, no glowing trim, no beams, no fog; not
+  a night scene." Drop "lights off" from the style block.
+- **Real unit, part-built:** name the reference as "the real ship this station builds... draw THAT
+  ship, part-built", then the build state (front plated, rear bare octagonal ring frames on the keel).
+- **Lean sizing:** "the carrier dominates the volume... the station's whole outline about 1.1-1.3x the
+  carrier's length... trusses 15-30 m thick... no bulky mass several times the ship's size."
