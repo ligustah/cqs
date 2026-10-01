@@ -18,7 +18,7 @@ refute a claim. Never from trusting a change because the code looks right.
   - broadside;
   - the lineup (`mode=lineup`, every asset at one scale with a metre ruler, a 1.8 m figure and a slot
     cube);
-  - the scene shot (fleet).
+  - the scene shot (the asset in its intended context).
 - Freeze time (`t=20`) so animated lights compare. Change one variable at a time.
 - Compare at **matched resolution and camera**. Glow and point sizes change with resolution, so a
   1600 px after against a 2400 px before gives a wrong verdict.
@@ -31,7 +31,7 @@ refute a claim. Never from trusting a change because the code looks right.
   fails). Publish the interactive scene as an artifact. The user is often on a phone and cannot open
   GLBs.
 - **Your own critique first:** look at the images yourself before asking anyone. Many problems (a
-  bow grille of neon bars, a dotted ladder) are obvious at a glance.
+  grille of neon bars, a dotted ladder) are obvious at a glance.
 
 ## Multi-agent review (when the user opts in to workflows)
 
@@ -53,7 +53,7 @@ Pattern that worked, one agent per asset where possible:
    values they have **tested** by override, plus a keep list.
 6. **Fix rounds:** at most two. Then the orchestrator applies the last narrow, tested items itself.
    Verifiers keep finding smaller things, so stop when the remaining items are cosmetic.
-7. **Fleet check:** the lineup and scene shots, cross-asset consistency and ordering.
+7. **Family check:** the lineup and scene shots, cross-asset consistency and ordering.
 
 Practicalities:
 - Concurrency is roughly CPUs minus 2: on 4 cores, two agents at a time. A 49-agent run took about
@@ -64,13 +64,7 @@ Practicalities:
   inline.
 - Save each agent's result JSON. When parsing results, read the journal, not the output file.
 
-## Taste-to-metric translation (examples from this project)
+## Taste-to-metric translation
 
-| User said | Measurable property | Fix |
-|---|---|---|
-| "mushy", "wobbly", "lost its clear structure" | facet flatness, bevel width, silhouette IoU against the blueprint | hard-surface remodel |
-| "make it look alive" | count and visibility of hard amber marks at hero and range | authored slits at corners and recesses; beacons; lit crew spaces |
-| "neon" | slit peak luminance, core whiteness, halo radius | lower gain, crisper edge, pre-saturated colour, small halo |
-| "looks too big", "like windows" | window size against the fleet ruler, marks per area, dots per floor | fleet-size glass, fewer and authored lamps, dark small-craft ports |
-| "too clean" | plate tone variance, roughness breakup | worn-finish PATINA sets and AO |
-| "harder to spot, dark ships" | default livery value | keep dark as the default; light schemes opt-in |
+The generic table is in `readability.md`. Every translation that came up for a style is in that
+style's `corrections.md`. Look there first: the same word usually comes back.

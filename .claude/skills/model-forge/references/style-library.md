@@ -1,53 +1,75 @@
 # Style library
 
-The library keeps a family of assets consistent across creations, sessions and agents. It lives in the
-repo at `style-library/` so every agent and every future session sees it:
+The library holds everything that is specific to a family of assets: what it must look like, how big
+things are, which parts exist, which prompts worked, and every correction the user made. The skill
+stays generic; the library carries the constraints. It lives in the repo at `style-library/`, so
+every session and agent sees it:
 
 ```
 style-library/
-  README.md                 index of styles, how to use and extend
+  README.md                 index of styles
   styles/<style-id>/
-    STYLE.md                art bible in words: identity, forms, palette and livery, materials, scale
-                            model and rulers, fixture and lighting standard, hard rules, budgets
-    prompts.md              prompts that worked (bible, concept, edit, turnaround, part, material),
-                            with model, params and what to avoid
-    kits.md                 catalogue of reusable parts (source, size, mount, file), with a pointer to parts.json
-    references.md           reference images (paths) and what each is the reference for
-    lessons.md              dated lessons: surprise, cause, fix
-    assets.md               assets built in this style (size, crew, role, status, files)
+    STYLE.md                the constraints: identity, forms, palette and runtime look, materials,
+                            rulers and scale model, lighting and emissives, level of detail, budgets,
+                            hard rules. Each line is a rule with its reason
+    corrections.md          the user's corrections, rejections, preferences and praise, in order,
+                            each with the rule it became
+    prompts.md              prompts that produced approved images (model, params, job ids), and what
+                            to avoid
+    kits.md                 reusable parts: source, true size, mount frame, file
+    references.md           approved images (art bible, concepts, kit sheets) and what each is the
+                            reference for
+    lessons.md              technical surprises: cause and fix
+    assets.md               assets built in the style: size, role, status, files, open items
+    images/                 spread sheets, chosen concepts, the art bible (listed in references.md)
+    (optional)              detailed standards, e.g. a lighting standard
 ```
+
+`styles/_template/` is the starting point. `styles/cqs-fleet/` is a fully worked example: a spacecraft
+family with a scale model, two parts kits, a lighting standard and sixteen recorded corrections.
 
 ## Using a style
 
-1. Read `STYLE.md` and `kits.md` before designing anything.
-2. Pass the style's reference images to every nano-banana-pro/edit call (the bible sheet plus the
-   closest sister asset). For parts, pass the kit's style-reference part.
-3. Reuse kit parts at their true size. Follow the scale rulers and the fixture standard.
-4. Check new work against `lessons.md` before a reviewer finds the same thing again.
+1. Before designing anything, read `STYLE.md`, `corrections.md` and `kits.md`.
+2. Pass the style's reference images to every image-edit call: the art bible plus the closest sister
+   asset. For parts, pass the kit's style-reference part.
+3. Reuse kit parts at their true size, and follow the rulers and standards.
+4. When delegating, give each agent the style paths, and quote the constraints that bear on its task.
+5. Check `lessons.md` before a known pitfall bites again.
 
-## Starting a new style
+## Capturing corrections (continuous)
 
-When the user starts a new creation that should not look like an existing one:
-1. Copy `styles/_template/`, or the closest style, to `styles/<new-id>/`.
-2. Write the identity first: three to five sentences on forms, materials, the colour story and the
-   mood. Then the scale model: units, sizes of the human-scale rulers.
-3. Generate the art bible sheet (nano-banana-pro) and get the user's approval. It becomes the root
-   reference.
-4. Design the kit's style-reference part, then the rest of the kit. Record them in `kits.md`.
-5. Record every prompt that got approved in `prompts.md`.
+Record a correction in the same turn the user makes it.
 
-Styles can share kits. A human-scale door or port can be common to several styles, repainted by
-livery. When they share, note it in both `kits.md` files and do not fork the part.
+1. **Append a row to `corrections.md`:**
+   - the asset and stage;
+   - the user's words, short and verbatim;
+   - what was wrong;
+   - the fix;
+   - the rule, and where it went.
+2. **Promote the rule** into `STYLE.md`, if it applies beyond this one asset. Write it as a rule with
+   its reason, e.g. "A small asset gets fewer windows, never smaller ones: half-size ports made the
+   fighter read 1.5x too big." If it changes a number in a detailed standard, update that file too.
+3. **Record praise as a constraint** ("keep X"), so later passes do not strip what the user liked.
+4. **Ask when a correction conflicts with an existing rule.** Do not silently override it. When the user
+   decides, mark the old rule superseded, with the date.
+5. **Tell the user in one line** what was recorded, so they can correct the rule itself.
 
-## Feeding it back (after every accepted asset)
+Corrections from independent reviewers can be logged too. Mark them "(reviewer)", and only promote
+them to `STYLE.md` once the user has accepted the result.
 
-- New parts go into the kit (files, parts.json entry, kit sheet thumbnail) and into `kits.md`.
-- Approved prompts go into `prompts.md`, with the job ids and why they worked.
-- Any rule a reviewer or the user had to enforce goes into `STYLE.md`. Write it as a rule with its
-  reason, e.g. "A small craft gets fewer windows, never smaller ones: half-size ports made the
-  fighter read 1.5x too big."
-- Surprises go into `lessons.md`.
-- Add the asset to `assets.md`.
+## After every accepted asset
 
-Keep entries short and factual. The library is read at the start of every job, so every line has to
+- New parts go into the kit (file, catalogue entry, kit sheet) and `kits.md`.
+- Approved prompts go into `prompts.md`, with job ids.
+- Technical surprises go into `lessons.md`.
+- The asset goes into `assets.md`, with any open items.
+
+Keep entries short and factual. The library is read at the start of every job, so every line must
 earn its place.
+
+## Sharing between styles
+
+Styles can share kits or rulers: a human-scale door can be common to several styles, repainted at
+runtime. Note the sharing in both `kits.md` files, and do not fork the part. A style variant (e.g. a
+civilian sub-language) can be a section in `STYLE.md` instead of a new style.

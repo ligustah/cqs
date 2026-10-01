@@ -1,9 +1,9 @@
 # Parts kits: design once, reuse everywhere
 
 The single biggest consistency lever is a kit of small components at **true metric size**, shared by
-every asset of a style. A 1 x 2 m door or a 1 m port placed on a 70 m and a 900 m hull is the ruler
-that makes both read at their real size. The user asked for this directly: "design a window once, crew
-door once, then reuse on all ships".
+every asset of a style. The same door or window on a small and a huge asset is the ruler that makes
+both read at their real size. (In the worked example the user asked for exactly this: "design a window
+once, crew door once, then reuse on all ships".)
 
 The style's `kits.md` lists what exists. Reuse before you make anything.
 
@@ -11,16 +11,16 @@ The style's `kits.md` lists what exists. Reuse before you make anything.
 
 | Source | Use for | Tooling |
 |---|---|---|
-| **Procedural (Blender)** | anything with exact dimensions or function: drive bells S-XL (exact throat depth, radius, wall profile for glow effects), turrets S/M/L, ports and panes (glass must be real, flat and 1 m), doors, rails, ladders, RCS, nav-light housings, containers (ISO 20 ft), vents, conduits | `tools/blender/kit.py` → `assets/parts-blender/` + `parts.json` |
-| **fal (image → Tripo H3.1)** | organic or detail-rich dressing where exact size matters less: antennas, sensor domes, PDC, missile pods, docking clamps, airlocks, cargo hatches | nano-banana-pro/edit (door as the style reference) → `tripo3d/h3.1/image-to-3d` → normalise → `assets/parts/` + `parts.json` |
+| **Procedural (Blender)** | anything with exact dimensions, repetition or function (generic: doors, windows, beams, planks, shingles, fences, stairs, crates; in `cqs-fleet`: drive bells S-XL (exact throat depth, radius, wall profile for glow effects), turrets S/M/L, ports and panes (glass must be real, flat and 1 m), doors, rails, ladders, RCS, nav-light housings, containers (ISO 20 ft), vents, conduits) | `tools/blender/kit.py` → `assets/parts-blender/` + `parts.json` |
+| **fal (image → Tripo H3.1)** | organic or detail-rich dressing where exact size matters less (generic: signs, carvings, statues, barrels, plants, machinery clutter; in `cqs-fleet`: antennas, sensor domes, PDC, missile pods, docking clamps, airlocks, cargo hatches) | nano-banana-pro/edit (door as the style reference) → `tripo3d/h3.1/image-to-3d` → normalise → `assets/parts/` + `parts.json` |
 
-When both kits have a part, the fleet preferred the procedural one for glass and functional parts
+When both kits had a part, `cqs-fleet` preferred the procedural one for glass and functional parts
 (bells, turrets). It kept the fal ones for dressing.
 
 ## Frame and mounting convention
 
 Every part is authored in metres, in a frame that says how it mounts:
-- **mount normal +Z:** +Z out of the hull (surface normal), +Y up along the part's height, +X along its
+- **mount normal +Z:** +Z out of the mounting surface (surface normal), +Y up along the part's height, +X along its
   width. The origin is the centre of the back (mounting) face at z = 0 (doors, ports, panes, hatches,
   RCS, domes, floodlights).
 - **mount normal +Y:** stands on its foot at y = 0, centred on its base axis (rails, antennas,
@@ -33,14 +33,14 @@ Every part is authored in metres, in a frame that says how it mounts:
 Record the mount in `parts.json` (`mount.anchor`, `mount.normal`). Record the true `bbox` and `size`,
 the triangle count, the texture size, and the fal job ids and params. For functional parts, also record
 the data the runtime needs: e.g. a bell's `engine` block (radius, depth, throat, wall profile), so a
-ship module can take its engine entries straight from the kit times the placement scale.
+asset module can take its engine entries straight from the kit times the placement scale.
 
 ## fal part pipeline
 
 1. **Image:** nano-banana-pro/edit with the style reference; one part per image, isolated, light paint.
 2. **Mesh:** Tripo H3.1 image-to-3D, `face_limit` sized to the part (2000 for a pane, 5000 for an
    airlock), texture on, PBR on, detailed quality.
-3. **Normalise** (`Scene3D/tools/parts/normalize.mjs`, or `normalize-uniform.mjs` for uniform scale):
+3. **Normalise** (in this repo `Scene3D/tools/parts/normalize.mjs`, or `normalize-uniform.mjs` for uniform scale):
    1. flatten the scene graph;
    2. rotate into the frame (`normaliseRot`, degrees, R = Rz·Ry·Rx);
    3. scale:
@@ -50,7 +50,7 @@ ship module can take its engine entries straight from the kit times the placemen
    5. dedup, prune and weld;
    6. WebP textures (512 for small parts, 1024 for large);
    7. meshopt.
-4. **Contact sheet** (`tools/parts/kit-sheet.mjs`, `sheet.mjs`): render every part next to a 1.8 m figure and a 1 m grid. Reject and retry parts
+4. **Contact sheet** (`Scene3D/tools/parts/kit-sheet.mjs`, `sheet.mjs`): render every part next to a 1.8 m figure and a 1 m grid. Reject and retry parts
    that fail:
    - glass as a hole;
    - wrong proportions;
@@ -59,7 +59,7 @@ ship module can take its engine entries straight from the kit times the placemen
 
 ## Placement (assemble.py spec)
 
-The per-asset spec (`tools/blender/specs/<asset>-v3.json`, generated by `<asset>_spec.py` from the hull
+The per-asset spec (`tools/blender/specs/<asset>-v3.json`, generated by `<asset>_spec.py` from the asset's
 dimension tables) lists placements:
 
 ```json
@@ -69,7 +69,7 @@ dimension tables) lists placements:
 
 - Per-part defaults (`partDefaults`) set the sink depth. Ports sink about 0.03 m: their glass sits
   0.05 m proud, so a deeper sink buries it. `fixes` sets per-part decimation.
-- `seat` checks gap and bury against the hull and drops bad placements. **Read the `dropped` list** in
+- `seat` checks gap and bury against the main body and drops bad placements. **Read the `dropped` list** in
   the assembly report after every run.
 - Snapping casts from 8 m out along the normal. If the ray starts inside another part or volume (a
   sponson gun beside a door, a turret barbette), the part lands on the wrong surface or is dropped.
@@ -79,10 +79,10 @@ dimension tables) lists placements:
 
 ## Scale rules for parts
 
-- **Never shrink a human-scale part to fit a small asset.** Half-size ports (x0.55) on the fighter made
-  it read 1.3-1.8x its real length. The fix was two fleet-size ports instead of 36 small ones. A small
+- **Never shrink a ruler part to fit a small asset.** In `cqs-fleet`, half-size ports (x0.55) on the
+  fighter made it read 1.3-1.8x its real length; the fix was two full-size ports instead of 36 small ones. A small
   asset gets fewer parts, not smaller ones.
-- **Keep glass at fleet size:** panes 1.0 x 1.2 m at 1.12 m pitch, ports 0.86-1.0 m glass on 3 m
-  decks. No lit glass under 0.8 m.
-- **Size steps:** capital assets may use size steps only for fixtures that are genuinely bigger in real
+- **Keep glass at the style's size** (in `cqs-fleet`: panes 1.0 x 1.2 m at 1.12 m pitch, ports 0.86-1.0 m glass on 3 m
+  decks; no lit glass under 0.8 m).
+- **Size steps:** large assets may use size steps only for fixtures that are genuinely bigger in real
   life (turret-L versus turret-S, bell XL). Doors, ports, rails and lamps never step up.

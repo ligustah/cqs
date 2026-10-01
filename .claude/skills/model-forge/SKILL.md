@@ -1,182 +1,165 @@
 ---
 name: model-forge
-description: Build and refine game-ready 3D models (ships, vehicles, buildings, props, any hard-surface asset) with fal.ai image models, image-to-3D reconstruction, headless Blender and a three.js review scene, and keep every new asset consistent with a shared style library (art bible, parts kits, materials, scale and lighting standards). Use this skill whenever the user wants to create, redesign, remodel, detail, texture, light or review a 3D model or asset, generate concept art or turnaround sheets for one, make reusable parts or components, pick a fal model for images, meshes or materials, run review loops on renders, or add or extend a style for a new creation, even if they do not say "skill", "fal" or "Blender" explicitly.
+description: Build and refine 3D models and asset families (vehicles, ships, buildings, props, characters' gear, any hard-surface asset) with fal.ai image models, image-to-3D reconstruction, headless Blender and a real-time review scene, starting from style exploration with concept art and keeping every asset consistent through a style library that records the user's choices and corrections as constraints. Use this skill whenever the user wants to create, design, redesign, remodel, detail, texture, light or review a 3D model or asset, explore or define a visual style, generate concept art or turnaround sheets, make reusable parts or components, pick a fal model for images, meshes or materials, run review loops on renders, or start a new creation that should match earlier ones, even if they do not say "skill", "fal", "Blender" or "style" explicitly.
 ---
 
 # Model forge
 
-A proven pipeline for hard-surface 3D assets. It came out of building and repeatedly refining a five-class
-space fleet (fighter to 900 m carrier) for an original-IP game. The lessons are general: they apply to any
-asset family that has to look consistent, read at the right scale and survive close inspection.
+A pipeline for designing and building 3D assets that hold up under close inspection and stay
+consistent across many creations. It is domain-neutral. What a particular project's assets must look like
+(forms, palette, scale, lighting, budgets, taboos) is **not** in this skill. It lives in the project's
+**style library** as constraints, and it grows from the user's own choices and corrections.
 
-The core insight, learned the hard way: **image-to-3D is a blueprint, not a product.** Generated meshes
-average fine detail into soft "mushy" lumps, bake lighting into textures and hallucinate the unseen sides.
-The quality bar was only met by rebuilding each hull as clean parametric geometry in Blender, using the
-generated mesh purely for measurements, and composing it from small reusable parts that are designed
-once at true size and reused everywhere. Consistency comes from the style library, not from prompting
-harder.
+Two ideas carry everything else:
+1. **The style is defined with the user, from images, before any modelling.** Generate a few divergent
+   concept directions, let the user react, and converge on an approved art bible and written
+   constraints.
+2. **Every correction the user makes becomes a constraint.** It is recorded in the style library the
+   moment it is made, so no later asset, session or agent repeats the mistake.
 
-## Before you start
+A third idea is technical, learned the hard way: **image-to-3D is a blueprint, not a product.**
+Generated meshes average fine detail into soft lumps. The quality bar was met by rebuilding each model
+as clean geometry in headless Blender, using the generated mesh only for measurements, and composing it
+from small reusable parts designed once at true size.
 
-1. **Read the style library.** It lives at `style-library/` in the repo root (see
-   `references/style-library.md`). Find the style the asset belongs to, e.g.
-   `style-library/styles/cqs-fleet/`, or create a new one. Load its `STYLE.md`, which holds the art bible,
-   palette, livery, materials, scale rules and lighting standard. Load its `kits.md`, the catalogue of
-   reusable parts. A new asset in an existing style reuses those kits and rules. Do not reinvent them.
-2. **Check the hard rules of the project.** Typical ones:
-   - original IP only;
-   - never open or reference legacy art (list the folders);
-   - no imitation of named franchises;
-   - a budget for fal spend.
+## The library
 
-   Put them in `STYLE.md` so every agent sees them.
-3. **Check the environment.**
-   - Blender: the `bpy` pip wheel works headless. Run
-     `.claude/skills/model-forge/scripts/setup_blender_venv.sh <dir>` (bpy 5.0.1 needs Python 3.11).
-   - Node deps: `npm install` in the scene folder (three, gltf-transform, meshoptimizer, sharp,
-     playwright-core).
-   - Chromium for renders.
-   - The fal connector for generation.
+The library lives at `style-library/` in the repo root. Read `references/style-library.md` for its
+layout and how to edit it. In short, each style keeps:
+- `STYLE.md`: the constraints;
+- `corrections.md`: the user's corrections and the rule each became;
+- `prompts.md`: prompts that worked;
+- `kits.md`: reusable parts;
+- `references.md`: approved images;
+- `lessons.md`: technical surprises;
+- `assets.md`: what has been built.
 
-   Cloud containers restart often. Write notes and intermediate results to disk as you go, schedule
-   check-ins for long runs, and make every stage resumable.
+At the start of any job, find the style the work belongs to and load its `STYLE.md`, `corrections.md`
+and `kits.md`. Every agent you start needs the same context: give it the paths, or paste the relevant
+constraints into its prompt.
 
-## The pipeline
+If no style fits, the job starts at stage 0.
 
-Each stage ends with rendered evidence that you (or independent reviewers) look at. Never advance on
-numbers alone. Details and exact parameters are in the references.
+## Stages
 
-| # | Stage | Tooling | Reference |
+Every stage ends with rendered evidence that you, or independent reviewers, look at. Advance on what the
+images show, not on intent.
+
+| # | Stage | What happens | Reference |
 |---|---|---|---|
-| 1 | Brief and scale | style's scale model, crew and role, real-world refs | `references/scale-and-lighting.md` |
-| 2 | Concept art | `fal-ai/nano-banana-pro` + `/edit` with the style's references | `references/fal-models.md` |
-| 3 | Turnaround | nano-banana-pro 4K six-view sheet, cropped | `references/fal-models.md` |
+| 0 | **Define the style** | interview; 3-5 divergent concept directions; the user picks, mixes and corrects; the approved art bible and constraints go into a new style | `references/style-discovery.md` |
+| 1 | Brief | the asset's size, role and the style's rulers; what it must read as from the game camera | `references/readability.md` |
+| 2 | Concept | variants through `nano-banana-pro/edit` with the style's references; the user approves one | `references/fal-models.md` |
+| 3 | Turnaround | one 4K orthographic multi-view sheet, cropped | `references/fal-models.md` |
 | 4 | Blueprint mesh | `tripo3d/h3.1/multiview-to-3d` | `references/fal-models.md` |
-| 5 | Parts kit (reuse first) | style kits; new parts via fal (image then Tripo) or procedural `kit.py` | `references/parts-kits.md` |
-| 6 | Hard-surface remodel | headless Blender: measure, model, bake, paint | `references/blender-pipeline.md` |
-| 7 | Assemble | `assemble.py` places kit parts from a spec | `references/blender-pipeline.md` |
-| 8 | Materials and finish | `fal-ai/patina/material` tiling sets, runtime livery and worn finish | `references/fal-models.md`, `references/runtime-threejs.md` |
-| 9 | Lights and life | lightscape: slits, pins, windows, nav lights, to the style's fixture standard | `references/scale-and-lighting.md` |
-| 10 | Review loops | renders at hero / close / range / lineup; adversarial judges | `references/review-loops.md` |
-| 11 | Ship it | GLB optimise, phone tier, artifact packaging, commit | `references/runtime-threejs.md` |
-| 12 | Feed the library | new parts, prompts, rules and lessons back into the style | `references/style-library.md` |
+| 5 | Parts | reuse the style's kits; add missing parts to the kit, not to the asset | `references/parts-kits.md` |
+| 6 | Remodel | headless Blender: measure, parametric model, bake, texture-space paint | `references/blender-pipeline.md` |
+| 7 | Assemble | place kit parts from a spec; score against the blueprint | `references/blender-pipeline.md` |
+| 8 | Look | materials (PATINA), runtime paint and finish, emissives, all to the style | `references/fal-models.md`, `references/readability.md` |
+| 9 | Review | standard views, before/after evidence, adversarial judges | `references/review-loops.md` |
+| 10 | Release | optimise, lightweight tier, publish, commit | `references/runtime.md` |
+| — | **Capture** (continuous) | every user correction goes to `corrections.md`, then into `STYLE.md` as a rule | `references/style-library.md` |
 
-### 1. Brief and scale
+### 0. Define the style (when it is new, or the user wants to change it)
 
-Pin down, in writing, before any image is generated:
-- **Size and role:** true size in metres, crew, role.
-- **Scale ruler:** what anchors human scale on it (doors 1 x 2 m, ports 1 m, rails 1.1 m, 20-ft
-  containers).
-- **Envelope:** the size the asset must hit.
+Do not start from a blank prompt. Interview briefly about:
+- what the assets are and where they will be seen: the game or scene camera, its distance, daylight or night;
+- the mood and period;
+- references the user likes or hates;
+- hard taboos (IP to avoid, legacy art not to open);
+- the budget.
 
-Scale drift is the most expensive mistake: every later stage inherits it. In the fleet, a scale judge
-measured doors and windows in every concept against the final length.
+Then generate a **spread** of three to five concept directions, shown from the game's own camera, that differ along real axes:
+- form language;
+- material and finish;
+- colour story;
+- realism versus stylisation;
+- level of detail.
 
-### 2-3. Concept and turnaround
+Show them side by side in one labelled sheet. Ask what the user likes and dislikes in each, mix, and
+generate again. Two or three rounds usually converge. Then:
+1. Generate the **art bible**: one sheet with the family's key assets, or a key asset with callouts.
+2. Create `style-library/styles/<id>/` from `_template/`, add the row to `style-library/README.md`, and
+   save the images in its `images/` folder.
+3. Write `STYLE.md` from the decisions. Every line is a constraint with its reason.
+4. Show the user a short summary and ask what is wrong. That answer is the first correction.
 
-Use nano-banana-pro for concepts, always through `/edit` with the style's art-bible sheet and approved
-sister assets as references, so the family stays coherent. For each asset, make:
-- an isolated three-quarter studio image on light grey, which is the reconstruction input;
-- a beauty shot in the operational look;
-- a 4K orthographic six-view turnaround, cropped into views.
+`references/style-discovery.md` has the prompts, the axes, and how to present choices.
 
-Generate in **light paint**, even if the final look is dark: light surfaces reconstruct far better, and
-the runtime livery darkens them. State the final length in the prompt. Make openings you need to keep
-(hangar bays, recesses) see-through or explicit in the turnaround, or the reconstruction closes them.
+### 1-4. From brief to blueprint
 
-### 4. Blueprint mesh
+- **Brief:** pin down size, role and what the asset must read as, in writing, against the style's rulers
+  (the human-scale or domain-scale references the style defines). Scale drift is the most expensive
+  mistake, because every later stage inherits it.
+- **Concept:** generate with `/edit` and the style's references; show variants, and let the user choose
+  and correct. Generate the image you will reconstruct from as evenly lit and matte on a light-grey
+  studio background, with no baked shadows. If the style recolours at runtime (e.g. a dark operational
+  paint), generate it in light neutral paint, because that reconstructs far better. If the colour is the
+  material itself (wood, stone, thatch), generate the real material.
+- **Turnaround:** a 4K orthographic multi-view sheet. It keeps the views consistent, and multiview
+  reconstruction needs them.
+- **Blueprint mesh:** Tripo H3.1 multiview won two bake-offs. Treat its output as a blueprint.
 
-Tripo H3.1 multiview-to-3D, fed front / port / stern / starboard, won two independent bake-offs. It
-gives crisp facets, legible markings, and a real stern and belly instead of hallucinated ones. Use the
-result as a blueprint. Where a fast placeholder is acceptable, it can ship after
-`tools/optimize-glb.mjs`, but expect "mushy" detail. The user rejected that quality level.
+### 5-7. Build
 
-### 5. Parts first
+- **Parts first:** list every small or repeated component and reuse the style's kits at their true
+  size. Identical small parts across assets are the strongest consistency and scale cue there is.
+- **Remodel:** rebuild the asset as clean parametric geometry in headless Blender: volumes, exact
+  boolean recesses, small bevels, texture-space paint.
+- **Assemble:** place the parts from a spec, and keep the envelope stable.
 
-Before modelling a hull, list every small human-scale or repeated component: doors, ports, panes,
-hatches, rails, ladders, RCS, nav lights, floodlights, antennas, domes, turrets, drive bells, weapons,
-containers. Reuse the style's kits at their **true metric size**. The same door on a 70 m and a 900 m
-hull is what makes both read at the right scale. Add missing parts to the kit, not to the asset. See
-`references/parts-kits.md` for:
-- when to use fal (organic, detailed dressing) versus procedural Blender (anything with exact
-  dimensions: bells, turrets, glass);
-- the normalisation frame;
-- known reconstruction failures, e.g. glass rebuilt as holes, and backs mirrored onto hidden faces.
+The pitfalls are long and specific; read the references before you start.
 
-### 6-7. Remodel and assemble
+### 8. Look
 
-In headless Blender:
-1. **Measure** the blueprint in the asset frame (sections, silhouettes, height maps).
-2. **Model:** build the hull parametrically as closed volumes, with exact boolean recesses and
-   4-10 cm bevels with weighted normals.
-3. **Bake** maps.
-4. **Paint** in texture space (light base, seams, panel tone, grime, edge wear, crisp stencils).
-5. **Assemble:** place kit parts from a JSON spec.
-6. **Score:** run `compare.py` against the blueprint (silhouette IoU about 0.9 or better).
+Materials, any runtime paint scheme, weathering and any emissive lights all follow the style's
+constraints (a daylight-only style may have no emissives at all).
+The generic principles (what makes an asset read at its true size, how to make it "alive" without it
+looking "neon", how lights behave at range) are in `references/readability.md`. The style supplies the
+numbers.
 
-Keep the envelope within about 0.5 % so downstream scale systems do not move. One `build.sh` per asset
-reproduces it end to end. `references/blender-pipeline.md` has the method and the long list of pitfalls
-(snap rays starting inside other parts, decimation eating thin round pieces, UV density on thin bands,
-and more).
+### 9. Review
 
-### 8-9. Look
+Look at the standard views at matched resolution: **the game's own camera at gameplay distance first**,
+then hero, close, range, a lineup with sister assets, and the scene.
+Make before/after sheets and 1:1 crops. Use independent judges with opposing lenses, for example
+"reads at its true size" against "still as alive as the user liked". Judges default to refuted and
+return tested, concrete fixes. Cap the fix rounds. Turn recurring judgements into scripts.
 
-- **Finish:** a runtime livery repaints generation paint into the operational scheme. The
-  tone / bone two-tone schemes are opt-in; the default stays dark.
-- **Materials:** tri-planar PATINA sets add plate tone, roughness breakup, grit and soot at one absolute
-  tile size on every asset.
-- **Lighting look:** studio lighting for single-asset views, orbital for scenes.
-- **Lights:** follow the style's **fixture standard**. One physical size per fixture type on every
-  asset. Windows only on real glass in crew spaces. Density grows with size. Small craft get authored
-  lights, not scattered automatic pins. Distant lights thin and fade instead of becoming window-shaped
-  boxes.
+### 10. Release
 
-  This is where "make it look alive" and "it looks too big" pull against each other. The resolution is
-  in `references/scale-and-lighting.md`.
+Optimise, make a lightweight (phone) tier, publish an interactive preview, run the project's checks,
+and commit after each accepted step. Cloud containers restart, so keep work resumable.
 
-### 10. Review loops
+## Capturing corrections (the part that makes the library grow)
 
-Every change is judged on renders, not on intent. The review toolkit, the render harness and the
-multi-agent patterns that worked are in `references/review-loops.md`. The short version:
-- **Views:** always look at hero, close, range (the asset small on screen) and a lineup next to other
-  assets at the same scale. A problem that only shows at range is still a problem.
-- **Comparisons:** make before/after sheets and 1:1 crops. Compare at matched resolution and camera, or
-  the comparison lies.
-- **Independent judges:** use lenses that pull in different directions, e.g. SCALE ("does it read at its
-  true size?") and LIFE ("is it still as alive as the user liked?"). Judges try to refute, default to
-  refuted, and must give concrete, tested must-fix items. Cap fix rounds at two, then the orchestrator
-  applies the last narrow items.
-- **Rules as code:** turn recurring judgements into measurable checks (audit scripts, mark counters,
-  luminance splits) and put them in the style library.
+Whenever the user corrects, rejects, prefers or praises something, record it **in the same turn**:
+1. **Log it** in `style-library/styles/<id>/corrections.md`: date, asset, the user's words (verbatim,
+   short), what was wrong, the fix, and the rule it implies.
+2. **Promote it** to `STYLE.md` as a constraint with its reason, if it applies beyond this one asset.
+   This covers:
+   - a preference ("keep the dark livery as the default");
+   - a dislike ("not neon");
+   - a scale rule ("a small asset gets fewer windows, never smaller ones");
+   - a process rule ("show me renders, not file paths").
 
-### 11. Ship
+   Praise counts too: "the lights make it look much better" protects that look from the next pass.
+3. **Keep the rest of the library current:**
+   - a prompt that produced the approved image goes to `prompts.md`;
+   - a part made during the fix goes to `kits.md`;
+   - a technical surprise goes to `lessons.md`.
+4. **Say so** in your reply, in one line: "Recorded in the style: …". The user then sees the library
+   learning and can correct the rule itself.
 
-- **Optimise:** meshopt and WebP.
-- **Phone tier:** a lite copy of every GLB with capped textures. Phones crash on about 2 GB of texture
-  memory.
-- **Packaging:** GLBs go into an artifact as base64 text files, with a per-file and per-publish size
-  limit, so publish in batches.
-- **Scale check:** run it and require a pass before committing.
-- **Commit:** checkpoint-commit finished work often, because the container can restart.
-
-### 12. Feed the library
-
-After an asset is accepted, update the style:
-- new kit parts go into the catalogue;
-- prompts that worked go into `prompts.md`;
-- any rule a reviewer had to enforce goes into `STYLE.md`;
-- surprises go into `lessons.md`.
-
-The next asset should start where this one ended. Skipping this step is how a family drifts apart.
+Before generating anything for a style, re-read `corrections.md` so the next result already respects it.
 
 ## Working with the user
 
-- Show images, not file paths: the user may be on a phone. Send HD renders and before/after sheets, and
-  publish the scene as an artifact.
-- When the user gives taste feedback ("mushy", "wobbly", "looks too big", "make it look alive"),
-  translate it into a measurable property, fix that property, and show it moved. Keep what they
-  praised: the user's "much better" is a constraint for the next pass.
-- For long autonomous runs, notify when done, and state clearly what passed review, what did not, and
-  what you chose not to do.
-- Track fal spend against the budget and record every job in the pipeline record
-  (`pipeline/fal-pipeline.json` or the style's equivalent).
+- Show images, not paths: the user may be on a phone. Send HD renders, labelled comparison sheets and an
+  interactive preview.
+- Translate taste words into measurable properties ("mushy" means facet flatness and bevel width;
+  "looks too big" means detail frequency and ruler size). Fix the property, and show that it moved.
+- Keep what the user praised; it is a constraint for the next pass.
+- For long autonomous runs, notify when done. State plainly what passed review, what did not, and what
+  you chose not to do.
+- Track spend against the style's budget and record every generation job (model, id, prompt, params).

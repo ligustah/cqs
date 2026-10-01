@@ -1,5 +1,13 @@
 # Runtime (three.js) and shipping
 
+This describes the real-time runtime of the project this skill came from (`Scene3D/src/`, three.js). A
+project with another engine keeps the same responsibilities: a runtime paint pass, tri-planar detail,
+emissives drawn with range behaviour, a lightweight tier, a scale or consistency check, and a preview
+build. Map them onto that engine.
+
+For a new project in another repo, copy `.claude/skills/model-forge/` and `style-library/` (at least
+the styles you build on) into it. The library belongs with the project that uses it.
+
 In this repo: `Scene3D/src/`. A new project can copy the lib folder. The pieces and what each is for:
 
 | File | Role |

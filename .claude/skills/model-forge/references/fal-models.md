@@ -33,7 +33,7 @@ Typical cost for one new asset in an existing style (kits reused):
 | **Total** | **about $4-6** |
 
 A redesign after review roughly doubles it. A new style costs its art bible and a starter kit on top: the
-fleet's two kits were about $19.5.
+worked example's two kits (`cqs-fleet`) were about $19.5.
 
 A full five-asset family with parts kits cost about $78 across seven rounds. The first build was about
 $27.50. Most of the spend went on re-draws after design changes, so fix the brief (stage 1) before you
@@ -44,43 +44,47 @@ generate.
 - **Studio shots:** isolated subject, three-quarter view, clean neutral **light-grey** seamless
   background, soft even studio light, no text unless you want captions. Light background plus light
   paint gives the best reconstructions.
-- **Light paint in generation:** ask for off-white or light-grey weathered paint with dark blue-grey
-  glass. The runtime livery maps neutral luminance to the operational colour (dark hull) and keeps
+- **Reconstruction-friendly images:** evenly lit, matte, no baked shadows, a light-grey background. If
+  the style recolours at runtime, ask for off-white or light-grey paint with dark glass: a runtime paint
+  pass can map neutral luminance to the style's operational colour and keep
   saturated markings. Dark generation paint loses detail in reconstruction.
-- **State true size:** give the length or height in metres, plus the human-scale anchors: "2 m crew
+- **State true size:** give the length or height in metres, plus the style's rulers, e.g. "2 m crew
   doors, 1 m windows, 20-ft containers, railings 1.1 m". Without them, the model invents detail at the
   wrong frequency, and the asset reads too big or too small.
 - **Originality:** say "original design". Name the forms you want (e.g. "faceted armoured pod",
   "spinal railgun", "open-flank through-deck hangar"). Do not name franchises, not even negatively: the
-  word itself pulls the image toward them. A judge checks every concept for franchise look-alikes; the
-  first fighter read like a franchise fighter and was redesigned.
+  word itself pulls the image toward them. A judge checks every concept for look-alikes of whatever the
+  style's taboos list (in `cqs-fleet`, the first fighter read like a franchise fighter and was
+  redesigned).
 - **Edits:** with `/edit`, pass the style's art bible plus one or two approved sister assets. Describe
-  the change and restate what must stay (proportions, livery, markings).
+  the change and restate what must stay (proportions, paint, markings).
 - **Openings:** anything that must stay open in 3D (bays, recesses, see-through structure) must be
   drawn visibly open in every turnaround view.
 
 ### Turnaround prompt (worked)
 
-> Technical orthographic turnaround sheet of EXACTLY this spacecraft (same design, proportions, livery,
+> (Worked for vehicles; adapt the view names to the object. For a building use FRONT, LEFT, BACK, RIGHT
+> and TOP, and drop BOTTOM.)
+> Technical orthographic turnaround sheet of EXACTLY this <object> (same design, proportions, paint,
 > markings, weathering). Six views in a clean 3 x 2 grid of equal cells on a plain seamless light-grey
-> background: top row: FRONT view (straight at the bow, camera level), PORT SIDE view (straight at the
-> left side, bow pointing left), STERN view (straight at the engines from behind, camera level); bottom
-> row: STARBOARD SIDE view, TOP view, BOTTOM view. Orthographic, no perspective, no shadows on the
+> background: top row: FRONT view (straight at the front, camera level), LEFT SIDE view (straight at the
+> left side, front pointing left), BACK view (straight at the back, camera level); bottom
+> row: RIGHT SIDE view, TOP view, BOTTOM view. Orthographic, no perspective, no shadows on the
 > background, every view at the same scale, no labels.
 
-Crop the cells (PIL), check each is square to its axis, and feed front / port / stern / starboard to
-H3.1 multiview. If the sheet mirrors a marking or drifts in proportion between views, regenerate it
+Crop the cells (PIL), check each is square to its axis, and feed front / left / back / right to H3.1
+multiview. If the sheet mirrors a marking or drifts in proportion between views, regenerate it
 rather than feed it: the mesh inherits every inconsistency.
 
 ### Part prompt pattern (worked)
 
-Design the first part (the crew door) with plain nano-banana-pro. Make every other part with `/edit`,
+Design the first part (e.g. a door) with plain nano-banana-pro. Make every other part with `/edit`,
 using the door image as the **style reference**, so the kit shares one industrial language. Per part:
 
-> Isolated hull component for an original sci-fi spacecraft parts kit, in the same style, materials
+> Isolated component for an original <style> parts kit, in the same style, materials
 > and weathering as the reference door: <part description with exact dimensions: "a 1.0 m square
 > viewport with a 0.2 m chamfered frame, dark blue-grey glass, four bolts">. Three-quarter view from the
-> front, on a plain light-grey studio background, light off-white weathered paint, no hull around it,
+> front, on a plain light-grey studio background, light off-white weathered paint, nothing mounted around it,
 > nothing else in frame.
 
 Glass parts need a second try more often than not (see below).
@@ -88,13 +92,13 @@ Glass parts need a second try more often than not (see below).
 ## Reconstruction failure modes (seen, with fixes)
 
 - **Glass becomes a hole plus a wedge** (ports, panes): ask for opaque glass with a visible glass
-  sheen and a solid backplate, or build glass parts procedurally. The fleet's final ports and panes
+  sheen and a solid backplate, or build glass parts procedurally. In `cqs-fleet` the final ports and panes
   come from the procedural kit.
-- **The back is mirrored from the front** (doors): harmless when the back is mounted against the hull.
+- **The back is mirrored from the front** (doors): harmless when the back is mounted against a surface.
   Check before using the part free-standing.
 - **Thickness is squashed or inflated:** normalise per axis only where the brief fixes all three
   dimensions. Otherwise use uniform scale from the key dimension and record the true bbox.
-- **Markings:** a hull number comes out rounded, mirrored or different on each flank, or as a relief
+- **Markings:** a painted number comes out rounded, mirrored or different on each flank, or as a relief
   under the paint. Re-project the stencil onto the texture, flatten the relief (paint has none), or
   paint it in Blender.
 - **Hallucinated underside and stern:** the reason multiview wins. For a remodel, trust only the views
@@ -104,11 +108,11 @@ Glass parts need a second try more often than not (see below).
 
 ## PATINA materials
 
-`fal-ai/patina/material` with a short, physical prompt, e.g. "worn painted steel hull plating, subtle
+`fal-ai/patina/material` with a short, physical prompt, e.g. "worn painted steel plating, subtle
 plate-to-plate tone variation, fine grit, faint streaks", with all five maps and a 2x upscale. Uses:
 - **Tri-planar detail layer:** normal, roughness and cavity at one absolute tile size on every asset
-  (6 m per repeat on the fleet), so plating reads at the same scale everywhere.
-- **Worn-finish sets:** `hullWear` (two-scale plate tone), `hullGrit` (micro grit), `sootStreak`
+  (set by the style, e.g. 6 m per repeat in `cqs-fleet`), so surface detail reads at the same scale everywhere.
+- **Worn-finish sets** (examples from `cqs-fleet`): `hullWear` (two-scale plate tone), `hullGrit` (micro grit), `sootStreak`
   (drive soot).
 - **Full sets for scene-built parts:** deck, radiator, armour, foil, ceramic.
 

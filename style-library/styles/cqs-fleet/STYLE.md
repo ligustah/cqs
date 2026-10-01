@@ -88,35 +88,43 @@ user before inventing one. To add it:
   A small craft gets **fewer** windows, never smaller ones: the fighter's half-size ports made it read
   1.3-1.8x too long.
 
-## Lights (summary; full standard in `lighting-standard.md`)
+## Lights (summary; full standard F1-F17 / R1-R12 in `lighting-standard.md`, which is authoritative)
 
-- **Signature:** the concept art's short, hard-edged amber slits at block corners and in real recesses,
-  with a faint warm spill, never neon tubes.
-- **Supporting lights:**
-  - sparse amber pins at block corners and deck edges;
-  - one amber lamp per crew door;
-  - 2-4 slow beacons;
-  - red / green / white nav lights (0.4 m);
-  - cool drive-status lamps beside the stern light.
-- **Fixture sizes:** one physical size per fixture on every ship. Pins 0.2-0.3 m. Bars 0.14-0.2 m wide
-  (0.26-0.30 m on ships of 200 m and more).
-- **Budgets grow with class.** Audited ranges (`lighting-standard.md` section 4) are fighter 26-34,
-  corvette 115-145, civil 160-195 (built at about 120, reviewed as fine: the range is under review), destroyer
-  about 200-250, carrier exterior 550-800 plus the hangar.
-  - **A new class:** interpolate its budget by visible hull area between the neighbours of similar size and
-    role. Test it with an `OV=` override in `audit.mjs`, add its row to `audit.mjs` and to the standard, and
-    check that the mark order still holds in the lineup.
-  - **Exterior work floods** on industrial faces (F17 outside a hangar) are not yet ruled. Decide with the
-    user, keep them off in transit, and record the rule here. Small craft (under about 100 m) are lit only by
-  authored fixtures: no automatic pins, no rows.
+- **Signature look** (the user: "make it look alive", then "not neon"): short, hard-edged, saturated
+  amber slits at block corners and in real recesses, with a faint warm spill.
+  - Peak modest; colour pre-saturated about 1.3x; halo about 0.1 of the core; no white core; about 3 px
+    wide at the hero view.
+  - Never on grilles, louvres or radiators; never within 1.5 m of glass; never grazing a face.
+
+| Fixture | Size | Colour | Use |
+|---|---|---|---|
+| Corner / recess slit | 0.6-1.8 m long x 0.14-0.2 m wide (0.26-0.30 m on ships of 200 m and more) | amber | block corners, joints, real recesses |
+| Pin lamp | 0.2-0.3 m | amber (white up to 15 %) | block corners, deck edges; never a lone dot on open plating |
+| Door lamp | 0.6 x 0.14 m bar | amber | one per crew door: the human ruler |
+| Beacon | 0.26-0.30 m, slow pulse 3-4 s | amber | 2-4 per ship under 250 m, clear of antennas (a lamp on a whip tip reads as a lamp post) |
+| Nav lights | 0.4 m | red port, green starboard, white stern and strobes | nothing else goes in `lights[]` |
+| Drive status | 0.2 m pins or a short bar | cool blue-white | beside, never through, the white stern light |
+| Window glow | real kit glass only, 0.86-1.0 m | warm, per compartment | crew spaces only |
+| Bridge / cockpit glass | fleet panes | uniform, about 0.6-0.7x the lit cabins as displayed | bridges run dark; a canopy facing the hero camera even less |
+
+- **Fixture sizes:** one physical size per fixture on every ship. Never scaled with the hull.
+- **Budgets grow with class.** Audited ranges (`lighting-standard.md` section 4): fighter 26-34,
+  corvette 115-145, civil 160-195 (built at about 120 and reviewed as fine, so the range is under
+  review), destroyer about 200-250, carrier exterior 550-800 plus the hangar.
+  - **A new class:** interpolate its budget by visible hull area between neighbours of similar size and
+    role. Test it with an `OV=` override in `audit.mjs`, add its row to `audit.mjs` and the standard,
+    and check that the mark order still holds in the lineup.
+- **Small craft** (under about 100 m) are lit only by authored fixtures: no automatic pins, no rows.
+- **Exterior work floods** on industrial faces (F17 outside a hangar) are not yet ruled. Decide with
+  the user, keep them off in transit, and record the rule here.
 - **Windows:**
   - only real kit glass in crew spaces (`livery.glassParts`);
   - lit share by role: warship about 0.45, civil about 0.55;
-  - no compartment edge splits a port;
-  - bridges run dark (about 0.6-0.7x the lit cabins as displayed);
-  - fighter ports stay dark.
+  - no compartment edge splits a port (`tools/lights/cellcut.mjs`);
+  - bridges run dark;
+  - fighter-class ports stay dark (a lit door, two windows and a lamp read as a house front).
 - **At range:** lights thin by rank and fade by true area; kit glass fades like texture glass.
-- **Order:** marks must rise fighter < corvette < civil < destroyer < carrier at hero, range and in the
+- **Order:** marks rise fighter < corvette < civil < destroyer < carrier at hero, at range and in the
   lineup.
 - **Tools:** `Scene3D/tools/lights/` (audit, dump, raycast, cellcut, partbox, marks).
 
