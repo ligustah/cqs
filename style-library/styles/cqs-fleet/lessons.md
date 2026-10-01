@@ -106,3 +106,9 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
     carrier then owns the silhouette and the icons run 1.55-1.73 wide. Anchoring words ("resting on its
     frames", "held only at its stern", "no frame, no ring, no portal surrounds the carrier") stop frames
     returning round the hull.
+28. **Image 1 is the edit target.** Passing an earlier concept as image 1 for a FORM change returned it
+    nearly unchanged (2 of 3 jobs). For a new form, describe the earlier design in words and pass only
+    the ship references. For a local fix (replace the ship), image 1 is right.
+29. **Ship replacement may need two passes.** The first fixed the bow; the stern stayed a sea ship.
+    A second edit naming the leftovers ("round arched ribs, a curved pointed stern, a propeller, a
+    rudder, red-brown bottom paint... the stern ends square at the last octagonal frame, open") fixed it.

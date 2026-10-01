@@ -1417,5 +1417,187 @@
     "note": "Concepts only (correction 23). Cap 6 images used: 4 directions + 2 retries (C, D)."
    }
   }
+ },
+ "v19_concepts_r4": {
+  "date": "2026-10-01",
+  "about": "Shipyard r3 A ship-replacement edits (2 passes); spaceport r3 A with more enclosure (hood, tunnel; 2 copies of r3 A failed). Concepts only.",
+  "approx_usd": 0.9,
+  "jobs": {
+   "round": "r4 (v19)",
+   "note": "Concepts only (correction 23). Cap 6 images, all 6 used.",
+   "total_images": 6,
+   "cost_usd_est": 0.9,
+   "jobs": [
+    {
+     "asset": "shipyard",
+     "key": "SY1",
+     "stage": "ship-replacement edit of r3 A",
+     "requestId": "01a0f5a8-5c1f-7b22-acfd-2d18b590ff32",
+     "prompt": "Edit image 1. Keep image 1 exactly as it is: the same camera, framing, dusk lighting, work floodlights on masts, amber lamps, lit windows, the dark portal gantry with its number 01, the two cranes, the light sheds, trucks, containers, crates, scaffolding, forklifts, workers, rails and ground, all unchanged pixel for pixel. Change ONLY the ship lying in the berth under the gantry: it is wrong, because it is drawn as a sea-going warship (pointed bow, red bottom paint, rounded ribs). Replace it with the DD-12 SPACESHIP of image 2 (and image 3, same ship), lying in the same place and direction on low keel blocks, bow toward the lower left, at the same length, and at an early stage of construction. Its hull is a flat-sided, faceted armoured BOX of nearly the same width from bow to stern, with flat vertical sides, a flat deck and a flat bottom, chamfered long edges; the bow is NOT pointed: the front end is a blunt, squared OCTAGONAL bow ring, a thick chamfered octagonal frame round the large dark square-ish bore of the spinal railgun, exactly like the front of image 2, facing toward the camera at the lower left. Forward third: plated in dark charcoal-grey armour panels as in image 2, the octagonal bow ring, light-grey panel bands with small square ports along the flank, the first boxy twin-gun turret, and the hull number DD-12 painted once on the flank. Middle third: open, bare gunmetal ring frames of the same flat-sided OCTAGONAL cross-section (straight sides, chamfered corners, never round arches) and deck beams with scaffolding, a few pale primer-grey module blocks inside, one module block being lowered from the gantry's hoist into the opening. Aft third: a bare keel spine with a row of bare octagonal ring frames standing on it, no plating, no superstructure, no drive yet; the drive bell stays on the ground beside the stern. Nothing of a sea ship: no pointed, raked or flared bow, no bulbous bow, no curved sheer, no rounded hull bottom, no round arched ribs, no waterline stripe, no red or brown bottom paint, no propeller, no rudder, no anchors, no hawse holes, no funnel, no mast. Original design, not based on any existing franchise. Photoreal, sharp; no added text, the only lettering stays the yard number 01 once and DD-12 once.",
+     "refs": [
+      "https://v3b.fal.media/files/b/0aac952f/-SQNRC-go8UlDoMzE6bo0_HJ3QjHPp.png",
+      "https://v3b.fal.media/files/b/0aac9291/5qmyJzN7SzXjUsAa4Zovm_ref-dd12-v9.jpg",
+      "https://v3b.fal.media/files/b/0aac949f/UJgaQyZc3Qor5g8e6IHKp_lineup-dd12.jpg"
+     ],
+     "url": "https://v3b.fal.media/files/b/0aac9620/dN8gmIGxi9XJ1n8B8XKjA_sw8K6EHt.png",
+     "file": "SY.png",
+     "status": "intermediate: bow/forward half correct DD-12, aft half still sea-ship (round ribs, propeller, rudder, red bottom)",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "params": {
+      "num_images": 1,
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "output_format": "png"
+     },
+     "costUSD": 0.15
+    },
+    {
+     "asset": "shipyard",
+     "key": "SY2",
+     "stage": "aft-half edit of SY1",
+     "requestId": "01a0f5ab-3e93-74e3-abf5-66fb86cfc4c4",
+     "prompt": "Edit image 1. Keep image 1 exactly as it is: the same camera, framing, dusk lighting, floodlights, amber lamps, lit windows, the dark portal gantry with its number 01, the cranes, sheds, trucks, containers, the pale module hanging from the gantry hoist, workers, scaffolding and ground, and also the FRONT half of the ship (the octagonal bow, the plated forward hull, the turret, the DD-12 lettering) all unchanged. Change ONLY the REAR half of the ship, the part beyond the DD-12 lettering, running under the gantry toward the upper right: it is still wrong, drawn as the stern of a sea-going vessel, with round arched ribs, a curved pointed stern, a propeller and a rudder and red-brown bottom paint. Replace it with the bare rear of the DD-12 SPACESHIP of image 2 at an early stage of construction, the same length and direction: a straight flat keel spine on low keel blocks carrying a row of evenly spaced bare gunmetal ring frames, each frame a flat-sided OCTAGON (straight vertical sides, flat top and flat bottom, chamfered corners), all the same size as the plated forward hull's cross-section so the box hull keeps the same width and height to the very end, with deck beams and scaffolding between them; a few pale primer-grey module blocks sit inside the first open frames, the hanging module is being lowered into that opening; the stern simply ends square at the last octagonal frame, open, with no drive fitted; the drive bell stays on the ground beside it. Nothing of a sea ship anywhere: no propeller, no rudder, no shaft, no round arched ribs, no curved or pointed stern, no rounded hull bottom, no red or brown bottom paint, no waterline. Original design, not based on any existing franchise. Photoreal, sharp; no added text, the only lettering stays 01 once and DD-12 once.",
+     "refs": [
+      "https://v3b.fal.media/files/b/0aac9620/dN8gmIGxi9XJ1n8B8XKjA_sw8K6EHt.png",
+      "https://v3b.fal.media/files/b/0aac9291/5qmyJzN7SzXjUsAa4Zovm_ref-dd12-v9.jpg"
+     ],
+     "url": "https://v3b.fal.media/files/b/0aac9633/Ud2U93iR3feHpnlcEOra9_zbwgtrnS.png",
+     "file": "SY2.png",
+     "status": "DELIVERED as images/shipyard-r3-A-fixed.jpg",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "params": {
+      "num_images": 1,
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "output_format": "png"
+     },
+     "costUSD": 0.15
+    },
+    {
+     "asset": "spaceport",
+     "key": "SP-A1 canopy",
+     "stage": "generate, r3 A as image 1",
+     "requestId": "01a0f5a8-a500-7c91-b936-b2df822660fb",
+     "prompt": "Reference roles: image 1 is an earlier concept of THIS SAME orbital spaceport, design direction A, the lean shield yard: keep its design language exactly (thin dark charcoal shield-panel walls with pale off-white chamfered rim frames, light habitat blocks with fine window bands on the top rim, slim gantry arms on rails reaching over the hull, white floodlights, small amber lamps, welding sparks, the part-built carrier inside), but its form is changed as described below; its lettering (STATION 07, CV-) is NOT copied. Image 2 is this fleet's CV-50 carrier, the real ship this station builds: a 900 m long, flat-sided faceted box hull, the same width bow to stern, a squared octagonal bow ring round an open hangar bore, framed rectangular hangar openings along the flank, off-white panelling with golden amber stripes. Draw THAT ship, part-built; do not invent another ship. Image 3 is a close-up paint and finish swatch only (worn off-white thermal paint, panel seams, amber hazard stripes, stencil style); draw nothing else from it. Create a new image of the original orbital SPACEPORT where this civilisation builds its largest warp-capable ships: direction A with MORE ENCLOSURE round the build bay. Form, SHIELD CANOPY: the same single thin dark shield wall stands upright along the carrier's far side, and its top edge FOLDS OVER toward the camera as a sloping partial roof, a cantilevered canopy of the same dark charcoal shield panels with a pale chamfered rim, covering only the far half of the hull's top; in cross-section an inverted L, like a half-open hood. The canopy's leading edge carries the row of light habitat blocks and the floodlights, which shine down onto the hull plating. Below the canopy edge the near side, the whole bottom and both ends stay completely OPEN, so the carrier is clearly seen from the camera side under the hood. Slim gantry arms run on rails under the canopy. Signature: the dark folded hood with its pale rim, the pale carrier half-sheltered under it. THE CARRIER UNDER CONSTRUCTION (the biggest object in the image): the CV-50 lies lengthwise and level inside the station's bay, resting on its frames, entirely within the station's outline, nothing of it projecting beyond it. Its front third is plated in the carrier's off-white panelling with the squared octagonal bow ring and the first framed hangar openings exactly like image 2, a few amber stripes; the rest is still bare: a long straight keel girder carrying a row of evenly spaced open octagonal ring frames of the same full hull section, bare metal and grey primer, with plating panels partly fitted at the transition. No turrets, no island tower, no masts and no engine bells are fitted yet. It is a flat-sided spaceship hull, nothing of a sea ship: no pointed prow, no waterline, no deck house, no funnels. SIZE, the key rule: the carrier dominates the volume of the image. The station is LEAN: its whole outline about 1.2 to 1.4 times the carrier's length and only a little taller and wider than the hull; every wall and roof is a thin plate about 30 m thick against the hull's 400 m width; no bulky mass, no giant blocks, no thick armoured walls. Photorealistic orbital industrial station in a credible near-future 'naval-industrial' design language, like a high-end aerospace concept render: faceted hard-surface modules with chamfered edges, light off-white and pale-grey thermal paint on rims and modules with dark charcoal shield panels and gunmetal accents, realistic weathering, golden safety-amber hazard chevrons (hue about 34 degrees, never salmon, coral or red-orange), small cobalt-blue identification bands. LIGHTS ON, low-key night-shift mood: overall exposure about one stop darker than a bright studio shot, the void a soft mid-light grey, one low raking key light leaving the far sides and the bay interior in deep shadow, the station's own lamps and floods lighting the work; real depth, layered structure in front of and behind the hull; many small hard-edged warm amber lamps at rim corners and joints, white work floodlights throwing pools of light onto the hull plating, a few rows of lit warm habitat windows (most dark), tiny blinking beacons; no neon, no glowing trim lines, no bloom haze. DENSE SMALL DETAIL everywhere as a second layer: hand rails, pipe runs, cable trays, ladders, gantry trolleys, tiny tugs and work pods, stacks of cargo pods, welding sparks at two or three points. Scale cues: 1 m windows on 3 m decks, so habitat blocks carry fine hairline window rows; tugs are specks against the carrier; the station reads as vast, never as a toy. Ships land and take off under their own power: no launch rails, catapults, cradles on legs, launch towers or blast pits. Never show: a closed box hall or roofed shed hiding the hull, a box-girder lattice cage or portal frames round the ship, a long spine lined with berths, a ring or wheel with radial docks. Weightless orbital construction floating alone: nothing stands on legs or pillars, no tower cranes. Unarmed station: no guns. Lettering: one short station code, SP-3, painted exactly once in the whole image on a small dark ID field on the station's rim (not on the carrier); never repeated, no word STATION, no CV-, no other words, letters, numbers, labels or codes anywhere. Original design, not based on any existing franchise. Thumbnail-first massing: from this camera the station and carrier together form ONE compact silhouette, at most about 1.5 times as wide as tall, with one bold signature shape that still reads when shrunk to a 40-pixel icon. Framing: three-quarter view of the whole station from about 45 degrees azimuth off the carrier's bow and about 30 degrees above, so the long axis is foreshortened, the octagonal bow ring turned toward the camera at the lower left, centred, filling about 70% of the frame with even margin. It floats in an empty, seamless light-grey void: no floor, no ground, no cast shadow on any backdrop, no horizon, no planet, no stars. Photoreal, deep focus, sharp throughout.",
+     "refs": [
+      "https://v3b.fal.media/files/b/0aac9529/VMVxbHFwfGHHExexqD8he_PeX9ug2B.png",
+      "https://v3b.fal.media/files/b/0aac9522/aFXU5h5Lt3nnj4GsAncev_ref-cv50-amber.jpg",
+      "https://v3b.fal.media/files/b/0aac9486/GgYVUNyOpsmWVE5eaq0Bk_ref-cv50-flank-amber.jpg"
+     ],
+     "url": "https://v3b.fal.media/files/b/0aac9622/t_msE5fEGUQwrGMmBr3XL_7yxzI3ps.png",
+     "file": "SP-A1.png",
+     "status": "FAILED: near-copy of r3 A (no canopy), darker; not shown",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "params": {
+      "num_images": 1,
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "output_format": "png"
+     },
+     "costUSD": 0.15
+    },
+    {
+     "asset": "spaceport",
+     "key": "SP-B1 C-shell",
+     "stage": "generate, r3 A as image 1",
+     "requestId": "01a0f5a9-2d52-70d1-99e9-bfed4d147470",
+     "prompt": "Reference roles: image 1 is an earlier concept of THIS SAME orbital spaceport, design direction A, the lean shield yard: keep its design language exactly (thin dark charcoal shield-panel walls with pale off-white chamfered rim frames, light habitat blocks with fine window bands on the top rim, slim gantry arms on rails reaching over the hull, white floodlights, small amber lamps, welding sparks, the part-built carrier inside), but its form is changed as described below; its lettering (STATION 07, CV-) is NOT copied. Image 2 is this fleet's CV-50 carrier, the real ship this station builds: a 900 m long, flat-sided faceted box hull, the same width bow to stern, a squared octagonal bow ring round an open hangar bore, framed rectangular hangar openings along the flank, off-white panelling with golden amber stripes. Draw THAT ship, part-built; do not invent another ship. Image 3 is a close-up paint and finish swatch only (worn off-white thermal paint, panel seams, amber hazard stripes, stencil style); draw nothing else from it. Create a new image of the original orbital SPACEPORT where this civilisation builds its largest warp-capable ships: direction A with MORE ENCLOSURE round the build bay. Form, C-SECTION SHELL: the shield wall continues round three sides of the bay as one thin folded shell: the far wall, a roof and a floor, each a flat plane of dark charcoal shield panels with pale chamfered rims at every edge and fold, joined at chamfered corners, so in cross-section it is a squared letter C lying on its side, OPEN along the whole near side facing the camera and open at both ends. The open side is the signature: the pale part-built carrier is seen through it, lit by floods inside the dark shell, like a jewel in an open case. Habitat blocks sit along the roof's outer rim, slim gantry arms reach out of the shell over the hull, radiator fins edge-on at the ends, a docking collar at one lower corner. The shell is thin (about 30 m), only a little larger than the hull, NOT a closed hall: the near side has no wall at all. THE CARRIER UNDER CONSTRUCTION (the biggest object in the image): the CV-50 lies lengthwise and level inside the station's bay, resting on its frames, entirely within the station's outline, nothing of it projecting beyond it. Its front third is plated in the carrier's off-white panelling with the squared octagonal bow ring and the first framed hangar openings exactly like image 2, a few amber stripes; the rest is still bare: a long straight keel girder carrying a row of evenly spaced open octagonal ring frames of the same full hull section, bare metal and grey primer, with plating panels partly fitted at the transition. No turrets, no island tower, no masts and no engine bells are fitted yet. It is a flat-sided spaceship hull, nothing of a sea ship: no pointed prow, no waterline, no deck house, no funnels. SIZE, the key rule: the carrier dominates the volume of the image. The station is LEAN: its whole outline about 1.2 to 1.4 times the carrier's length and only a little taller and wider than the hull; every wall and roof is a thin plate about 30 m thick against the hull's 400 m width; no bulky mass, no giant blocks, no thick armoured walls. Photorealistic orbital industrial station in a credible near-future 'naval-industrial' design language, like a high-end aerospace concept render: faceted hard-surface modules with chamfered edges, light off-white and pale-grey thermal paint on rims and modules with dark charcoal shield panels and gunmetal accents, realistic weathering, golden safety-amber hazard chevrons (hue about 34 degrees, never salmon, coral or red-orange), small cobalt-blue identification bands. LIGHTS ON, low-key night-shift mood: overall exposure about one stop darker than a bright studio shot, the void a soft mid-light grey, one low raking key light leaving the far sides and the bay interior in deep shadow, the station's own lamps and floods lighting the work; real depth, layered structure in front of and behind the hull; many small hard-edged warm amber lamps at rim corners and joints, white work floodlights throwing pools of light onto the hull plating, a few rows of lit warm habitat windows (most dark), tiny blinking beacons; no neon, no glowing trim lines, no bloom haze. DENSE SMALL DETAIL everywhere as a second layer: hand rails, pipe runs, cable trays, ladders, gantry trolleys, tiny tugs and work pods, stacks of cargo pods, welding sparks at two or three points. Scale cues: 1 m windows on 3 m decks, so habitat blocks carry fine hairline window rows; tugs are specks against the carrier; the station reads as vast, never as a toy. Ships land and take off under their own power: no launch rails, catapults, cradles on legs, launch towers or blast pits. Never show: a closed box hall or roofed shed hiding the hull, a box-girder lattice cage or portal frames round the ship, a long spine lined with berths, a ring or wheel with radial docks. Weightless orbital construction floating alone: nothing stands on legs or pillars, no tower cranes. Unarmed station: no guns. Lettering: one short station code, SP-3, painted exactly once in the whole image on a small dark ID field on the station's rim (not on the carrier); never repeated, no word STATION, no CV-, no other words, letters, numbers, labels or codes anywhere. Original design, not based on any existing franchise. Thumbnail-first massing: from this camera the station and carrier together form ONE compact silhouette, at most about 1.5 times as wide as tall, with one bold signature shape that still reads when shrunk to a 40-pixel icon. Framing: three-quarter view of the whole station from about 45 degrees azimuth off the carrier's bow and about 30 degrees above, so the long axis is foreshortened, the octagonal bow ring turned toward the camera at the lower left, centred, filling about 70% of the frame with even margin. It floats in an empty, seamless light-grey void: no floor, no ground, no cast shadow on any backdrop, no horizon, no planet, no stars. Photoreal, deep focus, sharp throughout.",
+     "refs": [
+      "https://v3b.fal.media/files/b/0aac9529/VMVxbHFwfGHHExexqD8he_PeX9ug2B.png",
+      "https://v3b.fal.media/files/b/0aac9522/aFXU5h5Lt3nnj4GsAncev_ref-cv50-amber.jpg",
+      "https://v3b.fal.media/files/b/0aac9486/GgYVUNyOpsmWVE5eaq0Bk_ref-cv50-flank-amber.jpg"
+     ],
+     "url": "https://v3b.fal.media/files/b/0aac9626/JUvtHO9XD-GqypEvKoVCN_IicwZM8V.png",
+     "file": "SP-B1.png",
+     "status": "FAILED: near-copy of r3 A, STATION 07 kept + SP-3 added; not shown",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "params": {
+      "num_images": 1,
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "output_format": "png"
+     },
+     "costUSD": 0.15
+    },
+    {
+     "asset": "spaceport",
+     "key": "SP-C twin walls",
+     "stage": "generate, r3 A as image 1",
+     "requestId": "01a0f5a9-2e51-7871-bc28-5a3fe430cde2",
+     "prompt": "Reference roles: image 1 is an earlier concept of THIS SAME orbital spaceport, design direction A, the lean shield yard: keep its design language exactly (thin dark charcoal shield-panel walls with pale off-white chamfered rim frames, light habitat blocks with fine window bands on the top rim, slim gantry arms on rails reaching over the hull, white floodlights, small amber lamps, welding sparks, the part-built carrier inside), but its form is changed as described below; its lettering (STATION 07, CV-) is NOT copied. Image 2 is this fleet's CV-50 carrier, the real ship this station builds: a 900 m long, flat-sided faceted box hull, the same width bow to stern, a squared octagonal bow ring round an open hangar bore, framed rectangular hangar openings along the flank, off-white panelling with golden amber stripes. Draw THAT ship, part-built; do not invent another ship. Image 3 is a close-up paint and finish swatch only (worn off-white thermal paint, panel seams, amber hazard stripes, stencil style); draw nothing else from it. Create a new image of the original orbital SPACEPORT where this civilisation builds its largest warp-capable ships: direction A with MORE ENCLOSURE round the build bay. Form, TWIN SHIELD WALLS: two thin dark shield walls face each other along the carrier's two sides, the far one full height, the near one LOWER (about half the hull's height, its pale rim below the carrier's deck line so the hull is seen above it), both with pale chamfered rim frames; across the top they are joined by an open ROOF of slim spaced slats: a row of narrow dark shield-panel louvre strips with pale edges and wide gaps between them, through which the hull is seen; gantry trolleys run on the slats. The bay is OPEN AT BOTH ENDS: the octagonal bow ring looks out of the front opening toward the camera. Habitat blocks sit on top of the far wall, floods on both rims. Signature: the dark slatted tunnel with pale rims, the pale bow in its open mouth. It is a lean folded shield, not a hall and not a girder cage: walls are thin plated panels, never lattice frames. THE CARRIER UNDER CONSTRUCTION (the biggest object in the image): the CV-50 lies lengthwise and level inside the station's bay, resting on its frames, entirely within the station's outline, nothing of it projecting beyond it. Its front third is plated in the carrier's off-white panelling with the squared octagonal bow ring and the first framed hangar openings exactly like image 2, a few amber stripes; the rest is still bare: a long straight keel girder carrying a row of evenly spaced open octagonal ring frames of the same full hull section, bare metal and grey primer, with plating panels partly fitted at the transition. No turrets, no island tower, no masts and no engine bells are fitted yet. It is a flat-sided spaceship hull, nothing of a sea ship: no pointed prow, no waterline, no deck house, no funnels. SIZE, the key rule: the carrier dominates the volume of the image. The station is LEAN: its whole outline about 1.2 to 1.4 times the carrier's length and only a little taller and wider than the hull; every wall and roof is a thin plate about 30 m thick against the hull's 400 m width; no bulky mass, no giant blocks, no thick armoured walls. Photorealistic orbital industrial station in a credible near-future 'naval-industrial' design language, like a high-end aerospace concept render: faceted hard-surface modules with chamfered edges, light off-white and pale-grey thermal paint on rims and modules with dark charcoal shield panels and gunmetal accents, realistic weathering, golden safety-amber hazard chevrons (hue about 34 degrees, never salmon, coral or red-orange), small cobalt-blue identification bands. LIGHTS ON, low-key night-shift mood: overall exposure about one stop darker than a bright studio shot, the void a soft mid-light grey, one low raking key light leaving the far sides and the bay interior in deep shadow, the station's own lamps and floods lighting the work; real depth, layered structure in front of and behind the hull; many small hard-edged warm amber lamps at rim corners and joints, white work floodlights throwing pools of light onto the hull plating, a few rows of lit warm habitat windows (most dark), tiny blinking beacons; no neon, no glowing trim lines, no bloom haze. DENSE SMALL DETAIL everywhere as a second layer: hand rails, pipe runs, cable trays, ladders, gantry trolleys, tiny tugs and work pods, stacks of cargo pods, welding sparks at two or three points. Scale cues: 1 m windows on 3 m decks, so habitat blocks carry fine hairline window rows; tugs are specks against the carrier; the station reads as vast, never as a toy. Ships land and take off under their own power: no launch rails, catapults, cradles on legs, launch towers or blast pits. Never show: a closed box hall or roofed shed hiding the hull, a box-girder lattice cage or portal frames round the ship, a long spine lined with berths, a ring or wheel with radial docks. Weightless orbital construction floating alone: nothing stands on legs or pillars, no tower cranes. Unarmed station: no guns. Lettering: one short station code, SP-3, painted exactly once in the whole image on a small dark ID field on the station's rim (not on the carrier); never repeated, no word STATION, no CV-, no other words, letters, numbers, labels or codes anywhere. Original design, not based on any existing franchise. Thumbnail-first massing: from this camera the station and carrier together form ONE compact silhouette, at most about 1.5 times as wide as tall, with one bold signature shape that still reads when shrunk to a 40-pixel icon. Framing: three-quarter view of the whole station from about 45 degrees azimuth off the carrier's bow and about 30 degrees above, so the long axis is foreshortened, the octagonal bow ring turned toward the camera at the lower left, centred, filling about 70% of the frame with even margin. It floats in an empty, seamless light-grey void: no floor, no ground, no cast shadow on any backdrop, no horizon, no planet, no stars. Photoreal, deep focus, sharp throughout.",
+     "refs": [
+      "https://v3b.fal.media/files/b/0aac9529/VMVxbHFwfGHHExexqD8he_PeX9ug2B.png",
+      "https://v3b.fal.media/files/b/0aac9522/aFXU5h5Lt3nnj4GsAncev_ref-cv50-amber.jpg",
+      "https://v3b.fal.media/files/b/0aac9486/GgYVUNyOpsmWVE5eaq0Bk_ref-cv50-flank-amber.jpg"
+     ],
+     "url": "https://v3b.fal.media/files/b/0aac9626/J1CKvVcfeAF_3W-uMupcU_Lu9wbU32.png",
+     "file": "SP-C.png",
+     "status": "DELIVERED as spread-spaceport-r4-B (slatted tunnel)",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "params": {
+      "num_images": 1,
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "output_format": "png"
+     },
+     "costUSD": 0.15
+    },
+    {
+     "asset": "spaceport",
+     "key": "SP-hood",
+     "stage": "generate, CV-50 refs only (no r3 A image)",
+     "requestId": "01a0f5ab-3f7f-7483-9d5d-f616263fe5b1",
+     "prompt": "Design direction: SHIELD HOOD. One thin shield, only 30 m thick, made of a grid of dark charcoal shield panels framed by a pale off-white rim with chamfered corners, is FOLDED into an inverted L round the carrier: an upright wall along the carrier's far side, and, joined to its top by a chamfered pale fold, a flat ROOF that reaches over the hull toward the camera and covers the hull's whole top, ending at the near side in a pale rim with a short down-turned lip. Under the roof the near side, the whole bottom and both ends are completely OPEN: the camera looks in under the hood at the pale part-built carrier, whose near flank is fully visible. Slim gantry arms on rails hang from the underside of the roof over the hull, white floodlights under the roof edge throw pools of light down onto the hull plating; a short row of light habitat blocks with fine window bands stands on top of the roof along the fold; a few thin dark radiator fins edge-on at the two ends; one small docking collar at a lower corner of the wall. Signature: the dark folded hood with its pale rim and lip, the pale carrier sheltered under it.",
+     "prompt_note": "Full submitted text = v18 spaceport A 'Reference roles' paragraph (image 1 CV-50, image 2 swatch) + this form paragraph + the SP common block of prompts.json with these small changes: 'lies lengthwise and level under the hood', 'exactly like image 1', 'wall and roof are thin plates', 'the space under the hood in deep shadow', no CV- clause, 'dark ID field on the station's pale rim'. Exact text is retrievable from the fal request payload.",
+     "refs": [
+      "https://v3b.fal.media/files/b/0aac9522/aFXU5h5Lt3nnj4GsAncev_ref-cv50-amber.jpg",
+      "https://v3b.fal.media/files/b/0aac9486/GgYVUNyOpsmWVE5eaq0Bk_ref-cv50-flank-amber.jpg"
+     ],
+     "url": "https://v3b.fal.media/files/b/0aac9633/SvU9L1C2NnRQhfNk3HGw5_Sgw3Tc7O.png",
+     "file": "SP-hood.png",
+     "status": "DELIVERED as spread-spaceport-r4-A (shield hood)",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "params": {
+      "num_images": 1,
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "output_format": "png"
+     },
+     "costUSD": 0.15
+    }
+   ],
+   "thumbs": {
+    "spaceport": {
+     "r3 A": [
+      1.73,
+      0.46
+     ],
+     "A hood": [
+      1.6,
+      0.5
+     ],
+     "B tunnel": [
+      1.35,
+      0.59
+     ]
+    },
+    "shipyard (crop, --no-trim)": {
+     "r3 A": [
+      1.26,
+      0.63
+     ],
+     "A fixed": [
+      1.26,
+      0.63
+     ]
+    }
+   },
+   "deliverables": [
+    "style-library/styles/cqs-fleet/images/shipyard-r3-A-fixed.jpg",
+    "style-library/styles/cqs-fleet/images/spread-spaceport-r4.jpg",
+    "style-library/styles/cqs-fleet/images/spread-spaceport-r4-A.jpg",
+    "style-library/styles/cqs-fleet/images/spread-spaceport-r4-B.jpg"
+   ]
+  }
  }
 }
