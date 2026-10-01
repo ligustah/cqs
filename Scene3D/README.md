@@ -2,7 +2,8 @@
 
 A real-time three.js scene of the reboot's orbital ships: fighter, corvette,
 civil ship (freighter / troop transport), destroyer and the fleet carrier, in
-orbit above a planet. Every hull, texture and tiling material was generated
+orbit above a planet, plus the first ground unit (the V-31 vehicle) and two buildings (the planetside
+shipyard and the SP-3 orbital spaceport, which also orbits near the fleet). Every hull, texture and tiling material was generated
 with fal.ai; three.js plays Blender's role (import, clean-up, materials,
 lighting, rendering). All ships share one scale derived from the game's own
 unit data.
@@ -24,10 +25,19 @@ node tools/serve.mjs 8080      # any static server works
 
 | View | URL | What it shows |
 | --- | --- | --- |
-| Fleet in orbit | `#fleet` (default), `?mode=fleet&shot=hero\|high\|stern` | Carrier group above the planet: parked ships in the carrier's open bays (21 fighters, 2 corvettes, a destroyer and a cargo ship; with the 3 fighters of the launch cycle that is exactly its 50-slot legal load), a launch and recovery cycle through the bow mouth, escorts, fighter patrols, the logistics convoy |
-| Scale lineup | `#lineup`, close-up `?lineup=small#lineup` | Scale chart: sterns aligned on a metre ruler (ticks every 10 m to 100 m, then every 100 m), one row per class labelled by callouts on the stern side, a 1-slot reference cube, a 1.8 m crew member, a neutral 10 m / 100 m grid, and an optional 50-fighter hangar load (`hangar=1`). The default view frames the whole 900 m chart, with a detail box in the empty grid that shows the `lineup=small` framing (a second render of the same scene); `lineup=small` frames only the small ships, the cube and the crew member, like the enlarged inset of a technical drawing (also linked from the toggles bar and the detail box) |
-| Ship studio | `?mode=ship&ship=carrier&az=35&el=18&dist=1` | One ship, framed for inspection (`fighter`, `corvette`, `freighter`, `destroyer`, `carrier`; `variant=troops`; the carrier's hangar is parked by default (`parked=0` empties it, `parked=1` aims the camera at it); `debug=1` shows axes, a metre grid, engine/light anchors and the hangar box). The camera fits the hull's own silhouette (sampled mesh vertices), not its bounding box. Stills are shot over the planet (`planet=0` for black; the interactive studio adds it with `planet`), and the studio key is placed relative to the camera, 85 degrees round from its azimuth and 30 degrees up, so every view splits into a lit and a shadowed plane (`sunaz=`/`sunel=` override, in degrees) |
-| Check | `?mode=check` | Builds every ship and reports envelopes, slots and hangar fits (used by `tools/scale-check.mjs`) |
+| Fleet in orbit | `#fleet` (default), `?mode=fleet&shot=hero\|high\|stern\|spaceport` | Carrier group above the planet: parked ships in the carrier's open bays (21 fighters, 2 corvettes, a destroyer and a cargo ship; with the 3 fighters of the launch cycle that is exactly its 50-slot legal load), a launch and recovery cycle through the bow mouth, escorts, fighter patrols, the logistics convoy, and the SP-3 spaceport 3 km off the starboard bow (yawed 30 degrees so its open berth faces the group; `shot=spaceport` frames it from 2 km). Ground units never appear here |
+| Scale lineup | `#lineup`, close-up `?lineup=small#lineup` | Scale chart: sterns aligned on a metre ruler (ticks every 10 m to 100 m, then every 100 m), one row per class (the 7 m V-31 vehicle in the front row, beside the slot cube and the crew member: "ground unit, true size") labelled by callouts on the stern side, a 1-slot reference cube, a 1.8 m crew member, a neutral 10 m / 100 m grid, and an optional 50-fighter hangar load (`hangar=1`). The default view frames the whole 900 m chart, with a detail box in the empty grid that shows the `lineup=small` framing (a second render of the same scene); `lineup=small` frames only the small ships, the cube and the crew member, like the enlarged inset of a technical drawing (also linked from the toggles bar and the detail box) |
+| Ship studio | `?mode=ship&ship=carrier&az=35&el=18&dist=1`, `#vehicle` | One ship or ground unit, framed for inspection (`fighter`, `corvette`, `freighter`, `destroyer`, `carrier`, `vehicle`; `variant=troops`; the carrier's hangar is parked by default (`parked=0` empties it, `parked=1` aims the camera at it); `debug=1` shows axes, a metre grid, engine/light anchors and the hangar box). The camera fits the hull's own silhouette (sampled mesh vertices), not its bounding box. Stills are shot over the planet (`planet=0` for black; the interactive studio adds it with `planet`), and the studio key is placed relative to the camera, 85 degrees round from its azimuth and 30 degrees up, so every view splits into a lit and a shadowed plane (`sunaz=`/`sunel=` override, in degrees) |
+| Building view | `?mode=building&building=shipyard\|spaceport`, `#shipyard`, `#spaceport` (`?mode=ship&ship=spaceport` is an alias) | One building at true size in the studio rig, dimmed by the building's own `studio` hint (the shipyard's dusk: exposure 1.25, a lower key, lamps x1.3); camera from 35 / 30 degrees (`az=`, `el=`), fitted to the silhouette (`dist=` scales it), or `focus=x,y,z&dist=m` for a close-up on a point of the building (metres, its own frame). The shipyard shows the real DD-12 cut back to its build state in the berth; the spaceport the real CV-50 under construction and four docked CT-4s (drives cold) |
+| Check | `?mode=check` | Builds every ship and the vehicle and reports envelopes, slots and hangar fits (used by `tools/scale-check.mjs`) |
+
+The view switch in the page header (Fleet in orbit, Scale lineup, Vehicle, Shipyard, Spaceport) uses the `#` routes.
+
+Registries (`src/ships/index.js`): `ORDER` (the five fleet classes: fleet scene, hangar loads, scale check), `GROUND`
+(ground units: ship studio and lineup only, never in the orbital fleet) and `BUILDINGS` (id -> module path and
+`fleet: true` when the fleet scene places it). A building module exports `meta`, a `load()` or `preload()` hook (its GLB
+and the real ship GLBs it reuses), `build(palette, { library })` and an optional `studio` hint; `buildBuilding()` builds
+it at true size (never slot-normalised). `src/lib/scale.js` `CLASSES` has an entry for each (size null).
 
 Controls: drag to orbit, scroll to zoom, double-click a ship to fly to it and
 follow it. The spec sheet shows each ship's dimensions, crew, hangar loads and
@@ -253,19 +263,20 @@ legal load (two destroyers and two civil ships nose to tail across the frames, t
 fighters in the bow section, three fighters on the launch and recovery cycle: 37
 of 50 slots). `node tools/scale-check.mjs` verifies all of this against the
 geometry that is actually rendered, including a ray-cast test that the hangar box
-lies inside the hull:
+lies inside the hull (the V-31 vehicle is listed at its true size: a ground unit, no hangar slots):
 
 <!-- scale-table -->
 ```
 slot volume: 70000 m^3
 
 class             size  L x B x H (m)             volume    slots   design scale  tris     draws
-fighter           1     71.71 x 46.87 x 20.83     70000     1       0.9994        78068    10
+fighter           1     71.71 x 46.87 x 20.83     70000     1       0.9994        63379    10
 corvette          5     108.04 x 69.41 x 46.67    350000    5       0.9992        129852   17
 freighter         4     134.14 x 54.69 x 38.17    280000    4       1.0001        95927    22
-destroyer         12    202.87 x 55.95 x 74.01    840000    12      1.0008        163581   14
+destroyer         12    203.13 x 56.02 x 73.82    840000    12      1.002         179620   14
 carrier           -     900 x 406.04 x 319.33     116695859 -       1             314854   17
 freighter:troops  4     128.82 x 57.73 x 37.65    280000    4       0.9998        126827   16
+vehicle           -     6.95 x 2.63 x 2.99        55        -       1             40387    9
 
 carrier hangar (clear, L x B x H): 670 x 155.8 x 84.4 m
   fighter           need 50  fits 81   OK
@@ -287,12 +298,14 @@ Scene3D/
   index.html            page shell, UI overlay, import map
   pipeline/             fal-pipeline.json: every prompt and parameter
   assets/concepts/      fal concept art (WebP)
-  assets/ships/         optimised fal meshes (GLB); raw/ is gitignored
+  assets/ships/         optimised fal meshes and remodelled hulls (GLB, incl. the vehicle); raw/ is gitignored
+  assets/buildings/     shipyard.glb, spaceport.glb (Blender builds, tools/blender/buildings/)
   assets/materials/     PATINA tiling PBR sets + manifest.json
   src/main.js           renderer, views, camera, post-processing
   src/fleet.js          fleet composition and choreography
   src/ui.js             ship registry and spec sheet
-  src/ships/*.js        one module per class: meta + asset config (GLB, orientation, length, anchors)
+  src/ships/*.js        one module per class: meta + asset config (GLB, orientation, length, anchors); index.js = registries
+  src/buildings/*.js    shipyard.js, spaceport.js: building modules (load hook, build, studio hint)
   src/lib/glbship.js    GLB -> scene ship (orientation, size, livery, detail, nozzle glow, anchors)
   src/lib/livery.js     dark matte operational repaint of the generated textures
   src/lib/patina.js     PATINA library, full materials and the tri-planar detail layer
@@ -305,8 +318,10 @@ Scene3D/
   src/env/*.js          lighting rig, sky, sun, planet
   src/lib/finish.js     worn hull finish and screen-space AO
   src/lib/device.js     phone (lite) tier
-  assets/parts*/        parts kits (fal and procedural Blender)
-  tools/blender/        Blender pipeline: kit.py, hulls/ (remodel per ship), assemble.py, straighten.py
+  assets/parts*/        parts kits (fal and procedural Blender, incl. the ground-unit parts; parts-yard/ and
+                        parts-spaceport/: the building kits)
+  tools/blender/        Blender pipeline: kit.py, parts_ground.py, hulls/ (remodel per ship and the vehicle),
+                        buildings/ (shipyard, spaceport, their kits), assemble.py, straighten.py
   tools/                server, stills, GLB inspection, scale check, fal ingest/optimise, artifact packaging
 ```
 
@@ -319,7 +334,8 @@ node tools/shoot.mjs "mode=ship&ship=destroyer&az=35&el=18" shots/destroyer.png
 node tools/render-glb.mjs any/where/ship.glb shots/ship --rot 0,-90,0   # GLB inspection stills + contact sheet + mesh info
 node tools/thumbs/thumbs.mjs shots/thumbs.png "Fighter=a.png" "Vehicle=b.png"   # icon readability test: 80 / 40 px squares on the game UI panel
 node tools/ingest-fal.mjs results.json   # download fal outputs: concepts, meshes (optimised), PATINA maps
-node tools/build-artifact.mjs   # single-page package for sharing (+ lite copies for phones)
+node tools/build-artifact.mjs   # single-page package for sharing (+ lite copies for phones; ships, vehicle, buildings, building kits)
+node tools/shoot.mjs "mode=building&building=shipyard" shots/shipyard.png
 PY=<venv>/bin/python tools/blender/hulls/build.sh corvette /tmp/work   # rebuild a hull (bpy 5.0)
 ```
 

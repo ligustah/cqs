@@ -785,6 +785,35 @@
    "aim": "lamp faces +Y, pitched 25 degrees toward +Z",
    "about": "floodlight on a yoke"
   },
+  "foilBox": {
+   "file": "foilBox.glb",
+   "part": "foilBox",
+   "size": 0.32,
+   "tris": 268,
+   "bbox": {
+    "min": [
+     -0.2,
+     -0.2,
+     0.0
+    ],
+    "max": [
+     0.2,
+     0.2,
+     0.363
+    ],
+    "size": [
+     0.4,
+     0.4,
+     0.363
+    ]
+   },
+   "tex": 256,
+   "kb": 16,
+   "seconds": 15.7,
+   "seconds_build": 0.2,
+   "seconds_bake": 5.8,
+   "about": "0.32 m sensor box wrapped in gold MLI foil on a gunmetal plinth"
+  },
   "ladder": {
    "file": "ladder.glb",
    "part": "ladder",
@@ -815,6 +844,44 @@
    "rungs": 10,
    "pitch": 0.3,
    "about": "ladder along Y, rungs every 0.3 m"
+  },
+  "markerLamp": {
+   "file": "markerLamp.glb",
+   "part": "markerLamp",
+   "size": null,
+   "tris": 312,
+   "bbox": {
+    "min": [
+     -0.13,
+     -0.08,
+     0.0
+    ],
+    "max": [
+     0.13,
+     0.082,
+     0.13
+    ],
+    "size": [
+     0.26,
+     0.162,
+     0.13
+    ]
+   },
+   "tex": 256,
+   "kb": 18,
+   "seconds": 14.2,
+   "seconds_build": 0.3,
+   "seconds_bake": 7.2,
+   "lens": [
+    0,
+    -0.01,
+    0.09
+   ],
+   "lensSize": [
+    0.16,
+    0.048
+   ],
+   "about": "covered convoy / marker lamp 0.22 x 0.12 m: hooded slit lens; the runtime light goes at `lens`"
   },
   "missilePod": {
    "file": "missilePod.glb",
@@ -1211,6 +1278,113 @@
    ],
    "about": "RCS quad block with an outboard nozzle"
   },
+  "roofHatch": {
+   "file": "roofHatch.glb",
+   "part": "roofHatch",
+   "size": null,
+   "tris": 1496,
+   "bbox": {
+    "min": [
+     -0.5,
+     -0.5,
+     0.0
+    ],
+    "max": [
+     0.5,
+     0.5,
+     0.225
+    ],
+    "size": [
+     1.0,
+     1.0,
+     0.225
+    ]
+   },
+   "tex": 512,
+   "kb": 65,
+   "seconds": 16.0,
+   "seconds_build": 0.2,
+   "seconds_bake": 9.8,
+   "diameter": 0.8,
+   "about": "round armoured roof hatch 0.8 m with a periscope, hinge at -Y"
+  },
+  "rws": {
+   "file": "rws.glb",
+   "part": "rws",
+   "size": null,
+   "tris": 2300,
+   "bbox": {
+    "min": [
+     -0.41,
+     -0.41,
+     0.0
+    ],
+    "max": [
+     0.41,
+     1.28,
+     0.49
+    ],
+    "size": [
+     0.82,
+     1.69,
+     0.49
+    ]
+   },
+   "tex": 512,
+   "kb": 88,
+   "seconds": 18.8,
+   "seconds_build": 0.2,
+   "seconds_bake": 11.6,
+   "ring": 0.72,
+   "trunnion": [
+    0,
+    0.03,
+    0.37
+   ],
+   "muzzle": [
+    0,
+    1.28,
+    0.37
+   ],
+   "height": 0.49,
+   "about": "remote weapon station: 0.72 m ring, heavy-MG barrel along +Y, sensor head (+X), ammo box (-X); mount on the roof with up = forward"
+  },
+  "suspension": {
+   "file": "suspension.glb",
+   "part": "suspension",
+   "size": null,
+   "tris": 2104,
+   "bbox": {
+    "min": [
+     -0.36,
+     -0.26,
+     0.0
+    ],
+    "max": [
+     0.36,
+     0.75,
+     0.315
+    ],
+    "size": [
+     0.72,
+     1.01,
+     0.315
+    ]
+   },
+   "tex": 512,
+   "kb": 96,
+   "seconds": 13.0,
+   "seconds_build": 0.2,
+   "seconds_bake": 9.9,
+   "reach": 0.24,
+   "top": 0.62,
+   "hub": [
+    0,
+    0,
+    0.315
+   ],
+   "about": "double-wishbone corner with a coil-over; hull wall at z = 0, hub at z = 0.315, damper top 0.62 m above the axle"
+  },
   "torpedoDoor": {
    "file": "torpedoDoor.glb",
    "part": "torpedoDoor",
@@ -1373,6 +1547,49 @@
    "height": 3.38,
    "about": "twin gun turret on a barbette, guns along +Y; 1 x 2 m access door on the +X wall"
   },
+  "vehicleDoor": {
+   "file": "vehicleDoor.glb",
+   "part": "vehicleDoor",
+   "size": null,
+   "tris": 1636,
+   "bbox": {
+    "min": [
+     -0.505,
+     -0.7,
+     0.0
+    ],
+    "max": [
+     0.5,
+     0.7,
+     0.144
+    ],
+    "size": [
+     1.005,
+     1.4,
+     0.144
+    ]
+   },
+   "tex": 512,
+   "kb": 60,
+   "seconds": 17.7,
+   "seconds_build": 0.2,
+   "seconds_bake": 13.1,
+   "leaf": [
+    0.9,
+    1.3
+   ],
+   "frame": [
+    1.0,
+    1.4,
+    0.07
+   ],
+   "visionBlock": [
+    0,
+    0.351,
+    0.07
+   ],
+   "about": "armoured vehicle door, 0.9 x 1.3 m leaf, surface-mounted frame; hinges -X, handle +X"
+  },
   "vent": {
    "file": "vent.glb",
    "part": "vent",
@@ -1401,6 +1618,47 @@
    "seconds_build": 0.1,
    "seconds_bake": 3.8,
    "about": "louvred hull vent 1.2 x 0.8 m"
+  },
+  "wheel": {
+   "file": "wheel.glb",
+   "part": "wheel",
+   "size": null,
+   "tris": 8032,
+   "bbox": {
+    "min": [
+     -0.577,
+     -0.577,
+     0.0
+    ],
+    "max": [
+     0.577,
+     0.577,
+     0.435
+    ],
+    "size": [
+     1.154,
+     1.154,
+     0.435
+    ]
+   },
+   "tex": 1024,
+   "kb": 379,
+   "seconds": 30.8,
+   "seconds_build": 0.4,
+   "seconds_bake": 27.9,
+   "about": "road wheel: 1.15 m deep-tread tyre, 0.42 m wide, bead-lock steel rim; axle along +Z, origin = centre of the inner face",
+   "diameter": 1.15,
+   "width": 0.42,
+   "axle": [
+    0,
+    0,
+    0
+   ],
+   "outer": [
+    0,
+    0,
+    0.42
+   ]
   }
  }
 }

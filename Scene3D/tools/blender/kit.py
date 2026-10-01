@@ -24,7 +24,8 @@ README
   AO grime, curvature edge wear) and an ORM map -> one glTF material -> GLB -> the repo's
   tools/optimize-glb.mjs (WebP textures, meshopt) -> assets/parts-blender/<file>.glb.
   Modules: lib.py (builders, materials, bake, export), parts_human.py (human-scale reference
-  parts), parts_weapons.py, parts_drive.py (bells, housing, radiator), parts_greeble.py.
+  parts), parts_weapons.py, parts_drive.py (bells, housing, radiator), parts_greeble.py, parts_ground.py (ground vehicles:
+  wheel, suspension, rws, roofHatch, vehicleDoor, markerLamp, foilBox).
 """
 import argparse
 import json
@@ -43,9 +44,10 @@ import parts_human  # noqa: E402
 import parts_weapons  # noqa: E402
 import parts_drive  # noqa: E402
 import parts_greeble  # noqa: E402
+import parts_ground  # noqa: E402
 
 REGISTRY = {}
-for mod in (parts_human, parts_weapons, parts_drive, parts_greeble):
+for mod in (parts_human, parts_weapons, parts_drive, parts_greeble, parts_ground):
     REGISTRY.update(mod.PARTS)
 
 OUT = os.path.join(ROOT, 'assets', 'parts-blender')

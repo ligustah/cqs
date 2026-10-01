@@ -1,0 +1,450 @@
+{
+ "about": "V-31 wheeled 4x4 (ground unit), v3 REMODEL: the body is clean hard-surface geometry built by tools/blender/hulls/vehicle.py to the brief's true size (vehicle frame = ship frame, metres, front +Z, up +Y, left +X; ground at y = 0, not re-centred), textured by vehicle_paint.py over paint.py; this spec places the procedural kit (assets/parts-blender, +Z mounts) on it at scale 1.",
+ "hull": {
+  "glb": "HULL_GLB_FROM_COMMAND_LINE",
+  "rotate": [
+   0,
+   0,
+   0
+  ],
+  "scale": 1.0,
+  "centre": false
+ },
+ "partsDir": "../../../assets/parts-blender",
+ "kits": {
+  "fal": "../../../assets/parts"
+ },
+ "partDefaults": {
+  "vehicleDoor": {
+   "sink": 0.0
+  },
+  "roofHatch": {
+   "sink": 0.01
+  },
+  "rws": {
+   "sink": 0.0
+  },
+  "vent": {
+   "sink": 0.02
+  },
+  "foilBox": {
+   "sink": 0.0
+  },
+  "markerLamp": {
+   "sink": 0.0
+  },
+  "wheel": {
+   "sink": 0.0
+  },
+  "suspension": {
+   "sink": 0.0
+  }
+ },
+ "fixes": {
+  "wheel": {
+   "decimate": 0.6
+  },
+  "suspension": {
+   "decimate": 0.7
+  },
+  "rws": {
+   "decimate": 0.7
+  },
+  "roofHatch": {
+   "decimate": 0.6
+  },
+  "vehicleDoor": {
+   "decimate": 0.6
+  },
+  "markerLamp": {
+   "decimate": 0.8
+  },
+  "foilBox": {
+   "decimate": 0.8
+  },
+  "vent": {
+   "decimate": 0.7
+  }
+ },
+ "seat": {
+  "maxGap": 0.08,
+  "maxBury": 0.2,
+  "drop": true
+ },
+ "bake": {
+  "ao": true,
+  "res": 2048,
+  "distance": 0.15,
+  "samples": 16,
+  "aa": 4,
+  "strength": 0.6
+ },
+ "placements": [
+  {
+   "id": "road wheels (kit wheel 1.15 m, inner face at x +-0.88)",
+   "part": "wheel",
+   "p": [
+    0.88,
+    0.575,
+    1.8
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "suspension corners on the wheelhouse wall",
+   "part": "suspension",
+   "p": [
+    0.84,
+    0.575,
+    1.8
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "wheel",
+   "p": [
+    0.88,
+    0.575,
+    -2.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "suspension",
+   "p": [
+    0.84,
+    0.575,
+    -2.0
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "flank doors (kit vehicleDoor 0.9 x 1.3 m), cab and rear-flank",
+   "part": "vehicleDoor",
+   "p": [
+    1.1,
+    1.5,
+    0.53
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "vehicleDoor",
+   "p": [
+    1.1,
+    1.5,
+    -0.75
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "tail door",
+   "part": "vehicleDoor",
+   "p": [
+    0.0,
+    1.55,
+    -3.25
+   ],
+   "n": [
+    0,
+    0,
+    -1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "roof hatches (kit roofHatch 0.8 m)",
+   "part": "roofHatch",
+   "p": [
+    0.0,
+    2.5,
+    0.75
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "part": "roofHatch",
+   "p": [
+    0.0,
+    2.5,
+    -0.15
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "remote weapon station (kit rws), gun forward",
+   "part": "rws",
+   "p": [
+    0.0,
+    2.5,
+    -1.22
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "engine-deck grille (kit vent, long axis across)",
+   "part": "vent",
+   "p": [
+    0.0,
+    2.5,
+    -2.42
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "foil-wrapped sensor box (kit foilBox)",
+   "part": "foilBox",
+   "p": [
+    0.52,
+    2.5,
+    -1.72
+   ],
+   "n": [
+    0,
+    1,
+    0
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "front covered lamps, upright on the collar cheeks",
+   "part": "markerLamp",
+   "p": [
+    0.835,
+    1.33,
+    3.34
+   ],
+   "n": [
+    0,
+    0,
+    1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "rot": 90,
+   "snap": false,
+   "mirrorX": true,
+   "seat": {
+    "check": false
+   }
+  },
+  {
+   "id": "amber side markers on the bonnet flank",
+   "part": "markerLamp",
+   "p": [
+    1.0,
+    1.34,
+    2.86
+   ],
+   "n": [
+    1,
+    0,
+    0
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "snap": true,
+   "normal": "hit",
+   "mirrorX": true
+  },
+  {
+   "id": "tail lamps beside the tail door",
+   "part": "markerLamp",
+   "p": [
+    0.77,
+    2.02,
+    -3.25
+   ],
+   "n": [
+    0,
+    0,
+    -1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "snap": true,
+   "mirrorX": true
+  },
+  {
+   "id": "covered convoy lamp over the tail door",
+   "part": "markerLamp",
+   "p": [
+    0,
+    2.34,
+    -3.25
+   ],
+   "n": [
+    0,
+    0,
+    -1
+   ],
+   "up": [
+    0,
+    1,
+    0
+   ],
+   "snap": true
+  }
+ ]
+}

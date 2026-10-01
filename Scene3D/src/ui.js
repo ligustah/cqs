@@ -1,8 +1,8 @@
 // Overlay UI: mode switch, fleet registry, and ship spec sheet.
-import { SLOT_VOLUME, carrierLoads } from './lib/scale.js';
+import { SLOT_VOLUME, carrierLoads, sizeLabel } from './lib/scale.js';
 import * as THREE from 'three';
 
-export function createUI({ mode, still, world, classes, order, envelopes = {}, onMode, onFocus, onToggle }) {
+export function createUI({ mode, view = mode, still, world, classes, order, envelopes = {}, onMode, onFocus, onToggle }) {
   const root = document.getElementById('ui');
   if (!root || still) { if (root) root.hidden = true; return { select() {} }; }
 
@@ -15,10 +15,11 @@ export function createUI({ mode, still, world, classes, order, envelopes = {}, o
 
   const fmt = (v, d = 1) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 
-  // mode switch
+  // view switch: fleet / lineup modes, and the studio views of the ground unit and the buildings (#vehicle, #shipyard,
+  // #spaceport); `view` is the mode, or the ship / building on view
   root.querySelectorAll('[data-mode]').forEach((b) => {
-    b.setAttribute('aria-pressed', String(b.dataset.mode === mode));
-    b.addEventListener('click', () => { if (b.dataset.mode !== mode) onMode(b.dataset.mode); });
+    b.setAttribute('aria-pressed', String(b.dataset.mode === view));
+    b.addEventListener('click', () => { if (b.dataset.mode !== view) onMode(b.dataset.mode); });
   });
 
   // registry
@@ -37,7 +38,7 @@ export function createUI({ mode, still, world, classes, order, envelopes = {}, o
       <span class="reg-name">${spec.label}</span>
       <span class="reg-class">${s.meta?.name ?? ''}</span>
       <span class="reg-len">${fmt(s.envelope.size.z)} m</span>
-      <span class="reg-slots">${spec.size ? `${spec.size} slot${spec.size > 1 ? 's' : ''}` : `hangar ${spec.capacity}`}</span>`;
+      <span class="reg-slots">${sizeLabel(spec)}</span>`;
     btn.addEventListener('click', () => { select(cls); onFocus(cls); });
     li.appendChild(btn);
     list.appendChild(li);
@@ -62,7 +63,7 @@ export function createUI({ mode, still, world, classes, order, envelopes = {}, o
         </tbody></table>`;
     }
     sheet.innerHTML = `
-      <p class="eyebrow">${s.source?.gameId || spec.gameId} · ${spec.size ? `${spec.size} hangar slot${spec.size > 1 ? 's' : ''}` : `carries ${spec.capacity} slots`}</p>
+      <p class="eyebrow">${s.source?.gameId || spec.gameId} · ${sizeLabel(spec, { long: true })}</p>
       <h2>${s.meta?.name ?? spec.label}</h2>
       <p class="role">${s.meta?.blurb || spec.role}</p>
       <dl class="specs">

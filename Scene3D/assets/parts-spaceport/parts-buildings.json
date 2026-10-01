@@ -1,0 +1,162 @@
+{
+ "generator": "tools/blender/buildings/spaceport_kit.py",
+ "frame": "metres, +Y up, +Z forward, +X left",
+ "parts": {
+  "habBlock": {
+   "file": "habBlock.glb",
+   "tris": 176,
+   "bbox": [
+    [
+     -8.05,
+     0.0,
+     -20.0
+    ],
+    [
+     8.05,
+     25.5,
+     20.5
+    ]
+   ],
+   "size": [
+    16.1,
+    25.5,
+    40.5
+   ],
+   "mount": {
+    "normal": "+Y"
+   },
+   "note": "habitat / cargo block 40 x 16 m, 5 decks of 3 m on a 2 m plinth; length along Z; kit ports at habBlock_ports(), crew door on the +Z end at (0, 2, L/2 + 0.5)",
+   "generator": "tools/blender/buildings/spaceport_kit.py"
+  },
+  "clampArm": {
+   "file": "clampArm.glb",
+   "tris": 1288,
+   "bbox": [
+    [
+     -8.0,
+     0.0,
+     -8.0
+    ],
+    [
+     8.0,
+     26.2,
+     8.0
+    ]
+   ],
+   "size": [
+    16.0,
+    26.2,
+    16.0
+   ],
+   "mount": {
+    "normal": "+Y"
+   },
+   "note": "docking clamp arm: base plate at y = 0, cradle face at y = 24 (reach), jaws along X",
+   "generator": "tools/blender/buildings/spaceport_kit.py"
+  },
+  "manipulator": {
+   "file": "manipulator.glb",
+   "tris": 288,
+   "bbox": [
+    [
+     -4.5,
+     0.0,
+     -4.5
+    ],
+    [
+     4.5,
+     38.13,
+     53.43
+    ]
+   ],
+   "size": [
+    9.0,
+    38.13,
+    57.93
+   ],
+   "mount": {
+    "normal": "+Y"
+   },
+   "note": "two-link manipulator arm (34 + 30 m) on a turret, base at y = 0; boom in the YZ plane; flood head at the wrist",
+   "generator": "tools/blender/buildings/spaceport_kit.py"
+  },
+  "gantryCrane": {
+   "file": "gantryCrane.glb",
+   "tris": 1124,
+   "bbox": [
+    [
+     -65.0,
+     -37.0,
+     -8.0
+    ],
+    [
+     65.0,
+     8.3,
+     8.0
+    ]
+   ],
+   "size": [
+    130.0,
+    45.3,
+    16.0
+   ],
+   "mount": {
+    "normal": "bridge"
+   },
+   "note": "bridge crane: bridge girders at y = 0 along X (span 120 here, parametric), legs down to rail bogies, trolley and hoist",
+   "generator": "tools/blender/buildings/spaceport_kit.py"
+  },
+  "radiatorArray": {
+   "file": "radiatorArray.glb",
+   "tris": 2908,
+   "bbox": [
+    [
+     -15.5,
+     0.0,
+     -3.0
+    ],
+    [
+     15.5,
+     122.12,
+     3.0
+    ]
+   ],
+   "size": [
+    31.0,
+    122.12,
+    6.0
+   ],
+   "mount": {
+    "normal": "+Y"
+   },
+   "note": "lattice mast (root y = 0) with 3 pairs of thin 12 x 34 m radiator panels; solar=True gives dark cells",
+   "generator": "tools/blender/buildings/spaceport_kit.py"
+  },
+  "tug": {
+   "file": "tug.glb",
+   "tris": 528,
+   "bbox": [
+    [
+     -8.4,
+     -4.33,
+     -11.0
+    ],
+    [
+     8.4,
+     8.0,
+     10.1
+    ]
+   ],
+   "size": [
+    16.8,
+    12.33,
+    21.1
+   ],
+   "mount": {
+    "normal": "centre"
+   },
+   "note": "24 m yard tug, bow +Z: cab, push plate with fenders, four drive pods (exhaust -Z)",
+   "generator": "tools/blender/buildings/spaceport_kit.py"
+  }
+ }
+}

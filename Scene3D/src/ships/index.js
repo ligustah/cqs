@@ -6,8 +6,26 @@ import { ShipBuilder, geo } from '../lib/kit.js';
 import { loadGLB, buildGLBShip } from '../lib/glbship.js';
 import { loadParts, composeParts } from '../lib/compose.js';
 
+// orbital fleet classes: the fleet scene, the hangar loads, the scale check
 export const ORDER = ['fighter', 'corvette', 'freighter', 'destroyer', 'carrier'];
+// ground units (true size, scale.js size null): ship studio (?mode=ship&ship=<id>) and the lineup only; never placed in
+// the orbital fleet. Built through the same ship path as ORDER.
+export const GROUND = ['vehicle'];
+// Buildings (src/buildings/<id>.js), shown in the building view ?mode=building&building=<id> (or #<id>;
+// ?mode=ship&ship=<id> is an alias). fleet: also placed in the orbital fleet scene (fleet.js). Module contract:
+// `meta`, an async load hook (`load()` or `preload()`: the GLBs it needs, including the real ship GLBs it reuses),
+// `build(palette, { library })` -> Group with userData.ship (envelope, lights) and optionally userData.building
+// { effectTargets } (the sub-groups that carry their own light records; default: the group itself), and an optional
+// `studio` hint for the building view ({ exposure, key, fill, rim, kick, env, lightscapeGain, az, el, dist }).
+export const BUILDINGS = {
+  shipyard: { module: '../buildings/shipyard.js', fleet: false },
+  spaceport: { module: '../buildings/spaceport.js', fleet: true },
+};
+/** Every class the ship path builds (studio, lineup): the fleet classes and the ground units. */
+export const LINEUP = [...GROUND, ...ORDER];
 export const SHIPS = {};
+const BUILDING_MODS = {};
+const BUILDINGS_LOADED = new Set();
 export const LOAD_ERRORS = {};
 const GLTFS = {};
 const PARTS = {}; // parts kit GLBs by part name (assets/parts)
@@ -37,6 +55,57 @@ export async function loadShips(only = ORDER) {
     }
   }));
   return SHIPS;
+}
+
+/** Import a building module (no assets yet); null if it fails. */
+export async function importBuilding(id) {
+  if (BUILDING_MODS[id]) return BUILDING_MODS[id];
+  try {
+    if (!BUILDINGS[id]) throw new Error(`unknown building ${id}`);
+    BUILDING_MODS[id] = await import(BUILDINGS[id].module);
+  } catch (e) {
+    LOAD_ERRORS[id] = String(e?.stack || e);
+    console.error(`[buildings] failed to import ${id}:`, e);
+    return null;
+  }
+  return BUILDING_MODS[id];
+}
+
+/** Load building modules and their assets (load() / preload() hooks). Safe to call more than once. */
+export async function loadBuildings(ids = Object.keys(BUILDINGS)) {
+  await Promise.all(ids.map(async (id) => {
+    const mod = await importBuilding(id);
+    if (!mod || BUILDINGS_LOADED.has(id)) return;
+    try {
+      await (mod.load ?? mod.preload)?.();
+      BUILDINGS_LOADED.add(id);
+    } catch (e) {
+      LOAD_ERRORS[id] = String(e?.stack || e);
+      console.error(`[buildings] failed to load ${id}:`, e);
+    }
+  }));
+}
+
+/**
+ * Build a building (real size, never normalised). Always a fresh build: a building is placed once per view, and its
+ * effect targets are sub-groups of this instance. userData.ship gets cls/meta/spec like a ship; userData.building
+ * { id, meta, studio, effectTargets }.
+ */
+export function buildBuilding(id, palette) {
+  const mod = BUILDING_MODS[id];
+  let group;
+  try {
+    if (!BUILDINGS_LOADED.has(id)) throw new Error(LOAD_ERRORS[id] || `${id} not loaded`);
+    group = mod.build(palette, { library: CONTEXT.library });
+  } catch (e) {
+    console.error(`[buildings] ${id}.build failed:`, e);
+    LOAD_ERRORS[id] = LOAD_ERRORS[id] || String(e?.stack || e);
+    group = fallback(id, palette);
+  }
+  const b = (group.userData.building ||= {});
+  Object.assign(b, { id, meta: b.meta ?? mod?.meta, studio: b.studio ?? mod?.studio ?? null, effectTargets: b.effectTargets ?? [group] });
+  Object.assign(group.userData.ship, { cls: id, meta: mod?.meta ?? { name: id }, spec: CLASSES[id], scaleCorrection: 1 });
+  return group;
 }
 
 function fallback(cls, palette) {

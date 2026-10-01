@@ -1,8 +1,10 @@
 # Assets built in this style
 
-All of them are in `Scene3D/`. Each has its module in `src/ships/<id>.js`, its GLB in
+All of them are in `Scene3D/`. Each ship and ground unit has its module in `src/ships/<id>.js`, its GLB in
 `assets/ships/<id>.glb`, its hull script and spec in `tools/blender/hulls/<id>*.py` and
-`tools/blender/specs/<id>-v3.json`, and its build notes in `tools/blender/hulls/README-<id>.md`.
+`tools/blender/specs/<id>-v3.json`, and its build notes in `tools/blender/hulls/README-<id>.md`. Buildings have their
+module in `src/buildings/<id>.js`, their GLB in `assets/buildings/<id>.glb`, their scripts in `tools/blender/buildings/`,
+their spec in `tools/blender/specs/<id>-v1.json` and their notes in `tools/blender/buildings/README-<id>.md`.
 
 | Asset | Length | Crew | Signature | Status |
 |---|---|---|---|---|
@@ -12,14 +14,16 @@ All of them are in `Scene3D/`. Each has its module in `src/ships/<id>.js`, its G
 | CT-7 troop transport | 129 m | 750 troops | same spine, four habitat cylinders in the girder | remodelled, v14 lights |
 | DD-12 Bastion destroyer | 203 m | about 2,000 | spinal railgun through a blunt octagonal bow, 12 turret-M, broadside sponsons, VLS, armoured command block, lattice mast | remodelled (v9 polish), v14 lights |
 | CV-50 Keystone carrier | 900 m | about 20,000 | open-flank through-deck hangar (670 x 155.8 x 84.4 m) parking every legal load, 40-deck island, bow mouth | remodelled, v14 lights |
+| V-31 Kestrel light armoured vehicle | 6.95 m (body 6.5 x 2.6 x 2.5 m) | 2-4 | ground unit at true size: tall faceted cab with a flat roof to the tail, gunmetal nose collar, four 1.15 m tyres on double wishbones, RWS behind two round roof hatches, 7 covered lamps | built v1; ship studio `#vehicle` and the lineup (front row), never in the orbital fleet |
+| SY-1 planetside shipyard | 250 m berth, yard about 250 x 270 m | yard crew | dark portal gantry "01" over one berth, two luffing cranes, light workshop halls, flood masts; the real DD-12 cut back to its build state; dusk | built v1; building view `#shipyard` |
+| SP-3 orbital spaceport | 1,131 m | about 6,000 | two offset dark half-shells with pale rims round the berth, habitat blocks, cranes, manipulator arms; the real CV-50 under construction (bow plated, frames aft), four docked CT-4s | built v1; building view `#spaceport`, in the fleet scene 3 km off the carrier's starboard bow (`shot=spaceport`) |
 
 Known open item: the reactor-flank CT-4 / CT-7 stencil reads like a row of small windows at steep
 angles. It needs a paint change in `freighter_paint.py` and a rebuild.
 
 ## In design
 
-| Asset | Brief | Stage | Spread |
-|---|---|---|---|
-| V-31 ground vehicle (base "jeep" chassis) | `briefs/vehicle.md` | 3: concept settled (A, correction 19); modelling | `images/spread-vehicle-r1.jpg` (A) |
-| Planetside shipyard | `briefs/shipyard.md` | 3: concept settled (r3 A fixed, corrections 28); modelling | `images/shipyard-r3-A-fixed.jpg` |
-| Orbital spaceport | `briefs/spaceport.md` | 3: concept settled (r6, corrections 31-32); modelling | `images/spaceport-r6.jpg` |
+None. The three assets built in v1 keep their briefs and concepts: V-31 `briefs/vehicle.md`,
+`images/spread-vehicle-r1.jpg` (A), review sheet `images/build-vehicle-v1.jpg`; shipyard `briefs/shipyard.md`,
+`images/shipyard-r3-A-fixed.jpg`, review sheet `images/build-shipyard-v1.jpg`; spaceport `briefs/spaceport.md`,
+`images/spaceport-r6.jpg`, review sheet `images/build-spaceport-v1.jpg`.

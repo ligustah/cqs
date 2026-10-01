@@ -493,6 +493,8 @@ MATS = {
     'ceramic':  ((0.22, 0.215, 0.21), 'paint', 0.8, 0.0),     # throat plate / refractory
     'hazard':   ((0.55, 0.40, 0.08), 'hazard', 0.6, 0.0),     # worn safety stripes (livery dims them)
     'lens':     ((0.55, 0.56, 0.56), 'glass', 0.1, 0.0),      # frosted lamp lens (not a window)
+    'foil':     ((0.78, 0.60, 0.28), 'metal', 0.3, 0.85),     # gold MLI foil (sensor boxes; parts_ground.foil_box)
+    'foil2':    ((0.62, 0.47, 0.22), 'metal', 0.4, 0.8),      # foil tape seams
 }
 BAKE = {'ao': 0.35, 'curv': 0.02, 'panel': (1.6, 1.1, 1.6)}   # set per part by kit.py
 

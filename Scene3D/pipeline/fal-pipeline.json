@@ -1789,5 +1789,69 @@
     }
    ]
   }
+ },
+ "v22_vehicle_build": {
+  "date": "2026-10-01",
+  "asset": "vehicle (V-31, wheeled 4x4, concept A, correction 19)",
+  "about": "Stages 3-4 of the V-31 build: one 4K turnaround of the approved concept A2, then a Tripo H3.1 multiview blueprint. The installed model is the parametric Blender remodel (tools/blender/hulls/vehicle.py), built to the brief's 6.5 x 2.6 x 2.5 m.",
+  "approx_usd": 0.9,
+  "cap_usd": 2.5,
+  "jobs": [
+   {
+    "key": "turnaround",
+    "endpoint": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a0f752-4c69-7123-86e0-a82781848692",
+    "inputs": {
+     "image_urls": [
+      "https://v3b.fal.media/files/b/0aac92cf/Dkvm0JP61YPXyEqM0fJZB_jqd1dpC9.png"
+     ],
+     "num_images": 1,
+     "resolution": "4K",
+     "aspect_ratio": "3:2",
+     "output_format": "png",
+     "prompt": "Technical orthographic turnaround sheet of EXACTLY this armoured wheeled ground vehicle (same design, proportions, light off-white paint, gunmetal nose collar and belly band, amber corner hatching, one amber flank band, cobalt square, V-31 stencil, weathering). Remove the standing person: the vehicle only. Six views in a clean 3 x 2 grid of equal cells on a plain seamless light-grey background: top row: FRONT view (straight at the nose, camera level), LEFT SIDE view (straight at the left side, nose pointing left), BACK view (straight at the tail with the rear door, camera level); bottom row: RIGHT SIDE view (straight at the right side, nose pointing right), TOP view (plan view straight down, nose pointing up), BOTTOM view (straight up at the belly, nose pointing up). The vehicle is 6.5 m long, 2.6 m wide and 2.5 m tall to the flat roof, which runs unbroken from the cab to the tail; chamfered octagonal cross-section; four large deep-tread tyres about 1.15 m in diameter in faceted wheel arches; a small remote weapon station on the roof behind two round hatches. Orthographic long-lens projection, every view at the same scale, centred in its cell with margin, soft even studio lighting, matte, no cast shadows, no floor, no text, no labels, no captions, no grid lines. Photorealistic studio photograph of a detailed physical model."
+    },
+    "url": "https://v3b.fal.media/files/b/0aaca10a/Aa64cdiREabQ7ziVAimjj_br3MrKWM.png",
+    "size": [
+     5056,
+     3392
+    ],
+    "cost_usd_est": 0.3,
+    "result_note": "5 views, not 6 (front, left, back, right, and a top view labelled BOTTOM) and it added captions anyway; front / left / back / right are consistent (same markings both flanks, V-31 not mirrored) and were used. Side views read about 6.5 x 2.77 m body when the length is normalised (the brief's 2.5 m height wins at remodel)."
+   },
+   {
+    "key": "crops",
+    "note": "local PIL crops of front / left / back / right at ONE common scale (2300 px square from the 4K sheet, resized to 1200), uploaded to fal storage",
+    "urls": {
+     "front": "https://v3b.fal.media/files/b/0aaca11f/DMrYU4uoMQBG9FtNoks3W_v31_mv_front.png",
+     "left": "https://v3b.fal.media/files/b/0aaca11f/jNuissPhbf0LFYma8ceLo_v31_mv_left.png",
+     "back": "https://v3b.fal.media/files/b/0aaca11f/NwmbHjnNlm-TnJmGbYYIK_v31_mv_back.png",
+     "right": "https://v3b.fal.media/files/b/0aaca11f/f9VVuj70XoQirqZ3A_H7-_v31_mv_right.png"
+    }
+   },
+   {
+    "key": "blueprint",
+    "endpoint": "tripo3d/h3.1/multiview-to-3d",
+    "requestId": "01a0f756-18b6-72f3-b6c8-d82190a37205",
+    "taskId": "6f380170-1685-49d1-83d0-af81499b4fee",
+    "inputs": {
+     "image_urls": [
+      "front",
+      "left",
+      "back",
+      "right (crops above)"
+     ],
+     "face_limit": 60000,
+     "texture": true,
+     "pbr": true,
+     "texture_quality": "detailed",
+     "geometry_quality": "detailed"
+    },
+    "url": "https://v3b.fal.media/files/b/0aaca134/mhgzdAVvfZpMcXm1067S4_model.glb",
+    "preview": "https://v3b.fal.media/files/b/0aaca134/STr1Qtej6aDRBKRzhRLY4_preview.png",
+    "file": "assets/ships/raw/vehicle.glb (gitignored)",
+    "cost_usd_est": 0.6
+   }
+  ]
  }
 }

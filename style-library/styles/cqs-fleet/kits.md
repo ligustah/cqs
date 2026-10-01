@@ -1,6 +1,9 @@
 # Parts kits (cqs-fleet)
 
-Two kits, both at true metric size. Data (bbox, tris, mount, fal jobs, the engine data for bells) is in each kit's `parts.json`, and the contact sheets are the `kit-sheet.webp` files next to them.
+Two ship kits (procedural and fal), the procedural kit's ground-unit family, and two building kits (yard, spaceport),
+all at true metric size. Data (bbox, tris, mount, fal jobs, the engine data for bells, anchors) is in each kit's
+`parts.json` (`parts-buildings.json` for the spaceport kit), and the contact sheets are the `kit-sheet.webp` files next
+to them.
 
 **The two kits use different mount axes.**
 - Procedural kit: every part mounts with **+Z out of the mounting surface**, including stand-on parts such as the container and the antenna.
@@ -48,6 +51,21 @@ Two kits, both at true metric size. Data (bbox, tris, mount, fal jobs, the engin
 | turret-S | 4.48 x 11.24 x 3.80 | twin gun turret on a barbette, guns along +Y; 1 x 2 m access door on the +X wall |
 | vent | 1.39 x 0.99 x 0.19 | louvred hull vent 1.2 x 0.8 m |
 
+### Ground-unit parts (procedural kit family, `tools/blender/parts_ground.py`, files in `assets/parts-blender/`)
+
+First used by the V-31 vehicle. True size like every kit part: a heavier ground unit (the tank chassis, later module
+variants) gets more wheels or more hatches, never bigger ones. Mount +Z out of the surface, as the procedural kit.
+
+| Part | Size w x h x d (m) | Notes |
+|---|---|---|
+| foilBox | 0.40 x 0.40 x 0.36 | 0.32 m sensor box in gold MLI foil on a gunmetal plinth (ground units; `parts_ground.py`) |
+| markerLamp | 0.26 x 0.16 x 0.13 | covered convoy / marker lamp 0.22 x 0.12 m, hooded slit lens; runtime light at `lens` (ground units) |
+| roofHatch | 1.00 x 1.00 x 0.23 | round armoured roof hatch 0.8 m with a periscope, hinge at -Y (ground units) |
+| rws | 0.82 x 1.69 x 0.49 | remote weapon station: 0.72 m ring, heavy-MG barrel along +Y, sensor head, ammo box; roof mount, up = forward (ground units) |
+| suspension | 0.72 x 1.01 x 0.32 | double-wishbone corner + coil-over; hull wall at z = 0, hub at z = 0.315, damper top 0.62 m above the axle (ground units) |
+| vehicleDoor | 1.00 x 1.40 x 0.14 | armoured vehicle door, 0.9 x 1.3 m leaf, surface-mounted frame, vision block; hinges -X (ground units: the ship's 1 x 2 m door does not fit a 2.5 m vehicle) |
+| wheel | 1.15 x 1.15 x 0.44 | road wheel, 1.15 m deep-tread tyre, 0.42 m wide, bead-lock rim; axle along +Z, origin = centre of the inner face (ground units) |
+
 ## fal kit: `Scene3D/assets/parts/` (nano-banana-pro/edit + Tripo H3.1, `tools/parts/`)
 
 | Part | Size w x h x d (m) | Notes |
@@ -76,6 +94,49 @@ Two kits, both at true metric size. Data (bbox, tris, mount, fal jobs, the engin
 | radiator | 10.00 x 6.17 x 1.38 | Radiator panel on a gunmetal root hinge beam with two knuckles, chamfered frame, vertical fins between top and bottom manifold pipes; fins on both faces (Tripo mirrored). |
 | sensorArray | 4.00 x 3.23 x 0.96 | Phased-array panel 4 x 3.23 m: chamfered off-white frame, 4 x 3 grid of dark emitter tiles, junction box at the bottom edge. Mirrored onto the back by Tripo, so 0.96 m deep; sink it ~0.6 m (position.z = -0.6). |
 | dockingClamp | 2.33 x 3.00 x 2.38 | Docking clamp: 2 x 2 m bolted base plate, two opposing jaw arms (one gunmetal, one off-white) closing over a round padded socket, driven by two hydraulic cylinders; 2.34 x 3 x 2.39 m. |
+
+## Yard kit: `Scene3D/assets/parts-yard/` (`tools/blender/buildings/yard_kit.py`)
+
+First used by the planetside shipyard. Mount: every yard part stands on y = 0 (`mount.normal` +Y), origin at the
+footprint centre, front +Z. Anchors (lamps, beacons, obstruction lights, slits, windows, floods, doors, panes, vents,
+ladders, hook) are in `parts.json`; doors, panes, vents, ladders, floodlights and containers on them are the fleet
+procedural kit's parts.
+
+| Part | Size w x h x d (m) | Notes |
+|---|---|---|
+| gantry | 112 x 115 x 51.2 | portal gantry: span 96 m, 95 m clear, double box girder, A-frame legs, crab with hoist house, fleet-stencil number (`mark`), tex 4096 |
+| crane-A / crane-B | ~55 x 81-85 x 14-16 | level-luffing portal crane (12 m gauge, 70 m light jib with amber bands, beak, hook); one bake per pose (`slew`, `luff`, `hook`) |
+| hall | 37.3 x 24.1 x 81.3 | workshop hall segment 80 x 36 m, light cladding, pilasters, chamfered roof, half-open 20 x 14 m end door, side roller doors; anchors for kit doors / panes / vents / ladder |
+| floodMast | 2.6 x 32.2 x 2.0 | 32 m mast, head frame for 6 kit floodlights (anchors.floods, spot anchor anchors.light) |
+| scaffold-S / M / L | 5.2 x 9 / 15 / 23 x 1.5 | scaffold tower, 2.5 x 1.3 m bays, 2 m lifts (4 / 7 / 11), amber toe boards |
+| truck | 2.64 x 4.55 x 17.2 | semi: cab-over tractor + 13.6 m box trailer |
+| forklift | 1.37 x 3.1 x 4.0 | counterbalance forklift, amber |
+| worker | 0.64 x 1.8 x 0.27 | 1.8 m crew figure (the fleet ruler), amber vest, hard hat |
+| keelBlock | 3.0 x 2.0 x 2.2 | keel / bilge block; scale y for other heights |
+| bollard | 0.36 x 1.17 x 0.36 | lamp bollard; its amber lamp is a lightscape pin at anchors.lamp |
+
+Container stacks are a placement macro (`shipyard_spec.container_stack`) over the fleet kit `container`, not a part.
+
+## Spaceport kit: `Scene3D/assets/parts-spaceport/` (`tools/blender/buildings/spaceport_kit.py`, `parts-buildings.json`)
+
+First used by the SP-3 orbital spaceport. Parametric functions (the GLBs are one baked instance each), vertex-coloured
+(no UVs, no textures), true metric size.
+
+| Part | Size w x h x d (m) | Notes |
+|---|---|---|
+| habBlock(L, W, decks) | 16.1 x 25.5 x 40.5 (40 x 16, 5 decks) | +Y, length along Z; chamfered body on a 2 m plinth, 3 m decks, roof plant, door bay on +Z, amber corner marks; `habBlock_ports()` gives the kit-port positions |
+| clampArm(reach) | 16 x 26.2 x 16 (reach 24) | +Y, cradle at y = reach; base plate, two truss arms, rams, cradle with jaws and amber pads |
+| manipulator(yaw, a1, a2, l1, l2) | 9 x 38 x 58 (34 + 30 m) | +Y; turret, boom with hazard band, forearm, wrist, effector, cable; returns the tip |
+| gantryCrane(span, legL, legR) | 130 x 45 x 16 (span 120) | bridge at y = 0 along X; twin pale box girders, amber stripe, truss legs to rail bogies, trolley, hoist and hook block |
+| radiatorArray(n, w, h, solar) | 31 x 122 x 6 (3 pairs of 12 x 34 m) | +Y; lattice mast, thin panels on outriggers (finned radiators or dark solar cells) |
+| tug() | 16.8 x 12.3 x 21.1 | centre, bow +Z; yard tug: cab, push plate with fenders, four drive pods |
+| truss(p0, p1, w) | - | square lattice (chords, rings, diagonals), the building block of masts, legs, cradles (function only, no GLB) |
+
+**Merge pending.** The yard kit (textured, baked per part) and the spaceport kit (vertex-coloured, parametric) are two
+building kits with different material models. Merge them into one building kit (one mount convention, +Y stand-on,
+one `parts.json`) when the next installation is built; until then pick the yard kit for planetside buildings and the
+spaceport kit for orbital ones, and reuse the fleet procedural kit for every human-scale part (doors, ports, panes,
+rails, ladders, floodlights, containers).
 
 ## Built into asset scripts (not kit files)
 

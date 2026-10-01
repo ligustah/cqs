@@ -26,7 +26,25 @@ export const CLASSES = {
   freighter: { size: 4,  label: 'Civil ship',  gameId: 'FREIGHTER', role: 'Cargo / troop transport' },
   destroyer: { size: 12, label: 'Destroyer',   gameId: 'DESTROYER', role: 'Heavy line warship' },
   carrier:   { size: null, capacity: 50, label: 'Carrier', gameId: 'CARRIER', role: 'Warp-capable fleet carrier' },
+  // Not hangar-slot classes (size null: normalizeShip leaves them at their authored real size; carrierLoads and the
+  // hangar check only read the five space classes above).
+  // Ground unit (ships/index.js GROUND: ship studio and lineup only, never in the orbital fleet). ground = the game's
+  // ground-transport size (UnitEnum VEHICLE: 3; a CT-7 carries 750).
+  vehicle:   { size: null, ground: 3, label: 'Vehicle', gameId: 'VEHICLE', role: 'Fast armoured all-terrain ground unit' },
+  // Buildings (ships/index.js BUILDINGS: the building view ?mode=building&building=<id>; the spaceport also orbits in
+  // the fleet scene). Never in ORDER, the lineup or the scale check.
+  shipyard:  { size: null, building: 'planetside', label: 'Shipyard', gameId: 'SHIPYARD', role: 'Planetside yard: builds the line warships' },
+  spaceport: { size: null, building: 'orbital', label: 'Spaceport', gameId: 'SPACEPORT', role: 'Orbital shipyard: builds the warp-capable units' },
 };
+
+/** Short label for a class's size stat: hangar slots, carrier capacity, ground unit or building. */
+export function sizeLabel(spec, { long = false } = {}) {
+  if (spec.size) return `${spec.size}${long ? ' hangar' : ''} slot${spec.size > 1 ? 's' : ''}`;
+  if (spec.capacity) return long ? `carries ${spec.capacity} slots` : `hangar ${spec.capacity}`;
+  if (spec.ground) return long ? 'ground unit, true size' : 'ground unit';
+  if (spec.building) return `${spec.building} building`;
+  return '';
+}
 
 export const CLEARANCE = 2; // metres around each parked hull
 

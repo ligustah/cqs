@@ -13,7 +13,9 @@
 //     launch and recovery cycle (lib/launch.js): a deck lift in the enclosed bow section
 //     raises each fighter onto the centreline lane, the deck catapults it out of the bow
 //     mouth, it lights its drive clear of the bow, climbs away, flies a wide loop and
-//     glides back in to the recovery lift. It is only ever hidden below the deck.
+//     glides back in to the recovery lift. It is only ever hidden below the deck;
+//   - the SP-3 orbital spaceport (a building, src/buildings/spaceport.js, ships/index.js BUILDINGS with fleet: true)
+//     3 km off the starboard bow. Ground units (ships/index.js GROUND) are never placed here.
 import * as THREE from 'three';
 import { parkInHangar, DEFAULT_LOADOUT, LAUNCH_CYCLE_FIGHTERS } from './lib/park.js';
 import { launchCycle } from './lib/launch.js';
@@ -28,7 +30,7 @@ const V = (x, y, z) => new THREE.Vector3(x, y, z);
 // (UnitEnum CARRIER spaceTransport = 50).
 const HANGAR_LOADOUT = DEFAULT_LOADOUT;
 
-export function buildFleet({ palette, buildShip, attachEffects }) {
+export function buildFleet({ palette, buildShip, attachEffects, buildBuilding = null, buildings = [] }) {
   const root = new THREE.Group();
   root.name = 'fleet';
   const ships = [];
@@ -73,6 +75,26 @@ export function buildFleet({ palette, buildShip, attachEffects }) {
   place('freighter', V(354, 4, -775), { yaw: 3, variant: 'cargo' });
   place('freighter', V(409, 38, -868), { yaw: 3, variant: 'troops' });
   place('freighter', V(304, 42, -907), { yaw: 2, variant: 'cargo' });
+
+  // --- orbital buildings (main.js loads every BUILDINGS entry with fleet: true and passes the ids) ----------------
+  // the SP-3 spaceport: 3 km off the starboard bow, yawed 30 degrees so its open slot faces the group; the drives of
+  // its tugs and docked freighters stay cold. Not in the shadow box (below). Its own shot: ?shot=spaceport
+  const SPACEPORT_AT = V(-2600, -150, 1900);
+  let spaceport = null;
+  if (buildBuilding && buildings.includes('spaceport')) {
+    const g = buildBuilding('spaceport', palette);
+    const s = g.userData.ship;
+    const holder = new THREE.Group();
+    holder.position.copy(SPACEPORT_AT);
+    holder.rotation.set(0, THREE.MathUtils.degToRad(-30), 0);
+    g.position.sub(s.envelope.center);
+    holder.add(g);
+    holder.userData.ship = s;
+    root.add(holder);
+    for (const t of g.userData.building.effectTargets) effects.push(attachEffects(t, { power: 0 }));
+    spaceport = { group: holder, ship: g, cls: 'spaceport', base: SPACEPORT_AT.clone(), phase: 0, bob: 0, building: true };
+    ships.push(spaceport);
+  }
 
   // --- fighters ---------------------------------------------------------------
   const fighters = [];
@@ -151,7 +173,8 @@ export function buildFleet({ palette, buildShip, attachEffects }) {
   }
 
   const shadowBox = new THREE.Box3();
-  for (const s of ships) if (s.cls !== 'fighter') shadowBox.expandByObject(s.group);
+  // (buildings are left out: the spaceport 3 km off would spread the shadow map over the whole gap)
+  for (const s of ships) if (s.cls !== 'fighter' && !s.building) shadowBox.expandByObject(s.group);
 
   // camera shots (world = carrier frame). The planet is true scale (planet.js): the fleet is
   // 400 km up, so its horizon sits 3.5-36 degrees below the fleet's horizontal depending on the
@@ -177,6 +200,8 @@ export function buildFleet({ palette, buildShip, attachEffects }) {
     // own bells to starboard, the limb across the lower third
     stern: { pos: V(330, 300, -1250), target: V(110, -70, -400), horizon: 5 },
   };
+  // the spaceport: 45 degrees off its bow on the slot side, 30 degrees up, 2 km out (only when it is placed)
+  if (spaceport) shots.spaceport = { pos: V(-2152, 850, 3574), target: SPACEPORT_AT.clone(), fov: 34, horizon: 5 };
 
   return {
     root, ships, effects, shadowBox, shots, parked,

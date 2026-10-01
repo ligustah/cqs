@@ -1,6 +1,8 @@
 // Package the scene as a claude.ai Artifact: the page body (the host adds the
 // document skeleton) plus every module under src/ and every asset under assets/
-// (GLBs, concept art, PATINA maps; not assets/ships/raw) as supporting files.
+// (GLBs, concept art, PATINA maps; not assets/ships/raw) as supporting files. That includes the ground unit
+// (assets/ships/vehicle.glb), the buildings (assets/buildings/*.glb) and the building kits (assets/parts-yard/,
+// assets/parts-spaceport/), each GLB with its phone-tier lite copy made here.
 //   node tools/build-artifact.mjs  -> dist/orbital-fleet.html + dist/files.json
 import { readFile, writeFile, mkdir, readdir, stat } from 'node:fs/promises';
 import { join, relative, dirname } from 'node:path';
@@ -24,17 +26,21 @@ await writeFile(join(ROOT, 'dist/orbital-fleet.html'), html);
 const files = {};
 const TYPES = { '.glb': 'model/gltf-binary', '.webp': 'image/webp', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg' };
 const MAX = 15e6;
-// phone-tier texture caps: ships 1024 px (the carrier 2048: it fills the frame), kit parts 512
+// phone-tier texture caps: ships and buildings 1024 px (the carrier 2048: it fills the frame), kit parts 512
+// (parts, parts-yard, parts-spaceport)
 const liteTex = (rel) => (rel.includes('/parts') ? 512 : rel.endsWith('carrier.glb') ? 2048 : 1024);
 let bytes = 0;
 async function walk(dir, keep) {
   for (const e of await readdir(dir, { withFileTypes: true })) {
     const p = join(dir, e.name);
     const rel = relative(ROOT, p).split('\\').join('/');
-    // raw meshes and the parts kits stay out: assembled ships carry their parts in their own GLB
+    // raw meshes and the ship parts kits stay out: assembled ships carry their parts in their own GLB. The building
+    // kits (parts-yard, parts-spaceport) ship with the buildings.
     if (e.isDirectory()) { if (!['assets/ships/raw', 'assets/parts', 'assets/parts-blender'].includes(rel)) await walk(p, keep); continue; }
     const ext = e.name.slice(e.name.lastIndexOf('.'));
     if (!keep(ext)) continue;
+    // local lite copies (e.g. assets/buildings/*.lite.glb) are not shipped as models: every GLB's lite copy is made below
+    if (e.name.endsWith('.lite.glb')) continue;
     const size = (await stat(p)).size;
     if (size > MAX) throw new Error(`${rel} is ${(size / 1e6).toFixed(1)} MB (> 15 MB artifact limit)`);
     bytes += size;
@@ -69,4 +75,7 @@ async function walk(dir, keep) {
 await walk(join(ROOT, 'src'), (ext) => ext === '.js');
 await walk(join(ROOT, 'assets'), (ext) => ext in TYPES);
 await writeFile(join(ROOT, 'dist/files.json'), JSON.stringify(files, null, 2));
-console.log(`dist/orbital-fleet.html + ${Object.keys(files).length} supporting files, ${(bytes / 1e6).toFixed(1)} MB`);
+const page = (await stat(join(ROOT, 'dist/orbital-fleet.html'))).size;
+let largest = ['', 0];
+for (const [k, v] of Object.entries(files)) { const sz = (await stat(join(ROOT, typeof v === 'string' ? v : v.from))).size; if (sz > largest[1]) largest = [k, sz]; }
+console.log(`dist/orbital-fleet.html (${(page / 1e3).toFixed(1)} kB page) + ${Object.keys(files).length} supporting files, ${(bytes / 1e6).toFixed(1)} MB; largest ${largest[0]} ${(largest[1] / 1e6).toFixed(1)} MB`);

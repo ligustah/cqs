@@ -1,5 +1,5 @@
 // CQS reboot — orbital fleet scene.
-// Modes (query ?mode=… or #token): fleet (default) | lineup | ship | check
+// Modes (query ?mode=… or #token): fleet (default) | lineup | ship | building | check
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
@@ -11,9 +11,9 @@ import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 
 import { createPalette } from './lib/materials.js';
 import { attachEffects, LIGHTSCAPE_GAIN } from './lib/effects.js';
-import { CLASSES, SLOT_VOLUME, carrierLoads } from './lib/scale.js';
+import { CLASSES, SLOT_VOLUME, carrierLoads, sizeLabel } from './lib/scale.js';
 import { hangarInsideFraction } from './lib/hangar.js';
-import { buildShip, loadShips, setShipContext, LOAD_ERRORS, ORDER } from './ships/index.js';
+import { buildShip, loadShips, setShipContext, LOAD_ERRORS, ORDER, GROUND, LINEUP, BUILDINGS, importBuilding, loadBuildings, buildBuilding } from './ships/index.js';
 import { loadPatinaLibrary, proceduralStandIn } from './lib/patina.js';
 import { setLiveryScheme } from './lib/glbship.js';
 import { panelSet } from './lib/textures.js';
@@ -32,7 +32,19 @@ const params = new URLSearchParams(location.search);
 const EXPOSURE = 1.7; // default tone-mapping exposure (see start())
 const hash = location.hash.replace('#', '');
 const HASH_MODES = ['fleet', 'lineup'];
-const mode = params.get('mode') || (HASH_MODES.includes(hash) ? hash : (ORDER.includes(hash) ? 'ship' : 'fleet'));
+// #<ship or ground unit> opens the ship studio, #<building> the building view
+let mode = params.get('mode') || (HASH_MODES.includes(hash) ? hash : LINEUP.includes(hash) ? 'ship' : BUILDINGS[hash] ? 'building' : 'fleet');
+// one route per building: ?mode=building&building=<id>; ?mode=ship&ship=<building> is an alias for it
+if (mode === 'ship' && BUILDINGS[params.get('ship')]) mode = 'building';
+const buildingId = mode === 'building'
+  ? [params.get('building'), params.get('ship'), hash].find((id) => BUILDINGS[id]) || 'shipyard'
+  : null;
+// the building's module (its studio hint is read before the lighting is set up); its assets load below
+const BUILDING = buildingId ? await importBuilding(buildingId) : null;
+const BSTUDIO = BUILDING?.studio ?? {};
+// studio camera azimuth / elevation (degrees): ?az= / ?el=, else the building's hint, else 35 / 18 (buildings 30)
+const camAz = parseFloat(params.get('az') ?? String(BSTUDIO.az ?? 35));
+const camEl = parseFloat(params.get('el') ?? String(BSTUDIO.el ?? (mode === 'building' ? 30 : 18)));
 const still = params.has('still');
 const fixedTime = params.has('t') ? parseFloat(params.get('t')) : null;
 
@@ -45,21 +57,20 @@ const fixedTime = params.has('t') ? parseFloat(params.get('t')) : null;
 // Showcase lighting (env/lighting.js createStudioLighting) is the ship studio's default: key, fill and
 // rim lights, a soft-box environment and a gradient backdrop, no planet. ?studio=0 falls back to the
 // orbital rig (the hard sun below over the planet). Every other view keeps the orbital rig.
-const studio = mode === 'ship' && params.get('studio') !== '0';
+// The building view uses the same showcase rig, dimmed per light by the building's `studio` hint (the shipyard's dusk).
+const studio = (mode === 'ship' || mode === 'building') && params.get('studio') !== '0';
 if (studio) {
   // the studio key and fill light the dark hull far more than the orbital sun: the lightscape (pins, slits) gets
   // STUDIO.lightscapeGain there so the small lights keep the concept's contrast; orbit and fleet stay at 1
-  LIGHTSCAPE_GAIN.value = STUDIO.lightscapeGain ?? 1;
+  LIGHTSCAPE_GAIN.value = BSTUDIO.lightscapeGain ?? STUDIO.lightscapeGain ?? 1;
   // the key light is also SUN_DIR (the shadow fit reads it); ?sunaz= / ?sunel= still override it (ship frame)
-  const camAz = parseFloat(params.get('az') ?? '35'), camEl = parseFloat(params.get('el') ?? '18');
   SUN_DIR.copy(studioDir(camAz, camEl, STUDIO.key.az, STUDIO.key.el));
   if (params.has('sunaz') || params.has('sunel')) {
     const sAz = THREE.MathUtils.degToRad(parseFloat(params.get('sunaz') ?? String(camAz + STUDIO.key.az)));
     const sEl = THREE.MathUtils.degToRad(parseFloat(params.get('sunel') ?? String(STUDIO.key.el)));
     SUN_DIR.set(Math.sin(sAz) * Math.cos(sEl), Math.sin(sEl), Math.cos(sAz) * Math.cos(sEl)).normalize();
   }
-} else if (mode === 'ship') {
-  const camAz = parseFloat(params.get('az') ?? '35');
+} else if (mode === 'ship' || mode === 'building') {
   const sAz = THREE.MathUtils.degToRad(parseFloat(params.get('sunaz') ?? String(camAz + 85)));
   const sEl = THREE.MathUtils.degToRad(parseFloat(params.get('sunel') ?? '30'));
   SUN_DIR.set(Math.sin(sAz) * Math.cos(sEl), Math.sin(sEl), Math.cos(sAz) * Math.cos(sEl)).normalize();
@@ -78,13 +89,21 @@ const liveryQ = params.get('livery') || null;
 const liveryScheme = liveryQ === 'tone' || liveryQ === 'bone' ? liveryQ : null;
 setLiveryScheme(liveryScheme);
 setShipContext({ library, livery: liveryScheme ? null : liveryQ });
-const studioShip = params.get('ship') || (ORDER.includes(hash) ? hash : 'fighter');
+const studioShip = params.get('ship') || (LINEUP.includes(hash) ? hash : 'fighter');
 // The studio carrier's open bays show parked ships by default (?parked=0 empties the hangar,
 // ?parked=1 also aims the camera at it), so every class is needed; the carrier's spec sheet also
 // checks its hangar against every class's envelope
 const studioParked = mode === 'ship' && studioShip === 'carrier' ? params.get('parked') !== '0' : false;
-const onlyShip = mode === 'ship' && !studioParked && studioShip !== 'carrier' ? [studioShip] : ORDER;
+// The orbital fleet loads only the fleet classes (ORDER: never the ground units); the lineup and the check also load
+// the ground units (GROUND); the building view loads only what its building asks for (load hook).
+const onlyShip = mode === 'building' ? []
+  : mode === 'ship' && !studioParked && studioShip !== 'carrier' ? [studioShip]
+    : mode === 'lineup' || mode === 'check' ? LINEUP : ORDER;
 await loadShips(onlyShip);
+// buildings: the one on view, or those the fleet scene places (BUILDINGS[id].fleet)
+const fleetBuildings = Object.keys(BUILDINGS).filter((id) => BUILDINGS[id].fleet);
+if (buildingId) await loadBuildings([buildingId]);
+else if (mode === 'fleet') await loadBuildings(fleetBuildings);
 
 // ---------------------------------------------------------------------------
 // check mode: build every ship, report envelopes vs. the game's size stat
@@ -94,7 +113,8 @@ if (mode === 'check') {
   const env = {};
   let hangar = null, hangarInside = null;
   // every class, plus the civil ship's troop variant (4 slots like the cargo ship, own envelope)
-  for (const [cls, variant] of [...ORDER.map((c) => [c]), ['freighter', 'troops']]) {
+  // (and the ground units at their true size: no slots, scale 1; never in the hangar loads)
+  for (const [cls, variant] of [...ORDER.map((c) => [c]), ['freighter', 'troops'], ...GROUND.map((c) => [c])]) {
     const t0 = performance.now();
     const g = buildShip(cls, palette, variant ? { variant } : {});
     const s = g.userData.ship;
@@ -137,7 +157,7 @@ function start() {
   // Look-dev: ?tonemap=agx|neutral, ?exposure=
   const TONEMAPS = { agx: THREE.AgXToneMapping, neutral: THREE.NeutralToneMapping };
   renderer.toneMapping = TONEMAPS[params.get('tonemap')] ?? THREE.NeutralToneMapping;
-  renderer.toneMappingExposure = parseFloat(params.get('exposure') || String(studio ? STUDIO.exposure : EXPOSURE));
+  renderer.toneMappingExposure = parseFloat(params.get('exposure') || String(studio ? BSTUDIO.exposure ?? STUDIO.exposure : EXPOSURE));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
   container.appendChild(renderer.domElement);
@@ -166,9 +186,15 @@ function start() {
   const lighting = studio
     ? createStudioLighting(renderer, scene, {
       shadowSize: TIER.shadowSize, lite: TIER.ao === false, exposure: renderer.toneMappingExposure,
-      camAz: parseFloat(params.get('az') ?? '35'), camEl: parseFloat(params.get('el') ?? '18'), keyDir: SUN_DIR,
+      camAz, camEl, keyDir: SUN_DIR,
     })
     : createLighting(renderer, scene, { shadowSize: TIER.shadowSize });
+  // a building's studio hint (e.g. the shipyard's dusk): the showcase rig dimmed per light (key, fill, rim, kick, env)
+  if (studio && mode === 'building') {
+    lighting.sun.intensity *= BSTUDIO.key ?? 1;
+    for (const L of lighting.lights || []) L.intensity *= BSTUDIO[L.name.replace('studio-', '')] ?? 1;
+    scene.environmentIntensity *= BSTUDIO.env ?? 1;
+  }
   // the studio has no sky (star field, sun glare): its backdrop is part of the lighting rig
   const sky = studio ? { update() {} } : createSky(scene);
 
@@ -222,7 +248,8 @@ function start() {
   const overlays = []; // screen-space annotation, laid out after the camera has moved
   let world = null; // { ships:[{group, cls}], focus(cls) , bounds }
 
-  if (mode === 'ship') world = setupShipStudio();
+  if (mode === 'building') world = setupBuildingStudio();
+  else if (mode === 'ship') world = setupShipStudio();
   else if (mode === 'lineup') world = setupLineup();
   else world = setupFleet();
 
@@ -233,20 +260,32 @@ function start() {
     for (const cls of onlyShip) envelopes[cls] = buildShip(cls, palette).userData.ship.envelope.size.clone();
     if (onlyShip.includes('freighter')) envelopes['freighter:troops'] = buildShip('freighter', palette, { variant: 'troops' }).userData.ship.envelope.size.clone();
   }
+  // the registry lists whatever this view shows, in this order (fleet classes, ground units, buildings)
+  const uiOrder = [...ORDER, ...GROUND, ...Object.keys(BUILDINGS)];
+  // the view's id for the view switch: fleet / lineup, or the ship or building on view
+  const view = mode === 'ship' ? studioShip : mode === 'building' ? buildingId : mode;
   const ui = createUI({
-    mode, still, world, classes: CLASSES, order: ORDER, envelopes,
-    onMode: (m) => { location.hash = m; location.reload(); },
+    mode, view, still, world, classes: CLASSES, order: uiOrder, envelopes,
+    // switch views by #token (the hash route); a ?mode= / ?ship= / ?building= query would override the hash, so it
+    // is dropped (look-dev parameters such as ?lite= stay)
+    onMode: (m) => {
+      const q = new URLSearchParams(location.search);
+      for (const k of ['mode', 'ship', 'building', 'shot', 'variant', 'parked', 'lineup', 'focus', 'dist', 'az', 'el', 'cam', 'target']) q.delete(k);
+      const qs = q.toString();
+      if (qs === location.search.replace(/^\?/, '')) { location.hash = m; location.reload(); } else location.href = `${location.pathname}${qs ? `?${qs}` : ''}#${m}`;
+    },
     onFocus: (cls) => world.focus?.(cls),
     onToggle: (key, on) => { if (key === 'orbit') { controls.autoRotate = on; controls.autoRotateSpeed = 0.35; } else world.toggle?.(key, on); },
   });
   world.reframe?.(); // the overlay panels are filled now: frame the view clear of them
 
   // --- ship studio: one ship, framed for inspection / screenshots ----------
-  /** Up to ~`max` world-space vertices of a ship's hull meshes (strided), for framing. */
-  function hullPoints(g, max = 6000) {
+  /** Up to ~`max` world-space vertices of a ship's hull meshes (strided), for framing. allMeshes: the parts too (a
+   *  ground unit's wheels, collar and weapon station are a large share of its silhouette). */
+  function hullPoints(g, max = 6000, allMeshes = false) {
     g.updateMatrixWorld(true);
     const meshes = [];
-    g.traverse((o) => { if (o.isMesh && o.userData.hull && o.geometry?.attributes.position) meshes.push(o); });
+    g.traverse((o) => { if (o.isMesh && (allMeshes ? o.visible : o.userData.hull) && o.geometry?.attributes.position) meshes.push(o); });
     const total = meshes.reduce((n, m) => n + m.geometry.attributes.position.count, 0);
     const stride = Math.max(1, Math.ceil(total / max));
     const pts = [];
@@ -257,7 +296,7 @@ function start() {
     return pts;
   }
   function setupShipStudio() {
-    const cls = params.get('ship') || (ORDER.includes(hash) ? hash : 'fighter');
+    const cls = studioShip;
     const g = buildShip(cls, palette, { variant: params.get('variant') || undefined });
     const s = g.userData.ship;
     g.position.sub(s.envelope.center);
@@ -266,8 +305,7 @@ function start() {
     if (studioParked && s.anchors.hangarDeck) effects.push(...parkInHangar(g, { buildShip, palette, attachEffects }).effects);
     const box = new THREE.Box3().setFromObject(g);
     lighting.fitShadow(box);
-    const az = THREE.MathUtils.degToRad(parseFloat(params.get('az') ?? '35'));
-    const el = THREE.MathUtils.degToRad(parseFloat(params.get('el') ?? '18'));
+    const az = THREE.MathUtils.degToRad(camAz), el = THREE.MathUtils.degToRad(camEl);
     const dir = new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
     const k = parseFloat(params.get('dist') ?? '1');
     if (params.get('parked') === '1' && s.anchors.hangar) {
@@ -280,7 +318,7 @@ function start() {
       // vertices, projected), with a margin, then ?dist scales the camera distance. The envelope's
       // 8 corners would centre the box, not the ship: wedge and tapered hulls then sat high in
       // the frame over an empty bottom third
-      let pts = hullPoints(g);
+      let pts = hullPoints(g, 6000, GROUND.includes(cls));
       if (pts.length < 8) {
         const e = s.envelope; pts = [];
         for (let i = 0; i < 8; i++) pts.push(new THREE.Vector3(i & 1 ? e.max.x : e.min.x, i & 2 ? e.max.y : e.min.y, i & 4 ? e.max.z : e.min.z).sub(e.center));
@@ -296,6 +334,35 @@ function start() {
     if (studioPlanet) createPlanet(scene);
     if (params.has('debug')) g.add(debugOverlay(s));
     return { ships: [{ group: g, cls }], selected: cls, focus: () => {} };
+  }
+
+  // --- building view: one building (src/buildings/<id>.js), framed like the ship studio -----------
+  // ?mode=building&building=<id> (or #<id>; ?mode=ship&ship=<id> is an alias). Showcase rig with the building's
+  // `studio` hint; ?az= / ?el= / ?dist= as in the ship studio; ?focus=x,y,z&dist=m (metres, building frame) aims a
+  // close-up at a point of the building instead of fitting the whole of it.
+  function setupBuildingStudio() {
+    const g = buildBuilding(buildingId, palette);
+    const b = g.userData.building;
+    scene.add(g);
+    // a building's drives (tugs, docked ships) stay cold
+    for (const t of b.effectTargets) effects.push(attachEffects(t, { power: 0 }));
+    lighting.fitShadow(new THREE.Box3().setFromObject(g));
+    const az = THREE.MathUtils.degToRad(camAz), el = THREE.MathUtils.degToRad(camEl);
+    const dir = new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
+    let target;
+    if (params.has('focus')) {
+      target = new THREE.Vector3(...params.get('focus').split(',').map(Number));
+      camera.position.copy(dir).multiplyScalar(parseFloat(params.get('dist') ?? '120')).add(target);
+    } else {
+      // the whole silhouette: the hull node and every part (halls, cranes, the docked ships)
+      let pts = hullPoints(g, 12000, true);
+      if (pts.length < 8) { const bb = new THREE.Box3().setFromObject(g); pts = []; for (let i = 0; i < 8; i++) pts.push(new THREE.Vector3(i & 1 ? bb.max.x : bb.min.x, i & 2 ? bb.max.y : bb.min.y, i & 4 ? bb.max.z : bb.min.z)); }
+      target = frameView(camera, pts, dir, { l: 64, r: 64, t: 56, b: 56 }, w, h);
+      camera.position.sub(target).multiplyScalar(parseFloat(params.get('dist') ?? String(b.studio?.dist ?? 1))).add(target);
+    }
+    camera.lookAt(target);
+    controls.target.copy(target);
+    return { ships: [{ group: g, cls: buildingId }], selected: buildingId, focus: () => {} };
   }
 
   // ?debug: ship-frame axes (X red = port, Y green = dorsal, Z blue = bow), a
@@ -340,7 +407,8 @@ function start() {
     const ships = [];
     const gap = 24;
     // one row per class, plus the civil ship's troop variant (4 slots like the cargo ship, its own shape)
-    const rows = ORDER.flatMap((cls) => (cls === 'freighter' ? [{ cls }, { cls, variant: 'troops' }] : [{ cls }]));
+    // (the ground units come first: a 7 m vehicle reads only in the front row, beside the slot cube and the crew member)
+    const rows = LINEUP.flatMap((cls) => (cls === 'freighter' ? [{ cls }, { cls, variant: 'troops' }] : [{ cls }]));
     const built = rows.map(({ cls, variant }) => buildShip(cls, palette, variant ? { variant } : {}));
     const side = Math.cbrt(SLOT_VOLUME);
     const chart = createChartOverlay(container);
@@ -362,7 +430,7 @@ function start() {
       // the carrier's open bays show its hangar load, as everywhere else
       if (cls === 'carrier' && s.anchors.hangarDeck) effects.push(...parkInHangar(g, { buildShip, palette, attachEffects }).effects);
       ships.push({ group: g, cls, variant, center: new THREE.Vector3(L / 2, H / 2, rowZ), length: L, beam: B, height: H });
-      const slots = spec.size ? `${spec.size} slot${spec.size > 1 ? 's' : ''}` : `carries ${spec.capacity} slots`;
+      const slots = sizeLabel(spec, { long: !spec.size }); // '12 slots', 'carries 50 slots', 'ground unit, true size'
       chart.callout(new THREE.Vector3(-1, H / 2, rowZ), variant === 'troops' ? `${spec.label} (troops)` : spec.label, `${L.toFixed(1)} m · ${slots}`);
     });
     // reference cube: one hangar slot (SLOT_VOLUME m^3) in the front row, stern face on the zero line
@@ -468,7 +536,8 @@ function start() {
     reframe();
     // ghost hangar with the 50-fighter load (toggle, or ?hangar=1)
     const carrierShip = ships.find((s) => s.cls === 'carrier');
-    const hangarViz = carrierShip ? hangarLoadViz(carrierShip.group, built[0].userData.ship.envelope.size) : null;
+    const fighterShip = ships.find((s) => s.cls === 'fighter');
+    const hangarViz = carrierShip && fighterShip ? hangarLoadViz(carrierShip.group, fighterShip.group.userData.ship.envelope.size) : null;
     if (hangarViz && params.has('hangar') && params.get('hangar') !== '0') hangarViz.visible = true;
     return {
       ships, selected: small ? 'fighter' : 'carrier', lineupSmall: small, reframe, inset,
@@ -485,7 +554,7 @@ function start() {
   function setupFleet() {
     const planet = createPlanet(scene);
     tickers.push((t) => planet.update(t, camera));
-    const fleet = buildFleet({ palette, buildShip, attachEffects });
+    const fleet = buildFleet({ palette, buildShip, attachEffects, buildBuilding, buildings: fleetBuildings.filter((id) => !LOAD_ERRORS[id]) });
     scene.add(fleet.root);
     effects.push(...fleet.effects);
     tickers.push((t, dt) => fleet.update(t, dt));

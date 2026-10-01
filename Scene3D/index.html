@@ -58,7 +58,8 @@
   .brand h1 { margin: 0; font: 800 clamp(30px, 4.2vw, 46px)/0.9 var(--display); letter-spacing: 0.04em; text-transform: uppercase; text-wrap: balance; }
   .brand h1 span { color: var(--signal); }
   .brand p { margin: 6px 0 0; color: var(--muted); font-size: 12px; letter-spacing: 0.02em; }
-  .modes { display: inline-flex; padding: 3px; gap: 3px; }
+  .modes { display: inline-flex; flex-wrap: wrap; align-items: center; padding: 3px; gap: 3px; max-width: 100%; }
+  .modes .sep { width: 1px; align-self: stretch; margin: 4px 3px; background: var(--glass-edge); }
   .modes button { font: 600 12px/1 var(--body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: none; border: 0; border-radius: 4px; padding: 9px 12px; cursor: pointer; }
   .modes button[aria-pressed="true"] { background: var(--bone); color: var(--void); }
   .modes button:hover:not([aria-pressed="true"]) { color: var(--bone); }
@@ -147,6 +148,10 @@
     <div class="modes panel" role="group" aria-label="View">
       <button type="button" id="mode-fleet" data-mode="fleet">Fleet in orbit</button>
       <button type="button" id="mode-lineup" data-mode="lineup">Scale lineup</button>
+      <span class="sep" aria-hidden="true"></span>
+      <button type="button" id="mode-vehicle" data-mode="vehicle" title="V-31 ground vehicle (studio)">Vehicle</button>
+      <button type="button" id="mode-shipyard" data-mode="shipyard" title="Planetside shipyard (building view)">Shipyard</button>
+      <button type="button" id="mode-spaceport" data-mode="spaceport" title="SP-3 orbital spaceport (building view)">Spaceport</button>
     </div>
   </header>
   <section id="registry-wrap" class="panel" aria-label="Ship classes">

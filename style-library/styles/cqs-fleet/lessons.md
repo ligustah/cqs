@@ -121,3 +121,12 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
     re-renders the whole image, camera included: do it as a separate step. A luminance-inverted CT-4
     render gives light paint and dark windows (no lit-window leak). Without "a CLOSED boxy crew module
     at the front (no open front, no bore)" freighters copy the carrier's bow.
+32. **Ground-vehicle layout follows the hardware rule, not the concept's doors.** A 2.5 m vehicle has only about
+    1.45 m of vertical flank, so the brief's 0.9 x 1.3 m doors cannot sit over the wheel arches as concept A drew them
+    (its doors were small). Both flank doors went between the arches and the wheelbase opened from 3.5 to 3.8 m; the
+    markings took the remaining fields. Check the true-size hardware against the flank before fixing the axles.
+33. **Round pins read as headlamps.** 0.2 m lightscape pins on a vehicle nose read as a pair of round headlamps
+    (excluded by the brief). Covered lamps are short dim slits at the kit lens (0.16 x 0.05 m).
+34. **Turnaround sheets ignore "no labels" and the view count.** The 4K vehicle sheet came back with five views
+    and captions; front, left, back and right were still consistent, so they were cropped at one common scale and fed
+    to H3.1 rather than paying for a retry.
