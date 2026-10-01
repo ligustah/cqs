@@ -10,8 +10,9 @@ shipyards.
   from the old code.
 - **No imitation** of franchise ships: Star Wars, Star Trek, The Expanse, Halo, BSG, Homeworld, EVE.
   Do not name them in prompts either. A judge checks every concept for look-alikes.
-- **Budget:** fal spend is tracked in `Scene3D/pipeline/fal-pipeline.json`. The fleet so far cost about
-  $78; the current cap is $120.
+- **Budget:** about **$100 of fal credit remaining** on the account (user, 2026-10-01; correction 17).
+  This is the hard cap for all further work in this style: check spend before every batch, and record
+  every job in `Scene3D/pipeline/fal-pipeline.json`. The fleet itself cost about $78.
 
 ## Identity
 
