@@ -36,7 +36,11 @@ took the identity.
   - power and radiators;
   - berths for 134 m freighters delivering material;
   - docking for the fleet.
-- **Overall:** about 1.2-2 km.
+- **Overall:** lean, about 1.0-1.3 km, only modestly larger than the carrier it builds (correction
+  25: "It shouldn't be several times larger than the carrier for no apparent reason. Make it much
+  leaner"). Every big element has a job; no bulk for its own sake.
+- **Round 2 (2026-10-01):** too massive. Show the real CV-50 part-built (correction 26) in light paint
+  (correction 27), with lights and small details on.
 - **Rulers:** the style's rulers (1 m ports on 3 m decks, doors, lamps of one fixed size) must be
   present, so the station reads as vast.
 

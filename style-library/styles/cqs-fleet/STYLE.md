@@ -63,6 +63,18 @@ are not opened.
   and 40 px on #222d35, and put it on a sheet with the sibling assets. A judge must name each one.
   Tool: `Scene3D/tools/thumbs/`.
 
+## Installations (shipyard, spaceport and later buildings)
+
+- **Lights and small detail are required** (correction 24): work floods, amber lamps and lit windows at
+  the fleet's fixture sizes, plus dense small parts (rails, pipes, ladders, crates, vehicles, figures).
+- **Darker, with depth** (correction 24): a lower overall value than the r2 daylight images, deep
+  shadowed recesses and layered structure, not flat bright planes.
+- **Sized by what they build** (correction 25): lean structure, only modestly larger than the biggest
+  ship; no mass that is several times the ship's size without a reason.
+- **Show the actual unit** (correction 26): the real fleet ship, part-built (the DD-12 in the shipyard,
+  the CV-50 in the spaceport). At remodel, instance the real ship GLB, cut back to its build state.
+- **Light paint** (correction 27): buildings keep the light concept paint with dark accents.
+
 ## Palette and livery
 
 - **Generation paint:** off-white thermal paint with weathering, signal-orange hazard and ID markings,

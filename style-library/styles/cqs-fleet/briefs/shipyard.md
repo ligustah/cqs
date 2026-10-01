@@ -32,6 +32,10 @@ gantries, hull sections and modules being fabricated and moved in, a ship under 
   hull visible inside a giant gantry or arch, a monumental hall with a bow nosing out, a crane silhouette.
 - Rich detail stays for close shots: rulers, markings, cranes, containers and vehicles.
 
+**Round 2 (2026-10-01), correction 24:** "something between A and E" (A's portal gantry, E's
+hammerhead cranes); the DD-12 visibly less complete; lighting and dense small details on; darker overall,
+with depth. Keep the real DD-12 (correction 26) and light paint (correction 27).
+
 **Scale:**
 - **Biggest product:** a 203 m x 56 m x 74 m destroyer, so the main bay or berth needs about 240 x 80 m
   of floor and about 90 m of clear height.
