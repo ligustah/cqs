@@ -52,3 +52,6 @@ with depth. Keep the real DD-12 (correction 26) and light paint (correction 27).
 - a studio / overview camera: an elevated three-quarter view with a ship under construction for scale.
 
 A ground diorama scene does not exist yet.
+
+**Picked (correction 28): r3 A**, the gate-led yard at dusk (`images/spread-shipyard-r3-A.jpg`), with the
+sea ship replaced by the part-built DD-12.

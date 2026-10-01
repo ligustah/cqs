@@ -55,3 +55,5 @@ Its construction scaffolding and gantries must look different from the finished 
 - the game's square building icon (80 and 40 px);
 - the orbital fleet scene (400 km above the planet);
 - the studio view.
+
+**Direction (correction 29): r3 A, the lean shield wall**, with more enclosure round the build bay.
