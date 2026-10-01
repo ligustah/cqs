@@ -1698,5 +1698,96 @@
     }
    ]
   }
+ },
+ "v21_concepts_spaceport_r6": {
+  "date": "2026-10-01",
+  "about": "Spaceport r5 C made busier with docked CT-4 freighters (inpaint + pasted cut-outs + one cleanup edit). Concepts only.",
+  "approx_usd": 0.6,
+  "jobs": {
+   "asset": "spaceport",
+   "round": "r6 (v21)",
+   "endpoint": "fal-ai/nano-banana-pro/edit",
+   "params": {
+    "num_images": 1,
+    "resolution": "2K",
+    "aspect_ratio": "4:3",
+    "output_format": "png"
+   },
+   "note": "Concepts only (correction 23). Local edit of r5 C (image 1 = C, lesson 28). Cap 4 images, all 4 used. Carrier length in frame ~1258 px (bow face centre to stern); target freighter ~188 px.",
+   "total_images": 4,
+   "cost_usd_est": 0.6,
+   "thumbs": {
+    "r5_C": [
+     1.28,
+     0.62
+    ],
+    "r6_W1": [
+     1.28,
+     0.62
+    ],
+    "r6_W2": [
+     1.28,
+     0.62
+    ],
+    "r6_final": [
+     1.28,
+     0.63
+    ]
+   },
+   "local_prep": {
+    "ct4_light_cut.png": "CT-4 remodel render cut out (gradient-bg fit) and luminance-inverted to light paint, which also darkens its lit windows (prep.py)",
+    "C_guide.png": "r5 C with four 0.15-scale CT-4 cut-outs pasted (comp.py)",
+    "ref_ct4_small.png": "light CT-4 small in a 1600x1200 grey frame (lesson 19)",
+    "W1_guide.png": "W1 with its four oversize freighters inpainted out (cv2 Telea) and 0.15-scale CT-4 cut-outs pasted (erase.py)"
+   },
+   "jobs": [
+    {
+     "key": "G1",
+     "requestId": "01a0f73d-a17e-76c3-bcd1-a91cf4707785",
+     "url": "https://v3b.fal.media/files/b/0aaca081/ortP1ch3q5grLYTP2dG_V_TK7FPpDU.png",
+     "file": "G1.png",
+     "refs": [
+      "https://v3b.fal.media/files/b/0aaca07a/MrMIzwsu_LWNyemO-2acT_spaceport-r6-guide.png"
+     ],
+     "prompt": "Edit image 1. Keep image 1 as it is and add only small details. Image 1 already contains four small pale cargo freighters pasted in as rough cut-outs: two docked against the outside of the near lower half-shell, one docked on top of the upper aft hood, and one approaching in the void at the lower left. Their SIZE and POSITION are CORRECT: keep each one exactly that small and exactly where it is. Each freighter is only about one seventh of the carrier's length, clearly shorter than the carrier's plated bow block; they are small ships next to a huge carrier. Re-draw each of the four as a properly rendered CT-4 freighter in the scene's own lighting and perspective, at the same small size: a CT-4 cargo freighter is a small ship: a boxy crew module at the front with a few small dark ports, an open truss keel carrying rows of 20-ft containers in muted colours, a compact reactor block, a pair of tanks and one flat radiator panel at the stern; light off-white thermal paint with gunmetal accents and a few amber marks; its windows are dark (no lit window rows), no lettering. The three docked freighters are each held parallel to the station's long axis by two or three short clamp arms and a short boarding gantry from a small berth platform on the shell's outside; the approaching one has a faint drive glow and two tiny tugs beside it. Make the whole station look BUSIER with small working activity, all of it small, thin and broken up, adding no bulk to the shell: a few small tugs and work pods (specks, each far smaller than a freighter's crew module) moving round the station with tiny amber lamps; strings of cargo pods and small stacks of 20-ft containers riding on thin rails along the tops of the pale rims; three or four slim pale crane and manipulator arms reaching from the rims out over the open slot to the carrier's bare frames; welding sparks at several points on the carrier's bare ring frames; more white work floodlights throwing pools of light onto the hull, and more small hard-edged amber lamps at rim corners and joints; one or two small thin radiator or solar panel arrays (dark, flat, no larger than a freighter) on short lattice masts on the shell's outside. Keep everything else exactly as in image 1: the same two dark offset half-shells (the lower trough and the upper hood shifted toward the stern) at the same size, thickness and outline, the same pale chamfered rims, the same wide open slot along the near side, the same part-built carrier lying inside (plated bow block, bare ring frames, no lettering on it), the same camera, framing, lighting and the same light-grey seamless void with no floor and no shadows. The shell does NOT grow, thicken, lengthen or close up; no new walls, roofs, hulls or big blocks; the station stays lean. Remove the 'SP-3' lettering from the rim and paint the rim plain: no letters, numbers, codes or labels anywhere in the image. No guns. Photorealistic 3D render, same style as image 1. Original design, not based on any existing franchise.",
+     "status": "REJECTED: busier+freighters in one edit on the pasted guide; camera zoomed/reframed, freighters grown to ~0.35 and drawn as mini-carriers (octagonal bore), lattice solar towers"
+    },
+    {
+     "key": "W1",
+     "requestId": "01a0f73d-a25a-7dd3-ac81-17ae1e0b0aac",
+     "url": "https://v3b.fal.media/files/b/0aaca081/LLrQrF0A4TdXwuzBi6Sph_WfwiBpoD.png",
+     "file": "W1.png",
+     "refs": [
+      "https://v3b.fal.media/files/b/0aac968c/WDmEZ0oRw4B1f-7Y4KbO-_pdz1bQUh.png",
+      "https://v3b.fal.media/files/b/0aaca07a/bz-ojim1zYni1QDStk4F5_ref-ct4-light-small.png"
+     ],
+     "prompt": "Edit image 1. Keep image 1 as it is and add only small details. Image 2 shows only the design of the CT-4 cargo freighter (a CT-4 cargo freighter is a small ship: a boxy crew module at the front with a few small dark ports, an open truss keel carrying rows of 20-ft containers in muted colours, a compact reactor block, a pair of tanks and one flat radiator panel at the stern; light off-white thermal paint with gunmetal accents and a few amber marks; its windows are dark (no lit window rows), no lettering); copy its form, not its size: draw nothing else from image 2. Add four CT-4 freighters, and draw them SMALL: the freighter is 134 m long and the carrier 900 m, so each freighter is only about one seventh of the carrier's length, clearly shorter than the carrier's plated bow block, about half its length. Two are docked against the outside of the near lower half-shell, one forward and one aft; one is docked on top of the upper aft hood; each is held parallel to the station's long axis by two or three short clamp arms and a short boarding gantry from a small berth platform. One more is approaching in the void at the lower left, near the open bow end, with a faint drive glow and two tiny tugs beside it. Make the whole station look BUSIER with small working activity, all of it small, thin and broken up, adding no bulk to the shell: a few small tugs and work pods (specks, each far smaller than a freighter's crew module) moving round the station with tiny amber lamps; strings of cargo pods and small stacks of 20-ft containers riding on thin rails along the tops of the pale rims; three or four slim pale crane and manipulator arms reaching from the rims out over the open slot to the carrier's bare frames; welding sparks at several points on the carrier's bare ring frames; more white work floodlights throwing pools of light onto the hull, and more small hard-edged amber lamps at rim corners and joints; one or two small thin radiator or solar panel arrays (dark, flat, no larger than a freighter) on short lattice masts on the shell's outside. Keep everything else exactly as in image 1: the same two dark offset half-shells (the lower trough and the upper hood shifted toward the stern) at the same size, thickness and outline, the same pale chamfered rims, the same wide open slot along the near side, the same part-built carrier lying inside (plated bow block, bare ring frames, no lettering on it), the same camera, framing, lighting and the same light-grey seamless void with no floor and no shadows. The shell does NOT grow, thicken, lengthen or close up; no new walls, roofs, hulls or big blocks; the station stays lean. Remove the 'SP-3' lettering from the rim and paint the rim plain: no letters, numbers, codes or labels anywhere in the image. No guns. Photorealistic 3D render, same style as image 1. Original design, not based on any existing franchise.",
+     "status": "STEP 1 kept as base: camera and shell identical to C, SP-3 removed, activity good; freighters ~0.28-0.35 and mini-carrier form; lattice masts hang below the shell"
+    },
+    {
+     "key": "W2",
+     "requestId": "01a0f740-37b6-76d0-99de-45d3417bba51",
+     "url": "https://v3b.fal.media/files/b/0aaca091/VVcgF_PO0bKjV62YXQ0hK_m66IaZ2j.png",
+     "file": "W2.png",
+     "refs": [
+      "https://v3b.fal.media/files/b/0aaca081/LLrQrF0A4TdXwuzBi6Sph_WfwiBpoD.png",
+      "https://v3b.fal.media/files/b/0aaca07a/bz-ojim1zYni1QDStk4F5_ref-ct4-light-small.png"
+     ],
+     "prompt": "Edit image 1. Keep image 1 exactly as it is: the same station, the same carrier, the same camera, framing, lighting and light-grey void, all the cranes, cargo, lamps, tugs and sparks. Change ONLY the four small freighters (one docked on clamp arms against the outside of the near lower half-shell at the lower right, one docked on the far rim at the upper left, one docked on top of the pale arch at the top, and one approaching at the lower left with blue drive glow). They are wrong in two ways: they are too BIG, and they look like small copies of the carrier (an open octagonal front bore with a hole in the roof). Replace each of them, in the same place and orientation, with a CT-4 cargo freighter of image 2, drawn at about HALF its current length: each new freighter is no longer than the small pale habitat block with the window band that sits on the near rim, and only about one seventh of the carrier's length; the carrier's plated bow block is more than twice as long as a freighter. The CT-4 (image 2 shows its design; copy its form, not its size): a CLOSED boxy crew module at the front with a sloped faceted roof and a few rows of tiny dark portholes (no open front, no bore, no hole), behind it an open truss keel carrying stacked 20-ft containers in muted colours, then a compact reactor block, two small tanks, two small drive bells and one flat radiator panel at the stern; light off-white thermal paint, gunmetal accents, a few amber marks; windows dark, no lettering. Keep the short clamp arms holding the docked freighters, shortened to reach the smaller hulls; where the old larger freighters were, show the dark shell plating and light-grey void that was behind them. Also change the three lattice masts that hang DOWN below the shell into short flat radiator panels lying close along the shell's outside; nothing hangs below the station like a leg. Change nothing else; the shell does not grow. No letters or numbers anywhere. Photorealistic 3D render, same style as image 1. Original design, not based on any existing franchise.",
+     "status": "REJECTED: words-only shrink ('half its current length', 'no longer than the habitat block') fixed the CT-4 form but not the size (~0.3); top mini-carrier kept and a 5th freighter added"
+    },
+    {
+     "key": "W3",
+     "requestId": "01a0f743-5500-76f0-8573-71433050bb5f",
+     "url": "https://v3b.fal.media/files/b/0aaca0a6/1q1Ft0hMsHn2DN8ZRqNBe_ixvBASkB.png",
+     "file": "W3.png",
+     "refs": [
+      "https://v3b.fal.media/files/b/0aaca0a4/0sHBXgqU0GuNS4HOw_dVc_spaceport-r6-W1-guide.png"
+     ],
+     "prompt": "Edit image 1. Keep image 1 exactly as it is: the same station, the same carrier, the same camera, framing, lighting, colours and light-grey void, and all the cranes, cargo, lamps, tugs, sparks and masts. Image 1 contains four SMALL pale cargo freighters pasted in as rough cut-outs, with smudged retouching patches around them: one held by the clamp arms below the near lower half-shell at the lower right, one on the far rim at the upper left, one on the pale arch at the top, and one approaching at the lower left. Their SIZE and POSITION are exactly right. Do NOT enlarge them: each one stays inside its current outline, about one seventh of the carrier's length, less than half the length of the carrier's plated bow block. Only do three things: (1) render each of the four cleanly as a small CT-4 cargo freighter in the scene's lighting and perspective, at exactly its current size: a closed boxy crew module at the front with a sloped faceted roof and tiny dark portholes, an open truss keel with stacked 20-ft containers in muted colours, a compact reactor block, two small drive bells and a flat radiator panel at the stern; light off-white paint, gunmetal accents, a few amber marks; dark windows, no lettering. (2) Tie the three docked ones to the station with the existing clamp arms or two short new clamp arms and a thin boarding gantry each; give the approaching one a faint blue drive glow. (3) Clean up every smudged, blurred or grey patch: restore the dark shell plating, the crisp pale chamfered rim at the lower left corner of the lower half-shell, and the plain light-grey void, sharp like the rest of the image. Change nothing else; the shell does not grow. No letters or numbers anywhere. Photorealistic 3D render, same style as image 1. Original design, not based on any existing franchise.",
+     "status": "DELIVERED as spaceport-r6.jpg: freighters 0.19 / 0.235 / 0.235 / 0.28 of the carrier (model grew the 0.15 pastes ~1.5x); CT-4 form; smudges cleaned; drive glow sits at the crew-module end"
+    }
+   ]
+  }
  }
 }

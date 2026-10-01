@@ -114,3 +114,10 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
     rudder, red-brown bottom paint... the stern ends square at the last octagonal frame, open") fixed it.
 30. **"Exactly once" does not hold for station codes.** Three of four r5 images drew SP-3 twice. Paint
     numbers at remodel; do not spend retries on lettering.
+31. **Small ships at true scale need a paste.** Words never shrank docked freighters below about 0.3 of
+    the carrier. What worked: erase them (OpenCV inpaint), paste light CT-4 cut-outs, then one short,
+    narrow edit ("their size and position are exactly right, do not enlarge them... clean up"). The
+    model still grows pastes about 1.5x, so paste at about 0.67x the target. A "busier" request
+    re-renders the whole image, camera included: do it as a separate step. A luminance-inverted CT-4
+    render gives light paint and dark windows (no lit-window leak). Without "a CLOSED boxy crew module
+    at the front (no open front, no bore)" freighters copy the carrier's bow.
