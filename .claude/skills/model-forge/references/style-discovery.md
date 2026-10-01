@@ -8,7 +8,9 @@ So show them options early and cheaply, and write down what they decide.
 
 - What is being built (asset types, how many, the biggest and the smallest)?
 - Where will it be seen: the game camera (isometric, third person, orbital...), its distance, close-ups,
-  phone or desktop, real-time or offline? Daylight only, or night and lit interiors?
+  phone or desktop, real-time or offline? Daylight only, or night and lit interiors? **The smallest
+  size it is shown at:** icons, thumbnails, list entries, minimap markers (look the sizes up in the UI
+  code if there is one). Every asset must still be recognisable there.
 - Mood, period, realism versus stylisation?
 - References liked or disliked, and why?
 - Hard taboos: IP or franchises to avoid, legacy art that must not be opened or copied, content limits.

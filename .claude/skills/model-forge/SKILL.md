@@ -63,7 +63,8 @@ images show, not on intent.
 ### 0. Define the style (when it is new, or the user wants to change it)
 
 Do not start from a blank prompt. Interview briefly about:
-- what the assets are and where they will be seen: the game or scene camera, its distance, daylight or night;
+- what the assets are and where they will be seen: the game or scene camera, its distance, daylight or night,
+  and the smallest size they are shown at (icons, thumbnails);
 - the mood and period;
 - references the user likes or hates;
 - hard taboos (IP to avoid, legacy art not to open);
@@ -92,7 +93,7 @@ generate again. Two or three rounds usually converge. Then:
   (the human-scale or domain-scale references the style defines). Scale drift is the most expensive
   mistake, because every later stage inherits it.
 - **Concept:** generate with `/edit` and the style's references; show variants, and let the user choose
-  and correct. Generate the image you will reconstruct from as evenly lit and matte on a light-grey
+  and correct. Show each variant's thumbnail beside it, so the user judges the icon read too. Generate the image you will reconstruct from as evenly lit and matte on a light-grey
   studio background, with no baked shadows. If the style recolours at runtime (e.g. a dark operational
   paint), generate it in light neutral paint, because that reconstructs far better. If the colour is the
   material itself (wood, stone, thatch), generate the real material.
@@ -121,7 +122,8 @@ numbers.
 ### 9. Review
 
 Look at the standard views at matched resolution: **the game's own camera at gameplay distance first**,
-then hero, close, range, a lineup with sister assets, and the scene.
+then the **thumbnail** at the game's icon sizes next to its siblings, then hero, close, range, a lineup
+with sister assets, and the scene.
 Make before/after sheets and 1:1 crops. Use independent judges with opposing lenses, for example
 "reads at its true size" against "still as alive as the user liked". Judges default to refuted and
 return tested, concrete fixes. Cap the fix rounds. Turn recurring judgements into scripts.

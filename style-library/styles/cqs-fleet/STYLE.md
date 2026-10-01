@@ -30,6 +30,36 @@ Credible near-future "naval-industrial" spacecraft, photographed like studio mod
 Warships are blunt and armoured, civil ships are lean spines with modules. Weapons are railguns
 (spinal on the destroyer), turrets, PDC and missile cells.
 
+The same civilisation builds the ground units and the installations (shipyard, spaceport), in the same
+construction, markings and rulers.
+
+- **Ships land and take off under their own power on any planet** (a game rule; the user, correction
+  20). Installations do not explain how: no launch rails, cradles, launch towers or blast pits, and
+  no design question built round reaching orbit.
+
+## Thumbnail readability (correction 22)
+
+The user: "They need to be distinctly recognizable on a relatively small thumbnail. So we want rich
+details for large shots, but also not too 'wide' like the shipyard designs."
+
+The game shows every unit and building as a **square icon**: 40 px in queues and job lists, 80 px for
+the current job and on hover, 20 px in compact lists, on the dark UI panel (#222d35). Sources: the CSS
+in `Html/Design/pack/css*/` and `CqsSession.getUrl(..., big=false)`; the legacy icon images themselves
+are not opened.
+
+- **Identifiable at 80 px, still distinct from every sibling at 40 px.**
+- **Compact massing.** From the icon camera (three-quarter, about 30° up), the silhouette fills a square
+  frame: bounding aspect about 1.5:1 at most. A sprawl of similar sheds over a kilometre fails (the r1
+  shipyard sites). Show one dominant structure with a clear outline, keep the rest tight round it, or
+  leave it out.
+- **One or two signature shapes** carry the identity at icon size (a cab profile, a ring, an arch, a
+  tower, a dish). Markings and small parts are the second layer, for close shots, and stay rich there.
+- **Value contrast that survives downscaling:** a light / dark split or one bright signature element.
+  Uniform mid-grey reads as nothing.
+- **Test (review gate, also for concepts before a pick):** render or crop the icon view, downscale to 80
+  and 40 px on #222d35, and put it on a sheet with the sibling assets. A judge must name each one.
+  Tool: `Scene3D/tools/thumbs/`.
+
 ## Palette and livery
 
 - **Generation paint:** off-white thermal paint with weathering, signal-orange hazard and ID markings,

@@ -34,10 +34,30 @@ rails).
 
 It must not read as a spaceship, or as any franchise's vehicle.
 
-**Open design choices** (to show in the spread):
+**Chosen direction (user, 2026-10-01, correction 19): A, the tall-cab wheeled 4x4.** Concept:
+`images/spread-vehicle-r1-A.jpg` (full size: fal `Dkvm0JP61YPXyEqM0fJZB_jqd1dpC9.png`, job
+01a0f526-d773-7b82-893b-b221ac520902).
+- **Keep:** a tall faceted crew cab whose roof runs unbroken to the tail; a chamfered octagonal cross-section;
+  four big tyres in faceted arches, with independent suspension visible; the gunmetal octagonal nose
+  collar and belly band; a small remote weapon station behind two round roof hatches; a louvred side
+  vent; a rear-flank door; amber corner hatching, one amber flank band, the cobalt square and V-31.
+- **Fix at remodel:** the image drew it about 1.5x too big against the figure. Build it to 6.5 x 2.6 x
+  2.5 m (body), with the weapon station to about 2.9 m and tyres about 1.1-1.2 m.
+- **Hardware at real vehicle size:** side and rear doors about 0.9 x 1.3-1.4 m, roof hatches 0.7-0.8 m,
+  armoured panes about 0.6-0.9 m wide. The ship's 2 m crew door does not fit a 2.5 m vehicle and is not
+  used. Rails (1.1 m where free-standing, grab rails elsewhere), lamp sizes, the stencil font and the
+  1.8 m figure stay the fleet's.
+- **Livery:** the ground-livery question was not answered, so the fleet default stands: dark
+  operational grey (correction 10). Sand stays an opt-in scheme.
+- **Lights:** authored fixtures only (small-craft rule), a handful: covered convoy and marker lamps,
+  no round headlamps, no light bars.
+- **Thumbnail:** the tall cab, the big wheels and the weapon station must read at 80 px and stay
+  distinct from the ships at 40 px (STYLE.md, Thumbnail readability).
+
+**Open design choices in r1** (decided above):
 - tracked vs wheeled vs hybrid;
 - the body form (low wedge, tall cab, sponsoned);
 - the ground livery: the fleet's dark operational grey, or a terrain tone.
 
-**Where it is seen:** ship studio view (`mode=ship`) and the lineup beside a 1.8 m figure. A ground
-diorama scene does not exist yet.
+**Where it is seen:** the game's square unit icon (80 and 40 px); the studio view (`mode=ship`) and the
+lineup beside a 1.8 m figure. A ground diorama scene does not exist yet (not decided by the user).

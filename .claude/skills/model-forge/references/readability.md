@@ -26,6 +26,21 @@ ratio, turret-to-hull ratio, head-to-body ratio. A stylised style may exaggerate
 roofs, chunky doors). That is fine when `STYLE.md` states the exaggeration, so every asset uses the
 same factor, and the rulers are then exaggerated consistently too.
 
+## Thumbnail readability
+
+Most games also show each asset as a small icon or thumbnail (often square, 40-128 px). The asset must
+be identifiable there and distinct from its siblings, while keeping rich detail for large shots:
+- **Compact massing.** The silhouette from the icon camera should fill the icon's frame. A wide, flat
+  sprawl (a site of many similar buildings) becomes a smear in a square icon; give it one dominant
+  structure with a clear outline and keep the rest tight round it.
+- **One or two signature shapes** carry the identity at icon size; detail is the second layer.
+- **Value contrast** that survives downscaling (a light / dark split or one bright element), shown on
+  the UI's own background colour.
+- **Test it on concepts, before a pick, and again at review:** downscale the icon view to the game's
+  icon sizes, put the sibling assets on one sheet, and have a judge name each one.
+
+The style records the icon sizes, the background and the frame aspect limit in `STYLE.md`.
+
 ## Making it look alive without making it look neon
 
 (Only when the style has emissives, e.g. night scenes or lit machinery. A daylight-only style can skip

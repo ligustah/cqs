@@ -18,7 +18,9 @@ refute a claim. Never from trusting a change because the code looks right.
   - broadside;
   - the lineup (`mode=lineup`, every asset at one scale with a metre ruler, a 1.8 m figure and a slot
     cube);
-  - the scene shot (the asset in its intended context).
+  - the scene shot (the asset in its intended context);
+  - the **thumbnail sheet**: the icon view downscaled to the game's icon sizes on the UI background,
+    next to the sibling assets (`readability.md`, Thumbnail readability).
 - Freeze time (`t=20`) so animated lights compare. Change one variable at a time.
 - Compare at **matched resolution and camera**. Glow and point sizes change with resolution, so a
   1600 px after against a 2400 px before gives a wrong verdict.
