@@ -112,3 +112,5 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
 29. **Ship replacement may need two passes.** The first fixed the bow; the stern stayed a sea ship.
     A second edit naming the leftovers ("round arched ribs, a curved pointed stern, a propeller, a
     rudder, red-brown bottom paint... the stern ends square at the last octagonal frame, open") fixed it.
+30. **"Exactly once" does not hold for station codes.** Three of four r5 images drew SP-3 twice. Paint
+    numbers at remodel; do not spend retries on lettering.
