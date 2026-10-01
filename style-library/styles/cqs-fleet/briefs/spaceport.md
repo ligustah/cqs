@@ -57,3 +57,6 @@ Its construction scaffolding and gantries must look different from the finished 
 - the studio view.
 
 **Direction (correction 29): r3 A, the lean shield wall**, with more enclosure round the build bay.
+
+**Form (correction 30):** a round enclosure. r3 A's shield, curved to wrap most of the way round the
+carrier along its length; lean, one side open.
