@@ -103,6 +103,8 @@ generate again. Two or three rounds usually converge. Then:
 
 ### 5-7. Build
 
+- **Reuse existing assets first:** an asset that shows another finished asset (a ship docked at a station,
+  a vehicle in a yard) instances that asset's model; never redraw or remodel it.
 - **Parts first:** list every small or repeated component and reuse the style's kits at their true
   size. Identical small parts across assets are the strongest consistency and scale cue there is.
 - **Remodel:** rebuild the asset as clean parametric geometry in headless Blender: volumes, exact

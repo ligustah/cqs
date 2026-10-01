@@ -17,6 +17,10 @@ shipyards.
 - **Concepts first:** when several assets are designed together, every concept is settled with the
   user before any turnaround, blueprint mesh or remodel of any of them (correction 23).
 
+- **Reuse first** (correction 32): docked freighters, ships under construction and every repeated part
+  are the existing models (instanced GLBs, kit parts, PATINA sets). New geometry only for what does not
+  exist yet, and new parts go into the kit for the next asset.
+
 - **Scope:** unit module variants (speed / attack / defense: weapon pods, add-on armour, speed packs)
   are not modelled yet, for ships or ground units. Build the base chassis; the variants come later
   (correction 18).
