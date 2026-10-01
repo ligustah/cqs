@@ -34,7 +34,8 @@ rails).
 
 It must not read as a spaceship, or as any franchise's vehicle.
 
-**Chosen direction (user, 2026-10-01, correction 19): A, the tall-cab wheeled 4x4.** Concept:
+**Chosen direction (user, 2026-10-01, correction 19): A, the tall-cab wheeled 4x4.** No turnaround or
+modelling until the shipyard and spaceport concepts are settled too (correction 23). Concept:
 `images/spread-vehicle-r1-A.jpg` (full size: fal `Dkvm0JP61YPXyEqM0fJZB_jqd1dpC9.png`, job
 01a0f526-d773-7b82-893b-b221ac520902).
 - **Keep:** a tall faceted crew cab whose roof runs unbroken to the tail; a chamfered octagonal cross-section;

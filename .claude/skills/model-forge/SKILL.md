@@ -157,6 +157,10 @@ Before generating anything for a style, re-read `corrections.md` so the next res
 
 ## Working with the user
 
+- When a batch of assets is designed together, settle every concept with the user before stage 3
+  (turnaround) for any of them. The family is judged as a whole, and a later concept can change an
+  earlier pick.
+
 - Show images, not paths: the user may be on a phone. Send HD renders, labelled comparison sheets and an
   interactive preview.
 - Translate taste words into measurable properties ("mushy" means facet flatness and bevel width;
