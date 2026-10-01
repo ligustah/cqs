@@ -100,3 +100,17 @@ Every prompt and job id is in `Scene3D/pipeline/fal-pipeline.json` (`v16_concept
   render** as its reference. Use ratio rulers: "a semi-trailer is about 1/12 of the ship's length".
 - **Spaceport:** a studio three-quarter view on light grey. References: the CV-50 concept, the CT-4
   remodel render and a civil-only crop of the fal kit (no weapon row). Leave the bible out.
+
+## Round 2 (v17): compact installations, thumbnail-first
+
+Every job is in `Scene3D/pipeline/fal-pipeline.json` (`v17_concepts_r2_shipyard_spaceport`). The
+prompts are in `scratchpad/v17/<asset>/prompts.json` and the fix prompts in `.../spaceport-fix/prompts-fix.json`.
+- **Framing for icons:**
+  - shipyard: an elevated three-quarter view of the whole compact facility as an island on plain flat
+    light-grey ground, filling about 70% of the frame;
+  - station: floating in a light-grey void, with a three-quarter camera at about 30°.
+- **Signature first:** name the one shape that must read at 40 px, then the forms, then the bans.
+- **Shipyard refs:** DD-12 v9 render, K-214 concept, and the one-scale lineup (lesson 21).
+- **Station refs:** one turret-free CV-50 flank crop, hue-shifted to amber (lesson 23). No ship docked.
+- **Lettering:** ask for "the number exactly once". The model otherwise adds words like "BERTH 01" or
+  "ORBITAL DOCK".

@@ -21,5 +21,5 @@ angles. It needs a paint change in `freighter_paint.py` and a rebuild.
 | Asset | Brief | Stage | Spread |
 |---|---|---|---|
 | V-31 ground vehicle (base "jeep" chassis) | `briefs/vehicle.md` | 2: concept settled (A, correction 19); waits until the shipyard and spaceport concepts are settled (correction 23) | `images/spread-vehicle-r1.jpg` (A) |
-| Planetside shipyard | `briefs/shipyard.md` | 2: r1 superseded (no launch hardware, correction 20; too wide for a thumbnail, correction 22); r2 spread next | `images/spread-shipyard-r1.jpg` |
-| Orbital spaceport | `briefs/spaceport.md` | 2: r1 rejected (correction 21); r2 spread next | `images/spread-spaceport-r1.jpg` |
+| Planetside shipyard | `briefs/shipyard.md` | 2: r2 spread shown to the user (r1 superseded: launch hardware, correction 20; too wide, correction 22) | `images/spread-shipyard-r2.jpg` |
+| Orbital spaceport | `briefs/spaceport.md` | 2: r2 spread shown to the user (r1 rejected, correction 21) | `images/spread-spaceport-r2.jpg` |
