@@ -14,6 +14,10 @@ shipyards.
   This is the hard cap for all further work in this style: check spend before every batch, and record
   every job in `Scene3D/pipeline/fal-pipeline.json`. The fleet itself cost about $78.
 
+- **Scope:** unit module variants (speed / attack / defense: weapon pods, add-on armour, speed packs)
+  are not modelled yet, for ships or ground units. Build the base chassis; the variants come later
+  (correction 18).
+
 ## Identity
 
 Credible near-future "naval-industrial" spacecraft, photographed like studio models:

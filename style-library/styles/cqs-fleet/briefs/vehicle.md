@@ -10,10 +10,14 @@
 - Built in the MILITARY_BASE. Ground-transport size 3: infantry 1, aircraft 4. A CT-7 transport carries
   750 units.
 
-**What to build first:** the base unit, the "jeep" chassis. It is a fast, armoured, all-terrain
-combat vehicle with a crew of 2-4. It must be able to take an attack module (a rocket battery pod) and
-a defence module (add-on plating), so the design reads as one modular platform. The tank chassis is a
-later variant on the same parts.
+**What to build:** the base unit only, the "jeep" chassis. It is a fast, armoured, all-terrain combat
+vehicle with a crew of 2-4. **Modules are out of scope for now** (user, 2026-10-01, correction 18; the
+ships ignored them too).
+- No rocket-battery pods, no drop-in mission beds, no add-on armour kits, no speed packs.
+- No "modular platform" as a design theme.
+- At most one modest integral weapon mount (e.g. a small remote weapon station) as part of the chassis.
+- Judges: fail a direction whose main idea is a module or launcher. The tank chassis and the module
+  variants come later.
 
 **Scale:** real-world, anchored by the style's human rulers (1 x 2 m door, 1.8 m crew figure, 1.1 m
 rails).
@@ -32,7 +36,7 @@ It must not read as a spaceship, or as any franchise's vehicle.
 
 **Open design choices** (to show in the spread):
 - tracked vs wheeled vs hybrid;
-- where the rocket battery mounts;
+- the body form (low wedge, tall cab, sponsoned);
 - the ground livery: the fleet's dark operational grey, or a terrain tone.
 
 **Where it is seen:** ship studio view (`mode=ship`) and the lineup beside a 1.8 m figure. A ground
