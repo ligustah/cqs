@@ -99,7 +99,10 @@ generate again. Two or three rounds usually converge. Then:
   material itself (wood, stone, thatch), generate the real material.
 - **Turnaround:** a 4K orthographic multi-view sheet. It keeps the views consistent, and multiview
   reconstruction needs them.
-- **Blueprint mesh:** Tripo H3.1 multiview won two bake-offs. Treat its output as a blueprint.
+- **Blueprint mesh:** Tripo H3.1 multiview won two bake-offs. Treat its output as a blueprint. For a
+  complex multi-part asset (a building, a plant, a station), prefer components: generate an isolated
+  image of each component in the concept's style, reconstruct each with image-to-3D, simplify it in
+  Blender, keep it as a kit part, and compose. The turnaround then serves for layout and proportions.
 
 ### 5-7. Build
 

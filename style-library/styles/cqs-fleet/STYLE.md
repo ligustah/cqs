@@ -16,6 +16,9 @@ shipyards.
 
 - **Full pipeline** (correction 36): every asset goes through turnaround, blueprint mesh, fal parts
   where useful, remodel and review. Do not skip stages to save credit while the budget allows.
+- **Compose from components** (correction 38): break a complex asset into components; make each with
+  fal (isolated component image, then image-to-3D), simplify it in Blender, keep it as a reusable kit
+  part, and compose the asset from parts. Do not reconstruct a whole building as one mesh.
 - **Concepts first:** when several assets are designed together, every concept is settled with the
   user before any turnaround, blueprint mesh or remodel of any of them (correction 23).
 
