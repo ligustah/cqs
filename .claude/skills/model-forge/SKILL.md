@@ -102,7 +102,8 @@ generate again. Two or three rounds usually converge. Then:
 - **Blueprint mesh:** Tripo H3.1 multiview won two bake-offs. Treat its output as a blueprint. For a
   complex multi-part asset (a building, a plant, a station), prefer components: generate an isolated
   image of each component in the concept's style, reconstruct each with image-to-3D, simplify it in
-  Blender, keep it as a kit part, and compose. The turnaround then serves for layout and proportions.
+  Blender, keep it as a kit part, and compose. Each component mesh is still only a blueprint: remodel it
+  as clean hard-surface geometry before it becomes a kit part (raw image-to-3D parts look mushy). The turnaround then serves for layout and proportions.
 
 ### 5-7. Build
 
@@ -134,6 +135,9 @@ Make before/after sheets and 1:1 crops. Use independent judges with opposing len
 return tested, concrete fixes. Cap the fix rounds. Turn recurring judgements into scripts.
 
 ### 10. Release
+
+Before reporting, open the published build itself (through the real package, desktop and phone) and look
+at every asset you changed: a packaging step can silently drop geometry or textures.
 
 Optimise, make a lightweight (phone) tier, publish an interactive preview, run the project's checks,
 and commit after each accepted step. Cloud containers restart, so keep work resumable.

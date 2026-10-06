@@ -19,6 +19,11 @@ shipyards.
 - **Compose from components** (correction 38): break a complex asset into components; make each with
   fal (isolated component image, then image-to-3D), simplify it in Blender, keep it as a reusable kit
   part, and compose the asset from parts. Do not reconstruct a whole building as one mesh.
+- **Remodel components too** (corrections 5, 40): a fal image-to-3D mesh is a blueprint for a part as much
+  as for a whole asset. Rebuild every component as clean hard-surface geometry (flat facets, sharp
+  bevelled edges, crisp features) and project or repaint its texture; never ship the raw mesh.
+- **Check what the user sees** (correction 40): review the published preview through the real package
+  before reporting a result.
 - **Concepts first:** when several assets are designed together, every concept is settled with the
   user before any turnaround, blueprint mesh or remodel of any of them (correction 23).
 
