@@ -1,0 +1,5 @@
+{
+ "generator": "tools/blender/buildings/component.py",
+ "frame": "metres, +Y up, stands on y = 0, origin at the footprint centre, front +Z (placed as colony:<name>)",
+ "parts": {}
+}

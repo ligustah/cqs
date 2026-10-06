@@ -1895,5 +1895,23 @@
    }
   ],
   "lesson": "PATINA flattens 'subtle' prompts to nothing: ask for dense, evenly distributed damage and normalise the maps afterwards."
+ },
+ "v24_buildings": {
+  "date": "2026-10-06",
+  "asset": "colony buildings (briefs/buildings.md): shared kit, runtime pattern and pilots deuterium_depot, steel_mill",
+  "about": "The user asked for the full pipeline with fal and no budget cap (corrections 36-38: components per building via nano-banana-pro/edit + tripo3d/h3.1/image-to-3d, composed in Blender). In this session the fal connector was refused by the permission system (the first call, get_model_schema for fal-ai/nano-banana-pro/edit, was denied), so no generation job ran; the pilots v1 are parametric bkit builds. Only the two concept uploads (free) were made, for the next session's jobs.",
+  "approx_usd": 0.0,
+  "uploads": [
+   {
+    "file": "style-library/styles/cqs-fleet/images/buildings/deuterium_depot-concept.jpg",
+    "url": "https://v3b.fal.media/files/b/0aad467e/vbkz1kOmB0G29rGsQw_xR_deuterium_depot-concept.jpg"
+   },
+   {
+    "file": "style-library/styles/cqs-fleet/images/buildings/steel_mill-concept.jpg",
+    "url": "https://v3b.fal.media/files/b/0aad467e/23mIBwtBH9hTSsNdCSRsh_steel_mill-concept.jpg"
+   }
+  ],
+  "jobs": [],
+  "blocked": "fal tools denied by the session's permission system (auto-mode classifier: real-world transactions); a permission rule for the fal connector tools is needed before the component stages can run"
  }
 }

@@ -67,6 +67,23 @@
   .modes button { font: 600 12px/1 var(--body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: none; border: 0; border-radius: 4px; padding: 9px 12px; cursor: pointer; }
   .modes button[aria-pressed="true"] { background: var(--bone); color: var(--void); }
   .modes button:hover:not([aria-pressed="true"]) { color: var(--bone); }
+  /* Buildings menu: 18 buildings in the brief's groups (src/buildings/catalog.js); planned ones are listed, disabled */
+  .bmenu { position: relative; }
+  .bmenu summary { list-style: none; font: 600 12px/1 var(--body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border-radius: 4px; padding: 9px 12px; cursor: pointer; }
+  .bmenu summary::-webkit-details-marker { display: none; }
+  .bmenu summary::after { content: ' \25BE'; }
+  .bmenu[data-active="true"] summary { background: var(--bone); color: var(--void); }
+  .bmenu-panel { position: absolute; z-index: 5; top: calc(100% + 6px); left: 0; display: grid; grid-template-columns: repeat(3, minmax(150px, 1fr)); gap: 10px 14px; padding: 12px; width: max-content; max-width: min(560px, calc(100vw - 32px)); background: rgb(14, 18, 24); }
+  .bmenu-panel h4 { margin: 0 0 4px; font: 600 10px/1 var(--body); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .bmenu-panel button { display: block; width: 100%; text-align: left; text-transform: none; letter-spacing: 0.02em; font-size: 13px; padding: 6px 8px; color: var(--bone); }
+  .bmenu-panel button:disabled { color: var(--muted); opacity: 0.55; cursor: default; }
+  .bmenu-panel button:disabled::after { content: ' · planned'; font-size: 11px; }
+  header { position: relative; z-index: 10; }
+  .modes { position: relative; }
+  @media (max-width: 560px) {
+    .bmenu { position: static; }
+    .bmenu-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); left: 0; right: 0; width: auto; max-width: none; max-height: 62vh; overflow: auto; }
+  }
 
   #registry-wrap { grid-column: 1; grid-row: 3; padding: 10px; align-self: end; }
   #registry-wrap h2, #sheet h3 { margin: 2px 6px 8px; font: 600 11px/1 var(--body); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
@@ -180,8 +197,10 @@
       <button type="button" id="mode-lineup" data-mode="lineup">Scale lineup</button>
       <span class="sep" aria-hidden="true"></span>
       <button type="button" id="mode-vehicle" data-mode="vehicle" title="V-31 ground vehicle (studio)">Vehicle</button>
-      <button type="button" id="mode-shipyard" data-mode="shipyard" title="Planetside shipyard (building view)">Shipyard</button>
-      <button type="button" id="mode-spaceport" data-mode="spaceport" title="SP-3 orbital spaceport (building view)">Spaceport</button>
+      <details class="bmenu" id="bmenu">
+        <summary id="bmenu-label" title="Buildings (building view)">Buildings</summary>
+        <div class="bmenu-panel panel" id="bmenu-panel" role="group" aria-label="Buildings"></div>
+      </details>
     </div>
   </header>
   <section id="registry-wrap" class="panel" aria-label="Ship classes">

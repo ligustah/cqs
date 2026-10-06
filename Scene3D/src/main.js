@@ -276,7 +276,7 @@ function start() {
   // the view's id for the view switch: fleet / lineup, or the ship or building on view
   const view = mode === 'ship' ? studioShip : mode === 'building' ? buildingId : mode;
   const ui = createUI({
-    mode, view, still, world, classes: CLASSES, order: uiOrder, envelopes,
+    mode, view, still, world, classes: CLASSES, order: uiOrder, envelopes, buildings: Object.keys(BUILDINGS),
     // switch views by #token (the hash route); a ?mode= / ?ship= / ?building= query would override the hash, so it
     // is dropped (look-dev parameters such as ?lite= stay)
     onMode: (m) => {

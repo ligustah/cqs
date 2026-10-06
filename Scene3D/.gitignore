@@ -4,3 +4,4 @@ dist/
 .glbtmp/
 assets/ships/raw/
 __pycache__/
+assets/buildings/raw/

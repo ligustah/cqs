@@ -17,6 +17,11 @@ their spec in `tools/blender/specs/<id>-v1.json` and their notes in `tools/blend
 | V-31 Kestrel light armoured vehicle | 6.95 m (body 6.5 x 2.6 x 2.5 m) | 2-4 | ground unit at true size: tall faceted cab with a flat roof to the tail, gunmetal nose collar, four 1.15 m tyres on double wishbones, RWS behind two round roof hatches, 7 covered lamps | built v1; ship studio `#vehicle` and the lineup (front row), never in the orbital fleet |
 | SY-1 planetside shipyard | 250 m berth, yard about 250 x 270 m | yard crew | dark portal gantry "01" over one berth, two luffing cranes, light workshop halls, flood masts; the real DD-12 cut back to its build state; dusk | built v1; building view `#shipyard` |
 | SP-3 orbital spaceport | 1,131 m | about 6,000 | two offset dark half-shells with pale rims round the berth, habitat blocks, cranes, manipulator arms; the real CV-50 under construction (bow plated, frames aft), four docked CT-4s | built v1; building view `#spaceport`, in the fleet scene 3 km off the carrier's starboard bow (`shot=spaceport`) |
+| DP-3 deuterium depot (colony) | slab 70 x 52 m, 30 m | depot crew | three 21 m spheres on braced legs with cobalt bands, manifold, two pump houses | built v1 (parametric bkit, no fal components yet); building view `#deuterium_depot`; sheet `images/buildings/deuterium_depot-v1.jpg` |
+| SM-1 steel mill (colony) | slab 72 x 96 m, 62 m | works crew | blast furnace in a steel tower frame, skip gallery, glowing pour bay with amber crane, two banded stacks, long shed | built v1 (parametric bkit, no fal components yet); building view `#steel_mill`; sheet `images/buildings/steel_mill-v1.jpg` |
+
+The other 14 colony buildings (`briefs/buildings.md`) are listed in the Buildings menu as planned; recipe
+`Scene3D/tools/blender/buildings/README-colony.md`.
 
 Known open item: the reactor-flank CT-4 / CT-7 stencil reads like a row of small windows at steep
 angles. It needs a paint change in `freighter_paint.py` and a rebuild.

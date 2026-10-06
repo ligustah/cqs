@@ -12,7 +12,7 @@ export const { meta, asset, studio, load, build } = colonyBuilding({
   id: 'deuterium_depot',
   DATA,
   meta: {
-    name: 'Deuterium Depot', designation: 'DD-3', gameId: 'DEUTERIUM_DEPOT',
+    name: 'Deuterium Depot', designation: 'DP-3', gameId: 'DEUTERIUM_DEPOT',
     blurb: 'Pressure storage for the fleet\'s fusion fuel: three 21 m deuterium spheres on braced legs with cobalt equator bands, a ground manifold with valves and transfer lines, two pump houses and a dryer skid, on a 70 x 52 m slab.',
   },
   // the concept's camera: front-left, ~25 deg down

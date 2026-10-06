@@ -3,7 +3,8 @@
 // heap (CDP), ArrayBuffer backing store, triangles drawn, GPU estimate (unique textures with mips + geometry buffers +
 // render targets), time to __ready, errors. Run node tools/build-artifact.mjs first (dist/ must match the sources).
 //   node tools/phone-check.mjs [--desktop] [--root <Scene3D dir>] [--json out.json] [--shots dir] [view ...]
-// views: fleet (default page), lineup, fighter, corvette, freighter, destroyer, carrier, vehicle, shipyard, spaceport
+// views: fleet (default page), lineup, fighter, corvette, freighter, destroyer, carrier, vehicle, shipyard, spaceport,
+// and the colony buildings (COLONY_VIEWS)
 // Budget (README "Phone budget"): heap peak + GPU estimate well under 300 MB per view on the phone tier.
 import { chromium } from 'playwright-core';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
@@ -31,7 +32,9 @@ const shots = opt('shots', null); // directory: also save a screenshot of each v
 const timeout = parseInt(opt('timeout', '600000'));
 const desktop = flag('desktop');
 const still = flag('still'); // stills (?still=1): three frames at pixel ratio 1, then idle; screenshots of heavy views finish
-const VIEWS = args.length ? args : ['fleet', 'lineup', 'fighter', 'corvette', 'freighter', 'destroyer', 'carrier', 'vehicle', 'shipyard', 'spaceport'];
+// colony buildings: one view each (#<id>), added as they are registered (src/ships/index.js BUILDINGS)
+const COLONY_VIEWS = ['deuterium_depot', 'steel_mill'];
+const VIEWS = args.length ? args : ['fleet', 'lineup', 'fighter', 'corvette', 'freighter', 'destroyer', 'carrier', 'vehicle', 'shipyard', 'spaceport', ...COLONY_VIEWS];
 const CDN = 'https://cdn.jsdelivr.net/npm/three@0.186.1/';
 const ORIGIN = 'https://artifact.test/';
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.txt': 'text/plain' };

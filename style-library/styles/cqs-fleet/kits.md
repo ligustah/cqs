@@ -1,6 +1,7 @@
 # Parts kits (cqs-fleet)
 
-Two ship kits (procedural and fal), the procedural kit's ground-unit family, and two building kits (yard, spaceport),
+Two ship kits (procedural and fal), the procedural kit's ground-unit family, two installation kits (yard, spaceport), the
+shared building kit (bkit) and the colony components,
 all at true metric size. Data (bbox, tris, mount, fal jobs, the engine data for bells, anchors) is in each kit's
 `parts.json` (`parts-buildings.json` for the spaceport kit), and the contact sheets are the `kit-sheet.webp` files next
 to them.
@@ -140,11 +141,38 @@ First used by the SP-3 orbital spaceport. Parametric functions (the GLBs are one
 | tug() | 16.8 x 12.3 x 21.1 | centre, bow +Z; yard tug: cab, push plate with fenders, four drive pods |
 | truss(p0, p1, w) | - | square lattice (chords, rings, diagonals), the building block of masts, legs, cradles (function only, no GLB) |
 
-**Merge pending.** The yard kit (textured, baked per part) and the spaceport kit (vertex-coloured, parametric) are two
-building kits with different material models. Merge them into one building kit (one mount convention, +Y stand-on,
-one `parts.json`) when the next installation is built; until then pick the yard kit for planetside buildings and the
-spaceport kit for orbital ones, and reuse the fleet procedural kit for every human-scale part (doors, ports, panes,
-rails, ladders, floodlights, containers).
+**Merged for the colony buildings (2026-10-06).** `bkit.py` (below) is the shared building kit from now on: one
+frame (+Y up, plinth top y = 0, front +Z), the yard kit's bake pipeline and materials, the spaceport kit's truss. The
+shipyard and spaceport keep their own kits as built; new buildings use bkit, the fleet and yard kits' placed parts, and
+the colony components.
+
+## Building kit (bkit): `Scene3D/tools/blender/buildings/bkit.py` (`README-bkit.md`)
+
+Parametric functions at true size, baked into each building's `hull` (lib.Part bake: panel tone, corner grime,
+streaks, edge wear; `lib.BAKE` retuned for buildings). First used by the colony pilots (deuterium depot, steel mill).
+Lights and placements go into the building's record (`B.R`), not geometry.
+
+| Component | Size / parameters | Notes |
+|---|---|---|
+| plinth | w x d, 1.4-1.6 m deep, 2 m plan chamfer, 0.5 m kerb, slab joints every 6-8 m | light kerb band, dark toe, markings, grates, edge stairs; amber pins at corners and every 16-18 m |
+| facade / block | bays 4-8 m, storeys 3.6-6 m, posts 0.6 m, pilasters 0.4 m, parapet cap 0.42 m | off-white panels in gunmetal frames; recessed warm windows (~55 % lit); roller doors with amber jamb slits; fleet-kit crew doors (1 x 2 m leaf) with 0.6 x 0.14 m lamps and canopies |
+| roof units | hvac 3 x 2 x 1.3, vent 1.2, fan 0.8 r, antenna 6 m, solar 6 x 3, tank, box | on `roof_deck` with parapet |
+| gable_roof | any span, rise 2-4 m | ridge cap, ribs, ridge skylights, light `panel2` |
+| pipe / valve / pipe_rack / cable_tray | r 0.15-1.3 m; supports every 6-8 m | flanges 1.3 r, amber ID rings at the run ends |
+| vtank / sphere_tank / htank / stack | any; sphere 21 m on 8 splayed legs; stacks with bands and platforms | stacks carry a red 0.4 m obstruction light |
+| railing / catwalk / platform_ring / stair / ladder | rail 1.1 m, stair 0.18 / 0.28 m, ladder 0.62 m, rungs 0.3 m, cage above 2.5 m | fleet rulers |
+| truss / lattice_tower | any | spaceport-kit lattice, ported |
+| glazing / glow_ring | mullions 1.5 m | warm or hot glow boxes (runtime fixtures, `rotY` on round vessels) |
+| tree / planter / crate / cabinet / bollards / lamp_post / hazard_band / stencil | true size | lamp posts: one pin at the head |
+| truck / forklift / worker / container / flood_on_wall | yard-kit and fleet-kit parts | placements (`heading` sets `along` for +Y parts) |
+
+## Colony components: `Scene3D/assets/parts-colony/` (`tools/blender/buildings/component.py`)
+
+Fal-made components (an isolated component image with nano-banana-pro/edit in the concept's style, then
+`tripo3d/h3.1/image-to-3d`), cleaned, decimated and stood on y = 0 at true size; mount +Y, placed as
+`colony:<name>` by `bkit.component()`. The catalogue (made and planned, which buildings use each) is in
+`Scene3D/tools/blender/buildings/README-colony.md`; data in `parts.json`. None made yet (fal was blocked in the
+pilot session).
 
 ## Built into asset scripts (not kit files)
 

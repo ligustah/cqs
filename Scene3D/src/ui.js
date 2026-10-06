@@ -1,8 +1,9 @@
 // Overlay UI: mode switch, fleet registry, and ship spec sheet.
 import { SLOT_VOLUME, carrierLoads, sizeLabel } from './lib/scale.js';
 import * as THREE from 'three';
+import { BUILDING_CATALOG, BUILDING_GROUPS } from './buildings/catalog.js';
 
-export function createUI({ mode, view = mode, still, world, classes, order, envelopes = {}, onMode, onFocus, onToggle }) {
+export function createUI({ mode, view = mode, still, world, classes, order, envelopes = {}, buildings = [], onMode, onFocus, onToggle }) {
   const root = document.getElementById('ui');
   if (!root || still) { if (root) root.hidden = true; return { select() {} }; }
 
@@ -15,8 +16,35 @@ export function createUI({ mode, view = mode, still, world, classes, order, enve
 
   const fmt = (v, d = 1) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 
-  // view switch: fleet / lineup modes, and the studio views of the ground unit and the buildings (#vehicle, #shipyard,
-  // #spaceport); `view` is the mode, or the ship / building on view
+  // Buildings menu: every building of the catalogue by group; the registered ones (`buildings`, ships/index.js
+  // BUILDINGS) open their building view, the rest are listed as planned
+  const panel = root.querySelector('#bmenu-panel');
+  if (panel) {
+    panel.innerHTML = '';
+    for (const g of BUILDING_GROUPS) {
+      const items = BUILDING_CATALOG.filter((b) => b.group === g.id);
+      if (!items.length) continue;
+      const col = document.createElement('div');
+      col.innerHTML = `<h4>${g.label}</h4>`;
+      for (const it of items) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = it.label;
+        b.title = `${it.label}${it.orbital ? ' (orbital)' : ''}`;
+        if (buildings.includes(it.id)) b.dataset.mode = it.id; else b.disabled = true;
+        col.appendChild(b);
+      }
+      panel.appendChild(col);
+    }
+    const cur = BUILDING_CATALOG.find((b) => b.id === view);
+    const menu = root.querySelector('#bmenu');
+    menu.dataset.active = String(!!cur);
+    if (cur) root.querySelector('#bmenu-label').textContent = cur.label;
+    document.addEventListener('click', (e) => { if (menu.open && !menu.contains(e.target)) menu.open = false; });
+  }
+
+  // view switch: fleet / lineup modes, the ground unit's studio (#vehicle) and the building views (Buildings menu);
+  // `view` is the mode, or the ship / building on view
   root.querySelectorAll('[data-mode]').forEach((b) => {
     b.setAttribute('aria-pressed', String(b.dataset.mode === view));
     b.addEventListener('click', () => { if (b.dataset.mode !== view) onMode(b.dataset.mode); });

@@ -17,5 +17,5 @@ export const { meta, asset, studio, load, build } = colonyBuilding({
   },
   // the concept's camera: front-left, ~27 deg down
   // key from the front, a little to +X: the long +X shed face and the pour bay are lit as in the concept
-  studio: { az: 55, el: 20, sunaz: 22, sunel: 46 },
+  studio: { az: 55, el: 20, sunaz: 42, sunel: 44, dist: 0.9 },
 });

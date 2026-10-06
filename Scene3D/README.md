@@ -28,10 +28,12 @@ node tools/serve.mjs 8080      # any static server works
 | Fleet in orbit | `#fleet` (default), `?mode=fleet&shot=hero\|high\|stern\|spaceport` | Carrier group above the planet: parked ships in the carrier's open bays (21 fighters, 2 corvettes, a destroyer and a cargo ship; with the 3 fighters of the launch cycle that is exactly its 50-slot legal load), a launch and recovery cycle through the bow mouth, escorts, fighter patrols, the logistics convoy, and the SP-3 spaceport 3 km off the starboard bow (yawed 30 degrees so its open berth faces the group; `shot=spaceport` frames it from 2 km). Ground units never appear here |
 | Scale lineup | `#lineup`, close-up `?lineup=small#lineup` | Scale chart: sterns aligned on a metre ruler (ticks every 10 m to 100 m, then every 100 m), one row per class (the 7 m V-31 vehicle in the front row, beside the slot cube and the crew member: "ground unit, true size") labelled by callouts on the stern side, a 1-slot reference cube, a 1.8 m crew member, a neutral 10 m / 100 m grid, and an optional 50-fighter hangar load (`hangar=1`). The default view frames the whole 900 m chart, with a detail box in the empty grid that shows the `lineup=small` framing (a second render of the same scene); `lineup=small` frames only the small ships, the cube and the crew member, like the enlarged inset of a technical drawing (also linked from the toggles bar and the detail box) |
 | Ship studio | `?mode=ship&ship=carrier&az=35&el=18&dist=1`, `#vehicle` | One ship or ground unit, framed for inspection (`fighter`, `corvette`, `freighter`, `destroyer`, `carrier`, `vehicle`; `variant=troops`; the carrier's hangar is parked by default (`parked=0` empties it, `parked=1` aims the camera at it); `debug=1` shows axes, a metre grid, engine/light anchors and the hangar box). The camera fits the hull's own silhouette (sampled mesh vertices), not its bounding box. Stills are shot over the planet (`planet=0` for black; the interactive studio adds it with `planet`), and the studio key is placed relative to the camera, 85 degrees round from its azimuth and 30 degrees up, so every view splits into a lit and a shadowed plane (`sunaz=`/`sunel=` override, in degrees) |
-| Building view | `?mode=building&building=shipyard\|spaceport`, `#shipyard`, `#spaceport` (`?mode=ship&ship=spaceport` is an alias) | One building at true size in the studio rig, dimmed by the building's own `studio` hint (the shipyard's dusk: exposure 1.25, a lower key, lamps x1.3); camera from 35 / 30 degrees (`az=`, `el=`), fitted to the silhouette (`dist=` scales it), or `focus=x,y,z&dist=m` for a close-up on a point of the building (metres, its own frame). The shipyard shows the real DD-12 cut back to its build state in the berth; the spaceport the real CV-50 under construction and four docked CT-4s (drives cold) |
+| Building view | `?mode=building&building=<id>`, `#<id>` (shipyard, spaceport, and the colony buildings as they are built: deuterium_depot, steel_mill; `?mode=ship&ship=spaceport` is an alias) | One building at true size in the studio rig, dimmed by the building's own `studio` hint (the shipyard's dusk: exposure 1.25, a lower key, lamps x1.3); camera from 35 / 30 degrees (`az=`, `el=`), fitted to the silhouette (`dist=` scales it), or `focus=x,y,z&dist=m` for a close-up on a point of the building (metres, its own frame). The shipyard shows the real DD-12 cut back to its build state in the berth; the spaceport the real CV-50 under construction and four docked CT-4s (drives cold) |
 | Check | `?mode=check` | Builds every ship and the vehicle and reports envelopes, slots and hangar fits (used by `tools/scale-check.mjs`) |
 
-The view switch in the page header (Fleet in orbit, Scale lineup, Vehicle, Shipyard, Spaceport) uses the `#` routes.
+The view switch in the page header (Fleet in orbit, Scale lineup, Vehicle, and a Buildings menu listing all 18 buildings in the brief's groups: production, storage, civic, science, military, megaproject; `src/buildings/catalog.js`) uses the `#` routes. Buildings not built yet are listed as planned.
+
+Colony buildings (`briefs/buildings.md`, 16 of them) share one runtime pattern: `src/buildings/colony.js` (`colonyBuilding({ id, DATA, meta, studio })`) gives each its GLB, light concept paint, the `building` finish preset, the fleet light language from its generated light block (amber pins, door lamps, jamb slits, lit windows, hot glow, floods, red obstruction lights) and a dusk studio with a front-left key (`studio.sunaz` / `sunel`) and the concepts' slate backdrop; orbital ones get a space backdrop. They are built by `tools/blender/buildings/colony_build.py` on the shared kit `bkit.py` and compared with their concepts by `tools/buildings/compare.mjs` (recipe: `tools/blender/buildings/README-colony.md`).
 
 Registries (`src/ships/index.js`): `ORDER` (the five fleet classes: fleet scene, hangar loads, scale check), `GROUND`
 (ground units: ship studio and lineup only, never in the orbital fleet) and `BUILDINGS` (id -> module path and
@@ -243,6 +245,8 @@ GPU = textures + geometry + render targets; heap = retained after GC / transient
 | destroyer studio | 7.0 | 85 | 160 | 191k | 7 / 22 | 167 | 7 → 6 |
 | carrier studio (+ parked) | 31.2 → 24.9 | 496 → 153 | 596 → 253 | 748k | 12 / 111 | 264 | 30 → 17 |
 | vehicle studio | 3.3 | 48 | 118 | 40k | 6 / 10 | 124 | 6 |
+| deuterium_depot (colony, v1) | 2.7 | 12 | 83 | 55k | 6 / 11 | 94 | 3.4 |
+| steel_mill (colony, v1) | 3.5 | 18 | 91 | 82k | 6 / 12 | 103 | 3.1 |
 | shipyard | 15.0 → 10.8 | 210 → 59 | 292 → 141 | 355k → 291k | 8 / 28 | 149 | 11 → 10 |
 | spaceport | 19.9 → 15.9 | 282 → 67 | 377 → 160 | 757k → 712k | 10 / 104 | 170 | 22 → 12 |
 
@@ -357,13 +361,13 @@ Scene3D/
   pipeline/             fal-pipeline.json: every prompt and parameter
   assets/concepts/      fal concept art (WebP)
   assets/ships/         optimised fal meshes and remodelled hulls (GLB, incl. the vehicle); raw/ is gitignored
-  assets/buildings/     shipyard.glb, spaceport.glb (Blender builds, tools/blender/buildings/)
+  assets/buildings/     shipyard.glb, spaceport.glb, colony buildings <id>.glb (Blender builds, tools/blender/buildings/); raw/ is gitignored
   assets/materials/     PATINA tiling PBR sets + manifest.json
   src/main.js           renderer, views, camera, post-processing
   src/fleet.js          fleet composition and choreography
   src/ui.js             ship registry and spec sheet
   src/ships/*.js        one module per class: meta + asset config (GLB, orientation, length, anchors); index.js = registries
-  src/buildings/*.js    shipyard.js, spaceport.js: building modules (load hook, build, studio hint)
+  src/buildings/*.js    shipyard.js, spaceport.js; colony.js (shared colony factory), catalog.js (Buildings menu), one small module per colony building
   src/lib/glbship.js    GLB -> scene ship (orientation, size, livery, detail, nozzle glow, anchors)
   src/lib/livery.js     dark matte operational repaint of the generated textures
   src/lib/patina.js     PATINA library, full materials and the tri-planar detail layer
@@ -396,6 +400,8 @@ node tools/ingest-fal.mjs results.json   # download fal outputs: concepts, meshe
 node tools/build-artifact.mjs   # single-page package for sharing (+ phone copies: ships .lite/.mini, buildings .lite)
 node tools/phone-check.mjs      # phone budget per view (needs a fresh dist/); --desktop, --still --shots <dir>
 node tools/shoot.mjs "mode=building&building=shipyard" shots/shipyard.png
+node tools/buildings/compare.mjs steel_mill --version v1   # concept | old render | new render + 80/40 px icons -> style-library/.../images/buildings/<id>-v1.jpg
+PY=<venv>/bin/python tools/blender/buildings/colony_build.py steel_mill /tmp/work --tex 4096   # build a colony building (bkit)
 PY=<venv>/bin/python tools/blender/hulls/build.sh corvette /tmp/work   # rebuild a hull (bpy 5.0)
 ```
 

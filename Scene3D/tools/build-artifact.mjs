@@ -2,7 +2,7 @@
 // document skeleton) plus every module under src/ and every runtime asset under assets/
 // (GLBs, concept art, PATINA maps) as supporting files. That includes the ground unit
 // (assets/ships/vehicle.glb) and the buildings (assets/buildings/*.glb). Not shipped: assets/ships/raw and the parts
-// kits (assets/parts, parts-blender, parts-yard, parts-spaceport): assembled ships and buildings carry their parts in
+// kits (assets/parts, parts-blender, parts-yard, parts-spaceport, parts-colony): assembled ships and buildings carry their parts in
 // their own GLB, and nothing loads a kit at runtime.
 // Phone tier (src/lib/device.js, README "Phone budget"): every GLB gets copies made here by tools/lite-glb.mjs:
 //   ships      .lite  1024 px textures (the subject of a ship studio)
@@ -38,10 +38,13 @@ const LITE_BUILDINGS = {
   'assets/buildings/shipyard.glb': ['parts_ladder', 'parts_rail', 'parts_vent', 'parts_yard-worker'],
   'assets/buildings/spaceport.glb': ['parts_rail'],
 };
+// colony buildings (src/buildings/colony.js) not listed above: the 1.8 m workers and the kit vents are below a pixel
+// on a phone (their amber pins and lamps are lightscape, not geometry, so they stay)
+const LITE_COLONY = ['parts_yard-worker', 'parts_vent'];
 const phoneCopies = (rel) => (rel.startsWith('assets/buildings/')
-  ? [['lite', 512, LITE_BUILDINGS[rel] || []]]
+  ? [['lite', 512, LITE_BUILDINGS[rel] || LITE_COLONY]]
   : [['lite', 1024, []], ['mini', rel.endsWith('carrier.glb') ? 512 : 256, []]]);
-const SKIP = ['assets/ships/raw', 'assets/parts', 'assets/parts-blender', 'assets/parts-yard', 'assets/parts-spaceport'];
+const SKIP = ['assets/ships/raw', 'assets/buildings/raw', 'assets/parts', 'assets/parts-blender', 'assets/parts-yard', 'assets/parts-spaceport', 'assets/parts-colony'];
 const report = [];
 let bytes = 0;
 async function walk(dir, keep) {

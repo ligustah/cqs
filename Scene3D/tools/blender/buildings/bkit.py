@@ -47,8 +47,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 sys.path.insert(0, HERE)
 
+import bpy  # noqa: E402  (bpy first: it makes bmesh / mathutils importable)
 import bmesh  # noqa: E402
-import bpy  # noqa: E402
 from mathutils import Matrix, Vector  # noqa: E402
 
 import lib  # noqa: E402
@@ -1188,6 +1188,15 @@ def worker(B, p, heading=0.0):
     _yard(B, 'yard:worker', p, heading, 'worker')
 
 
+def component(B, name, p, heading=0.0, scale=None, tag=None):
+    """A fal-made colony component (assets/parts-colony/<name>.glb, component.py: true size, +Y mount, footprint
+    centre at its origin, front +Z) placed at p, its front turned `heading` degrees about +Y. Components are kit
+    parts: reuse them across buildings (README-colony.md catalogue) before making a new one."""
+    a = heading * DEG
+    B.R.place(f'colony:{name}', p, n=(0, 1, 0), up=(math.sin(a), 0, math.cos(a)), along=(math.cos(a), 0, -math.sin(a)),
+              id=tag or name, **({'scale': scale} if scale is not None else {}))
+
+
 def container(B, p, heading=0.0):
     """Fleet-kit 20-ft ISO container (mount +Z out of the deck: stands with +Z up)."""
     a = heading * DEG
@@ -1234,4 +1243,5 @@ INVENTORY = [
     ('tree / planter', 'low-poly trees, planters with shrubs'),
     ('crate / cabinet / bollards / lamp_post / hazard_band / stencil', 'small dressing'),
     ('truck / forklift / worker / container / flood_on_wall', 'placements of yard-kit and fleet-kit parts (assemble.py)'),
+    ('component', 'placement of a fal-made colony component (assets/parts-colony, component.py)'),
 ]

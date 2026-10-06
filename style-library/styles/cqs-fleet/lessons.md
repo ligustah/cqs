@@ -148,3 +148,12 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
     light, so ground units use hazy glass (`glassRough: 0.8`) and the scratch normals skip glass. And PATINA flattens
     "subtle" prompts to nothing: ask for dense, evenly spread damage, then normalise the maps (its normals also carry
     a mean tilt to remove). Ship shaders are untouched (every new option is opt-in; DD-12 studio PSNR 60.7 dB).
+36. **Ship bake grime greys a building.** The kit bake's AO grime (full below AO 0.35, gone at 0.985, 0.35 m reach) is
+    right for a hull with sparse proud parts; on a building wall framed by proud gunmetal posts, bands and parapets
+    every point sits under 0.985 and the whole wall went dark (deuterium depot r1: black pump houses). Buildings use
+    grime full only below AO 0.45, gone by 0.88, at 0.6 strength, with a 1.2 m reach (`bkit` sets `lib.BAKE`).
+37. **The studio key decides which face reads light.** The ship studio key sits 85 degrees round from the camera; on
+    the steel mill that left the long shed face, the one the concept shows lit, in shadow. Building modules set the key
+    in their own frame (`studio.sunaz` / `sunel`, colony.js default front-left) to match the concept's light.
+38. **+Y-mount parts need `along`.** assemble.py lays a +Y part's +X along `along`, defaulting to the projected `up`;
+    passing only `up` (as for +Z parts) turned the yard truck 90 degrees. bkit's helpers take a `heading`.
