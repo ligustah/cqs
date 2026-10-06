@@ -65,9 +65,12 @@ if (studio) {
   LIGHTSCAPE_GAIN.value = BSTUDIO.lightscapeGain ?? STUDIO.lightscapeGain ?? 1;
   // the key light is also SUN_DIR (the shadow fit reads it); ?sunaz= / ?sunel= still override it (ship frame)
   SUN_DIR.copy(studioDir(camAz, camEl, STUDIO.key.az, STUDIO.key.el));
-  if (params.has('sunaz') || params.has('sunel')) {
-    const sAz = THREE.MathUtils.degToRad(parseFloat(params.get('sunaz') ?? String(camAz + STUDIO.key.az)));
-    const sEl = THREE.MathUtils.degToRad(parseFloat(params.get('sunel') ?? String(STUDIO.key.el)));
+  // a building's studio hint may fix the key in its own frame (sunaz / sunel, degrees): the colony concepts are lit from
+  // the front-left, so their faces read as the concept's do
+  const hintSun = mode === 'building' && (BSTUDIO.sunaz != null || BSTUDIO.sunel != null);
+  if (params.has('sunaz') || params.has('sunel') || hintSun) {
+    const sAz = THREE.MathUtils.degToRad(parseFloat(params.get('sunaz') ?? String(BSTUDIO.sunaz ?? camAz + STUDIO.key.az)));
+    const sEl = THREE.MathUtils.degToRad(parseFloat(params.get('sunel') ?? String(BSTUDIO.sunel ?? STUDIO.key.el)));
     SUN_DIR.set(Math.sin(sAz) * Math.cos(sEl), Math.sin(sEl), Math.cos(sAz) * Math.cos(sEl)).normalize();
   }
 } else if (mode === 'ship' || mode === 'building') {
@@ -194,7 +197,7 @@ function start() {
   const lighting = studio
     ? createStudioLighting(renderer, scene, {
       shadowSize: TIER.shadowSize, lite: TIER.ao === false, exposure: renderer.toneMappingExposure,
-      camAz, camEl, keyDir: SUN_DIR,
+      camAz, camEl, keyDir: SUN_DIR, backdrop: mode === 'building' ? BSTUDIO.backdrop ?? null : null,
     })
     : createLighting(renderer, scene, { shadowSize: TIER.shadowSize });
   // a building's studio hint (e.g. the shipyard's dusk): the showcase rig dimmed per light (key, fill, rim, kick, env)

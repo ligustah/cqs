@@ -300,7 +300,7 @@ function interiorLight(spec) {
  *              outside the box receive no spot light (see gateInteriorLights)
  *   interiorBounce optional { box, color, irradiance, feather }: light the floodlit deck reflects
  *              onto the ceiling and walls inside the box (needs interiorLights + interiorLightGate)
- *   fixtures   optional [{ p: [x,y,z] (centre), size: [sx,sy,sz], rotZ (rad), color, radiance, mirrorX, mirrorOffset }]:
+ *   fixtures   optional [{ p: [x,y,z] (centre), size: [sx,sy,sz], rotZ (rad), rotY (rad, after rotZ), color, radiance, mirrorX, mirrorOffset }]:
  *              emissive light fixtures (hangar light strips), drawn as unlit boxes of that radiance
  *   liveryZones optional [{ box: [[x,y,z], [x,y,z]] (ship frame), tone (1 = light paint, 0 = carve back to the
  *              base), feather (m), mirrorX }]: armour zones that take the light paint of a two-tone scheme
@@ -490,6 +490,7 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
       const key = `${q.color || '#fff4e6'}|${q.radiance ?? 2}`;
       const g = new THREE.BoxGeometry(...q.size);
       if (q.rotZ) g.rotateZ(q.rotZ);
+      if (q.rotY) g.rotateY(q.rotY); // colony buildings: glow panels on faces that are not axis-aligned
       g.translate(...q.p);
       if (!fixtureGroups.has(key)) fixtureGroups.set(key, []);
       fixtureGroups.get(key).push(g);

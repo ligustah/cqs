@@ -20,6 +20,9 @@ export const GROUND = ['vehicle'];
 export const BUILDINGS = {
   shipyard: { module: '../buildings/shipyard.js', fleet: false },
   spaceport: { module: '../buildings/spaceport.js', fleet: true },
+  // colony buildings (src/buildings/colony.js factory; catalogue and menu groups in src/buildings/catalog.js)
+  deuterium_depot: { module: '../buildings/deuterium_depot.js', fleet: false },
+  steel_mill: { module: '../buildings/steel_mill.js', fleet: false },
 };
 /** Every class the ship path builds (studio, lineup): the fleet classes and the ground units. */
 export const LINEUP = [...GROUND, ...ORDER];

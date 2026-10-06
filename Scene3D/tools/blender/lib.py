@@ -536,7 +536,9 @@ def material(name):
         tone = g.math('MULTIPLY', tone, g.mr(g.noise(obj, 22.0, 4), 0.35, 0.65, 0.975, 1.02))
         col = g.vm('SCALE', base, s=tone)
         streak = g.mr(g.noise(g.vm('MULTIPLY', obj, (3.0, 0.35, 3.0)), 1.2, 3), 0.42, 0.68, 0.35, 1.0)
-        grime = g.math('MULTIPLY', g.mr(ao, 0.35, 0.985, 1.0, 0.0), streak, clamp=True)
+        # grime from AO: BAKE['grime'] = (ao where grime is full, ao where it ends, strength); defaults are the ship kit's
+        glo, ghi, gk = BAKE.get('grime', (0.35, 0.985, 1.0))
+        grime = g.math('MULTIPLY', g.math('MULTIPLY', g.mr(ao, glo, ghi, 1.0, 0.0), streak, clamp=True), gk)
         brk = g.mr(g.noise(obj, 7.0, 6, 0.7), 0.46, 0.60)
         convex = g.math('MULTIPLY', curv, g.mr(ao, 0.75, 0.97))
         wear = g.math('MULTIPLY', convex, g.math('ADD', 0.35, g.math('MULTIPLY', brk, 1.2)), clamp=True)

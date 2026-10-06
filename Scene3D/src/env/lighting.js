@@ -197,7 +197,7 @@ function neutralInverse(rgb255) {
  * backdrop. `camAz` / `camEl` in degrees (ship frame); `keyDir` (optional) overrides the key.
  * Returns the same { sun, fitShadow, envTexture } contract as createLighting (sun = the key).
  */
-export function createStudioLighting(renderer, scene, { shadowSize = 4096, camAz = 35, camEl = 18, keyDir = null, exposure = STUDIO.exposure, lite = false } = {}) {
+export function createStudioLighting(renderer, scene, { shadowSize = 4096, camAz = 35, camEl = 18, keyDir = null, exposure = STUDIO.exposure, lite = false, backdrop: backdropColours = null } = {}) {
   const S = STUDIO;
   const dirs = {
     key: keyDir ? keyDir.clone().normalize() : studioDir(camAz, camEl, S.key.az, S.key.el),
@@ -234,7 +234,7 @@ export function createStudioLighting(renderer, scene, { shadowSize = 4096, camAz
   // backdrop: a clip-space quad drawn first behind everything (no depth), radial gradient in
   // aspect-corrected screen space. Colours are given as displayed sRGB and pre-inverted through
   // the tone curve and exposure, so the frame shows exactly them (before the vignette and grain).
-  const bd = S.backdrop;
+  const bd = backdropColours || S.backdrop; // a building may bring its own (colony.js SPACE_BACKDROP for orbital ones)
   const backdrop = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
     depthTest: false, depthWrite: false,
     uniforms: {

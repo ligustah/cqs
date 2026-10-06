@@ -57,6 +57,9 @@ const PLATE_STAT = [0.7125, 0.0285];
 //          on up-facing surfaces. groundY is the contact plane in the ship frame (glbship: anchors.ground.y).
 export const FINISH_PRESETS = {
   ship: { scale: [24, 110], tone: [0.06, 0.08], rough: [0.78, 0.55, 0.95], grit: 0.8, gritNrm: 0.55, seam: 0.45, edge: [1.2, 0.5] },
+  // colony buildings (src/buildings/colony.js, light concept paint): panel-scale wear tone at 8 / 36 m (a cladding
+  // panel to a whole facade), matte paint and concrete (0.8-0.97), grit at 0.5 m, firmer seam grime and edge wear
+  building: { scale: [8, 36], tone: [0.06, 0.07], rough: [0.86, 0.72, 0.97], grit: 0.5, gritNrm: 0.5, seam: 0.55, edge: [1.3, 0.6] },
   ground: {
     scale: [2.5, 9], tone: [0.07, 0.08], rough: [0.92, 0.84, 1.0], grit: 0.35, gritNrm: 0.6, seam: 0.6, edge: [1.5, 0.6],
     ground: {
