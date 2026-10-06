@@ -181,6 +181,11 @@ the README "Phone budget" table, the catalogue rows, and a line in `style-librar
 | military_base (v2: 23 components + 1 V-31) | 6.6 | 146k | 49 | 134 | 5.9 |
 | radio_telescope (v2: 2 components) | 3.3 | 58k | 21 | 102 | 6.3 |
 | transmitter (v2: 24 components, orbital) | 7.1 | 137k | 31 | 119 | 5.1 |
+| refinery (v2: 4 components, 7 placed) | 6.1 | 147k | 34 | 120 | 5.6 |
+| processing_plant (v2: 6 components, 9 placed) | 5.9 | 133k | 42 | 127 | 6.0 |
+| oil_tanks (v2: 3 components, 5 placed) | 3.5 | 68k | 24 | 108 | 6.3 |
+| silicon_foundry (v2: 2 components, 7 placed) | 3.4 | 59k | 23 | 106 | 6.3 |
+| steel_depot (v2: 4 components, 30 placed) | 6.8 | 132k | 38 | 125 | 6.2 |
 | (v1, kit only: depot / mill) | 2.7 / 3.5 | 55k / 82k | 12 / 18 | 94 / 103 | 3.4 / 3.1 |
 | (shipyard, for scale) | 10.9 | 291k | 59 | 169 | 5.9 |
 

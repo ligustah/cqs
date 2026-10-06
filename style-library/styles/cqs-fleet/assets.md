@@ -35,6 +35,12 @@ The other 14 colony buildings (`briefs/buildings.md`) are listed in the Building
 Known open item: the reactor-flank CT-4 / CT-7 stencil reads like a row of small windows at steep
 angles. It needs a paint change in `freighter_paint.py` and a rebuild.
 
+Colony buildings v2, production / storage batch (2026-10-06): refinery, processing_plant, oil_tanks, silicon_foundry,
+steel_depot (`assets/buildings/<id>.glb`, `src/buildings/<id>.js`, scripts `tools/blender/buildings/<id>.py`), composed
+from twelve new fal components (distColumn, htankSkid, processVessel, bandedLowTank, plantBlock, bottleSkid, floatTank,
+roofMonitor, crystalReactor, overheadCrane, beamStack, portalColumn) plus the pilots' plantHouse, manifoldSkid and
+filterBank; review sheets `images/buildings/<id>-v2.jpg`; phone tier 106-127 MB heap + GPU.
+
 ## In design
 
 None. The three assets built in v1 keep their briefs and concepts: V-31 `briefs/vehicle.md`,
