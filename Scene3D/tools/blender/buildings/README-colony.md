@@ -186,6 +186,11 @@ the README "Phone budget" table, the catalogue rows, and a line in `style-librar
 | oil_tanks (v2: 3 components, 5 placed) | 3.5 | 68k | 24 | 108 | 6.3 |
 | silicon_foundry (v2: 2 components, 7 placed) | 3.4 | 59k | 23 | 106 | 6.3 |
 | steel_depot (v2: 4 components, 30 placed) | 6.8 | 132k | 38 | 125 | 6.2 |
+| trade_center (v2: 4 components, 5 placed) | 4.1 | 61k | 41 | 123 | 3.7 |
+| infrastructure (v2: 4 components, 10 placed) | 4.5 | 83k | 38 | 122 | 3.8 |
+| residence (v2: 2 components, 5 placed) | 3.8 | 65k | 23 | 106 | 3.5 |
+| university (v2: 3 components, 6 placed) | 3.4 | 51k | 27 | 108 | 3.9 |
+| library (v2: 3 components, 9 placed) | 3.2 | 52k | 31 | 113 | 3.6 |
 | (v1, kit only: depot / mill) | 2.7 / 3.5 | 55k / 82k | 12 / 18 | 94 / 103 | 3.4 / 3.1 |
 | (shipyard, for scale) | 10.9 | 291k | 59 | 169 | 5.9 |
 
