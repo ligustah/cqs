@@ -42,22 +42,35 @@ function throatTexture() {
 // base64 alphabet -> 6-bit values
 const B64 = new Uint8Array(128);
 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'.split('').forEach((c, i) => { B64[c.charCodeAt(0)] = i; });
-/**
- * Decode base64 text (one line, as build-artifact writes it) straight into bytes: no intermediate binary string (atob)
- * next to the text and the buffer, so a 10 MB GLB costs its text and its bytes, nothing else.
- */
-function decodeB64(text) {
-  if (typeof Uint8Array.fromBase64 === 'function') return Uint8Array.fromBase64(text.trim());
+/** Length of base64 text (one line, as build-artifact writes it) without trailing whitespace and padding. */
+function b64End(text) {
   let end = text.length;
   while (end > 0 && (text.charCodeAt(end - 1) <= 32 || text.charCodeAt(end - 1) === 61)) end--; // whitespace, '='
-  const out = new Uint8Array(Math.floor((end * 3) / 4));
-  let o = 0, i = 0;
-  for (const full = end - (end % 4); i < full; i += 4) {
-    const n = (B64[text.charCodeAt(i)] << 18) | (B64[text.charCodeAt(i + 1)] << 12) | (B64[text.charCodeAt(i + 2)] << 6) | B64[text.charCodeAt(i + 3)];
-    out[o++] = n >> 16; out[o++] = (n >> 8) & 255; out[o++] = n & 255;
+  return end;
+}
+/** Decoded byte length of base64 text. */
+const b64Bytes = (text) => Math.floor((b64End(text) * 3) / 4);
+/**
+ * Decode base64 text straight into bytes (into `out` at `at`, or a new array): no intermediate binary string (atob)
+ * next to the text and the buffer, so a 10 MB model costs its text and its bytes, nothing else.
+ */
+function decodeB64(text, out = null, at = 0) {
+  const end = b64End(text);
+  const n = Math.floor((end * 3) / 4);
+  if (!out) {
+    if (typeof Uint8Array.fromBase64 === 'function') return Uint8Array.fromBase64(text.trim());
+    out = new Uint8Array(n);
+  } else if (typeof out.setFromBase64 === 'function') {
+    out.subarray(at, at + n).setFromBase64(text); // whitespace and padding are fine
+    return out;
   }
-  if (end - i === 2) { const n = (B64[text.charCodeAt(i)] << 18) | (B64[text.charCodeAt(i + 1)] << 12); out[o++] = n >> 16; }
-  else if (end - i === 3) { const n = (B64[text.charCodeAt(i)] << 18) | (B64[text.charCodeAt(i + 1)] << 12) | (B64[text.charCodeAt(i + 2)] << 6); out[o++] = n >> 16; out[o++] = (n >> 8) & 255; }
+  let o = at, i = 0;
+  for (const full = end - (end % 4); i < full; i += 4) {
+    const v = (B64[text.charCodeAt(i)] << 18) | (B64[text.charCodeAt(i + 1)] << 12) | (B64[text.charCodeAt(i + 2)] << 6) | B64[text.charCodeAt(i + 3)];
+    out[o++] = v >> 16; out[o++] = (v >> 8) & 255; out[o++] = v & 255;
+  }
+  if (end - i === 2) { const v = (B64[text.charCodeAt(i)] << 18) | (B64[text.charCodeAt(i + 1)] << 12); out[o++] = v >> 16; }
+  else if (end - i === 3) { const v = (B64[text.charCodeAt(i)] << 18) | (B64[text.charCodeAt(i + 1)] << 12) | (B64[text.charCodeAt(i + 2)] << 6); out[o++] = v >> 16; out[o++] = (v >> 8) & 255; }
   return out;
 }
 
@@ -77,16 +90,41 @@ function releaseImagesAfterUpload(gltf) {
   });
 }
 
-// Artifact hosting does not serve .glb, so tools/build-artifact.mjs ships each GLB as
-// base64 text (<name>.glb.b64.txt) and sets window.__glbB64; decode it here.
-// Phone tier copies (tools/lite-glb.mjs via build-artifact): '.lite' (the subject of a studio or building view:
+// Artifact hosting does not serve .glb, so tools/build-artifact.mjs (via tools/split-glb.mjs) ships each model split by
+// tier and sets window.__glbB64; reassemble it here:
+//   <url>.shared.b64.txt   geometry + the textures every tier uses (base64)
+//   <url>[.<tier>].b64.txt a small GLB: the tier's JSON (offsets already past the shared bytes) + its own textures
+//   assets/tex/<hash>.webp textures of 2048 px or more, referenced by URI from the JSON (the loader fetches them)
+// Tiers: desktop the original textures; phone (device.js LITE) '.lite' (the subject of a studio or building view:
 // textures capped at 1024 px, buildings 512 px and without small dressing parts) and '.mini' (ships in a crowd: the
 // fleet, the lineup, the carrier's parked load, ships inside a building scene: 256 px, the carrier 512 px).
-async function loadB64(url, tier) {
-  const file = `${url}${LITE ? `.${tier}` : ''}.b64.txt`;
+const glbText = async (file) => {
   const r = await fetch(file);
   if (!r.ok) throw new Error(`${r.status} ${file}`);
-  let bytes = decodeB64(await r.text()); // the text is dropped right here
+  return r.text();
+};
+async function loadB64(url, tier) {
+  // texts and decoded parts are dropped (set to null) before the parse awaits: an async frame keeps its locals alive
+  let [tierText, sharedText] = await Promise.all([glbText(`${url}${LITE ? `.${tier}` : ''}.b64.txt`), glbText(`${url}.shared.b64.txt`)]);
+  // the tier GLB: [header 12][JSON chunk 8 + json][BIN chunk 8 + the tier's own bytes]
+  let part = decodeB64(tierText);
+  tierText = null;
+  const dv = new DataView(part.buffer, part.byteOffset, part.byteLength);
+  const jsonLen = dv.getUint32(12, true);
+  const ownLen = 20 + jsonLen < part.length ? dv.getUint32(20 + jsonLen, true) : 0;
+  const sharedLen = b64Bytes(sharedText);
+  // one GLB: the tier's JSON, then BIN = shared bytes + the tier's own bytes (decoded in place, no second copy)
+  const binLen = sharedLen + ownLen;
+  let bytes = new Uint8Array(12 + 8 + jsonLen + 8 + binLen);
+  const out = new DataView(bytes.buffer);
+  out.setUint32(0, 0x46546c67, true); out.setUint32(4, 2, true); out.setUint32(8, bytes.length, true);
+  bytes.set(part.subarray(12, 20 + jsonLen), 12); // JSON chunk header + JSON
+  out.setUint32(20 + jsonLen, binLen, true); out.setUint32(24 + jsonLen, 0x004e4942, true);
+  if (ownLen) bytes.set(part.subarray(28 + jsonLen, 28 + jsonLen + ownLen), 28 + jsonLen + sharedLen);
+  part = null;
+  decodeB64(sharedText, bytes, 28 + jsonLen);
+  sharedText = null;
+  // external images resolve against the page (their URIs are package paths: assets/tex/<hash>.webp)
   const gltf = await loader.parseAsync(bytes.buffer, '');
   bytes = null;
   delete gltf.parser; // the parser caches the whole GLB buffer; only the scene graph is used

@@ -202,7 +202,7 @@ heap + GPU estimate (textures with mips + geometry buffers + render targets) **u
 300 MB**, about 25 MB fetched, ready in seconds. Check before every publish:
 
 ```bash
-node tools/build-artifact.mjs && node tools/phone-check.mjs   # every view, 390x844 DPR 3 touch, base64 GLBs from dist/
+node tools/build-artifact.mjs && node tools/phone-check.mjs   # every view, 390x844 DPR 3 touch, served through dist/files.json
 ```
 
 How the phone tier stays inside it:
@@ -210,7 +210,7 @@ How the phone tier stays inside it:
 - **Load per view.** The default fleet view on a phone places the ships only; a building's
   assets load only when its own view (`#shipyard`, `#spaceport`) opens. Desktop keeps the
   spaceport in the fleet scene.
-- **Two phone copies per ship** (`tools/build-artifact.mjs` via `tools/lite-glb.mjs`):
+- **Two phone copies per ship** (`tools/build-artifact.mjs` via `tools/split-glb.mjs`):
   `.lite` (1024 px textures) for the subject of a ship studio, `.mini` (256 px, carrier
   512 px) for ships in a crowd: the fleet, the lineup, the carrier's parked load and the
   ships inside a building scene. `loadShips(ids, tier)` / `loadGLB(url, tier)` pick one;
@@ -229,7 +229,28 @@ How the phone tier stays inside it:
   ones in typed arrays.
 - **Fail visibly.** A load error or a lost WebGL context shows a message with Reload and a
   lighter view (index.html `__fail`), never a white page.
-- Not shipped: the parts kits (`assets/parts*`): nothing loads them at runtime.
+- Not shipped: the parts kits (`assets/parts*`): nothing loads them at runtime; nor the PATINA
+  maps the runtime does not fetch (only each set's `runtimeMaps` / `maps` from the manifest).
+
+### Package size
+
+One artifact version holds at most 256 MiB, 511 files, 15 MB per binary and 16 MB per text
+file; the build fails past the first two. Artifact hosting does not serve `model/gltf-binary`,
+so models travel as base64 text, but split (`tools/split-glb.mjs`) so the base64 carries as
+little as possible and nothing twice:
+
+- `<name>.glb.shared.b64.txt`: the geometry (meshopt buffers, bit-identical to the GLB) and the
+  textures every tier uses unchanged, once for all tiers.
+- `<name>.glb.b64.txt` (desktop), `.lite.b64.txt`, `.mini.b64.txt`: a small GLB per tier, its
+  JSON (offsets already past the shared bytes; a building's lite JSON leaves the dressing nodes
+  out of the scene graph) and its own textures (the phone tiers' downscaled copies).
+- `assets/tex/<hash>.webp`: every texture of 2048 px or more as a plain WebP file, shared by
+  content hash, referenced by URI from the tier JSON.
+
+`loadGLB` (glbship.js) fetches tier + shared, decodes the shared base64 straight into one GLB
+buffer behind the tier's JSON and parses it. Desktop gets the authored textures, except the
+colony buildings' own 4096 px metallic-roughness map, which goes out at 2048 px (base colour
+and normals stay at 4096). 358 MB in 246 files before, ~208 MB in ~387 files after.
 
 Measured with `tools/phone-check.mjs` (headless Chromium, SwiftShader, so times are
 relative). Before = commit 73c9ec2 (vehicle, shipyard, spaceport added); after = this fix.

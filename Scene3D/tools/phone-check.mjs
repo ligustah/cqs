@@ -1,5 +1,6 @@
-// Phone-tier budget check: load each view the way the published artifact does (GLBs as base64 .b64.txt from dist/,
-// lite copies on the phone tier) in an emulated mid-range phone and report, per view: bytes fetched, peak and final JS
+// Phone-tier budget check: load each view the way the published artifact does (every file through dist/files.json, the
+// package's mapping: models split by tier as base64 .b64.txt plus WebP textures, lite copies on the phone tier; a path
+// the package does not hold is a 404) in an emulated mid-range phone and report, per view: bytes fetched, peak and final JS
 // heap (CDP), ArrayBuffer backing store, triangles drawn, GPU estimate (unique textures with mips + geometry buffers +
 // render targets), time to __ready, errors. Run node tools/build-artifact.mjs first (dist/ must match the sources).
 //   node tools/phone-check.mjs [--desktop] [--root <Scene3D dir>] [--json out.json] [--shots dir] [view ...]
@@ -43,6 +44,10 @@ const PHONE = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isM
   userAgent: 'Mozilla/5.0 (Linux; Android 13; Pixel 6a) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36' };
 const DESKTOP = { viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1 };
 
+// the package: published path -> file (build-artifact.mjs); the page itself is the source index.html (the host wraps
+// dist/orbital-fleet.html, the same body, in the document skeleton)
+const PACKAGE = JSON.parse(await readFile(join(ROOT, 'dist/files.json'), 'utf8'));
+const packaged = (p) => { const v = PACKAGE[p]; return v === undefined ? null : join(ROOT, typeof v === 'string' ? v : v.from); };
 const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--enable-webgl', '--enable-precise-memory-info', '--js-flags=--expose-gc'] });
 const rows = [];
 for (const view of VIEWS) {
@@ -56,14 +61,15 @@ for (const view of VIEWS) {
   });
   await pg.route(ORIGIN + '**', async (route) => {
     const p = decodeURIComponent(new URL(route.request().url()).pathname).replace(/^\/+/, '') || 'index.html';
-    // the artifact serves GLBs as base64 text and lite PATINA maps from dist/; everything else from the source tree
-    const file = p.endsWith('.b64.txt') || p.endsWith('.lite.webp') ? join(ROOT, 'dist', p) : join(ROOT, p);
+    // the artifact serves exactly what dist/files.json maps (and the page)
+    const file = p === 'index.html' ? join(ROOT, 'index.html') : packaged(p);
     try {
+      if (!file) throw new Error('not in the package');
       const body = await readFile(file);
       fetched.total += body.length; fetched.files++;
-      if (p.endsWith('.b64.txt')) fetched.glb += body.length;
+      if (p.endsWith('.b64.txt') || p.startsWith('assets/tex/')) fetched.glb += body.length;
       await route.fulfill({ body, contentType: TYPES[extname(p)] || 'application/octet-stream' });
-    } catch { await route.fulfill({ status: 404, body: 'not found' }); }
+    } catch { logs.push(`[404] ${p}`); await route.fulfill({ status: 404, body: 'not found' }); }
   });
   const logs = [];
   pg.on('console', (m) => { if (['error'].includes(m.type())) logs.push(m.text().slice(0, 200)); });
@@ -137,7 +143,7 @@ for (const view of VIEWS) {
       return { tris: Math.round(tris), texCount: tex.size, bySize, bySrc, calls: r.render.calls, textures: r.memory.textures, geometries: r.memory.geometries, texMB: texB / 1e6, maxTex, geoMB: geoB / 1e6, rtMB: rt / 1e6, canvas: [c.width, c.height], lost: renderer.getContext().isContextLost() };
     });
   } catch (e) { logs.push(`[eval] ${e.message.split('\n')[0]}`); }
-  if (shots && readyS !== null) { try { await mkdir(shots, { recursive: true }); await pg.screenshot({ path: join(shots, `${view}.png`), timeout: 120000 }); } catch (e) { logs.push(`[shot] ${e.message.split('\n')[0]}`); } }
+  if (shots && readyS !== null) { try { await mkdir(shots, { recursive: true }); await pg.screenshot({ path: join(shots, `${view}.png`), timeout }); } catch (e) { logs.push(`[shot] ${e.message.split('\n')[0]}`); } }
   let heap = 0;
   try { await cdp.send('HeapProfiler.collectGarbage'); } catch { /* crashed */ }
   try { const m = await cdp.send('Performance.getMetrics'); heap = m.metrics.find((x) => x.name === 'JSHeapUsedSize')?.value || 0; } catch { /* crashed */ }
@@ -147,7 +153,7 @@ for (const view of VIEWS) {
   row.budgetMB = row.heapPeakMB + row.gpuMB;
   rows.push(row);
   const f = (v, d = 0) => (v === undefined || v === null ? '-' : Number(v).toFixed(d));
-  console.log(`${view.padEnd(10)} ${row.ok ? 'ok  ' : 'FAIL'} ready ${f(readyS, 1)}s  fetched ${f(row.fetchedMB, 1)} MB (b64 ${f(row.glbMB, 1)})  heap peak ${f(row.heapPeakMB)} MB end ${f(row.heapMB)}  tris ${f((row.tris || 0) / 1e3)}k  tex ${f(row.texMB)} MB (max ${row.maxTex ?? '-'}px)  geo ${f(row.geoMB)} MB  rt ${f(row.rtMB)} MB  heap+gpu ${f(row.budgetMB)} MB  rss peak ${f(row.rssPeakMB)} end ${f(row.rssEndMB)} MB${row.errors.length ? `\n           ${row.errors.join('\n           ')}` : ''}`);
+  console.log(`${view.padEnd(10)} ${row.ok ? 'ok  ' : 'FAIL'} ready ${f(readyS, 1)}s  fetched ${f(row.fetchedMB, 1)} MB (models ${f(row.glbMB, 1)})  heap peak ${f(row.heapPeakMB)} MB end ${f(row.heapMB)}  tris ${f((row.tris || 0) / 1e3)}k  tex ${f(row.texMB)} MB (max ${row.maxTex ?? '-'}px)  geo ${f(row.geoMB)} MB  rt ${f(row.rtMB)} MB  heap+gpu ${f(row.budgetMB)} MB  rss peak ${f(row.rssPeakMB)} end ${f(row.rssEndMB)} MB${row.errors.length ? `\n           ${row.errors.join('\n           ')}` : ''}`);
   await ctx.close();
 }
 await browser.close();
