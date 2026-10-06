@@ -24,6 +24,9 @@ shipyards.
   bevelled edges, crisp features) and project or repaint its texture; never ship the raw mesh. fal
   meshes serve only as small parts (about 3 m and under, cleaned and flattened) or as measuring
   blueprints; never scale one up past its source detail (correction 41: the transmitter modules).
+- **Quality bar** (correction 42, "look like from a 20 year old video game"): current-generation real-time
+  art. Clean, dense hard-surface geometry whose bevels catch light; texel density that holds at close
+  range; layered PBR (detail normals, AO, wear); real shadows. Judge renders at 1:1 against that bar.
 - **Check what the user sees** (correction 40): review the published preview through the real package
   before reporting a result.
 - **Concepts first:** when several assets are designed together, every concept is settled with the
