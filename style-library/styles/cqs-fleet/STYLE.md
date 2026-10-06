@@ -21,7 +21,9 @@ shipyards.
   part, and compose the asset from parts. Do not reconstruct a whole building as one mesh.
 - **Remodel components too** (corrections 5, 40): a fal image-to-3D mesh is a blueprint for a part as much
   as for a whole asset. Rebuild every component as clean hard-surface geometry (flat facets, sharp
-  bevelled edges, crisp features) and project or repaint its texture; never ship the raw mesh.
+  bevelled edges, crisp features) and project or repaint its texture; never ship the raw mesh. fal
+  meshes serve only as small parts (about 3 m and under, cleaned and flattened) or as measuring
+  blueprints; never scale one up past its source detail (correction 41: the transmitter modules).
 - **Check what the user sees** (correction 40): review the published preview through the real package
   before reporting a result.
 - **Concepts first:** when several assets are designed together, every concept is settled with the
