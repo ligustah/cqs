@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__org-connector-mcp_fal_ai_88FE637B__get_job_result",
+      "mcp__org-connector-mcp_fal_ai_88FE637B__check_job",
+      "mcp__org-connector-mcp_fal_ai_88FE637B__get_model_schema"
+    ]
+  }
+}
