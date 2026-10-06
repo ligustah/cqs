@@ -245,8 +245,8 @@ GPU = textures + geometry + render targets; heap = retained after GC / transient
 | destroyer studio | 7.0 | 85 | 160 | 191k | 7 / 22 | 167 | 7 → 6 |
 | carrier studio (+ parked) | 31.2 → 24.9 | 496 → 153 | 596 → 253 | 748k | 12 / 111 | 264 | 30 → 17 |
 | vehicle studio | 3.3 | 48 | 118 | 40k | 6 / 10 | 124 | 6 |
-| deuterium_depot (colony, v1) | 2.7 | 12 | 83 | 55k | 6 / 11 | 94 | 3.4 |
-| steel_mill (colony, v1) | 3.5 | 18 | 91 | 82k | 6 / 12 | 103 | 3.1 |
+| deuterium_depot (colony, v2) | 5.0 | 27 | 101 | 120k | 6 / 11 | 112 | 3.8 |
+| steel_mill (colony, v2) | 6.3 | 43 | 117 | 127k | 6 / 11 | 129 | 4.1 |
 | shipyard | 15.0 → 10.8 | 210 → 59 | 292 → 141 | 355k → 291k | 8 / 28 | 149 | 11 → 10 |
 | spaceport | 19.9 → 15.9 | 282 → 67 | 377 → 160 | 757k → 712k | 10 / 104 | 170 | 22 → 12 |
 

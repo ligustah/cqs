@@ -9,10 +9,9 @@ whole-building mesh (the user, 2026-10-06: "use the fal 3d model to create small
 simplify and compose them in blender as opposed to generating the full 3d model"); a whole-building mesh, if one
 exists, is only a measuring reference.
 
-Pilots: `deuterium_depot`, `steel_mill` (v1). **They were built parametric-only** (bkit + per-building script): in that
-session the fal connector was blocked by the permission system, so stages B and C did not run. The component
-catalogue below is therefore empty, with the planned components listed. The first agent with fal access runs B-C for
-the pilots' signature components (sphere tank, blast furnace, stacks) and swaps them in.
+Pilots: `deuterium_depot`, `steel_mill`, v2: each composed from four to six fal components plus the parametric kit.
+The v1 pilots (kit only, built while fal was blocked) are kept as the compare sheets `<id>-v1.jpg`; v2 sheets are
+`<id>-v2.jpg`.
 
 ## Inputs (read first)
 
@@ -57,8 +56,10 @@ PUT the bytes)], `resolution` 4K:
 > view (straight at the front, camera level), LEFT SIDE view, BACK view, RIGHT SIDE view, TOP view (straight down).
 > Orthographic, no perspective, no shadows on the background, every view at the same scale, no labels.
 
-Crop the cells (PIL). If the views disagree (a tank moves, a stack doubles), regenerate once. Use the TOP view for the
-plan (positions in metres from the slab size) and the side views for heights. Do not mesh the sheet.
+Crop the cells (PIL). If the views disagree (a tank moves, a stack doubles), regenerate once, then stop. Both pilot
+sheets ghosted a faded copy of the perspective concept across the grid and the depot's TOP view drew four spheres
+(lesson 39): use the elevations for heights and the left-to-right order, take the plan from the concept by eye, and
+never mesh the sheet. Save the usable sheet as `images/buildings/<id>-turnaround.jpg`.
 
 ### C. Components
 
@@ -79,13 +80,24 @@ plan (positions in metres from the slab size) and the side views for heights. Do
 3. **Mesh**: `tripo3d/h3.1/image-to-3d` with `image_url`, `texture: true`, `pbr: true`, `texture_quality: "detailed"`,
    `geometry_quality: "detailed"`, `face_limit` to suit (3k for a skid, 10-30k for a furnace or a dish). Download the
    GLB into `Scene3D/assets/buildings/raw/` (gitignored).
-4. **Ingest**: `$PY tools/blender/buildings/component.py <raw.glb> <name> --height <m> [--rot x,y,z] [--tris N]
-   --source <image> --fal <image job>,<mesh job> --used-by <id> --about "..."`. It welds, drops Tripo floaters,
-   dissolves flat regions (UV-delimited), decimates, stands the part on y = 0 at true size (uniform scale from one
-   key dimension unless the brief fixes all three), flattens the foot, keeps the texture (WebP, <= 1024 px) and
-   records the part in `assets/parts-colony/parts.json`. Tested on a fal kit mesh (dome: 2,883 -> 2,362 tris).
-5. **Check** it: render it next to a 1.8 m worker (`tools/render-glb.mjs`), reject glass-as-hole, mushy faces, a
-   mirrored marking. Then add a row to the catalogue below.
+4. **Ingest**: `$PY tools/blender/buildings/component.py <raw.glb> <name> (--height | --width | --length | --long |
+   --size W,H,D) [--rot x,y,z] [--tris N] [--tex 1024|2048] [--hot 0.8] --source images/buildings/components/<name>.jpg
+   --fal <image job>,<mesh job> --used-by <id> --about "..."`. It welds, drops Tripo floaters, dissolves flat regions
+   (UV-delimited), decimates, stands the part on y = 0 at true size, flattens the foot, keeps the texture (WebP),
+   names the material `colony_<name>` and records the part in `assets/parts-colony/parts.json` (re-run all with
+   `--rebuild`). Tripo H3.1 output is Y-up with the long axis on Z, so `--rot` was never needed on the pilots.
+   - Size: uniform from one key dimension (`--width 26.5` for the sphere's footing span, `--height 60` for the furnace,
+     `--long` for skids); per axis (`--size`) only where the building fixes all three (shed segment 28 x 24 x 36,
+     skip gallery stretched to 46 m rise over 28 m).
+   - `--hot 0.8`: bright saturated orange texels (molten runner, tuyere band, the image's small amber lamps) become an
+     emissive map, so the concept's glow is real at runtime; amber paint (darker) stays unlit.
+   - Texture: 2048 px for hero components (sphere, furnace, pour bay), 1024 for the rest; the phone copy caps all at 512.
+   - The runtime lifts every `colony_*` material's albedo by 1.25 (`colony.js`): Tripo's paint reads a step darker
+     than the concept's off-white once the detail layer and worn finish are on.
+5. **Check** it: `node tools/render-glb.mjs assets/parts-colony/<name>.glb <out> --angles "35:20,0:89"` (three-quarter
+   and top: confirm which face is front), and `--bg dark` for `--hot` parts. Reject glass-as-hole, mushy faces, a
+   mirrored marking, missing open bays. Then add a row to the catalogue below. All nine pilot components passed first
+   time: isolated, light-background component images reconstruct far better than whole buildings.
 
 ### D. The building script
 
@@ -163,38 +175,49 @@ the README "Phone budget" table, the catalogue rows, and a line in `style-librar
 
 | view | fetched MB | tris | textures MB | heap + GPU MB | ready s |
 |---|---|---|---|---|---|
-| deuterium_depot | 2.7 | 55k | 12 | 94 | 3.4 |
-| steel_mill | 3.5 | 82k | 18 | 103 | 3.1 |
+| deuterium_depot (v2: 4 components) | 5.0 | 120k | 27 | 112 | 3.8 |
+| steel_mill (v2: 6 components) | 6.3 | 127k | 43 | 129 | 4.1 |
+| (v1, kit only: depot / mill) | 2.7 / 3.5 | 55k / 82k | 12 / 18 | 94 / 103 | 3.4 / 3.1 |
 | (shipyard, for scale) | 10.9 | 291k | 59 | 169 | 5.9 |
 
-Budget per colony building: about 150k triangles and 6 MB fetched on the phone tier; the hull at 4096 px desktop.
+Budget per colony building: about 150k triangles and 7 MB fetched on the phone tier (components dominate: keep their
+`--tris` near the pilots' and their textures at 1024 unless the part is the hero); the hull at 4096 px desktop.
 
 ## Component catalogue (`assets/parts-colony/`, placed as `colony:<name>`)
 
-Made so far: none (fal was blocked in the pilot session). `parts.json` holds bbox, tris, source image, fal job ids
-and `usedBy` for every part; keep this table in step with it.
+Made (pilots, 2026-10-06). Sizes are the ingested bbox (w x h x d, part frame: +Y up, front +Z); tris after cleaning.
 
-| part | true size (m) | source image | fal jobs | used by |
-|---|---|---|---|---|
-| (none yet) | | | | |
+| part | size (m) | tris | source image | fal jobs | used by |
+|---|---|---|---|---|---|
+| sphereTank | 26.5 x 25.837 x 26.546 | 22,895 | `images/buildings/components/sphereTank.jpg` | 01a110ea-6b9f-79b1-baee-bab0dcc60d7d (image), 01a110eb-e9f8-7a33-be46-049e2c749aa8 (mesh) | deuterium_depot |
+| plantHouse | 8.504 x 7.8 x 16.88 | 7,383 | `images/buildings/components/plantHouse.jpg` | 01a110ea-6cb6-7453-b1bf-a33d888b0954 (image), 01a110eb-eb05-7230-865d-24d8639b900c (mesh) | deuterium_depot |
+| manifoldSkid | 5.826 x 4.474 x 13 | 16,813 | `images/buildings/components/manifoldSkid.jpg` | 01a110ea-6d8b-7e23-8a51-34348e554249 (image), 01a110eb-ec06-7b52-a3de-54b818c03716 (mesh) | deuterium_depot |
+| filterBank | 2.922 x 4.299 x 6.5 | 11,923 | `images/buildings/components/filterBank.jpg` | 01a110ea-6e5d-7ed3-b121-8b644e0a4cb5 (image), 01a110eb-ece7-7563-91c2-46b532dabd55 (mesh) | deuterium_depot |
+| blastFurnace | 27.456 x 60 x 29.342 | 29,137 | `images/buildings/components/blastFurnace.jpg` | 01a110ea-6f2f-78b2-ba37-48609d9e64d4 (image), 01a110eb-ee16-7f12-ab38-0addcf0f67fb (mesh) | steel_mill |
+| bandedStack | 12.666 x 46 x 13.2 | 8,959 | `images/buildings/components/bandedStack.jpg` | 01a110ea-7011-7942-9813-46e1fcb46b82 (image), 01a110eb-eee5-7f93-9e32-3b89a6d7f2a9 (mesh) | steel_mill |
+| pourBay | 18.98 x 15.542 x 26 | 25,842 | `images/buildings/components/pourBay.jpg` | 01a110ea-70fa-7621-b809-e7a52fa8a855 (image), 01a110eb-efcf-7903-b342-56b00d4154c3 (mesh) | steel_mill |
+| skipGallery | 6 x 46 x 28 | 12,915 | `images/buildings/components/skipGallery.jpg` | 01a110ea-71ea-7212-b86a-5cc9123f8168 (image), 01a110eb-f0e4-71e3-a9c4-f713360bc9b5 (mesh) | steel_mill |
+| shedSegment | 28 x 24 x 36 | 7,534 | `images/buildings/components/shedSegment.jpg` | 01a110ea-72c4-7de3-b15f-4df2db490330 (image), 01a110eb-f1ca-7292-ae3e-72318ec0b68c (mesh) | steel_mill |
 
-Planned (decomposition of the 16 concepts; make each once, reuse across the buildings listed):
+Orientation notes (part frame): plantHouse's door is on its +X long face, pipe stubs at +Z; pourBay opens to +X with
+its runner running out along +X; shedSegment's windowed long face is +X, gables at +-Z, segments abut along Z;
+skipGallery climbs from its drive house at +Z (low) to -Z (high); blastFurnace's square base is axis-aligned.
+Hot texels (`--hot`): pourBay (runner), blastFurnace (tuyere band, frame lamps), bandedStack and plantHouse (lamps).
+
+Planned (decomposition of the other concepts; make each once, reuse across the buildings listed). Made parts to reuse
+first: plantHouse (oil_tanks, refinery, processing_plant), manifoldSkid / filterBank (every storage and production
+building), bandedStack (silicon_foundry, refinery), shedSegment (steel_depot, silicon_foundry with a new roof),
+skipGallery (steel_depot), pourBay's crane (steel_depot: or a new overheadCrane).
 
 | component | what | buildings |
 |---|---|---|
-| sphereTank | 21 m pressure sphere on splayed legs, cobalt band, top platform | deuterium_depot (x3) |
 | processVessel | 6 x 22 m banded process vessel with head and pipe collar | processing_plant (x3), refinery |
 | distColumn | 3-4 m x 30-45 m column with platforms and caged ladder | refinery (x3) |
 | floatTank | 28 x 14 m floating-roof tank with wind girder and stair | oil_tanks (x3), processing_plant (low tank, scaled) |
 | htankSkid | 3.5 x 14 m capsule tank on saddles with valves | refinery, processing_plant, deuterium_depot |
 | pumpSkid / valveSkid | pump and valve skids 3-6 m | every storage and production building |
-| filterBank | dryer / filter column skid | deuterium_depot, processing_plant |
-| plantHouse | 12 x 8 x 6.5 m pump or control house | deuterium_depot (x2), oil_tanks, refinery, processing_plant |
-| blastFurnace | furnace shell with tower frame | steel_mill |
-| bandedStack | 6-7 m x 40-50 m chimney with platforms | steel_mill (x2), silicon_foundry, refinery |
 | overheadCrane | amber bridge crane, 20-30 m span | steel_mill, steel_depot |
 | beamStack | stacked steel sections on dunnage | steel_depot, steel_mill |
-| skipGallery | inclined covered conveyor segment | steel_mill, steel_depot |
 | crystalReactor | violet-lit reactor vessel behind glazing | silicon_foundry, silicon_depot |
 | rackBay | dark rack bay with containers | silicon_depot |
 | waterTower | elevated tank on a frame | infrastructure |

@@ -279,7 +279,8 @@ function interiorLight(spec) {
  *   livery     optional repaint of the generated texture: 'dark' | 'civil' | {base, gain, mark, ...} (see livery.js)
  *   finish     optional worn-finish preset (finish.js FINISH_PRESETS): 'ship' (default) | 'ground' (ground units: matte,
  *              vehicle-scale wear, dust and mud graded up from anchors.ground.y) | { preset, ...overrides }
- *   materials  optional per-material overrides by GLB material name or '*'
+ *   materials  optional per-material overrides by GLB material name, a 'prefix*' or '*': { roughness, metalness, color,
+ *              colorScale, envMapIntensity, emissiveBoost }
  *   crease     optional angle in degrees: split vertex normals at sharper edges
  *              so faceted hard-surface hulls shade flat instead of rounded
  *   hullNodes  optional list of GLB node names that are hull (tools/blender/assemble.py output:
@@ -363,11 +364,14 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
     const next = mats.map((m) => {
       if (upgraded.has(keyOf(m))) return upgraded.get(keyOf(m));
       const mm = m.clone();
-      const over = { ...(cfg.materials?.['*'] || {}), ...(cfg.materials?.[m.name] || {}) };
+      // prefix keys ('colony_*': every fal colony component) sit between '*' and the exact name
+      const pre = Object.entries(cfg.materials || {}).filter(([k]) => k.length > 1 && k.endsWith('*') && m.name?.startsWith(k.slice(0, -1))).map(([, v]) => v);
+      const over = { ...(cfg.materials?.['*'] || {}), ...Object.assign({}, ...pre), ...(cfg.materials?.[m.name] || {}) };
       mm.envMapIntensity = over.envMapIntensity ?? 1.0;
       if (over.roughness !== undefined) mm.roughness = over.roughness;
       if (over.metalness !== undefined) mm.metalness = over.metalness;
       if (over.color) mm.color = new THREE.Color(over.color);
+      if (over.colorScale) mm.color.multiplyScalar(over.colorScale); // lift a texture's albedo (colony components)
       if (over.emissiveBoost && mm.emissiveMap) mm.emissiveIntensity = over.emissiveBoost;
       // true-scale ports and panes are a few texels wide: keep them sharp at grazing angles
       for (const t of [mm.map, mm.normalMap, mm.roughnessMap]) if (t) t.anisotropy = 8;

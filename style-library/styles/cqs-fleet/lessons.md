@@ -157,3 +157,20 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
     in their own frame (`studio.sunaz` / `sunel`, colony.js default front-left) to match the concept's light.
 38. **+Y-mount parts need `along`.** assemble.py lays a +Y part's +X along `along`, defaulting to the projected `up`;
     passing only `up` (as for +Z parts) turned the yard truck 90 degrees. bkit's helpers take a `heading`.
+39. **A perspective concept as image 1 ghosts into a building turnaround.** Both colony turnarounds (deuterium depot,
+    steel mill; two tries each, the second with boxed views and "no perspective view anywhere") came back with a
+    faded copy of the concept smeared across the middle of the grid, and the depot's TOP view drew four spheres
+    instead of three. The elevations were usable for heights and the left-to-right order; the plans were not. For
+    buildings, take the plan from the concept by eye (slab edges, the camera estimate in README-colony.md) and use the
+    turnaround only as a height reference; do not spend more retries on it.
+40. **Isolated component images reconstruct cleanly; whole buildings do not.** All nine pilot components (sphere tank,
+    plant house, manifold and filter skids, blast furnace, banded stack, pour bay, skip gallery, shed segment) came
+    out of nano-banana-pro/edit (the concept as the only reference, true dimensions stated, light-grey studio, "nothing
+    else in frame") and Tripo H3.1 image-to-3d first time, Y-up with the long axis on Z, with the concept's paint,
+    frames and wear in the texture. Composing them with the parametric kit took the depot and the mill much closer to
+    their concepts than the kit alone (v1 vs v2 sheets).
+41. **Make the concept's glow real.** Tripo bakes molten metal, furnace glow and the image's tiny amber lamps into the
+    base colour, where they render unlit. `component.py --hot 0.8` copies bright, saturated orange texels into an
+    emissive map (darker amber paint stays unlit). And Tripo paint reads a step darker than the concept's off-white
+    under the detail layer and worn finish: the colony factory lifts `colony_*` albedo by 1.25 (glbship `colorScale`).
+

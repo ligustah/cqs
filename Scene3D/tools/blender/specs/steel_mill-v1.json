@@ -12,7 +12,8 @@
  },
  "partsDir": "../../../assets/parts-blender",
  "kits": {
-  "yard": "../../../assets/parts-yard"
+  "yard": "../../../assets/parts-yard",
+  "colony": "../../../assets/parts-colony"
  },
  "partDefaults": {
   "door": {
@@ -56,172 +57,208 @@
  },
  "placements": [
   {
-   "part": "door",
+   "part": "colony:blastFurnace",
    "p": [
-    -9.4,
-    1.2,
-    33.905
+    -18.0,
+    0.0,
+    26.0
    ],
    "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
     0.0,
     0.0,
     1.0
    ],
-   "up": [
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    1.0,
+    0.0,
+    -0.0
+   ],
+   "id": "blastFurnace"
+  },
+  {
+   "part": "colony:skipGallery",
+   "p": [
+    -10.5,
+    0.0,
+    12.0
+   ],
+   "n": [
     0.0,
     1.0,
+    0.0
+   ],
+   "up": [
+    0.259,
+    0.0,
+    -0.966
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    -0.966,
+    0.0,
+    -0.259
+   ],
+   "id": "skipGallery"
+  },
+  {
+   "part": "colony:bandedStack",
+   "p": [
+    -15.0,
+    0.0,
+    -10.0
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    1.0,
+    0.0,
     0.0
    ],
    "snap": false,
    "seat": {
     "check": false
    },
-   "id": "crew door"
-  },
-  {
-   "part": "door",
-   "p": [
-    -6.095,
-    1.2,
-    28.9
-   ],
-   "n": [
-    1.0,
-    0.0,
-    0.0
-   ],
-   "up": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "id": "crew door"
-  },
-  {
-   "part": "door",
-   "p": [
-    -31.9,
-    1.2,
-    32.905
-   ],
-   "n": [
-    0.0,
-    0.0,
-    1.0
-   ],
-   "up": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "id": "crew door"
-  },
-  {
-   "part": "door",
-   "p": [
-    -31.4,
-    1.2,
-    43.405
-   ],
-   "n": [
-    0.0,
-    0.0,
-    1.0
-   ],
-   "up": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "id": "crew door"
-  },
-  {
-   "part": "door",
-   "p": [
-    19.9,
-    1.2,
-    -43.905
-   ],
-   "n": [
+   "along": [
     0.0,
     0.0,
     -1.0
    ],
-   "up": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "id": "crew door"
+   "id": "bandedStack"
   },
   {
-   "part": "door",
+   "part": "colony:bandedStack",
    "p": [
-    23.905,
-    1.2,
-    -2.1
+    -14.0,
+    0.0,
+    -32.0
    ],
    "n": [
-    1.0,
     0.0,
+    1.0,
     0.0
    ],
    "up": [
-    0.0,
     1.0,
+    0.0,
     0.0
    ],
    "snap": false,
    "seat": {
     "check": false
    },
-   "id": "crew door"
+   "along": [
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "scale": 0.87,
+   "id": "bandedStack"
   },
   {
-   "part": "door",
+   "part": "colony:shedSegment",
    "p": [
-    23.905,
-    1.2,
-    -20.1
+    10.0,
+    0.0,
+    -27.0
    ],
    "n": [
-    1.0,
     0.0,
+    1.0,
     0.0
    ],
    "up": [
     0.0,
-    1.0,
-    0.0
+    0.0,
+    1.0
    ],
    "snap": false,
    "seat": {
     "check": false
    },
-   "id": "crew door"
+   "along": [
+    1.0,
+    0.0,
+    -0.0
+   ],
+   "id": "shedSegment"
+  },
+  {
+   "part": "colony:shedSegment",
+   "p": [
+    10.0,
+    0.0,
+    9.0
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    1.0,
+    0.0,
+    -0.0
+   ],
+   "id": "shedSegment"
+  },
+  {
+   "part": "colony:pourBay",
+   "p": [
+    28.0,
+    0.0,
+    13.0
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    1.0,
+    0.0,
+    -0.0
+   ],
+   "id": "pourBay"
   },
   {
    "part": "door",
    "p": [
-    1.1,
+    -36.4,
     1.2,
-    27.905
+    39.905
    ],
    "n": [
     0.0,
@@ -242,9 +279,9 @@
   {
    "part": "door",
    "p": [
-    31.405,
+    -29.595,
     1.2,
-    1.9
+    36.9
    ],
    "n": [
     1.0,
@@ -265,9 +302,55 @@
   {
    "part": "door",
    "p": [
-    28.905,
+    -34.9,
     1.2,
-    32.9
+    23.905
+   ],
+   "n": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "up": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "id": "crew door"
+  },
+  {
+   "part": "door",
+   "p": [
+    36.405,
+    1.2,
+    -8.6
+   ],
+   "n": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "up": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "id": "crew door"
+  },
+  {
+   "part": "door",
+   "p": [
+    34.905,
+    1.2,
+    31.9
    ],
    "n": [
     1.0,
@@ -288,9 +371,9 @@
   {
    "part": "yard:truck",
    "p": [
-    31.0,
+    31.5,
     0.0,
-    -24.0
+    -32.0
    ],
    "n": [
     0.0,
@@ -316,9 +399,9 @@
   {
    "part": "yard:forklift",
    "p": [
-    31.0,
+    37.0,
     0.0,
-    4.0
+    -16.0
    ],
    "n": [
     0.0,
@@ -344,9 +427,9 @@
   {
    "part": "yard:worker",
    "p": [
-    28.5,
+    36.5,
     0.0,
-    14.0
+    22.0
    ],
    "n": [
     0.0,
@@ -372,9 +455,9 @@
   {
    "part": "yard:worker",
    "p": [
-    29.5,
+    37.0,
     0.0,
-    21.5
+    6.0
    ],
    "n": [
     0.0,
@@ -400,9 +483,9 @@
   {
    "part": "yard:worker",
    "p": [
-    12.0,
+    10.0,
     0.0,
-    43.0
+    37.0
    ],
    "n": [
     0.0,
@@ -428,7 +511,7 @@
   {
    "part": "yard:worker",
    "p": [
-    30.0,
+    24.0,
     0.0,
     34.0
    ],
@@ -457,8 +540,8 @@
    "part": "floodlight",
    "p": [
     24.55,
-    15.0,
-    4.5
+    16.0,
+    -12.0
    ],
    "n": [
     1.0,
@@ -480,8 +563,8 @@
    "part": "floodlight",
    "p": [
     24.55,
-    15.0,
-    -26.0
+    16.0,
+    -36.0
    ],
    "n": [
     1.0,

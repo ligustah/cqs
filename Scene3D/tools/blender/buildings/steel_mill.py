@@ -1,7 +1,9 @@
 """STEEL_MILL: blast furnace tower with skip hoist, glowing pour bay, stacks, long shed
 (concept style-library/styles/cqs-fleet/images/buildings/steel_mill-concept.jpg).
 
-Built only from the shared kit (bkit.py) by colony_build.py:
+v2: model() composes fal components (assets/parts-colony: blastFurnace, skipGallery, bandedStack x2, shedSegment x2,
+pourBay) with the shared kit; furnace() / shed() / stacks() / gas_cleaner() are the v1 parametric versions, kept as
+kit examples (unused). Built by colony_build.py:
     $PY tools/blender/buildings/colony_build.py steel_mill <work> [--tex 4096]
 
 Frame: metres, plinth top y = 0, +Z front, +X left. The concept camera looks from the front-left (az ~40, el ~27):
@@ -17,12 +19,14 @@ import bkit as K
 
 SPEC = {
     'title': 'Steel Mill', 'gameId': 'STEEL_MILL', 'group': 'production',
-    'footprint': [72, 96], 'height': 62.0,
+    'footprint': [80, 92], 'height': 61.0,
     'camera': {'az': 40, 'el': 27},
     'about': 'blast furnace in a steel tower frame with a skip-hoist gallery, glowing pour bay with an overhead crane, two banded stacks, long clad shed',
 }
 
-FX, FZ = -16.0, 24.0         # furnace axis
+FX, FZ = -18.0, 26.0         # furnace axis (front-left of the slab)
+SH_X, SH_SEGMENTS = 10.0, (-27.0, 9.0)   # shed: two 36 m fal segments along Z, x -4..24
+PB_X, PB_Z = 28.0, 13.0       # pour bay centre (against the shed's +X face)
 SH = (-4.0, 24.0, -44.0, 28.0)  # shed x0, x1, z0, z1
 EAVE = 18.0
 
@@ -207,36 +211,62 @@ def stacks(B):
 
 
 def model(B):
+    """v2: composed from fal components (assets/parts-colony: blastFurnace, skipGallery, bandedStack x2, shedSegment x2,
+    pourBay; README-colony.md catalogue) on the shared kit's plinth, with parametric annexes, pipes, dressing, lights."""
     W, D = SPEC['footprint']
-    K.plinth(B, W, D, h=1.6, chamfer=2.4, slab=8.0, lamp_pitch=18.0,
-             markings=[([(30.0, 46.0), (30.0, -46.0)], 0.2, 'frame2'), ([(-34.0, 45.0), (34.0, 45.0)], 0.2, 'frame2'),
-                       ([(26.0, 12.0), (35.5, 12.0)], 0.35, 'hazard'), ([(26.0, 24.0), (35.5, 24.0)], 0.35, 'hazard')],
-             grates=[(31.0, -12.0, 0.8, 3.0), (31.0, 30.0, 0.8, 3.0), (-6.0, 44.0, 3.0, 0.8)],
-             steps=[(10.0, 48.0, '+z')])
-    furnace(B)
-    gas_cleaner(B)
-    shed(B)
-    stacks(B)
-    # skip-hoist gallery: an inclined covered conveyor from the stockhouse on the shed roof up to the furnace top
-    p0, p1 = (2.0, EAVE + 6.0, 8.0), (FX + 3.0, 47.0, FZ - 2.0)
-    K.truss(B, p0, p1, 3.0, bay=3.0, chord=0.35, web=0.16)
-    from mathutils import Vector
-    a, b = Vector(p0), Vector(p1)
-    with B.at(M=K.frame_along(a, b)):
-        L = (b - a).length
-        B.box((3.6, 2.6, L), at=(0, 2.7, L / 2), mat='panel', bevel=0.05)
-        B.box((3.9, 0.3, L + 0.3), at=(0, 4.1, L / 2), mat='frame', bevel=0.02)
-    K.block(B, (2.0, EAVE + 0.0, 8.0), (7.0, 9.0, 7.0),
-            sides={'+x': {'bay': 3.5, 'windows': [1], 'win': (1.2, 1.0)}, '+z': {'bay': 3.5}}, roof={'parapet': 0.4})
-    K.lattice_tower(B, (FX + 9.0, 7.5, FZ - 6.0), 3.0, 33.0, bay=3.3, chord=0.3, web=0.14)
-    # yard dressing: lamp posts, cabinets, workers, a truck at the shed's back door, a forklift by the pour bay
-    for (x, z, rot) in ((33.0, 44.0, -135), (33.0, -44.0, -45), (-34.0, 44.0, 135)):
+    K.plinth(B, W, D, h=1.6, chamfer=2.4, slab=8.0, lamp_pitch=18.0, centre=(0.0, -4.0),
+             markings=[([(37.5, 40.0), (37.5, -48.0)], 0.2, 'frame2'), ([(-38.0, 39.5), (38.0, 39.5)], 0.2, 'frame2'),
+                       ([(30.0, 30.0), (39.0, 30.0)], 0.35, 'hazard'), ([(30.0, -2.0), (39.0, -2.0)], 0.35, 'hazard')],
+             grates=[(37.0, -16.0, 0.8, 3.0), (37.0, 32.0, 0.8, 3.0), (-2.0, 34.0, 3.0, 0.8)],
+             steps=[(12.0, 42.0, '+z')])
+    # the furnace tower at the front-left (60 m: shaft, glowing tuyere band, top cone and uptakes, gunmetal frame)
+    K.component(B, 'blastFurnace', (FX, 0.0, FZ), heading=0.0)
+    B.R.beacon((FX, 61.0, FZ))
+    B.R.obstruction((FX + 2.0, 60.4, FZ + 2.0))
+    # the skip gallery climbing from the yard behind the furnace to its top (low end with the drive house at +Z of the
+    # part, so it is turned to run from the shed side up to the furnace)
+    K.component(B, 'skipGallery', (-10.5, 0.0, 12.0), heading=165.0)
+    # two banded stacks behind the furnace, the second shorter
+    K.component(B, 'bandedStack', (-15.0, 0.0, -10.0), heading=90.0)
+    K.component(B, 'bandedStack', (-14.0, 0.0, -32.0), heading=90.0, scale=0.87)
+    for z in (-10.0, -32.0):
+        K.pipe(B, [(-3.0, 12.0, z), (-9.0, 12.0, z), (-11.0, 8.0, z)], r=1.3, mat='pipeDark', rings=False)
+    # the long shed along +X: two fal shed segments end to end, windowed long face to +X
+    for zc in SH_SEGMENTS:
+        K.component(B, 'shedSegment', (SH_X, 0.0, zc), heading=0.0)
+    # the open pour bay against the shed's +X face, its glowing runner out onto the apron
+    K.component(B, 'pourBay', (PB_X, 0.0, PB_Z), heading=0.0)
+    for (x, z) in ((PB_X + 9.5, PB_Z - 13.0), (PB_X + 9.5, PB_Z + 13.0)):
+        B.R.pin((x, 14.0, z))
+    # tall gas-cleaning block and annex on the furnace's -X side, the dust catcher (parametric kit)
+    K.block(B, (-34.0, 0.0, 34.5), (9.0, 24.0, 11.0),
+            sides={'+z': {'bay': 4.4, 'storey': 6.0, 'windows': [1, 2], 'win': (1.2, 1.2), 'doors': [2.0], 'louvres': [(6.5, 12.5, 2.0, 2.0)]},
+                   '+x': {'bay': 5.4, 'storey': 6.0, 'windows': [1, 2, 3], 'win': (1.2, 1.2), 'doors': [3.0]},
+                   '-x': {'bay': 5.4, 'storey': 6.0}, '-z': {'bay': 4.4, 'storey': 6.0}},
+            roof={'parapet': 0.6, 'units': [('hvac', 0.0, -3.0, {'w': 3.0, 'd': 2.2}), ('antenna', -1.5, 5.5, {'h': 5.0})]})
+    K.pipe(B, [(FX - 9.0, 40.0, FZ + 4.0), (-34.0, 40.0, FZ + 4.0), (-34.0, 40.0, 33.0), (-34.0, 24.5, 33.0)], r=1.2, mat='pipeDark', rings=False)
+    K.block(B, (-35.0, 0.0, 20.0), (6.0, 7.0, 8.0),
+            sides={'+z': {'bay': 3.0, 'doors': [3.0], 'windows': []}, '+x': {'bay': 4.0, 'windows': [0], 'win': (1.2, 1.0)}},
+            roof={'parapet': 0.4, 'units': [('hvac', 0.0, 0.0, {'w': 2.6, 'd': 1.8, 'fans': 1})]})
+    K.vtank(B, (-32.0, 8.0), 3.0, 10.0, y0=0.0, top='cone', mat='frame2', skirt=6.0, ladder_side=90.0,
+            bands=[(1.0, 1.4, 'frame'), (8.4, 8.8, 'frame')], platforms=(10.5,))
+    # switch room, control box, stairs, crates on the +X apron
+    K.block(B, (33.5, 0.0, -10.0), (6.0, 4.5, 7.0),
+            sides={'+x': {'bay': 3.5, 'doors': [2.0], 'windows': [0], 'win': (1.2, 1.0)}, '+z': {'bay': 3.0, 'windows': [0], 'win': (1.2, 1.0)}},
+            roof={'parapet': 0.4, 'units': [('hvac', 0.0, 0.0, {'w': 2.4, 'd': 1.6, 'fans': 1})]})
+    K.block(B, (33.0, 0.0, 32.0), (4.0, 3.6, 5.0),
+            sides={'+x': {'bay': 2.5, 'doors': [2.5]}, '+z': {'bay': 2.0, 'windows': [0], 'win': (1.2, 1.0)}},
+            roof={'parapet': 0.3})
+    for (cx, cz) in ((37.5, -6.0), (37.5, 28.0), (27.0, 37.0), (29.0, 37.5)):
+        K.crate(B, (cx, 0.0, cz), (1.6, 1.2, 1.6))
+    # yard dressing: lamp posts, cabinets, workers, a truck at the shed's back end, a forklift by the switch room
+    for (x, z, rot) in ((38.5, 40.0, -135), (38.5, -48.0, -45), (-38.5, 40.0, 135)):
         K.lamp_post(B, (x, 0.0, z), h=8.0, arm=1.2, rot=rot)
-    for (x, z, r) in ((-35.0, 10.0, 90.0), (-35.0, 12.0, 90.0), (31.5, -20.0, -90.0)):
+    for (x, z, r) in ((-39.0, 10.0, 90.0), (-39.0, 12.0, 90.0), (38.5, -24.0, -90.0)):
         K.cabinet(B, (x, 0.0, z), rot=r)
-    K.truck(B, (31.0, 0.0, -24.0), heading=180)
-    K.forklift(B, (31.0, 0.0, 4.0), heading=200)
-    for (x, z, hd) in ((28.5, 14.0, 90), (29.5, 21.5, 260), (12.0, 43.0, 10), (30.0, 34.0, 200)):
+    K.truck(B, (31.5, 0.0, -32.0), heading=180)
+    K.forklift(B, (37.0, 0.0, -16.0), heading=200)
+    for (x, z, hd) in ((36.5, 22.0, 90), (37.0, 6.0, 260), (10.0, 37.0, 10), (24.0, 34.0, 200)):
         K.worker(B, (x, 0.0, z), heading=hd)
-    K.flood_on_wall(B, (SH[1] + 0.05, EAVE - 3.0, 4.5), (1, 0, 0), (32.0, 0.0, 18.0))
-    K.flood_on_wall(B, (SH[1] + 0.05, EAVE - 3.0, -26.0), (1, 0, 0), (32.0, 0.0, -24.0))
+    K.flood_on_wall(B, (SH_X + 14.05, 16.0, -12.0), (1, 0, 0), (36.0, 0.0, -14.0))
+    K.flood_on_wall(B, (SH_X + 14.05, 16.0, -36.0), (1, 0, 0), (36.0, 0.0, -34.0))

@@ -1899,8 +1899,8 @@
  "v24_buildings": {
   "date": "2026-10-06",
   "asset": "colony buildings (briefs/buildings.md): shared kit, runtime pattern and pilots deuterium_depot, steel_mill",
-  "about": "The user asked for the full pipeline with fal and no budget cap (corrections 36-38: components per building via nano-banana-pro/edit + tripo3d/h3.1/image-to-3d, composed in Blender). In this session the fal connector was refused by the permission system (the first call, get_model_schema for fal-ai/nano-banana-pro/edit, was denied), so no generation job ran; the pilots v1 are parametric bkit builds. Only the two concept uploads (free) were made, for the next session's jobs.",
-  "approx_usd": 0.0,
+  "about": "Colony buildings (corrections 35-38): the user asked for the full pipeline with fal, no budget cap, and buildings composed from fal-made components. First session: fal was refused by the permission system, pilots v1 were parametric bkit builds. Second session (fal allowed in .claude/settings.json on the user's approval): two 4K turnarounds per pilot (layout reference only), nine component images (nano-banana-pro/edit, the concept as style reference) and nine component meshes (tripo3d/h3.1/image-to-3d), ingested by tools/blender/buildings/component.py into assets/parts-colony and composed into the pilots v2 with the parametric kit.",
+  "approx_usd": 7.95,
   "uploads": [
    {
     "file": "style-library/styles/cqs-fleet/images/buildings/deuterium_depot-concept.jpg",
@@ -1911,7 +1911,343 @@
     "url": "https://v3b.fal.media/files/b/0aad467e/23mIBwtBH9hTSsNdCSRsh_steel_mill-concept.jpg"
    }
   ],
-  "jobs": [],
-  "blocked": "fal tools denied by the session's permission system (auto-mode classifier: real-world transactions); a permission rule for the fal connector tools is needed before the component stages can run"
+  "jobs": [
+   {
+    "key": "turnaround1-deuterium_depot",
+    "endpoint": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a110ea-69b3-7282-8b71-73d6c2f2177a",
+    "status": "rejected",
+    "inputs": {
+     "image_urls": [
+      "https://v3b.fal.media/files/b/0aad467e/vbkz1kOmB0G29rGsQw_xR_deuterium_depot-concept.jpg"
+     ],
+     "resolution": "4K",
+     "aspect_ratio": "3:2",
+     "prompt": "Technical orthographic turnaround sheet of EXACTLY this <building> ... FRONT, LEFT SIDE, BACK / RIGHT SIDE, TOP ... no labels"
+    },
+    "output": "https://v3b.fal.media/files/b/0aad48c4/LNTiQKmLDAqdIcpyTncRO_HCIcJTwp.png",
+    "why": "a faded copy of the perspective concept smeared across the grid; the depot TOP view drew four spheres"
+   },
+   {
+    "key": "turnaround2-deuterium_depot",
+    "endpoint": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a110eb-e780-72b0-a45f-bbbfa90d71b3",
+    "status": "partly used",
+    "inputs": {
+     "image_urls": [
+      "https://v3b.fal.media/files/b/0aad467e/vbkz1kOmB0G29rGsQw_xR_deuterium_depot-concept.jpg"
+     ],
+     "resolution": "4K",
+     "aspect_ratio": "3:2",
+     "prompt": "clean technical orthographic drawing sheet ... exactly five separate views each in its own box ... no perspective or three-quarter view anywhere ... no labels"
+    },
+    "output": "style-library/styles/cqs-fleet/images/buildings/deuterium_depot-turnaround.jpg",
+    "why": "same ghosting; elevations used as a height and left-right order reference, the plans not (lesson 39)"
+   },
+   {
+    "key": "turnaround1-steel_mill",
+    "endpoint": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a110ea-6a80-7bd3-b2c1-03e54cf9df0f",
+    "status": "rejected",
+    "inputs": {
+     "image_urls": [
+      "https://v3b.fal.media/files/b/0aad467e/23mIBwtBH9hTSsNdCSRsh_steel_mill-concept.jpg"
+     ],
+     "resolution": "4K",
+     "aspect_ratio": "3:2",
+     "prompt": "Technical orthographic turnaround sheet of EXACTLY this <building> ... FRONT, LEFT SIDE, BACK / RIGHT SIDE, TOP ... no labels"
+    },
+    "output": "https://v3b.fal.media/files/b/0aad48c4/eVkkmZu4nZHMsNIc8QgMB_JcbpUvzV.png",
+    "why": "a faded copy of the perspective concept smeared across the grid; the depot TOP view drew four spheres"
+   },
+   {
+    "key": "turnaround2-steel_mill",
+    "endpoint": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a110eb-e85f-7bf1-933c-38365ea7dbe2",
+    "status": "partly used",
+    "inputs": {
+     "image_urls": [
+      "https://v3b.fal.media/files/b/0aad467e/23mIBwtBH9hTSsNdCSRsh_steel_mill-concept.jpg"
+     ],
+     "resolution": "4K",
+     "aspect_ratio": "3:2",
+     "prompt": "clean technical orthographic drawing sheet ... exactly five separate views each in its own box ... no perspective or three-quarter view anywhere ... no labels"
+    },
+    "output": "style-library/styles/cqs-fleet/images/buildings/steel_mill-turnaround.jpg",
+    "why": "same ghosting; elevations used as a height and left-right order reference, the plans not (lesson 39)"
+   },
+   {
+    "key": "sphereTank-image",
+    "endpoint": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a110ea-6b9f-79b1-baee-bab0dcc60d7d",
+    "status": "used",
+    "inputs": {
+     "image_urls": [
+      "https://v3b.fal.media/files/b/0aad467e/vbkz1kOmB0G29rGsQw_xR_deuterium_depot-concept.jpg"
+     ],
+     "resolution": "2K",
+     "aspect_ratio": "1:1",
+     "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE sphereTank (true dimensions stated) ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, no ground slab, nothing else in frame, no text"
+    },
+    "output": "style-library/styles/cqs-fleet/images/buildings/components/sphereTank.jpg (https://v3b.fal.media/files/b/0aad48c4/7VHzyWU0q1nvDuU90G6xa_itlsOHqD.png)"
+   },
+   {
+    "key": "sphereTank-mesh",
+    "endpoint": "tripo3d/h3.1/image-to-3d",
+    "requestId": "01a110eb-e9f8-7a33-be46-049e2c749aa8",
+    "status": "used",
+    "inputs": {
+     "image_url": "https://v3b.fal.media/files/b/0aad48c4/7VHzyWU0q1nvDuU90G6xa_itlsOHqD.png",
+     "face_limit": 40000,
+     "texture": true,
+     "pbr": true,
+     "texture_quality": "detailed",
+     "geometry_quality": "detailed"
+    },
+    "output": "assets/buildings/raw/sphereTank.glb (gitignored) -> component.py -> assets/parts-colony/sphereTank.glb"
+   },
+   {
+    "key": "plantHouse-image",
+    "endpoint": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a110ea-6cb6-7453-b1bf-a33d888b0954",
+    "status": "used",
+    "inputs": {
+     "image_urls": [
+      "https://v3b.fal.media/files/b/0aad467e/vbkz1kOmB0G29rGsQw_xR_deuterium_depot-concept.jpg"
+     ],
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE plantHouse (true dimensions stated) ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, no ground slab, nothing else in frame, no text"
+    },
+    "output": "style-library/styles/cqs-fleet/images/buildings/components/plantHouse.jpg (https://v3b.fal.media/files/b/0aad48c4/xHaUQqddvfGpzospz-TQi_hMnJkvRj.png)"
+   },
+   {
+    "key": "plantHouse-mesh",
+    "endpoint": "tripo3d/h3.1/image-to-3d",
+    "requestId": "01a110eb-eb05-7230-865d-24d8639b900c",
+    "status": "used",
+    "inputs": {
+     "image_url": "https://v3b.fal.media/files/b/0aad48c4/xHaUQqddvfGpzospz-TQi_hMnJkvRj.png",
+     "face_limit": 12000,
+     "texture": true,
+     "pbr": true,
+     "texture_quality": "detailed",
+     "geometry_quality": "detailed"
+    },
+    "output": "assets/buildings/raw/plantHouse.glb (gitignored) -> component.py -> assets/parts-colony/plantHouse.glb"
+   },
+   {
+    "key": "manifoldSkid-image",
+    "endpoint": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a110ea-6d8b-7e23-8a51-34348e554249",
+    "status": "used",
+    "inputs": {
+     "image_urls": [
+      "https://v3b.fal.media/files/b/0aad467e/vbkz1kOmB0G29rGsQw_xR_deuterium_depot-concept.jpg"
+     ],
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE manifoldSkid (true dimensions stated) ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, no ground slab, nothing else in frame, no text"
+    },
+    "output": "style-library/styles/cqs-fleet/images/buildings/components/manifoldSkid.jpg (https://v3b.fal.media/files/b/0aad48c4/jViWClgzWesgJvw2gDgCb_IpYsuVjv.png)"
+   },
+   {
+    "key": "manifoldSkid-mesh",
+    "endpoint": "tripo3d/h3.1/image-to-3d",
+    "requestId": "01a110eb-ec06-7b52-a3de-54b818c03716",
+    "status": "used",
+    "inputs": {
+     "image_url": "https://v3b.fal.media/files/b/0aad48c4/jViWClgzWesgJvw2gDgCb_IpYsuVjv.png",
+     "face_limit": 25000,
+     "texture": true,
+     "pbr": true,
+     "texture_quality": "detailed",
+     "geometry_quality": "detailed"
+    },
+    "output": "assets/buildings/raw/manifoldSkid.glb (gitignored) -> component.py -> assets/parts-colony/manifoldSkid.glb"
+   },
+   {
+    "key": "filterBank-image",
+    "endpoint": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a110ea-6e5d-7ed3-b121-8b644e0a4cb5",
+    "status": "used",
+    "inputs": {
+     "image_urls": [
+      "https://v3b.fal.media/files/b/0aad467e/vbkz1kOmB0G29rGsQw_xR_deuterium_depot-concept.jpg"
+     ],
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE filterBank (true dimensions stated) ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, no ground slab, nothing else in frame, no text"
+    },
+    "output": "style-library/styles/cqs-fleet/images/buildings/components/filterBank.jpg (https://v3b.fal.media/files/b/0aad48c4/HGvHmR4vKGiiah66JvA-d_3hVeSZqG.png)"
+   },
+   {
+    "key": "filterBank-mesh",
+    "endpoint": "tripo3d/h3.1/image-to-3d",
+    "requestId": "01a110eb-ece7-7563-91c2-46b532dabd55",
+    "status": "used",
+    "inputs": {
+     "image_url": "https://v3b.fal.media/files/b/0aad48c4/HGvHmR4vKGiiah66JvA-d_3hVeSZqG.png",
+     "face_limit": 15000,
+     "texture": true,
+     "pbr": true,
+     "texture_quality": "detailed",
+     "geometry_quality": "detailed"
+    },
+    "output": "assets/buildings/raw/filterBank.glb (gitignored) -> component.py -> assets/parts-colony/filterBank.glb"
+   },
+   {
+    "key": "blastFurnace-image",
+    "endpoint": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a110ea-6f2f-78b2-ba37-48609d9e64d4",
+    "status": "used",
+    "inputs": {
+     "image_urls": [
+      "https://v3b.fal.media/files/b/0aad467e/23mIBwtBH9hTSsNdCSRsh_steel_mill-concept.jpg"
+     ],
+     "resolution": "2K",
+     "aspect_ratio": "3:4",
+     "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE blastFurnace (true dimensions stated) ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, no ground slab, nothing else in frame, no text"
+    },
+    "output": "style-library/styles/cqs-fleet/images/buildings/components/blastFurnace.jpg (https://v3b.fal.media/files/b/0aad48c4/aT9AHLnH4gnb-5JQbZ5Ce_3mgvhSuW.png)"
+   },
+   {
+    "key": "blastFurnace-mesh",
+    "endpoint": "tripo3d/h3.1/image-to-3d",
+    "requestId": "01a110eb-ee16-7f12-ab38-0addcf0f67fb",
+    "status": "used",
+    "inputs": {
+     "image_url": "https://v3b.fal.media/files/b/0aad48c4/aT9AHLnH4gnb-5JQbZ5Ce_3mgvhSuW.png",
+     "face_limit": 60000,
+     "texture": true,
+     "pbr": true,
+     "texture_quality": "detailed",
+     "geometry_quality": "detailed"
+    },
+    "output": "assets/buildings/raw/blastFurnace.glb (gitignored) -> component.py -> assets/parts-colony/blastFurnace.glb"
+   },
+   {
+    "key": "bandedStack-image",
+    "endpoint": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a110ea-7011-7942-9813-46e1fcb46b82",
+    "status": "used",
+    "inputs": {
+     "image_urls": [
+      "https://v3b.fal.media/files/b/0aad467e/23mIBwtBH9hTSsNdCSRsh_steel_mill-concept.jpg"
+     ],
+     "resolution": "2K",
+     "aspect_ratio": "9:16",
+     "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE bandedStack (true dimensions stated) ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, no ground slab, nothing else in frame, no text"
+    },
+    "output": "style-library/styles/cqs-fleet/images/buildings/components/bandedStack.jpg (https://v3b.fal.media/files/b/0aad48c4/4Pfjjgj9biw-VYtY7W9SS_9HAm3Lop.png)"
+   },
+   {
+    "key": "bandedStack-mesh",
+    "endpoint": "tripo3d/h3.1/image-to-3d",
+    "requestId": "01a110eb-eee5-7f93-9e32-3b89a6d7f2a9",
+    "status": "used",
+    "inputs": {
+     "image_url": "https://v3b.fal.media/files/b/0aad48c4/4Pfjjgj9biw-VYtY7W9SS_9HAm3Lop.png",
+     "face_limit": 15000,
+     "texture": true,
+     "pbr": true,
+     "texture_quality": "detailed",
+     "geometry_quality": "detailed"
+    },
+    "output": "assets/buildings/raw/bandedStack.glb (gitignored) -> component.py -> assets/parts-colony/bandedStack.glb"
+   },
+   {
+    "key": "pourBay-image",
+    "endpoint": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a110ea-70fa-7621-b809-e7a52fa8a855",
+    "status": "used",
+    "inputs": {
+     "image_urls": [
+      "https://v3b.fal.media/files/b/0aad467e/23mIBwtBH9hTSsNdCSRsh_steel_mill-concept.jpg"
+     ],
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE pourBay (true dimensions stated) ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, no ground slab, nothing else in frame, no text"
+    },
+    "output": "style-library/styles/cqs-fleet/images/buildings/components/pourBay.jpg (https://v3b.fal.media/files/b/0aad48c4/q67ka5suevAhftZyCky8t_Vu4ZTzF6.png)"
+   },
+   {
+    "key": "pourBay-mesh",
+    "endpoint": "tripo3d/h3.1/image-to-3d",
+    "requestId": "01a110eb-efcf-7903-b342-56b00d4154c3",
+    "status": "used",
+    "inputs": {
+     "image_url": "https://v3b.fal.media/files/b/0aad48c4/q67ka5suevAhftZyCky8t_Vu4ZTzF6.png",
+     "face_limit": 50000,
+     "texture": true,
+     "pbr": true,
+     "texture_quality": "detailed",
+     "geometry_quality": "detailed"
+    },
+    "output": "assets/buildings/raw/pourBay.glb (gitignored) -> component.py -> assets/parts-colony/pourBay.glb"
+   },
+   {
+    "key": "skipGallery-image",
+    "endpoint": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a110ea-71ea-7212-b86a-5cc9123f8168",
+    "status": "used",
+    "inputs": {
+     "image_urls": [
+      "https://v3b.fal.media/files/b/0aad467e/23mIBwtBH9hTSsNdCSRsh_steel_mill-concept.jpg"
+     ],
+     "resolution": "2K",
+     "aspect_ratio": "16:9",
+     "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE skipGallery (true dimensions stated) ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, no ground slab, nothing else in frame, no text"
+    },
+    "output": "style-library/styles/cqs-fleet/images/buildings/components/skipGallery.jpg (https://v3b.fal.media/files/b/0aad48c4/WpDyrgr84-t7vmp9xuAt8_gtTHuJDk.png)"
+   },
+   {
+    "key": "skipGallery-mesh",
+    "endpoint": "tripo3d/h3.1/image-to-3d",
+    "requestId": "01a110eb-f0e4-71e3-a9c4-f713360bc9b5",
+    "status": "used",
+    "inputs": {
+     "image_url": "https://v3b.fal.media/files/b/0aad48c4/WpDyrgr84-t7vmp9xuAt8_gtTHuJDk.png",
+     "face_limit": 20000,
+     "texture": true,
+     "pbr": true,
+     "texture_quality": "detailed",
+     "geometry_quality": "detailed"
+    },
+    "output": "assets/buildings/raw/skipGallery.glb (gitignored) -> component.py -> assets/parts-colony/skipGallery.glb"
+   },
+   {
+    "key": "shedSegment-image",
+    "endpoint": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a110ea-72c4-7de3-b15f-4df2db490330",
+    "status": "used",
+    "inputs": {
+     "image_urls": [
+      "https://v3b.fal.media/files/b/0aad467e/23mIBwtBH9hTSsNdCSRsh_steel_mill-concept.jpg"
+     ],
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE shedSegment (true dimensions stated) ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, no ground slab, nothing else in frame, no text"
+    },
+    "output": "style-library/styles/cqs-fleet/images/buildings/components/shedSegment.jpg (https://v3b.fal.media/files/b/0aad48c6/rbWZzgaHKbfw-w7hZlKhr_9Zll26lS.png)"
+   },
+   {
+    "key": "shedSegment-mesh",
+    "endpoint": "tripo3d/h3.1/image-to-3d",
+    "requestId": "01a110eb-f1ca-7292-ae3e-72318ec0b68c",
+    "status": "used",
+    "inputs": {
+     "image_url": "https://v3b.fal.media/files/b/0aad48c6/rbWZzgaHKbfw-w7hZlKhr_9Zll26lS.png",
+     "face_limit": 10000,
+     "texture": true,
+     "pbr": true,
+     "texture_quality": "detailed",
+     "geometry_quality": "detailed"
+    },
+    "output": "assets/buildings/raw/shedSegment.glb (gitignored) -> component.py -> assets/parts-colony/shedSegment.glb"
+   }
+  ],
+  "note_usd": "fal list prices: 4K edit ~$0.30, 2K edit ~$0.15, Tripo H3.1 ~$0.60",
+  "blocked_first_session": "fal tools denied in the first session (permission system); resolved by the project allow rules"
  }
 }

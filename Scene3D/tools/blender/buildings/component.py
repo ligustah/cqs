@@ -1,9 +1,10 @@
 """Colony component ingest: one fal image-to-3D mesh (tripo3d/h3.1/image-to-3d of an isolated component image) ->
 a clean, true-size, reusable kit part in assets/parts-colony/ (README-colony.md, stage C).
 
-    $PY tools/blender/buildings/component.py <in.glb> <name> (--height H | --length L | --size W,H,D)
+    $PY tools/blender/buildings/component.py <in.glb> <name> (--height H | --length L | --width W | --long L | --size W,H,D)
         [--rot x,y,z] [--tris 12000] [--weld 0.004] [--min-piece 0.01] [--dissolve 1.0] [--flatten 0.04]
-        [--tex 1024] [--about "..."] [--source <image path or url>] [--fal <job-id>,<job-id>] [--used-by a,b]
+        [--tex 1024] [--hot 0.85] [--about "..."] [--source <image path or url>] [--fal <job-id>,<job-id>] [--used-by a,b]
+    $PY tools/blender/buildings/component.py --rebuild [name ...]   # re-ingest from the params recorded in parts.json
 
 Steps (Blender, the part frame of the building kits: metres, +Y up, the part stands on y = 0, origin at the centre of
 its footprint, front +Z; mount.normal '+Y', placed by assemble.py as 'colony:<name>'):
@@ -12,7 +13,8 @@ its footprint, front +Z; mount.normal '+Y', placed by assemble.py as 'colony:<na
   3. clean: weld at --weld (fraction of the bbox diagonal), delete loose pieces whose bbox diagonal is under
      --min-piece of the whole (Tripo floaters), limited dissolve at --dissolve degrees (UV-delimited, so the texture
      survives), then collapse-decimate to --tris;
-  4. scale to true size: uniform from --height or --length (z extent), or per axis from --size (only when the brief
+  4. scale to true size: uniform from --height (y), --length (z), --width (x) or --long (the larger plan extent), or per
+     axis from --size (only when the brief
      fixes all three dimensions: lesson "thickness squashed or inflated");
   5. origin at the footprint centre, base on y = 0; vertices within --flatten m of the base snap onto it (a flat foot
      that seats on the plinth);
@@ -46,25 +48,72 @@ def arg(flag, default=None, cast=str):
     return default
 
 
+def make_hot(me, v):
+    """Emissive map from the base colour: texels that are bright, saturated orange-amber (molten metal, furnace glow,
+    the concept's small amber lamps) glow; amber paint (darker) and everything else stays dark. v = minimum value
+    (max channel, 0-1) of a hot texel. Returns the number of hot texels."""
+    import numpy as np
+    n = 0
+    for mt in me.materials:
+        if not mt or not mt.use_nodes:
+            continue
+        nt = mt.node_tree
+        bsdf = next((nd for nd in nt.nodes if nd.type == 'BSDF_PRINCIPLED'), None)
+        if not bsdf or not bsdf.inputs['Base Color'].links:
+            continue
+        src = bsdf.inputs['Base Color'].links[0].from_node
+        if src.type != 'TEX_IMAGE' or not src.image:
+            continue
+        img = src.image
+        w, h = img.size
+        px = np.empty(w * h * 4, dtype=np.float32)
+        img.pixels.foreach_get(px)
+        px = px.reshape(-1, 4)
+        r, g, b = px[:, 0], px[:, 1], px[:, 2]
+        mx = np.maximum(np.maximum(r, g), b)
+        sat = (mx - np.minimum(np.minimum(r, g), b)) / np.maximum(mx, 1e-4)
+        mask = (mx >= v) & (sat > 0.45) & (r >= g) & (g > b) & (r > 0.5)
+        n += int(mask.sum())
+        em = np.zeros_like(px)
+        em[:, 3] = 1.0
+        em[mask, :3] = px[mask, :3]
+        out = bpy.data.images.new(f'{img.name}_hot', w, h, alpha=False)
+        out.pixels.foreach_set(em.ravel())
+        out.pack()
+        tn = nt.nodes.new('ShaderNodeTexImage')
+        tn.image = out
+        for l in list(src.outputs[0].links):
+            pass
+        uv = src.inputs['Vector'].links[0].from_socket if src.inputs['Vector'].links else None
+        if uv:
+            nt.links.new(uv, tn.inputs['Vector'])
+        nt.links.new(tn.outputs['Color'], bsdf.inputs['Emission Color'])
+        bsdf.inputs['Emission Strength'].default_value = 1.0
+    return n
+
+
 def main():
     t0 = time.time()
     height = arg('--height', None, float)
     length = arg('--length', None, float)
+    width = arg('--width', None, float)
+    long_ = arg('--long', None, float)
     size = arg('--size', None, lambda s: [float(v) for v in s.split(',')])
-    rot = arg('--rot', '0,0,0', lambda s: [float(v) for v in s.split(',')])
+    rot = arg('--rot', [0.0, 0.0, 0.0], lambda s: [float(v) for v in s.split(',')])
     tris = arg('--tris', 12000, int)
     weld = arg('--weld', 0.004, float)
     min_piece = arg('--min-piece', 0.01, float)
     dissolve = arg('--dissolve', 1.0, float)
     flatten = arg('--flatten', 0.04, float)
     tex = arg('--tex', 1024, int)
+    hot = arg('--hot', 0.0, float)
     about = arg('--about', '')
     source = arg('--source', '')
     fal = [j for j in arg('--fal', '').split(',') if j]
     used_by = [b for b in arg('--used-by', '').split(',') if b]
     src, name = os.path.abspath(sys.argv[1]), sys.argv[2]
-    if not (height or length or size):
-        sys.exit('component.py: give --height, --length or --size')
+    if not (height or length or width or long_ or size):
+        sys.exit('component.py: give --height, --length, --width, --long or --size')
 
     for coll in (bpy.data.objects, bpy.data.meshes, bpy.data.materials, bpy.data.images):
         for b in list(coll):
@@ -143,7 +192,8 @@ def main():
     if size:
         S = Matrix.Diagonal((size[0] / ext.x, size[2] / ext.y, size[1] / ext.z, 1))
     else:
-        k = (height / ext.z) if height else (length / ext.y)
+        # Blender frame: x = glTF x, y = -glTF z, z = glTF y
+        k = (height / ext.z) if height else (length / ext.y) if length else (width / ext.x) if width else (long_ / max(ext.x, ext.y))
         S = Matrix.Scale(k, 4)
     me.transform(Matrix.Translation(Vector((-(lo.x + hi.x) / 2, -(lo.y + hi.y) / 2, -lo.z))))
     me.transform(S)
@@ -151,6 +201,8 @@ def main():
         if v.co.z < flatten:
             v.co.z = 0.0
     me.update()
+    if hot:
+        hot_texels = make_hot(me, hot)
     for img in bpy.data.images:
         if img.size[0] > tex:
             img.scale(tex, int(tex * img.size[1] / img.size[0]))
@@ -168,6 +220,9 @@ def main():
     for o in bpy.context.scene.objects:
         o.select_set(o == ob)
     ob.name = name
+    for i, mt in enumerate(me.materials):   # one recognisable material name per component (runtime overrides 'colony_*')
+        if mt:
+            mt.name = f'colony_{name}' + (f'_{i}' if i else '')
     bpy.ops.export_scene.gltf(filepath=out, export_format='GLB', use_selection=True, export_yup=True, export_apply=True,
                               export_texcoords=True, export_normals=True, export_materials='EXPORT', export_image_format='WEBP')
     final = sum(len(p.vertices) - 2 for p in me.polygons)
@@ -184,12 +239,38 @@ def main():
         'mount': {'normal': '+Y', 'anchor': 'footprint centre at y = 0, front +Z'},
         'source': source or old.get('source', ''), 'fal': fal or old.get('fal', []),
         'usedBy': sorted(set(old.get('usedBy', [])) | set(used_by)),
-        'params': {'rot': rot, 'height': height, 'length': length, 'size': size, 'tris': tris, 'weld': weld, 'minPiece': min_piece, 'dissolve': dissolve},
+        'hot': hot, 'hotTexels': hot_texels if hot else 0,
+        'params': {'rot': rot, 'hotV': hot, 'height': height, 'length': length, 'width': width, 'long': long_, 'size': size, 'tris': tris, 'weld': weld, 'minPiece': min_piece, 'dissolve': dissolve},
         'kb': round(os.path.getsize(out) / 1024), 'seconds': round(time.time() - t0, 1),
     }
     json.dump(man, open(man_path, 'w'), indent=1)
     print(f'[component] {name}: {raw_tris} -> {final} tris, {dropped} loose pieces dropped, size {man["parts"][name]["bbox"]["size"]} m -> {out}')
 
 
+def rebuild(names):
+    """Re-ingest components from their recorded params (parts.json) and raw meshes (assets/buildings/raw/<name>.glb,
+    gitignored; re-download by the fal job id when missing). Each runs in its own Python process."""
+    import subprocess
+    man = json.load(open(os.path.join(OUT, 'parts.json')))['parts']
+    for n in names or list(man):
+        q = man[n]
+        pr = q['params']
+        cmd = [sys.executable, __file__, os.path.join(SCENE3D, 'assets', 'buildings', 'raw', f'{n}.glb'), n,
+               '--rot', ','.join(str(v) for v in pr['rot']), '--tris', str(pr['tris']), '--weld', str(pr['weld']),
+               '--min-piece', str(pr['minPiece']), '--dissolve', str(pr['dissolve']), '--tex', str(q['tex'])]
+        if pr.get('hotV'):
+            cmd += ['--hot', str(pr['hotV'])]
+        for k in ('height', 'length', 'width', 'long'):
+            if pr.get(k):
+                cmd += [f'--{k}', str(pr[k])]
+        if pr.get('size'):
+            cmd += ['--size', ','.join(str(v) for v in pr['size'])]
+        out = subprocess.run(cmd, capture_output=True, text=True)
+        print(next((l for l in (out.stdout + out.stderr).split('\n') if l.startswith('[component]') or 'Error' in l), out.stderr[-400:]), flush=True)
+
+
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == '--rebuild':
+        rebuild(sys.argv[2:])
+    else:
+        main()

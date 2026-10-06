@@ -171,8 +171,20 @@ Lights and placements go into the building's record (`B.R`), not geometry.
 Fal-made components (an isolated component image with nano-banana-pro/edit in the concept's style, then
 `tripo3d/h3.1/image-to-3d`), cleaned, decimated and stood on y = 0 at true size; mount +Y, placed as
 `colony:<name>` by `bkit.component()`. The catalogue (made and planned, which buildings use each) is in
-`Scene3D/tools/blender/buildings/README-colony.md`; data in `parts.json`. None made yet (fal was blocked in the
-pilot session).
+`Scene3D/tools/blender/buildings/README-colony.md`; data in `parts.json`; source images in
+`images/buildings/components/`. Re-ingest from the recorded params with `component.py --rebuild`.
+
+| Part | Size w x h x d (m) | Notes |
+|---|---|---|
+| sphereTank | 26.5 x 25.8 x 26.5 | 21 m pressure sphere on 8 splayed legs, cobalt band, top platform, transfer pipe (deuterium depot x3) |
+| plantHouse | 8.5 x 7.8 x 16.9 | 12 x 8 x 6.5 m pump house, door on +X, roof HVAC, pipe stubs at +Z |
+| manifoldSkid | 5.8 x 4.5 x 13 | pipe manifold skid: mains, valves, pump, base frame |
+| filterBank | 2.9 x 4.3 x 6.5 | filter / dryer columns on a skid |
+| blastFurnace | 27.5 x 60 x 29.3 | furnace in its tower frame on a base block; tuyere band and lamps emissive (`--hot`) |
+| bandedStack | 12.7 x 46 x 13.2 | banded chimney with platforms and caged ladder (steel mill x2, one at 0.87) |
+| pourBay | 19 x 15.5 x 26 | open pour bay, opens +X: amber crane, glowing runner (emissive), ladle car |
+| skipGallery | 6 x 46 x 28 | inclined covered conveyor, low end with drive house at +Z |
+| shedSegment | 28 x 24 x 36 | shed segment, windowed long face +X, gables +-Z; segments abut along Z |
 
 ## Built into asset scripts (not kit files)
 

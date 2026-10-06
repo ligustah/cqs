@@ -81,9 +81,10 @@ export function shiftCfg(cfg, c) {
  *   DATA   the generated block: { lights, bbox, footprint, height, orbital }
  *   meta   { name, designation, gameId, blurb }
  *   studio overrides of the dusk studio (az, el, exposure, key, ..., dist)
+ *   materials optional glbship material overrides (by name, 'prefix*' or '*')
  *   extend optional (group, ctx) => void: per-building runtime additions (animated parts, instanced ships)
  */
-export function colonyBuilding({ id, DATA = {}, meta = {}, studio = {}, extend = null }) {
+export function colonyBuilding({ id, DATA = {}, meta = {}, studio = {}, materials = null, extend = null }) {
   const asset = {
     glb: `./assets/buildings/${id}.glb`,
     generator: `tools/blender/buildings/${id}.py on bkit.py (colony_build.py) + tools/blender/assemble.py`,
@@ -93,6 +94,9 @@ export function colonyBuilding({ id, DATA = {}, meta = {}, studio = {}, extend =
     livery: null, // light concept paint (correction 27)
     detail: { set: 'hull', tile: 6, normalStrength: 0.4, roughAmount: 0.3, cavity: 0.12 },
     finish: 'building',
+    // fal colony components (assets/parts-colony, material 'colony_<part>'): their baked albedo reads a step darker than
+    // the concept's off-white once the detail layer and worn finish are on; lift it (the parametric hull is unchanged)
+    materials: { 'colony_*': { colorScale: 1.25 }, ...(materials || {}) },
   };
   const st = { ...DUSK, ...(DATA.orbital ? { backdrop: SPACE_BACKDROP } : {}), ...studio };
   let GLTF = null;

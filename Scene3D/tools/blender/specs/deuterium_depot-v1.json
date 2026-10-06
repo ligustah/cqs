@@ -12,7 +12,8 @@
  },
  "partsDir": "../../../assets/parts-blender",
  "kits": {
-  "yard": "../../../assets/parts-yard"
+  "yard": "../../../assets/parts-yard",
+  "colony": "../../../assets/parts-colony"
  },
  "partDefaults": {
   "door": {
@@ -56,80 +57,207 @@
  },
  "placements": [
   {
-   "part": "door",
+   "part": "colony:sphereTank",
    "p": [
-    -11.9,
-    1.2,
-    19.405
+    -21.5,
+    0.0,
+    -9.5
    ],
    "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    -0.342,
+    0.0,
+    -0.94
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    -0.94,
+    0.0,
+    0.342
+   ],
+   "id": "sphereTank"
+  },
+  {
+   "part": "colony:sphereTank",
+   "p": [
+    1.0,
+    0.0,
+    -2.5
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    0.342,
+    0.0,
+    -0.94
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    -0.94,
+    0.0,
+    -0.342
+   ],
+   "id": "sphereTank"
+  },
+  {
+   "part": "colony:sphereTank",
+   "p": [
+    22.0,
+    0.0,
+    -13.5
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    0.766,
+    0.0,
+    -0.643
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    -0.643,
+    0.0,
+    -0.766
+   ],
+   "id": "sphereTank"
+  },
+  {
+   "part": "colony:manifoldSkid",
+   "p": [
+    -3.0,
+    0.0,
+    12.8
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "id": "manifoldSkid"
+  },
+  {
+   "part": "colony:plantHouse",
+   "p": [
+    -19.5,
+    0.0,
+    12.5
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
     0.0,
     0.0,
     1.0
    ],
-   "up": [
+   "id": "plantHouse"
+  },
+  {
+   "part": "colony:plantHouse",
+   "p": [
+    18.5,
+    0.0,
+    11.0
+   ],
+   "n": [
     0.0,
     1.0,
+    0.0
+   ],
+   "up": [
+    -1.0,
+    0.0,
     0.0
    ],
    "snap": false,
    "seat": {
     "check": false
    },
-   "id": "crew door"
-  },
-  {
-   "part": "door",
-   "p": [
-    20.6,
-    1.2,
-    19.405
-   ],
-   "n": [
+   "along": [
     0.0,
     0.0,
     1.0
    ],
-   "up": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "id": "crew door"
+   "id": "plantHouse"
   },
   {
-   "part": "door",
+   "part": "colony:filterBank",
    "p": [
-    23.905,
-    1.2,
-    12.9
+    6.0,
+    0.0,
+    16.6
    ],
    "n": [
-    1.0,
     0.0,
+    1.0,
     0.0
    ],
    "up": [
-    0.0,
     1.0,
+    0.0,
     0.0
    ],
    "snap": false,
    "seat": {
     "check": false
    },
-   "id": "crew door"
+   "along": [
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "id": "filterBank"
   },
   {
    "part": "yard:worker",
    "p": [
-    3.0,
+    2.0,
     0.0,
-    19.0
+    18.0
    ],
    "n": [
     0.0,
@@ -155,9 +283,9 @@
   {
    "part": "yard:worker",
    "p": [
-    -8.6,
+    -8.0,
     0.0,
-    20.0
+    17.7
    ],
    "n": [
     0.0,
