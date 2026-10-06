@@ -43,10 +43,10 @@ def hall(B):
     B.boxp((gx0, gh, gz0), (gx1, EAVE, HZ1 - 0.2), mat='panel', bevel=0.06)
     # the long front facade, in two pieces either side of the glazed bay: dark 5 m lower course, big light panels
     fz = HZ1 - 0.1
-    K.facade(B, (HX0 + 0.1, 0.0, fz), (1, 0, 0), gx0 - HX0 - 0.1, EAVE, bay=14.4, storey=5.0, base=5.0, bands=False,
+    K.facade(B, (HX0 + 0.1, 0.0, fz), (1, 0, 0), gx0 - HX0 - 0.1, EAVE, bay=14.4, storey=5.0, base=5.0, bands=False, frame='frameL', base_mat='frame2',
              windows=[], rollers=[(25.5, 6.5, 7.0)], doors=[33.5, 6.0],
              louvres=[(6.5, 8.0, 5.5, 1.8), (16.0, 8.0, 5.5, 1.8), (9.0, 1.4, 6.0, 2.0), (39.0, 9.5, 2.4, 3.0)])
-    K.facade(B, (gx1, 0.0, fz), (1, 0, 0), HX1 - gx1 - 0.1, EAVE, bay=6.0, pilasters=False, storey=5.0, base=5.0, bands=False, windows=[])
+    K.facade(B, (gx1, 0.0, fz), (1, 0, 0), HX1 - gx1 - 0.1, EAVE, bay=6.0, pilasters=False, storey=5.0, base=5.0, bands=False, windows=[], frame='frameL', base_mat='frame2')
     # the loading portal: a deep dark surround projecting from the wall round the roller door, with a lit sign band
     px = HX0 + 0.1 + 25.5
     B.box((10.8, 1.4, 2.4), at=(px, 10.6, fz + 1.2), mat='frame2', bevel=0.08)
@@ -56,12 +56,12 @@ def hall(B):
     B.box((8.0, 0.5, 0.6), at=(px, 9.6, fz + 2.3), mat='frame', bevel=0.02)
     B.R.glowbox((px, 8.4, fz + 0.6), (3.6, 0.18, 0.05), color='#ffc27a', radiance=1.4)
     # the +X short face: dark lower course, louvres, a crew door, the risers come down it
-    K.facade(B, (HX1 - 0.1, 0.0, HZ1 - 0.1), (0, 0, -1), HZ1 - HZ0 - 0.2, EAVE, bay=14.0, storey=5.0, base=5.0, bands=False,
+    K.facade(B, (HX1 - 0.1, 0.0, HZ1 - 0.1), (0, 0, -1), HZ1 - HZ0 - 0.2, EAVE, bay=14.0, storey=5.0, base=5.0, bands=False, frame='frameL', base_mat='frame2',
              windows=[], doors=[30.0], louvres=[(8.0, 9.0, 4.0, 1.8), (24.0, 1.4, 4.0, 2.0)])
     # back and -X faces: plainer
-    K.facade(B, (HX0 + 0.1, 0.0, HZ0 + 0.1), (0, 0, 1), HZ1 - HZ0 - 0.2, EAVE, bay=7.0, storey=5.0, base=5.0, bands=False,
+    K.facade(B, (HX0 + 0.1, 0.0, HZ0 + 0.1), (0, 0, 1), HZ1 - HZ0 - 0.2, EAVE, bay=7.0, storey=5.0, base=5.0, bands=False, frame='frameL', base_mat='frame2',
              windows=[], rollers=[(21.0, 5.5, 6.0)], doors=[12.0])
-    K.facade(B, (HX1 - 0.1, 0.0, HZ0 + 0.1), (-1, 0, 0), HX1 - HX0 - 0.2, EAVE, bay=8.6, storey=5.0, base=5.0, bands=False,
+    K.facade(B, (HX1 - 0.1, 0.0, HZ0 + 0.1), (-1, 0, 0), HX1 - HX0 - 0.2, EAVE, bay=8.6, storey=5.0, base=5.0, bands=False, frame='frameL', base_mat='frame2',
              windows=[], rollers=[(14.0, 6.0, 7.0)], doors=[30.0, 50.0])
     # heavy corner posts and a dark pilaster dividing the long front into two volumes (the concept's break)
     for (x, z) in ((HX0, HZ0), (HX0, HZ1), (HX1, HZ0), (HX1, HZ1)):
@@ -72,7 +72,7 @@ def hall(B):
     K.roof_deck(B, (0.0, EAVE, (HZ0 + HZ1) / 2), (HX1 - HX0, HZ1 - HZ0), parapet=0.9)
     for k in range(6):
         x = HX0 + 5.7 + k * 11.3
-        K.component(B, 'roofMonitor', (x, EAVE + 0.1, (HZ0 + HZ1) / 2), heading=0.0, scale=[1.0, 1.0, 0.75])
+        K.component(B, 'roofMonitor', (x, EAVE + 0.1, (HZ0 + HZ1) / 2), heading=0.0, scale=[0.9, 0.45, 1.0])   # part axes (x, y up, z): low monitors (v3)
     for (x, z) in ((HX1 - 2.0, HZ0 + 3.0), (HX0 + 2.5, HZ0 + 3.0), (HX1 - 2.0, HZ1 - 3.0)):
         K.hvac(B, (x, EAVE + 0.1, z), w=3.0, d=2.2, h=1.6, fans=2, rot=90)
     # the glazed bay: dark interior walls and floor, the reactor, an open mullion grid in a heavy frame (no glass

@@ -28,10 +28,8 @@ const base = colonyBuilding({
     blurb: 'Garrison compound for the ground forces: a 104 x 76 m yard inside buttressed blast walls with a fortified gate and four corner towers, two armoured vehicle hangars, a stepped command bunker with its antenna cluster, and a V-31 on the yard.',
   },
   // the concept's camera: almost square on to the front wall, a little from the left, ~28 deg down
-  studio: { az: 14, el: 28, sunaz: -20, sunel: 45, dist: 0.9, exposure: 1.1 },
-  // the fal parts bake a warm tan concrete; the concept's compound is a cooler grey: tint every colony part (and keep the
-  // factory's 1.25 lift)
-  materials: { 'colony_*': { colorScale: 1.25, color: '#d2d9e4' } },
+  // v3 paint check: light-paint luminance trimmed to the concept's with the key alone (no paint lift)
+  studio: { az: 14, el: 28, sunaz: -20, sunel: 45, dist: 0.9, exposure: 1.1, key: 0.6 },
   extend(group, { palette, library }) {
     if (!VG) return;
     const box = new THREE.Box3().setFromObject(VG.scene);

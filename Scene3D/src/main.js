@@ -201,10 +201,12 @@ function start() {
     })
     : createLighting(renderer, scene, { shadowSize: TIER.shadowSize });
   // a building's studio hint (e.g. the shipyard's dusk): the showcase rig dimmed per light (key, fill, rim, kick, env)
+  // ?key= / ?fill= / ?rim= / ?kick= / ?env= override the hint's multipliers (studio calibration against the concepts)
   if (studio && mode === 'building') {
-    lighting.sun.intensity *= BSTUDIO.key ?? 1;
-    for (const L of lighting.lights || []) L.intensity *= BSTUDIO[L.name.replace('studio-', '')] ?? 1;
-    scene.environmentIntensity *= BSTUDIO.env ?? 1;
+    const hint = (k) => parseFloat(params.get(k) ?? String(BSTUDIO[k] ?? 1));
+    lighting.sun.intensity *= hint('key');
+    for (const L of lighting.lights || []) L.intensity *= hint(L.name.replace('studio-', ''));
+    scene.environmentIntensity *= hint('env');
   }
   // the studio has no sky (star field, sun glare): its backdrop is part of the lighting rig
   const sky = studio ? { update() {} } : createSky(scene);

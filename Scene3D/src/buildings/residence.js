@@ -16,6 +16,9 @@ export const { meta, asset, studio, load, build } = colonyBuilding({
     blurb: 'Colony housing: three curved ten-storey apartment blocks with continuous balconies, teal accent panels and roof gardens round a courtyard garden, a two-storey podium of entrances along the street, on a 100 x 72 m slab.',
   },
   // the concept's camera: front-left, ~33 deg down
-  studio: { az: 31, el: 32, dist: 0.9 },
-  materials: { colony_curvedTerrace: { colorScale: 1.4 }, colony_podiumSegment: { colorScale: 1.2 } },
+  // v3: key from the front-right, high: the courtyard balcony faces read light like the concept's (the default
+  // front-left key left them in shadow); the re-imaged block's lit windows (component.py --hot 0.6 --hot-sat 0.4) a little brighter
+  // v3 paint check: light-paint luminance trimmed to the concept's with the key alone (no paint lift)
+  studio: { az: 31, el: 32, sunaz: 20, sunel: 40, dist: 0.9, key: 0.6 },
+  materials: { colony_curvedTerrace: { emissiveBoost: 1.8 } },
 });

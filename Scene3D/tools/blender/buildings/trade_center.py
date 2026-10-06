@@ -59,7 +59,10 @@ def model(B):
 
     # --- the covered market arcade (fal marketArcade) on the plaza between the towers, a low glazed concourse behind it
     K.component(B, 'marketArcade', (-8.0, 0.0, 6.0), heading=0.0)
-    B.R.glowbox((-8.0, 2.0, 6.0), (22.0, 0.05, 16.0), color='#ffb766', radiance=0.45)
+    # v3: warm pools under the canopy bays and over the stalls instead of one flat 22 x 16 m orange floor plane
+    for (dx, dz) in ((-7.0, -4.0), (0.0, -4.5), (7.0, -4.0), (-7.0, 4.0), (0.0, 4.5), (7.0, 4.0)):
+        B.R.glowbox((-8.0 + dx, 0.06, 6.0 + dz), (4.2, 0.03, 3.4), color='#ffc890', radiance=0.7)
+        B.R.glowbox((-8.0 + dx, 8.2, 6.0 + dz), (1.8, 0.05, 0.5), color='#ffe2b8', radiance=2.2)
     K.block(B, (-8.0, 0.0, -13.0), (26.0, 7.0, 10.0),
             sides={'+z': {'bay': 4.3, 'storey': 3.5, 'windows': [0, 1], 'win': (2.6, 1.6), 'doors': [6.5, 19.5], 'seams': False},
                    '-z': {'bay': 4.3, 'storey': 3.5}, '+x': {'bay': 5.0}, '-x': {'bay': 5.0}},

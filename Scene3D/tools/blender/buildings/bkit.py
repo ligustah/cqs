@@ -68,6 +68,8 @@ BKIT_MATS = {
     'panel2':    ((0.47, 0.47, 0.46), 'paint', 0.66, 0.0),    # recessed / secondary panels, a step darker
     'frame':     ((0.040, 0.042, 0.046), 'paint', 0.55, 0.0),  # dark gunmetal frames, posts, beams, bands
     'frame2':    ((0.075, 0.078, 0.082), 'paint', 0.6, 0.0),   # its lighter variant (housings, legs)
+    'stone':     ((0.54, 0.525, 0.49), 'paint', 0.8, 0.0),   # pale civic stone, a touch warm (library, monuments)
+    'frameL':    ((0.25, 0.252, 0.255), 'paint', 0.62, 0.0),   # light grey trim: plain-panel walls (sRGB ~137)
     'seam':      ((0.016, 0.017, 0.018), 'paint', 0.8, 0.0),   # panel seams, slab joints (near black)
     'concrete':  ((0.30, 0.295, 0.28), 'paint', 0.9, 0.0),     # plinth top: light concrete
     'concrete2': ((0.20, 0.197, 0.19), 'paint', 0.9, 0.0),     # plinth sides, footings
@@ -505,31 +507,48 @@ def ladder(B, p, n, h, cage=True, w=0.62, mat='frame'):
 # ------------------------------------------------------------------------------------------------------------------
 # plinth: the chamfered concrete slab every planetside building stands on (brief checklist item 1)
 # ------------------------------------------------------------------------------------------------------------------
+def notch_rect(w, d, c, notch=None):
+    """Plan outline (CCW): chamfer_rect, or with `notch` = (nx, nz) a notched cross: an nx (x) by nz (z) rectangle
+    cut from each corner, every convex corner chamfered by c."""
+    if not notch:
+        return chamfer_rect(w, d, c)
+    x, z, nx, nz = w / 2, d / 2, notch[0], notch[1]
+    a, b = x - nx, z - nz           # the arms' half widths
+    c = min(c, nx * 0.5, nz * 0.5)
+    return [(x, b - c), (x - c, b), (a, b), (a, z - c), (a - c, z),
+            (-a + c, z), (-a, z - c), (-a, b), (-x + c, b), (-x, b - c),
+            (-x, -b + c), (-x + c, -b), (-a, -b), (-a, -z + c), (-a + c, -z),
+            (a - c, -z), (a, -z + c), (a, -b), (x - c, -b), (x, -b + c)]
+
+
 def plinth(B, w, d, h=1.4, chamfer=2.0, kerb=0.5, slab=8.0, lamp_pitch=18.0, centre=(0, 0), markings=None,
-           grates=(), lamps=True, steps=()):
+           grates=(), lamps=True, steps=(), notch=None):
     """Slab w (x) by d (z) with chamfered plan corners, top at y = 0, `h` deep: a light kerb band round the top edge,
     a darker skirt, slab joints every `slab` m, amber edge lamps (corners + every lamp_pitch m along the front and
     left edges, R.pin), optional markings [(polyline [(x, z)...], width, mat)] and drain grates [(x, z, w, d)].
     steps: [(x, z, side)] short access stairs down the slab edge (side '+z' / '-z' / '+x' / '-x')."""
     cx, cz = centre
-    out = [(cx + x, cz + z) for x, z in chamfer_rect(w, d, chamfer)]
+    R = lambda ww, dd, cc: notch_rect(ww, dd, cc, notch)   # the plan outline (a notched cross with `notch`)
+    out = [(cx + x, cz + z) for x, z in R(w, d, chamfer)]
     # body (side faces) and a 0.3 m lighter kerb cap round the top edge, top surface
     B.prism(out, -h, -0.32, mat='concrete2', bevel=0.06)
     B.prism(out, -0.36, -0.02, mat='kerb', bevel=0.05)
-    inner = [(cx + x, cz + z) for x, z in chamfer_rect(w - 2 * kerb, d - 2 * kerb, max(0.2, chamfer - kerb * 0.6))]
+    inner = [(cx + x, cz + z) for x, z in R(w - 2 * kerb, d - 2 * kerb, max(0.2, chamfer - kerb * 0.6))]
     B.prism(inner, -0.06, 0.0, mat='concrete', bevel=0.0)
     # skirt shadow line half-way down and a dark toe
-    B.prism([(cx + x, cz + z) for x, z in chamfer_rect(w + 0.16, d + 0.16, chamfer + 0.06)], -h * 0.62, -h * 0.55, mat='seam', bevel=0.0)
-    B.prism([(cx + x, cz + z) for x, z in chamfer_rect(w + 0.1, d + 0.1, chamfer + 0.04)], -h - 0.02, -h + 0.18, mat='frame2', bevel=0.0)
+    B.prism([(cx + x, cz + z) for x, z in R(w + 0.16, d + 0.16, chamfer + 0.06)], -h * 0.62, -h * 0.55, mat='seam', bevel=0.0)
+    B.prism([(cx + x, cz + z) for x, z in R(w + 0.1, d + 0.1, chamfer + 0.04)], -h - 0.02, -h + 0.18, mat='frame2', bevel=0.0)
     # slab joints (dark grooves) across the top
     iw, idd = w - 2 * kerb, d - 2 * kerb
     nx, nz = max(1, int(round(iw / slab))), max(1, int(round(idd / slab)))
     for i in range(1, nx):
         x = cx - iw / 2 + iw * i / nx
-        B.box((0.09, 0.012, idd - 0.4), at=(x, 0.002, cz), mat='seam', bevel=0.0)
+        L = idd - 0.4 - (2 * notch[1] if notch and abs(x - cx) > w / 2 - notch[0] else 0)
+        B.box((0.09, 0.012, L), at=(x, 0.002, cz), mat='seam', bevel=0.0)
     for j in range(1, nz):
         z = cz - idd / 2 + idd * j / nz
-        B.box((iw - 0.4, 0.012, 0.09), at=(cx, 0.002, z), mat='seam', bevel=0.0)
+        L = iw - 0.4 - (2 * notch[0] if notch and abs(z - cz) > d / 2 - notch[1] else 0)
+        B.box((L, 0.012, 0.09), at=(cx, 0.002, z), mat='seam', bevel=0.0)
     # kerb joint between kerb and top
     for (a, b) in zip(inner, inner[1:] + inner[:1]):
         B.bar((a[0], 0.0, a[1]), (b[0], 0.0, b[1]), 0.07, 0.012, mat='seam', bevel=0.0)
@@ -551,7 +570,11 @@ def plinth(B, w, d, h=1.4, chamfer=2.0, kerb=0.5, slab=8.0, lamp_pitch=18.0, cen
         y = -0.2
         pts = []
         hw, hd = w / 2 + 0.05, d / 2 + 0.05
-        for sx in (-1, 1):
+        if notch:   # a notched cross: a lamp at every outline vertex, pushed 5 cm out, and along the arm ends at pitch
+            for (x, z) in out:
+                pts.append((x + 0.05 * (1 if x > cx else -1), y, z + 0.05 * (1 if z > cz else -1)))
+            lamp_pitch = 0
+        for sx in (-1, 1) if not notch else ():
             for sz in (-1, 1):
                 pts.append((cx + sx * (hw - chamfer * 0.5), y, cz + sz * (hd - 0.02)))
                 pts.append((cx + sx * (hw - 0.02), y, cz + sz * (hd - chamfer * 0.5)))
@@ -579,7 +602,7 @@ def bollards(B, pts, h=1.0, r=0.1, mat=AMBER):
 # ------------------------------------------------------------------------------------------------------------------
 def facade(B, o, u, w, h, bay=4.5, storey=3.6, base=1.0, windows=(), win=(1.6, 1.4), win_per_bay=1, sill=1.0,
            doors=(), rollers=(), skip=(), pilasters=True, seams=True, bands=True, lit=0.55, louvres=(), panel='panel',
-           slots=(), lamps=True, frame='frame'):
+           slots=(), lamps=True, frame='frame', base_mat=None):
     """One wall face. o: bottom-left corner on the wall surface (seen from outside), u: unit horizontal to the right;
     the outward normal is u x up. Local x in [0, w], y in [0, h], z outward.
       windows   storey indices that carry windows (0 = ground floor), one or `win_per_bay` per bay
@@ -602,7 +625,7 @@ def facade(B, o, u, w, h, bay=4.5, storey=3.6, base=1.0, windows=(), win=(1.6, 1
     with B.at(M=M):
         # dark base band and parapet cap, storey bands
         if base:
-            B.box((w + 0.2, base, 0.22), at=(w / 2, base / 2, 0.06), mat=frame, bevel=0.03)
+            B.box((w + 0.2, base, 0.22), at=(w / 2, base / 2, 0.06), mat=base_mat or frame, bevel=0.03)
         if bands:
             y = storey
             while y < h - 1.0:

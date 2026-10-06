@@ -43,12 +43,12 @@ def model(B):
 
     # --- the armoured base (parametric): chamfered block, light panels in dark frames, doors on the +X face
     K.block(B, (BX, 0.0, BZ), (BW, BH, BD), chamfer=3.0,
-            sides={'+x': {'bay': 5.0, 'pilasters': False, 'bands': False, 'storey': 4.0, 'base': 1.2, 'doors': [21.0], 'rollers': [(7.5, 6.0, 5.2)],
+            sides={'+x': {'bay': 5.0, 'pilasters': False, 'bands': False, 'storey': 4.0, 'base': 1.2, 'frame': 'frameL', 'base_mat': 'frame2', 'doors': [21.0], 'rollers': [(7.5, 6.0, 5.2)],
                           'louvres': [(11.5, 4.2, 3.0, 1.6), (16.0, 1.6, 1.2, 1.2)]},
-                   '+z': {'bay': 5.0, 'pilasters': False, 'bands': False, 'storey': 4.0, 'base': 1.2, 'louvres': [(5.0, 4.4, 3.6, 2.0)]},
-                   '-z': {'bay': 5.0, 'pilasters': False, 'bands': False, 'storey': 4.0, 'base': 1.2, 'doors': [8.0]},
+                   '+z': {'bay': 5.0, 'pilasters': False, 'bands': False, 'storey': 4.0, 'base': 1.2, 'frame': 'frameL', 'base_mat': 'frame2', 'louvres': [(5.0, 4.4, 3.6, 2.0)]},
+                   '-z': {'bay': 5.0, 'pilasters': False, 'bands': False, 'storey': 4.0, 'base': 1.2, 'frame': 'frameL', 'base_mat': 'frame2', 'doors': [8.0]},
                    '-x': {'bay': 5.0, 'pilasters': False, 'bands': False, 'storey': 4.0, 'base': 1.2}},
-            roof={'parapet': 0.0, 'mat': 'panel2'}, post=0.8, frame='frame2')
+            roof={'parapet': 0.0, 'mat': 'panel2'}, post=0.5, frame='frameL')   # v3: light trim (was gunmetal frame2 posts and frames)
     # roof: a raised ring plinth for the azimuth drum, the deck railing, roof boxes at the corners
     B.vcyl(13.0, 0.8, (BX, BH, BZ), mat='frame2', n=48)
     B.vcyl(13.6, 0.25, (BX, BH, BZ), mat='frame', n=48)

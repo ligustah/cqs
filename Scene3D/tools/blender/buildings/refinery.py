@@ -27,10 +27,10 @@ SPEC = {
 W, D = SPEC['footprint']
 X0, X1, Z0, Z1 = -W / 2, W / 2, -D / 2, D / 2
 COLS = ((-6.0, 17.0, 1.25), (-5.5, -3.0, 0.98), (-5.0, -21.5, 0.7))     # (x, z, scale of the 40 m column)
-BLK = (12.5, 0.0, 24.5)                                                # control block centre (x, y, z)
-BLK_SIZE = (16.0, 11.0, 23.0)
-ANX = (13.0, 0.0, 7.0)
-ANX_SIZE = (14.0, 9.0, 10.0)
+BLK = (13.0, 0.0, 25.0)                                                # control block centre (x, y, z)
+BLK_SIZE = (13.0, 9.0, 17.0)                                           # v3: smaller (was 16 x 11 x 23)
+ANX = (13.0, 0.0, 9.5)
+ANX_SIZE = (12.0, 7.5, 9.0)
 LV = (7.0, 11.5)                                                       # rack levels
 
 
@@ -76,6 +76,20 @@ def rack(B):
             px, pz = cx + (2.6 * s + 0.9) * math.sin(a), cz + (2.6 * s + 0.9) * math.cos(a)
             K.pipe(B, [(px, 0.5, pz), (px, top * h, pz), (cx + (2.0 * s) * math.sin(a), top * h + 1.6, cz + (2.0 * s) * math.cos(a))],
                    r=r, mat='pipe' if k != 1 else 'pipeDark', rings=(k == 0))
+        # v3: lines and cages hugging the column to its head (the concept's dense amber-caged columns): two tight
+        # risers right up the shell, amber railed rings every ~8 m, a caged ladder up the front
+        rr = 2.0 * s + 0.55
+        for k, (ang, r, h) in enumerate(((25.0, 0.3, 0.93), (325.0, 0.25, 0.88), (95.0, 0.22, 0.7))):
+            a = math.radians(ang)
+            K.pipe(B, [(cx + rr * math.sin(a), 0.5, cz + rr * math.cos(a)), (cx + rr * math.sin(a), top * h, cz + rr * math.cos(a)),
+                       (cx + (rr - 0.9) * math.sin(a), top * h + 0.9, cz + (rr - 0.9) * math.cos(a))], r=r, mat='pipe' if k != 1 else 'pipeDark', rings=True)
+        rc = 2.0 * s + 1.4
+        for y in [y for y in (LV[1] + 6.0, LV[1] + 14.0, LV[1] + 22.0, LV[1] + 30.0) if y < top * 0.9]:
+            ring = [(cx + rc * math.cos(math.radians(t)), y, cz + rc * math.sin(math.radians(t))) for t in range(0, 360, 30)]
+            K.railing(B, ring, h=1.1, post=1.6, mat='amber', closed=True)
+            B.ring(rc + 0.1, 2.0 * s, y - 0.12, y, (cx, 0, cz), mat='grate', n=24)
+        a = math.radians(60.0)
+        K.ladder(B, (cx + (2.0 * s + 0.1) * math.sin(a), 0.4, cz + (2.0 * s + 0.1) * math.cos(a)), (math.sin(a), 0, math.cos(a)), top * 0.85, mat='amber')
         K.pipe(B, [(-10.2, LV[0] + 0.8, cz + 3.0), (cx + 3.2, LV[0] + 0.8, cz + 3.0), (cx + 3.2, LV[1] + 3.5, cz + 3.0), (cx + 2.2 * s, LV[1] + 3.5, cz + 1.0)], r=0.4, mat='pipe', rings=False)
         K.pipe(B, [(-4.4, LV[0] + 0.6, cz - 3.0), (-4.4, 1.2, cz - 3.0), (6.0, 1.2, cz - 3.0)], r=0.3, mat='pipeDark', rings=False)
     # a cross rack at the back carrying lines from column 3 to the capsule tanks
@@ -121,33 +135,35 @@ def model(B):
     # two-tone block)
     bx, _, bz = BLK
     bw, bh, bd = BLK_SIZE
+    # v3: light grey trim on the light panels (the concept's block reads light; the gunmetal stays on the base course)
+    LT = {'frame': 'frameL', 'base_mat': 'frame2'}
     K.block(B, BLK, BLK_SIZE, frame='frame2',
-            sides={'+x': {'bay': 4.6, 'storey': 4.0, 'base': 1.4, 'windows': [1], 'win': (1.5, 1.2), 'doors': [7.0, 16.0], 'seams': True, 'bands': False},
-                   '+z': {'bay': 4.0, 'storey': 4.0, 'base': 1.4, 'windows': [1], 'win': (1.2, 1.2), 'doors': [8.0], 'bands': False},
-                   '-x': {'bay': 4.6, 'storey': 4.0, 'base': 1.4, 'windows': [1], 'win': (1.2, 1.0), 'bands': False},
-                   '-z': {'bay': 4.0, 'storey': 4.0, 'base': 1.4, 'bands': False}},
-            roof={'parapet': 0.7, 'mat': 'panel2', 'units': [('hvac', -3.0, 6.5, {'w': 3.6, 'd': 2.4, 'fans': 2}), ('hvac', 3.0, 6.5, {'w': 3.6, 'd': 2.4, 'fans': 2}),
-                                            ('hvac', -3.0, -6.5, {'w': 3.2, 'd': 2.2}), ('box', 3.5, -1.0, {'w': 3.0, 'd': 4.0, 'h': 2.0}),
-                                            ('vent', 0.0, 1.0, {}), ('vent', -4.5, 0.5, {}), ('antenna', 5.5, -9.0, {'h': 5.0})]})
+            sides={'+x': {'bay': 4.2, 'storey': 4.0, 'base': 1.4, 'windows': [1], 'win': (1.5, 1.2), 'doors': [5.5, 12.5], 'seams': True, 'bands': False, **LT},
+                   '+z': {'bay': 4.3, 'storey': 4.0, 'base': 1.4, 'windows': [1], 'win': (1.2, 1.2), 'doors': [6.5], 'bands': False, **LT},
+                   '-x': {'bay': 4.2, 'storey': 4.0, 'base': 1.4, 'windows': [1], 'win': (1.2, 1.0), 'bands': False, **LT},
+                   '-z': {'bay': 4.3, 'storey': 4.0, 'base': 1.4, 'bands': False, **LT}},
+            roof={'parapet': 0.6, 'mat': 'panel2', 'units': [('hvac', -2.5, 5.0, {'w': 3.2, 'd': 2.2, 'fans': 2}), ('hvac', 2.5, 5.0, {'w': 3.2, 'd': 2.2, 'fans': 2}),
+                                            ('box', 3.0, -1.0, {'w': 2.6, 'd': 3.4, 'h': 1.8}),
+                                            ('vent', 0.0, 1.0, {}), ('vent', -4.0, 0.5, {}), ('antenna', 4.5, -6.5, {'h': 5.0})]})
     for (sx, sz, h) in ((-5.0, -2.5, 6.5), (-5.0, -5.5, 5.5)):
         K.stack(B, (bx + sx, bz + sz), 0.6, h, y0=bh, bands=[(h - 1.2, h - 0.8, 'frame')], lamps=False)
     ax_, _, az_ = ANX
-    K.block(B, ANX, ANX_SIZE, panel='frame2',
-            sides={'+x': {'bay': 5.0, 'storey': 4.5, 'base': 0.8, 'rollers': [(4.0, 4.4, 5.0)], 'doors': [8.0], 'panel': 'frame2', 'bands': False},
+    K.block(B, ANX, ANX_SIZE, panel='panel2',
+            sides={'+x': {'bay': 4.5, 'storey': 4.5, 'base': 0.8, 'rollers': [(3.5, 4.0, 4.6)], 'doors': [7.0], 'panel': 'panel2', 'bands': False},
                    '+z': {'skip_face': True},
-                   '-x': {'bay': 5.0, 'storey': 4.5, 'panel': 'frame2', 'bands': False},
-                   '-z': {'bay': 4.5, 'storey': 4.5, 'panel': 'frame2', 'louvres': [(5.0, 3.0, 3.0, 2.4)], 'bands': False}},
+                   '-x': {'bay': 4.5, 'storey': 4.5, 'panel': 'panel2', 'bands': False},
+                   '-z': {'bay': 4.0, 'storey': 4.5, 'panel': 'panel2', 'louvres': [(4.5, 2.6, 3.0, 2.2)], 'bands': False}},
             roof={'parapet': 0.5, 'mat': 'panel2', 'units': [('hvac', 0.0, -1.5, {'w': 3.4, 'd': 2.2, 'fans': 2}), ('vent', 4.0, 2.5, {})]})
-    K.ladder(B, (bx + bw / 2 + 0.05, 0.2, bz - 9.5), (1, 0, 0), bh + 0.5)
+    K.ladder(B, (bx + bw / 2 + 0.05, 0.2, bz - 7.0), (1, 0, 0), bh + 0.5)
     # pipe riser up the block's -X side and over its roof into the rack; transformer and cabinets by the block
     K.pipe(B, [(bx - bw / 2 - 1.2, 0.0, bz + 4.0), (bx - bw / 2 - 1.2, bh + 1.6, bz + 4.0), (bx - 2.0, bh + 1.6, bz + 4.0)], r=0.5, mat='pipe')
     K.pipe(B, [(bx - bw / 2 - 2.4, 0.0, bz + 1.0), (bx - bw / 2 - 2.4, LV[0] + 0.8, bz + 1.0), (-1.0, LV[0] + 0.8, bz + 1.0)], r=0.4, mat='pipeDark')
     K.pipe(B, [(bx - bw / 2 - 1.2, 1.0, bz - 6.0), (-0.5, 1.0, bz - 6.0)], r=0.35, mat='pipe', supports=False)
     for (x, z) in ((bx + 3.0, Z1 - 2.6), (bx - 1.0, Z1 - 2.6), (bx - 5.0, Z1 - 2.6)):
         K.cabinet(B, (x, 0.0, z), w=1.6, h=1.9, d=0.8)
-    B.box((3.0, 2.6, 2.4), at=(bx - bw / 2 - 3.2, 1.3, bz + 9.0), mat='frame2', bevel=0.06)      # transformer
+    B.box((3.0, 2.6, 2.4), at=(bx - bw / 2 - 3.2, 1.3, bz + 6.0), mat='frame2', bevel=0.06)      # transformer
     for k in range(5):
-        B.box((0.1, 2.0, 2.0), at=(bx - bw / 2 - 4.75, 1.4, bz + 8.2 + k * 0.4), mat='frame', bevel=0.0)
+        B.box((0.1, 2.0, 2.0), at=(bx - bw / 2 - 4.75, 1.4, bz + 5.2 + k * 0.4), mat='frame', bevel=0.0)
 
     # --- capsule tanks along the +X edge at the back (fal component htankSkid), axis along Z, platform end forward
     for z in (-13.5, -29.5):

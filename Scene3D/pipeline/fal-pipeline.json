@@ -3794,5 +3794,50 @@
    ],
    "note": "components only (correction 38); the 4K turnaround was skipped (lesson 39: layout taken from the concept by eye)"
   }
+ },
+ "v25_buildings_polish": {
+  "date": "2026-10-06",
+  "asset": "colony buildings: shared polish pass (paint calibration) and one-off fixes",
+  "about": "Paint fixed in the shared pipeline (component.py ingest normalisation against each component image, colony DUSK key 1.0); fal used only where a component itself was the problem: the residence balcony block re-imaged with light slab edges and many lit windows, then re-meshed.",
+  "uploads": [],
+  "jobs": [
+   {
+    "key": "img-curvedTerrace2",
+    "endpoint": "fal-ai/nano-banana-pro/edit",
+    "requestId": "01a11221-9240-7340-a4fb-8c80cd077621",
+    "status": "used",
+    "inputs": {
+     "image_urls": [
+      "https://v3b.fal.media/files/b/0aad49f6/ZZLQ8Ge0t94B4QP6Of0O4_AZKu6hOv.png",
+      "https://v3b.fal.media/files/b/0aad49e2/-8P9Cwvgf1eUQCZvuOpno_residence-concept.jpg"
+     ],
+     "resolution": "2K",
+     "aspect_ratio": "4:3",
+     "prompt": "Edit image 1: keep EXACTLY the same curved 9-storey apartment block (...). Change only the balcony face, to match the second reference image: crisp off-white balcony slab edges and light balustrades on every floor so the balcony face reads light, and warm amber interior light glowing in about two thirds of the windows (...)"
+    },
+    "output": "https://v3b.fal.media/files/b/0aad50bb/Aha9G4Syj4zR1oWN-asOo_EKAkLmjh.png",
+    "saved": "style-library/styles/cqs-fleet/images/buildings/components/curvedTerrace2.jpg",
+    "usedFor": "component image of curvedTerrace v3 (v2 image: balcony faces dark, few lit windows)"
+   },
+   {
+    "key": "mesh-curvedTerrace2",
+    "endpoint": "tripo3d/h3.1/image-to-3d",
+    "requestId": "01a11222-44ae-7032-a204-5115716563b5",
+    "status": "used",
+    "inputs": {
+     "image_url": "https://v3b.fal.media/files/b/0aad50bb/Aha9G4Syj4zR1oWN-asOo_EKAkLmjh.png",
+     "texture": true,
+     "pbr": true,
+     "texture_quality": "detailed",
+     "geometry_quality": "detailed",
+     "face_limit": 25000
+    },
+    "output": "Scene3D/assets/buildings/raw/curvedTerrace.glb (gitignored; the v2 raw mesh 01a1111a-7443-7123-b260-2bfd70a68407 is replaced)",
+    "usedFor": "assets/parts-colony/curvedTerrace.glb (component.py)",
+    "modelUrl": "https://v3b.fal.media/files/b/0aad50e0/Jhr9ag_gQnCY2yiqJ7cGY_model.glb",
+    "ingest": "component.py --height 32 --tris 12000 --tex 2048 --hot 0.6 --hot-sat 0.4 (20.0 x 32 x 55.1 m, 11,989 tris)"
+   }
+  ],
+  "approx_usd": 0.6
  }
 }

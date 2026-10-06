@@ -298,35 +298,6 @@
    "id": "vesselSkid"
   },
   {
-   "part": "colony:vesselSkid",
-   "p": [
-    43.5,
-    0.0,
-    43.5
-   ],
-   "n": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "up": [
-    0.707,
-    0.0,
-    0.707
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "along": [
-    0.707,
-    0.0,
-    -0.707
-   ],
-   "scale": 0.9,
-   "id": "vesselSkid"
-  },
-  {
    "part": "colony:waterTower",
    "p": [
     34.0,

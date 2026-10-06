@@ -17,6 +17,4 @@ export const { meta, asset, studio, load, build } = colonyBuilding({
   },
   // the concept's camera: front-left, ~18 deg down; key from the front-left so the bay faces and the +X annex read light
   studio: { az: 26, el: 18, sunaz: 15, sunel: 40, dist: 0.78 },
-  // the bays' off-white piers: Tripo's paint reads a step darker than the concept's, past the factory's 1.25 lift
-  materials: { colony_vaultBay: { colorScale: 1.3, metalness: 0.3 }, colony_rackBay: { colorScale: 1.3, metalness: 0.3 } },
 });

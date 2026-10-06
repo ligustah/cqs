@@ -41,6 +41,25 @@
    ],
    "hot": 0.85,
    "hotTexels": 0,
+   "albedo": {
+    "gain": 1.126,
+    "wb": [
+     1.037,
+     0.993,
+     0.959
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/sphereTank.jpg",
+    "texY": 0.177,
+    "texSat": 0.042,
+    "srcY": 0.209,
+    "srcSat": 0.063,
+    "outY": 0.202,
+    "outSat": 0.051,
+    "metalMean": 0.014,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -48,6 +67,9 @@
      0.0
     ],
     "hotV": 0.85,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": 26.5,
@@ -58,8 +80,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 1286,
-   "seconds": 13.2
+   "kb": 1292,
+   "seconds": 23.2
   },
   "plantHouse": {
    "file": "plantHouse.glb",
@@ -100,6 +122,25 @@
    ],
    "hot": 0.85,
    "hotTexels": 1972,
+   "albedo": {
+    "gain": 1.417,
+    "wb": [
+     0.987,
+     1.001,
+     1.04
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/plantHouse.jpg",
+    "texY": 0.234,
+    "texSat": 0.094,
+    "srcY": 0.328,
+    "srcSat": 0.073,
+    "outY": 0.328,
+    "outSat": 0.068,
+    "metalMean": 0.023,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -107,6 +148,9 @@
      0.0
     ],
     "hotV": 0.85,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": 7.8,
     "length": null,
     "width": null,
@@ -117,8 +161,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 430,
-   "seconds": 8.5
+   "kb": 446,
+   "seconds": 11.7
   },
   "manifoldSkid": {
    "file": "manifoldSkid.glb",
@@ -157,12 +201,37 @@
    "usedBy": [
     "deuterium_depot"
    ],
+   "hot": 0.0,
+   "hotTexels": 0,
+   "albedo": {
+    "gain": 1.493,
+    "wb": [
+     1.046,
+     0.992,
+     0.942
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/manifoldSkid.jpg",
+    "texY": 0.136,
+    "texSat": 0.046,
+    "srcY": 0.194,
+    "srcSat": 0.065,
+    "outY": 0.195,
+    "outSat": 0.035,
+    "metalMean": 0.035,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
      0.0,
      0.0
     ],
+    "hotV": 0.0,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -173,8 +242,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 839,
-   "seconds": 3.1
+   "kb": 866,
+   "seconds": 6.9
   },
   "filterBank": {
    "file": "filterBank.glb",
@@ -213,12 +282,37 @@
    "usedBy": [
     "deuterium_depot"
    ],
+   "hot": 0.0,
+   "hotTexels": 0,
+   "albedo": {
+    "gain": 1.982,
+    "wb": [
+     1.008,
+     1.0,
+     0.976
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/filterBank.jpg",
+    "texY": 0.078,
+    "texSat": 0.045,
+    "srcY": 0.166,
+    "srcSat": 0.05,
+    "outY": 0.159,
+    "outSat": 0.032,
+    "metalMean": 0.12,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
      0.0,
      0.0
     ],
+    "hotV": 0.0,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -229,8 +323,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 631,
-   "seconds": 2.9
+   "kb": 658,
+   "seconds": 6.8
   },
   "blastFurnace": {
    "file": "blastFurnace.glb",
@@ -271,6 +365,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 49953,
+   "albedo": {
+    "gain": 1.577,
+    "wb": [
+     1.008,
+     0.993,
+     1.047
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/blastFurnace.jpg",
+    "texY": 0.067,
+    "texSat": 0.122,
+    "srcY": 0.108,
+    "srcSat": 0.118,
+    "outY": 0.106,
+    "outSat": 0.102,
+    "metalMean": 0.113,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -278,6 +391,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": 60.0,
     "length": null,
     "width": null,
@@ -288,8 +404,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 2145,
-   "seconds": 13.2
+   "kb": 2224,
+   "seconds": 23.0
   },
   "bandedStack": {
    "file": "bandedStack.glb",
@@ -330,6 +446,25 @@
    ],
    "hot": 0.85,
    "hotTexels": 2902,
+   "albedo": {
+    "gain": 2.029,
+    "wb": [
+     0.983,
+     1.0,
+     1.06
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/bandedStack.jpg",
+    "texY": 0.098,
+    "texSat": 0.1,
+    "srcY": 0.196,
+    "srcSat": 0.066,
+    "outY": 0.193,
+    "outSat": 0.059,
+    "metalMean": 0.032,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -337,6 +472,9 @@
      0.0
     ],
     "hotV": 0.85,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": 46.0,
     "length": null,
     "width": null,
@@ -347,8 +485,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 640,
-   "seconds": 8.4
+   "kb": 679,
+   "seconds": 11.5
   },
   "pourBay": {
    "file": "pourBay.glb",
@@ -389,6 +527,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 15227,
+   "albedo": {
+    "gain": 3.2,
+    "wb": [
+     0.929,
+     1.016,
+     1.07
+    ],
+    "chroma": 0.797,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/pourBay.jpg",
+    "texY": 0.035,
+    "texSat": 0.194,
+    "srcY": 0.148,
+    "srcSat": 0.146,
+    "outY": 0.123,
+    "outSat": 0.101,
+    "metalMean": 0.038,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -396,6 +553,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -406,8 +566,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 1599,
-   "seconds": 13.3
+   "kb": 1791,
+   "seconds": 22.5
   },
   "skipGallery": {
    "file": "skipGallery.glb",
@@ -446,12 +606,37 @@
    "usedBy": [
     "steel_mill"
    ],
+   "hot": 0.0,
+   "hotTexels": 0,
+   "albedo": {
+    "gain": 2.149,
+    "wb": [
+     1.031,
+     0.994,
+     0.966
+    ],
+    "chroma": 0.655,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/skipGallery.jpg",
+    "texY": 0.151,
+    "texSat": 0.041,
+    "srcY": 0.312,
+    "srcSat": 0.019,
+    "outY": 0.302,
+    "outSat": 0.015,
+    "metalMean": 0.102,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
      0.0,
      0.0
     ],
+    "hotV": 0.0,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -466,8 +651,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 780,
-   "seconds": 3.4
+   "kb": 822,
+   "seconds": 7.0
   },
   "shedSegment": {
    "file": "shedSegment.glb",
@@ -506,12 +691,37 @@
    "usedBy": [
     "steel_mill"
    ],
+   "hot": 0.0,
+   "hotTexels": 0,
+   "albedo": {
+    "gain": 1.229,
+    "wb": [
+     0.94,
+     1.008,
+     1.134
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/shedSegment.jpg",
+    "texY": 0.205,
+    "texSat": 0.11,
+    "srcY": 0.254,
+    "srcSat": 0.07,
+    "outY": 0.25,
+    "outSat": 0.038,
+    "metalMean": 0.028,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
      0.0,
      0.0
     ],
+    "hotV": 0.0,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -526,8 +736,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 472,
-   "seconds": 3.3
+   "kb": 534,
+   "seconds": 7.4
   },
   "skyBridge": {
    "file": "skyBridge.glb",
@@ -568,6 +778,25 @@
    ],
    "hot": 0.75,
    "hotTexels": 1,
+   "albedo": {
+    "gain": 1.782,
+    "wb": [
+     0.911,
+     1.017,
+     1.15
+    ],
+    "chroma": 0.738,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/skyBridge.jpg",
+    "texY": 0.124,
+    "texSat": 0.261,
+    "srcY": 0.209,
+    "srcSat": 0.138,
+    "outY": 0.209,
+    "outSat": 0.128,
+    "metalMean": 0.346,
+    "metalFactor": 0.434
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -575,6 +804,9 @@
      0.0
     ],
     "hotV": 0.75,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -585,8 +817,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 432,
-   "seconds": 7.8
+   "kb": 472,
+   "seconds": 11.6
   },
   "distColumn": {
    "file": "distColumn.glb",
@@ -627,6 +859,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 622345,
+   "albedo": {
+    "gain": 1.621,
+    "wb": [
+     0.976,
+     1.001,
+     1.064
+    ],
+    "chroma": 0.858,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/distColumn.jpg",
+    "texY": 0.243,
+    "texSat": 0.052,
+    "srcY": 0.419,
+    "srcSat": 0.031,
+    "outY": 0.403,
+    "outSat": 0.034,
+    "metalMean": 0.072,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -634,6 +885,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -648,8 +902,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 770,
-   "seconds": 7.4
+   "kb": 777,
+   "seconds": 12.0
   },
   "loadingHall": {
    "file": "loadingHall.glb",
@@ -690,6 +944,25 @@
    ],
    "hot": 0.75,
    "hotTexels": 18217,
+   "albedo": {
+    "gain": 1.472,
+    "wb": [
+     0.971,
+     1.004,
+     1.06
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/loadingHall.jpg",
+    "texY": 0.137,
+    "texSat": 0.076,
+    "srcY": 0.187,
+    "srcSat": 0.071,
+    "outY": 0.189,
+    "outSat": 0.038,
+    "metalMean": 0.008,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -697,6 +970,9 @@
      0.0
     ],
     "hotV": 0.75,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -707,8 +983,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 439,
-   "seconds": 11.7
+   "kb": 483,
+   "seconds": 11.9
   },
   "adminWing": {
    "file": "adminWing.glb",
@@ -749,6 +1025,25 @@
    ],
    "hot": 0.75,
    "hotTexels": 39061,
+   "albedo": {
+    "gain": 3.018,
+    "wb": [
+     0.961,
+     1.006,
+     1.071
+    ],
+    "chroma": 0.925,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/adminWing.jpg",
+    "texY": 0.171,
+    "texSat": 0.122,
+    "srcY": 0.355,
+    "srcSat": 0.069,
+    "outY": 0.352,
+    "outSat": 0.063,
+    "metalMean": 0.033,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -756,6 +1051,9 @@
      0.0
     ],
     "hotV": 0.75,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -766,8 +1064,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 444,
-   "seconds": 12.3
+   "kb": 513,
+   "seconds": 11.6
   },
   "vesselSkid": {
    "file": "vesselSkid.glb",
@@ -808,6 +1106,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 102,
+   "albedo": {
+    "gain": 1.797,
+    "wb": [
+     1.013,
+     0.993,
+     1.03
+    ],
+    "chroma": 0.97,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/vesselSkid.jpg",
+    "texY": 0.07,
+    "texSat": 0.111,
+    "srcY": 0.118,
+    "srcSat": 0.094,
+    "outY": 0.117,
+    "outSat": 0.098,
+    "metalMean": 0.098,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -815,6 +1132,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -825,8 +1145,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 403,
-   "seconds": 12.5
+   "kb": 444,
+   "seconds": 11.1
   },
   "officeTower": {
    "file": "officeTower.glb",
@@ -867,6 +1187,25 @@
    ],
    "hot": 0.75,
    "hotTexels": 5275,
+   "albedo": {
+    "gain": 1.472,
+    "wb": [
+     0.974,
+     1.001,
+     1.08
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/officeTower.jpg",
+    "texY": 0.181,
+    "texSat": 0.117,
+    "srcY": 0.257,
+    "srcSat": 0.095,
+    "outY": 0.257,
+    "outSat": 0.078,
+    "metalMean": 0.006,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -874,6 +1213,9 @@
      0.0
     ],
     "hotV": 0.75,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": 50.0,
     "length": null,
     "width": null,
@@ -884,8 +1226,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 950,
-   "seconds": 17.6
+   "kb": 1014,
+   "seconds": 24.4
   },
   "hubDrum": {
    "file": "hubDrum.glb",
@@ -926,6 +1268,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 0,
+   "albedo": {
+    "gain": 1.195,
+    "wb": [
+     1.068,
+     0.988,
+     0.918
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/hubDrum.jpg",
+    "texY": 0.117,
+    "texSat": 0.066,
+    "srcY": 0.129,
+    "srcSat": 0.094,
+    "outY": 0.129,
+    "outSat": 0.051,
+    "metalMean": 0.049,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -933,6 +1294,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": 26.0,
@@ -943,8 +1307,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 766,
-   "seconds": 12.7
+   "kb": 834,
+   "seconds": 23.4
   },
   "htankSkid": {
    "file": "htankSkid.glb",
@@ -985,6 +1349,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 29159,
+   "albedo": {
+    "gain": 1.291,
+    "wb": [
+     0.994,
+     0.999,
+     1.03
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/htankSkid.jpg",
+    "texY": 0.243,
+    "texSat": 0.046,
+    "srcY": 0.332,
+    "srcSat": 0.037,
+    "outY": 0.323,
+    "outSat": 0.034,
+    "metalMean": 0.47,
+    "metalFactor": 0.319
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -992,6 +1375,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -1002,8 +1388,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 562,
-   "seconds": 9.2
+   "kb": 583,
+   "seconds": 11.5
   },
   "bandedLowTank": {
    "file": "bandedLowTank.glb",
@@ -1044,6 +1430,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 291,
+   "albedo": {
+    "gain": 1.466,
+    "wb": [
+     1.024,
+     0.994,
+     0.983
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/bandedLowTank.jpg",
+    "texY": 0.186,
+    "texSat": 0.046,
+    "srcY": 0.269,
+    "srcSat": 0.081,
+    "outY": 0.27,
+    "outSat": 0.047,
+    "metalMean": 0.03,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -1051,6 +1456,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": 28.0,
@@ -1061,8 +1469,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 943,
-   "seconds": 15.2
+   "kb": 1013,
+   "seconds": 24.7
   },
   "processVessel": {
    "file": "processVessel.glb",
@@ -1103,6 +1511,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 14185,
+   "albedo": {
+    "gain": 1.281,
+    "wb": [
+     1.017,
+     0.996,
+     0.987
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/processVessel.jpg",
+    "texY": 0.2,
+    "texSat": 0.053,
+    "srcY": 0.26,
+    "srcSat": 0.063,
+    "outY": 0.258,
+    "outSat": 0.051,
+    "metalMean": 0.025,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -1110,6 +1537,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": 32.0,
     "length": null,
     "width": null,
@@ -1120,8 +1550,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 917,
-   "seconds": 15.7
+   "kb": 936,
+   "seconds": 22.1
   },
   "podiumSegment": {
    "file": "podiumSegment.glb",
@@ -1162,6 +1592,25 @@
    ],
    "hot": 0.75,
    "hotTexels": 13280,
+   "albedo": {
+    "gain": 2.164,
+    "wb": [
+     0.946,
+     1.009,
+     1.106
+    ],
+    "chroma": 0.45,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/podiumSegment.jpg",
+    "texY": 0.209,
+    "texSat": 0.148,
+    "srcY": 0.429,
+    "srcSat": 0.04,
+    "outY": 0.425,
+    "outSat": 0.038,
+    "metalMean": 0.007,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -1169,6 +1618,9 @@
      0.0
     ],
     "hotV": 0.75,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -1179,55 +1631,77 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 404,
-   "seconds": 8.9
+   "kb": 423,
+   "seconds": 11.3
   },
   "curvedTerrace": {
    "file": "curvedTerrace.glb",
    "part": "curvedTerrace",
-   "about": "curved 9-storey apartment block, ~48 m arc, 30 m: off-white panels, teal accent panels, continuous curved balconies with dark rails and lit windows, rounded end tower, roof garden and plant rooms",
+   "about": "curved 9-storey apartment block, ~52 m S-plan arc, 17 m deep, 32 m: light balcony slab edges and balustrades, many warm-lit windows, teal accent panels, rounded end tower, roof garden (v3 image: v2's balcony faces were dark with few lit windows)",
    "bbox": {
     "min": [
-     -8.689,
+     -10.013,
      0.0,
-     -26.248
+     -27.545
     ],
     "max": [
-     8.689,
+     10.013,
      32.0,
-     26.248
+     27.545
     ],
     "size": [
-     17.378,
+     20.026,
      32.0,
-     52.496
+     55.09
     ]
    },
-   "tris": 11996,
-   "trisRaw": 23061,
+   "tris": 11989,
+   "trisRaw": 23921,
    "loosePiecesDropped": 0,
    "tex": 2048,
    "mount": {
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "source": "images/buildings/components/curvedTerrace.jpg",
+   "source": "style-library/styles/cqs-fleet/images/buildings/components/curvedTerrace2.jpg",
    "fal": [
-    "01a11117-660f-70d1-b0b8-7936ca05a3eb",
-    "01a1111a-7443-7123-b260-2bfd70a68407"
+    "01a11221-9240-7340-a4fb-8c80cd077621",
+    "01a11222-44ae-7032-a204-5115716563b5"
    ],
    "usedBy": [
     "residence"
    ],
-   "hot": 0.75,
-   "hotTexels": 30220,
+   "hot": 0.6,
+   "hotTexels": 73392,
+   "albedo": {
+    "gain": 1.203,
+    "wb": [
+     1.059,
+     0.985,
+     0.967
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/curvedTerrace2.jpg",
+    "texY": 0.21,
+    "texSat": 0.052,
+    "srcY": 0.241,
+    "srcSat": 0.122,
+    "outY": 0.243,
+    "outSat": 0.079,
+    "metalMean": 0.013,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
      0.0,
      0.0
     ],
-    "hotV": 0.75,
+    "hotV": 0.6,
+    "hotSat": 0.4,
+    "glass": false,
+    "norm": true,
     "height": 32.0,
     "length": null,
     "width": null,
@@ -1238,8 +1712,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 1221,
-   "seconds": 14.6
+   "kb": 1306,
+   "seconds": 26.4
   },
   "atriumHall": {
    "file": "atriumHall.glb",
@@ -1280,6 +1754,25 @@
    ],
    "hot": 0.75,
    "hotTexels": 0,
+   "albedo": {
+    "gain": 1.912,
+    "wb": [
+     1.034,
+     0.99,
+     1.003
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/atriumHall.jpg",
+    "texY": 0.138,
+    "texSat": 0.059,
+    "srcY": 0.228,
+    "srcSat": 0.081,
+    "outY": 0.235,
+    "outSat": 0.053,
+    "metalMean": 0.016,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -1287,6 +1780,9 @@
      0.0
     ],
     "hotV": 0.75,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": 34.0,
@@ -1297,8 +1793,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 882,
-   "seconds": 13.7
+   "kb": 993,
+   "seconds": 23.6
   },
   "obsDome": {
    "file": "obsDome.glb",
@@ -1339,6 +1835,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 35,
+   "albedo": {
+    "gain": 1.299,
+    "wb": [
+     0.986,
+     1.001,
+     1.042
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/obsDome.jpg",
+    "texY": 0.216,
+    "texSat": 0.072,
+    "srcY": 0.281,
+    "srcSat": 0.08,
+    "outY": 0.279,
+    "outSat": 0.051,
+    "metalMean": 0.298,
+    "metalFactor": 0.504
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -1346,6 +1861,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": 10.0,
@@ -1356,8 +1874,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 339,
-   "seconds": 8.4
+   "kb": 357,
+   "seconds": 12.8
   },
   "portalTower": {
    "file": "portalTower.glb",
@@ -1398,6 +1916,25 @@
    ],
    "hot": 0.7,
    "hotTexels": 385196,
+   "albedo": {
+    "gain": 1.288,
+    "wb": [
+     0.955,
+     1.008,
+     1.075
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/portalTower.jpg",
+    "texY": 0.283,
+    "texSat": 0.143,
+    "srcY": 0.348,
+    "srcSat": 0.111,
+    "outY": 0.352,
+    "outSat": 0.093,
+    "metalMean": 0.004,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -1405,6 +1942,9 @@
      0.0
     ],
     "hotV": 0.7,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -1419,8 +1959,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 891,
-   "seconds": 13.2
+   "kb": 993,
+   "seconds": 23.3
   },
   "bottleSkid": {
    "file": "bottleSkid.glb",
@@ -1461,6 +2001,25 @@
    ],
    "hot": 0.0,
    "hotTexels": 0,
+   "albedo": {
+    "gain": 2.306,
+    "wb": [
+     0.986,
+     1.002,
+     1.023
+    ],
+    "chroma": 0.639,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/bottleSkid.jpg",
+    "texY": 0.143,
+    "texSat": 0.115,
+    "srcY": 0.325,
+    "srcSat": 0.057,
+    "outY": 0.321,
+    "outSat": 0.059,
+    "metalMean": 0.592,
+    "metalFactor": 0.253
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -1468,6 +2027,9 @@
      0.0
     ],
     "hotV": 0.0,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -1478,8 +2040,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 409,
-   "seconds": 4.0
+   "kb": 424,
+   "seconds": 7.0
   },
   "monumentPylon": {
    "file": "monumentPylon.glb",
@@ -1520,6 +2082,25 @@
    ],
    "hot": 0.6,
    "hotTexels": 1484636,
+   "albedo": {
+    "gain": 2.259,
+    "wb": [
+     0.994,
+     1.002,
+     0.994
+    ],
+    "chroma": 0.604,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/monumentPylon.jpg",
+    "texY": 0.097,
+    "texSat": 0.248,
+    "srcY": 0.194,
+    "srcSat": 0.172,
+    "outY": 0.194,
+    "outSat": 0.145,
+    "metalMean": 0.08,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -1527,6 +2108,9 @@
      0.0
     ],
     "hotV": 0.6,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": 10.0,
     "length": null,
     "width": null,
@@ -1537,8 +2121,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 228,
-   "seconds": 8.4
+   "kb": 269,
+   "seconds": 11.9
   },
   "roofMonitor": {
    "file": "roofMonitor.glb",
@@ -1579,6 +2163,25 @@
    ],
    "hot": 0.0,
    "hotTexels": 0,
+   "albedo": {
+    "gain": 1.02,
+    "wb": [
+     1.009,
+     0.995,
+     1.027
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/roofMonitor.jpg",
+    "texY": 0.345,
+    "texSat": 0.055,
+    "srcY": 0.317,
+    "srcSat": 0.076,
+    "outY": 0.306,
+    "outSat": 0.053,
+    "metalMean": 0.007,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -1586,6 +2189,9 @@
      0.0
     ],
     "hotV": 0.0,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -1600,8 +2206,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 357,
-   "seconds": 3.0
+   "kb": 407,
+   "seconds": 7.0
   },
   "crystalReactor": {
    "file": "crystalReactor.glb",
@@ -1642,6 +2248,25 @@
    ],
    "hot": 0.0,
    "hotTexels": 0,
+   "albedo": {
+    "gain": 2.271,
+    "wb": [
+     1.006,
+     0.996,
+     1.026
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/crystalReactor.jpg",
+    "texY": 0.19,
+    "texSat": 0.0,
+    "srcY": 0.35,
+    "srcSat": 0.031,
+    "outY": 0.342,
+    "outSat": 0.014,
+    "metalMean": 0.382,
+    "metalFactor": 0.392
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -1649,6 +2274,9 @@
      0.0
     ],
     "hotV": 0.0,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": 12.0,
     "length": null,
     "width": null,
@@ -1659,8 +2287,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 598,
-   "seconds": 3.5
+   "kb": 627,
+   "seconds": 7.4
   },
   "portalColumn": {
    "file": "portalColumn.glb",
@@ -1701,6 +2329,25 @@
    ],
    "hot": 0.0,
    "hotTexels": 0,
+   "albedo": {
+    "gain": 1.832,
+    "wb": [
+     1.03,
+     0.993,
+     0.973
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/portalColumn.jpg",
+    "texY": 0.105,
+    "texSat": 0.06,
+    "srcY": 0.184,
+    "srcSat": 0.081,
+    "outY": 0.187,
+    "outSat": 0.078,
+    "metalMean": 0.267,
+    "metalFactor": 0.563
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -1708,6 +2355,9 @@
      0.0
     ],
     "hotV": 0.0,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": 22.0,
     "length": null,
     "width": null,
@@ -1718,8 +2368,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 425,
-   "seconds": 3.3
+   "kb": 460,
+   "seconds": 7.6
   },
   "rackBay": {
    "file": "rackBay.glb",
@@ -1760,6 +2410,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 4413,
+   "albedo": {
+    "gain": 1.938,
+    "wb": [
+     0.98,
+     1.004,
+     1.022
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/rackBay.jpg",
+    "texY": 0.18,
+    "texSat": 0.048,
+    "srcY": 0.319,
+    "srcSat": 0.053,
+    "outY": 0.318,
+    "outSat": 0.033,
+    "metalMean": 0.03,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -1767,6 +2436,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -1781,8 +2453,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 976,
-   "seconds": 14.6
+   "kb": 1063,
+   "seconds": 26.9
   },
   "entrancePorch": {
    "file": "entrancePorch.glb",
@@ -1823,6 +2495,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 182553,
+   "albedo": {
+    "gain": 1.193,
+    "wb": [
+     0.997,
+     0.999,
+     1.024
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/entrancePorch.jpg",
+    "texY": 0.244,
+    "texSat": 0.073,
+    "srcY": 0.28,
+    "srcSat": 0.085,
+    "outY": 0.282,
+    "outSat": 0.062,
+    "metalMean": 0.009,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -1830,6 +2521,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": 8.0,
@@ -1840,8 +2534,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 424,
-   "seconds": 8.5
+   "kb": 440,
+   "seconds": 11.5
   },
   "armouredHangar": {
    "file": "armouredHangar.glb",
@@ -1882,6 +2576,25 @@
    ],
    "hot": 0.93,
    "hotTexels": 358,
+   "albedo": {
+    "gain": 2.03,
+    "wb": [
+     0.954,
+     1.009,
+     1.069
+    ],
+    "chroma": 0.45,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/armouredHangar.jpg",
+    "texY": 0.124,
+    "texSat": 0.194,
+    "srcY": 0.22,
+    "srcSat": 0.083,
+    "outY": 0.231,
+    "outSat": 0.066,
+    "metalMean": 0.025,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -1889,6 +2602,9 @@
      0.0
     ],
     "hotV": 0.93,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -1903,8 +2619,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 884,
-   "seconds": 13.4
+   "kb": 1060,
+   "seconds": 25.9
   },
   "overheadCrane": {
    "file": "overheadCrane.glb",
@@ -1945,6 +2661,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 1373,
+   "albedo": {
+    "gain": 1.913,
+    "wb": [
+     0.897,
+     1.02,
+     1.15
+    ],
+    "chroma": 0.854,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/overheadCrane.jpg",
+    "texY": 0.1,
+    "texSat": 0.542,
+    "srcY": 0.193,
+    "srcSat": 0.124,
+    "outY": 0.189,
+    "outSat": 0.42,
+    "metalMean": 0.034,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -1952,6 +2687,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -1962,8 +2700,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 586,
-   "seconds": 12.0
+   "kb": 607,
+   "seconds": 11.6
   },
   "beamStack": {
    "file": "beamStack.glb",
@@ -2004,6 +2742,25 @@
    ],
    "hot": 0.0,
    "hotTexels": 0,
+   "albedo": {
+    "gain": 0.85,
+    "wb": [
+     1.018,
+     0.991,
+     1.035
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/beamStack.jpg",
+    "texY": 0.099,
+    "texSat": 0.068,
+    "srcY": 0.082,
+    "srcSat": 0.076,
+    "outY": 0.081,
+    "outSat": 0.069,
+    "metalMean": 0.323,
+    "metalFactor": 0.465
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2011,6 +2768,9 @@
      0.0
     ],
     "hotV": 0.0,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -2026,7 +2786,7 @@
     "dissolve": 1.0
    },
    "kb": 334,
-   "seconds": 3.3
+   "seconds": 7.0
   },
   "vaultBay": {
    "file": "vaultBay.glb",
@@ -2067,6 +2827,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 3748,
+   "albedo": {
+    "gain": 1.799,
+    "wb": [
+     0.991,
+     1.0,
+     1.022
+    ],
+    "chroma": 0.927,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/vaultBay.jpg",
+    "texY": 0.183,
+    "texSat": 0.03,
+    "srcY": 0.316,
+    "srcSat": 0.037,
+    "outY": 0.315,
+    "outSat": 0.036,
+    "metalMean": 0.007,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2074,6 +2853,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -2088,8 +2870,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 518,
-   "seconds": 8.6
+   "kb": 557,
+   "seconds": 11.9
   },
   "guardTower": {
    "file": "guardTower.glb",
@@ -2130,6 +2912,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 2577,
+   "albedo": {
+    "gain": 2.044,
+    "wb": [
+     0.988,
+     1.001,
+     1.034
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/guardTower.jpg",
+    "texY": 0.089,
+    "texSat": 0.068,
+    "srcY": 0.17,
+    "srcSat": 0.05,
+    "outY": 0.171,
+    "outSat": 0.047,
+    "metalMean": 0.029,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2137,6 +2938,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": 17.0,
     "length": null,
     "width": null,
@@ -2147,8 +2951,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 313,
-   "seconds": 8.5
+   "kb": 346,
+   "seconds": 11.1
   },
   "commandBunker": {
    "file": "commandBunker.glb",
@@ -2189,6 +2993,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 61656,
+   "albedo": {
+    "gain": 1.765,
+    "wb": [
+     0.985,
+     1.003,
+     1.022
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/commandBunker.jpg",
+    "texY": 0.111,
+    "texSat": 0.105,
+    "srcY": 0.184,
+    "srcSat": 0.114,
+    "outY": 0.186,
+    "outSat": 0.087,
+    "metalMean": 0.008,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2196,6 +3019,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -2206,8 +3032,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 954,
-   "seconds": 12.6
+   "kb": 1184,
+   "seconds": 22.7
   },
   "gateHouse": {
    "file": "gateHouse.glb",
@@ -2248,6 +3074,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 12764,
+   "albedo": {
+    "gain": 3.2,
+    "wb": [
+     0.937,
+     1.01,
+     1.121
+    ],
+    "chroma": 0.705,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/gateHouse.jpg",
+    "texY": 0.078,
+    "texSat": 0.151,
+    "srcY": 0.306,
+    "srcSat": 0.056,
+    "outY": 0.259,
+    "outSat": 0.044,
+    "metalMean": 0.015,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2255,6 +3100,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -2265,8 +3113,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 547,
-   "seconds": 9.1
+   "kb": 624,
+   "seconds": 11.0
   },
   "plantBlock": {
    "file": "plantBlock.glb",
@@ -2307,6 +3155,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 161,
+   "albedo": {
+    "gain": 1.245,
+    "wb": [
+     1.075,
+     0.983,
+     0.945
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/plantBlock.jpg",
+    "texY": 0.162,
+    "texSat": 0.022,
+    "srcY": 0.203,
+    "srcSat": 0.086,
+    "outY": 0.201,
+    "outSat": 0.073,
+    "metalMean": 0.006,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2314,6 +3181,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -2324,8 +3194,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 935,
-   "seconds": 16.0
+   "kb": 968,
+   "seconds": 23.5
   },
   "floatTank": {
    "file": "floatTank.glb",
@@ -2366,6 +3236,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 91842,
+   "albedo": {
+    "gain": 1.382,
+    "wb": [
+     1.028,
+     0.994,
+     0.965
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/floatTank.jpg",
+    "texY": 0.241,
+    "texSat": 0.062,
+    "srcY": 0.33,
+    "srcSat": 0.112,
+    "outY": 0.33,
+    "outSat": 0.086,
+    "metalMean": 0.01,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2373,6 +3262,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -2383,8 +3275,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 758,
-   "seconds": 14.0
+   "kb": 882,
+   "seconds": 22.1
   },
   "wallSegment": {
    "file": "wallSegment.glb",
@@ -2425,6 +3317,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 7550,
+   "albedo": {
+    "gain": 1.293,
+    "wb": [
+     0.995,
+     0.999,
+     1.022
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/wallSegment.jpg",
+    "texY": 0.137,
+    "texSat": 0.052,
+    "srcY": 0.175,
+    "srcSat": 0.045,
+    "outY": 0.174,
+    "outSat": 0.042,
+    "metalMean": 0.022,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2432,6 +3343,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -2442,8 +3356,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 285,
-   "seconds": 9.1
+   "kb": 314,
+   "seconds": 10.8
   },
   "dishMount": {
    "file": "dishMount.glb",
@@ -2484,6 +3398,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 0,
+   "albedo": {
+    "gain": 2.821,
+    "wb": [
+     0.957,
+     1.01,
+     1.05
+    ],
+    "chroma": 0.695,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/dishMount.jpg",
+    "texY": 0.1,
+    "texSat": 0.139,
+    "srcY": 0.273,
+    "srcSat": 0.062,
+    "outY": 0.271,
+    "outSat": 0.065,
+    "metalMean": 0.011,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2491,6 +3424,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -2501,8 +3437,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 1318,
-   "seconds": 14.1
+   "kb": 1440,
+   "seconds": 24.6
   },
   "ringModule": {
    "file": "ringModule.glb",
@@ -2543,6 +3479,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 6124,
+   "albedo": {
+    "gain": 1.497,
+    "wb": [
+     1.037,
+     0.992,
+     0.96
+    ],
+    "chroma": 0.946,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/ringModule.jpg",
+    "texY": 0.127,
+    "texSat": 0.095,
+    "srcY": 0.186,
+    "srcSat": 0.125,
+    "outY": 0.186,
+    "outSat": 0.12,
+    "metalMean": 0.129,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2550,6 +3505,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -2560,8 +3518,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 1010,
-   "seconds": 14.6
+   "kb": 1074,
+   "seconds": 24.4
   },
   "ringSegment": {
    "file": "ringSegment.glb",
@@ -2602,6 +3560,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 3785,
+   "albedo": {
+    "gain": 1.467,
+    "wb": [
+     1.007,
+     0.998,
+     1.001
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/ringSegment.jpg",
+    "texY": 0.16,
+    "texSat": 0.042,
+    "srcY": 0.225,
+    "srcSat": 0.086,
+    "outY": 0.225,
+    "outSat": 0.043,
+    "metalMean": 0.427,
+    "metalFactor": 0.351
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2609,6 +3586,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -2623,8 +3603,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 813,
-   "seconds": 13.5
+   "kb": 857,
+   "seconds": 24.7
   },
   "solarWing": {
    "file": "solarWing.glb",
@@ -2665,6 +3645,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 6685,
+   "albedo": {
+    "gain": 1.69,
+    "wb": [
+     0.992,
+     1.0,
+     1.03
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/solarWing.jpg",
+    "texY": 0.085,
+    "texSat": 0.139,
+    "srcY": 0.146,
+    "srcSat": 0.146,
+    "outY": 0.14,
+    "outSat": 0.122,
+    "metalMean": 0.12,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2672,6 +3671,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -2682,8 +3684,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 432,
-   "seconds": 10.0
+   "kb": 475,
+   "seconds": 11.1
   },
   "dockingHub": {
    "file": "dockingHub.glb",
@@ -2724,6 +3726,25 @@
    ],
    "hot": 0.75,
    "hotTexels": 17315,
+   "albedo": {
+    "gain": 2.329,
+    "wb": [
+     0.967,
+     1.005,
+     1.057
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/dockingHub.jpg",
+    "texY": 0.162,
+    "texSat": 0.064,
+    "srcY": 0.337,
+    "srcSat": 0.056,
+    "outY": 0.336,
+    "outSat": 0.036,
+    "metalMean": 0.054,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2731,6 +3752,9 @@
      0.0
     ],
     "hotV": 0.75,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -2741,8 +3765,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 595,
-   "seconds": 8.1
+   "kb": 621,
+   "seconds": 11.7
   },
   "facetedWing": {
    "file": "facetedWing.glb",
@@ -2783,6 +3807,25 @@
    ],
    "hot": 0.75,
    "hotTexels": 6142,
+   "albedo": {
+    "gain": 1.557,
+    "wb": [
+     1.006,
+     0.997,
+     1.011
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/facetedWing.jpg",
+    "texY": 0.216,
+    "texSat": 0.06,
+    "srcY": 0.304,
+    "srcSat": 0.076,
+    "outY": 0.309,
+    "outSat": 0.044,
+    "metalMean": 0.013,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2790,6 +3833,9 @@
      0.0
     ],
     "hotV": 0.75,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -2800,8 +3846,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 758,
-   "seconds": 14.2
+   "kb": 794,
+   "seconds": 24.1
   },
   "steppedWing": {
    "file": "steppedWing.glb",
@@ -2842,6 +3888,25 @@
    ],
    "hot": 0.7,
    "hotTexels": 9597,
+   "albedo": {
+    "gain": 1.927,
+    "wb": [
+     0.976,
+     1.005,
+     1.036
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/steppedWing.jpg",
+    "texY": 0.169,
+    "texSat": 0.103,
+    "srcY": 0.299,
+    "srcSat": 0.119,
+    "outY": 0.299,
+    "outSat": 0.072,
+    "metalMean": 0.006,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2849,6 +3914,9 @@
      0.0
     ],
     "hotV": 0.7,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -2859,8 +3927,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 680,
-   "seconds": 14.5
+   "kb": 906,
+   "seconds": 23.1
   },
   "marketArcade": {
    "file": "marketArcade.glb",
@@ -2901,6 +3969,25 @@
    ],
    "hot": 0.75,
    "hotTexels": 133839,
+   "albedo": {
+    "gain": 1.517,
+    "wb": [
+     1.01,
+     0.993,
+     1.033
+    ],
+    "chroma": 0.982,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/marketArcade.jpg",
+    "texY": 0.141,
+    "texSat": 0.102,
+    "srcY": 0.196,
+    "srcSat": 0.119,
+    "outY": 0.2,
+    "outSat": 0.1,
+    "metalMean": 0.059,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2908,6 +3995,9 @@
      0.0
     ],
     "hotV": 0.75,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": null,
     "length": null,
     "width": null,
@@ -2918,8 +4008,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 953,
-   "seconds": 15.5
+   "kb": 1070,
+   "seconds": 25.1
   },
   "waterTower": {
    "file": "waterTower.glb",
@@ -2960,6 +4050,25 @@
    ],
    "hot": 0.8,
    "hotTexels": 0,
+   "albedo": {
+    "gain": 1.227,
+    "wb": [
+     0.985,
+     0.999,
+     1.067
+    ],
+    "chroma": 1.0,
+    "source": "style-library/styles/cqs-fleet/images/buildings/components/waterTower.jpg",
+    "texY": 0.216,
+    "texSat": 0.086,
+    "srcY": 0.269,
+    "srcSat": 0.069,
+    "outY": 0.256,
+    "outSat": 0.053,
+    "metalMean": 0.016,
+    "metalFactor": 1.0
+   },
+   "glassTint": 0.0,
    "params": {
     "rot": [
      0.0,
@@ -2967,6 +4076,9 @@
      0.0
     ],
     "hotV": 0.8,
+    "hotSat": 0.45,
+    "glass": false,
+    "norm": true,
     "height": 24.0,
     "length": null,
     "width": null,
@@ -2977,8 +4089,8 @@
     "minPiece": 0.01,
     "dissolve": 1.0
    },
-   "kb": 418,
-   "seconds": 8.3
+   "kb": 439,
+   "seconds": 10.1
   }
  }
 }

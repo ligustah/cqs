@@ -55,11 +55,15 @@ def portico(B, c, rot, w=16.0, d=9.0, h=6.5):
         B.R.pin(to(sx * (w / 2 - 0.3), h + 0.3, d / 2 + 1.2))
 
 
+NOTCH = 14.0
+
+
 def model(B):
     W, D = SPEC['footprint']
-    K.plinth(B, W, D, h=1.5, chamfer=6.0, slab=8.0, lamp_pitch=16.0, centre=(0.0, 0.0),
-             markings=[([(-W / 2 + 1.5, D / 2 - 1.5), (W / 2 - 1.5, D / 2 - 1.5)], 0.16, 'frame2'),
-                       ([(W / 2 - 1.5, D / 2 - 1.5), (W / 2 - 1.5, -D / 2 + 1.5)], 0.16, 'frame2'),
+    # the concept's notched cross: a 14 m square cut from each corner, the arms run out under the wings
+    K.plinth(B, W, D, h=1.5, chamfer=3.0, slab=8.0, lamp_pitch=16.0, centre=(0.0, 0.0), notch=(NOTCH, NOTCH),
+             markings=[([(-W / 2 + NOTCH + 1.5, D / 2 - 1.5), (W / 2 - NOTCH - 1.5, D / 2 - 1.5)], 0.16, 'frame2'),
+                       ([(W / 2 - 1.5, W / 2 - NOTCH - 1.5), (W / 2 - 1.5, -D / 2 + NOTCH + 1.5)], 0.16, 'frame2'),
                        ([(10.0, 49.0), (10.0, 33.0)], 0.14, 'white'), ([(49.0, 10.0), (33.0, 10.0)], 0.14, 'white')],
              grates=[(26.0, 45.0, 2.4, 0.8), (45.0, 26.0, 0.8, 2.4), (-20.0, 46.0, 2.4, 0.8), (46.0, -24.0, 0.8, 2.4)],
              steps=[(-30.0, D / 2, '+z'), (W / 2, -30.0, '+x')])
@@ -93,7 +97,6 @@ def model(B):
     K.component(B, 'vesselSkid', (16.0, 0.0, 43.0), heading=90.0)
     K.component(B, 'vesselSkid', (43.0, 0.0, 16.0), heading=0.0)
     K.component(B, 'vesselSkid', (-22.0, 0.0, 40.0), heading=90.0, scale=0.9)
-    K.component(B, 'vesselSkid', (43.5, 0.0, 43.5), heading=45.0, scale=0.9)
     K.pipe_rack(B, (16.0, 0, 48.5), (34.0, 0, 48.5), w=2.4, levels=(3.2,), pitch=6.0,
                 pipes=[(0, -0.5, 0.3, 'pipe'), (0, 0.3, 0.25, 'pipeDark')])
     K.pipe_rack(B, (48.5, 0, 16.0), (48.5, 0, 34.0), w=2.4, levels=(3.2,), pitch=6.0,
@@ -119,7 +122,7 @@ def model(B):
     K.cable_tray(B, (-16.0, 6.0, -12.0), (-23.0, 6.0, -25.0))
     # --- dressing: bollards round the skids and the portico, lamp posts, cabinets, workers, a vehicle at the gate
     K.bollards(B, [(x, 49.0) for x in (6.0, 26.0, -30.0, -14.0)] + [(49.0, z) for z in (6.0, 26.0, -14.0)])
-    for (x, z, rot) in ((-50.0, 50.0, 135), (50.0, 50.0, -135), (50.0, -50.0, -45), (-50.0, -50.0, 45)):
+    for (x, z, rot) in ((-36.0, 50.0, 135), (50.0, 36.0, -135), (50.0, -36.0, -45), (-36.0, -50.0, 45)):
         K.lamp_post(B, (x, 0.0, z), h=7.0, arm=1.0, rot=rot)
     K.truck(B, (-36.0, 0.0, 22.0), heading=0.0)
     for (x, z, hd) in ((33.0, 38.0, 225), (36.5, 34.5, 45), (20.0, 26.0, 0), (24.0, 18.5, 120), (14.0, 47.0, 180), (46.0, 22.0, 270)):

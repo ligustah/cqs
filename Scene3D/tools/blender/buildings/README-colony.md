@@ -92,8 +92,11 @@ never mesh the sheet. Save the usable sheet as `images/buildings/<id>-turnaround
    - `--hot 0.8`: bright saturated orange texels (molten runner, tuyere band, the image's small amber lamps) become an
      emissive map, so the concept's glow is real at runtime; amber paint (darker) stays unlit.
    - Texture: 2048 px for hero components (sphere, furnace, pour bay), 1024 for the rest; the phone copy caps all at 512.
-   - The runtime lifts every `colony_*` material's albedo by 1.25 (`colony.js`): Tripo's paint reads a step darker
-     than the concept's off-white once the detail layer and worn finish are on.
+   - Paint is normalised at ingest, never lifted at runtime (see "Paint calibration" below): `component.py` matches
+     the part's albedo to its own source image (`--source`, or the recorded one) and caps its metalness; `--no-norm`
+     skips it (only for a part with no source image). `--hot-sat 0.35` lowers the hot texels' saturation floor (the
+     residence's dim amber windows: `--hot 0.5 --hot-sat 0.35`); `--glass` turns warm-baked glazing cool with a dim
+     warm emissive interior (not needed so far: check the texture's hue first).
 5. **Check** it: `node tools/render-glb.mjs assets/parts-colony/<name>.glb <out> --angles "35:20,0:89"` (three-quarter
    and top: confirm which face is front), and `--bg dark` for `--hot` parts. Reject glass-as-hole, mushy faces, a
    mirrored marking, missing open bays. Then add a row to the catalogue below. All nine pilot components passed first
@@ -171,26 +174,61 @@ node tools/scale-check.mjs                                           # must prin
 Building phone copies are 512 px with workers and vents dropped (`build-artifact.mjs` `LITE_COLONY`). Add the row to
 the README "Phone budget" table, the catalogue rows, and a line in `style-library/styles/cqs-fleet/assets.md`.
 
-## Phone budget (measured, phone tier, `tools/phone-check.mjs`)
+## Paint calibration (v3, 2026-10-06)
+
+v2 compensated dark, brown components with runtime lifts of different sizes (the factory's 1.25 on every `colony_*`,
+then 1.2-1.6 per module, the radio dish 2.5 with a cool tint). Measured (`component.py` stats in `parts.json` `albedo`,
+and a GrabCut-masked light-paint band, p70-97 of the building's pixels, of render vs concept), two causes:
+
+1. **Tripo's albedo is darker and warmer than its own source image.** Over all 50 components the surface-weighted
+   (triangle area x barycentric texel samples) linear albedo was 0.84-4.2x (median 1.6x) below the component image's
+   foreground, with about twice its saturation on the neutral paint (the brown cast), and its tonal range was flattened
+   (the dish face baked near white, the yoke under it near black). The ingest preserved it exactly (0.099 -> 0.101 on
+   the dish): it is Tripo's de-lighting, not the colour space, the WebP export or the finish.
+2. **The dusk studio's key at 0.5 rendered even the kit's calibrated panel paint (linear 0.60) at 0.55-0.8x the
+   concepts' light-paint luminance.** Key 1.0 alone brought four test buildings to 0.96-1.09x but over-lit the big
+   light roofs and slabs and flattened the shadows; over all 16, key 0.85 with fill 0.4 and env 0.45 gives a median
+   0.95x.
+
+The fix, once in the shared pipeline:
+- `component.py` normalises every part at ingest against its source image (`NORM`): a white balance from the neutral
+  texels (sat < 0.15, +-15 %), a chroma pull on near-neutral paint toward the image's (never more saturated; sat > 0.45
+  amber, cobalt and lamps kept), one linear gain (0.85-3.2x, bisected so the p30-p97 trimmed mean equals the image's,
+  soft knee at 0.72 -> 0.94), a tonal match (the toned texture's p5-p98 luminance quantiles onto the image's, 60 %
+  strength, per texel 0.6-2.2x), and a metal cap (mean metallic <= 0.15 through the map). It runs after `--hot` (which
+  reads the raw paint) and records gain, wb, chroma, before / after / image luminance and saturation in `parts.json`.
+  `--rebuild` re-ingests every part from its raw mesh with the same params.
+- `colony.js`: no runtime lift (`materials` stays for looks that are not paint); `DUSK` key 0.85, fill 0.4, env 0.45.
+  Per-building lighting trims (studio hint `key`, never a paint lift): steel mill 0.6, infrastructure 0.62, residence
+  0.6, steel depot 0.6, military base 0.6, transmitter 0.5 (big light roofs / slabs / ring read over-lit), refinery and
+  radio telescope 1.15, trade center 1.05. `?key= / ?fill= / ?env= / ?rim= / ?kick=` override them for a test shot.
+- Every per-module lift and metalness override was removed (infrastructure, library, military base, radio telescope,
+  residence, silicon depot, trade center, university); the transmitter keeps its ring-segment tint (a look: the
+  concept's ring is mid grey, darker than its image's).
+- Verify every building after a rebuild: `python3 tools/buildings/paint-check.py <concept> shots/buildings/<id>-<v>.png`
+  (light-band luminance ratio about 0.9-1.1, hue within ~10 degrees of the concept's). Fix a building's remaining
+  difference in its geometry and kit materials (lighter trim `frameL`, `stone`), not with a runtime lift.
+
+## Phone budget (measured, phone tier, `tools/phone-check.mjs`; v3 rows after the paint pass)
 
 | view | fetched MB | tris | textures MB | heap + GPU MB | ready s |
 |---|---|---|---|---|---|
-| deuterium_depot (v2: 4 components) | 5.0 | 120k | 27 | 112 | 3.8 |
-| steel_mill (v2: 6 components) | 6.3 | 127k | 43 | 129 | 4.1 |
-| silicon_depot (v2: 5 components) | 3.9 | 71k | 32 | 116 | 5.7 |
-| military_base (v2: 23 components + 1 V-31) | 6.6 | 146k | 49 | 134 | 5.9 |
-| radio_telescope (v2: 2 components) | 3.3 | 58k | 21 | 102 | 6.3 |
-| transmitter (v2: 24 components, orbital) | 7.1 | 137k | 31 | 119 | 5.1 |
-| refinery (v2: 4 components, 7 placed) | 6.1 | 147k | 34 | 120 | 5.6 |
-| processing_plant (v2: 6 components, 9 placed) | 5.9 | 133k | 42 | 127 | 6.0 |
-| oil_tanks (v2: 3 components, 5 placed) | 3.5 | 68k | 24 | 108 | 6.3 |
-| silicon_foundry (v2: 2 components, 7 placed) | 3.4 | 59k | 23 | 106 | 6.3 |
-| steel_depot (v2: 4 components, 30 placed) | 6.8 | 132k | 38 | 125 | 6.2 |
-| trade_center (v2: 4 components, 5 placed) | 4.1 | 61k | 41 | 123 | 3.7 |
-| infrastructure (v2: 4 components, 10 placed) | 4.5 | 83k | 38 | 122 | 3.8 |
-| residence (v2: 2 components, 5 placed) | 3.8 | 65k | 23 | 106 | 3.5 |
-| university (v2: 3 components, 6 placed) | 3.4 | 51k | 27 | 108 | 3.9 |
-| library (v2: 3 components, 9 placed) | 3.2 | 52k | 31 | 113 | 3.6 |
+| deuterium_depot (v3: 4 components) | 5.1 | 120k | 27 | 110 | 4.9 |
+| steel_mill (v3: 6 components) | 6.4 | 127k | 43 | 127 | 4.7 |
+| silicon_depot (v3: 5 components) | 3.9 | 71k | 32 | 115 | 6.9 |
+| military_base (v3: 23 components + 1 V-31) | 6.7 | 146k | 49 | 138 | 6.2 |
+| radio_telescope (v3: 2 components) | 3.3 | 58k | 21 | 102 | 6.0 |
+| transmitter (v3: 24 components, orbital) | 7.1 | 138k | 31 | 119 | 5.9 |
+| refinery (v3: 4 components, 7 placed) | 6.5 | 165k | 34 | 120 | 4.6 |
+| processing_plant (v3: 6 components, 9 placed) | 5.9 | 133k | 42 | 127 | 5.4 |
+| oil_tanks (v3: 3 components, 5 placed) | 3.5 | 68k | 24 | 106 | 4.0 |
+| silicon_foundry (v3: 2 components, 7 placed) | 3.4 | 59k | 23 | 104 | 4.4 |
+| steel_depot (v3: 4 components, 30 placed) | 7.0 | 135k | 38 | 123 | 6.2 |
+| trade_center (v3: 4 components, 5 placed) | 4.2 | 61k | 41 | 122 | 8.1 |
+| infrastructure (v3: 4 components, 10 placed) | 4.5 | 78k | 38 | 120 | 5.4 |
+| residence (v3: 2 components, 5 placed) | 4.0 | 65k | 23 | 107 | 4.5 |
+| university (v3: 3 components, 6 placed) | 3.4 | 51k | 27 | 108 | 5.8 |
+| library (v3: 2 components, 8 placed; parametric stepped wings) | 3.8 | 87k | 26 | 110 | 6.8 |
 | (v1, kit only: depot / mill) | 2.7 / 3.5 | 55k / 82k | 12 / 18 | 94 / 103 | 3.4 / 3.1 |
 | (shipyard, for scale) | 10.9 | 291k | 59 | 169 | 5.9 |
 
@@ -220,13 +258,13 @@ Made (pilots, 2026-10-06). Sizes are the ingested bbox (w x h x d, part frame: +
 | hubDrum | 26 x 26.586 x 27.576 | 8,000 | `images/buildings/components/hubDrum.jpg` | 01a11117-3b85-7011-9fdf-da7093340eb9 (image), 01a11118-95bd-7ae1-b944-31f8dd80326b (mesh) | infrastructure |
 | waterTower | 9.362 x 24 x 10.27 | 5,996 | `images/buildings/components/waterTower.jpg` | 01a11118-93f8-7880-b679-33e3a5ecbdbc (image), 01a1111d-e1ba-7662-a168-885cc9ce8a41 (mesh) | infrastructure |
 | vesselSkid | 4.432 x 6.107 x 13 | 5,997 | `images/buildings/components/vesselSkid.jpg` | 01a11117-3d36-7022-a35b-9e1ae0613d41 (image), 01a11118-967a-71d3-9238-928487c5fe98 (mesh) | infrastructure |
-| curvedTerrace | 17.378 x 32 x 52.496 | 11,996 | `images/buildings/components/curvedTerrace.jpg` | 01a11117-660f-70d1-b0b8-7936ca05a3eb (image), 01a1111a-7443-7123-b260-2bfd70a68407 (mesh) | residence |
+| curvedTerrace | 20.026 x 32 x 55.09 | 11,989 | `images/buildings/components/curvedTerrace2.jpg` (v3; v2: `curvedTerrace.jpg`) | 01a11221-9240-7340-a4fb-8c80cd077621 (image, v3), 01a11222-44ae-7032-a204-5115716563b5 (mesh, v3) | residence |
 | podiumSegment | 14.866 x 12.454 x 40 | 5,997 | `images/buildings/components/podiumSegment.jpg` | 01a11117-66e0-7873-876f-def937b9d399 (image), 01a1111a-753f-7842-923c-58e3b0a19417 (mesh) | residence |
 | facetedWing | 40 x 15.689 x 16.944 | 6,999 | `images/buildings/components/facetedWing.jpg` | 01a11117-c648-7f32-b6af-b0821cba9c79 (image), 01a1111a-ccd8-7571-ad7c-3a652a641508 (mesh) | university |
 | atriumHall | 34 x 17.754 x 34.024 | 9,997 | `images/buildings/components/atriumHall.jpg` | 01a11117-c71c-7e72-9ea1-dae058e2ad48 (image), 01a1111a-7618-79c1-9a7a-911822c58e3b (mesh) | university |
 | obsDome | 10 x 9.195 x 9.908 | 4,406 | `images/buildings/components/obsDome.jpg` | 01a11117-c7fc-7240-bef1-f5557f083dec (image), 01a1111a-f27d-76b3-96df-8f45c4affc75 (mesh) | university |
 | portalTower | 24 x 46 x 28 | 9,994 | `images/buildings/components/portalTower.jpg` | 01a11117-c90d-7301-9057-1eefb4e34372 (image), 01a1111a-f36f-7522-b9b4-439a0670bf5e (mesh) | library |
-| steppedWing | 40 x 31.79 x 39.958 | 6,998 | `images/buildings/components/steppedWing.jpg` | 01a11117-c9ec-7361-8300-2212cdef8d62 (image), 01a1111a-f443-74c1-a70a-504b1c3452f9 (mesh) | library |
+| steppedWing | 40 x 31.79 x 39.958 | 6,998 | `images/buildings/components/steppedWing.jpg` | 01a11117-c9ec-7361-8300-2212cdef8d62 (image), 01a1111a-f443-74c1-a70a-504b1c3452f9 (mesh) | library (v2; v3 builds the wings parametric: crisper terraces) |
 | monumentPylon | 3.934 x 10 x 3.924 | 1,499 | `images/buildings/components/monumentPylon.jpg` | 01a11117-cae4-7941-95c3-d2db4439d2b0 (image), 01a1111a-f557-7911-9a04-2db398907478 (mesh) | library |
 | distColumn | 6.8 x 40 x 5.8 | 11,787 | `images/buildings/components/distColumn.jpg` | 01a11117-5a2f-7b93-8e7c-5315b36c54fb (image), 01a11118-543c-7311-a42a-7a573d6ec09d (mesh) | refinery |
 | htankSkid | 5.512 x 6.679 x 13 | 8,000 | `images/buildings/components/htankSkid.jpg` | 01a11117-5b08-7a33-904d-5291f6538c88 (image), 01a11118-7267-7601-bb84-49400e1aefa2 (mesh) | refinery |
@@ -265,7 +303,7 @@ concept's columns are slimmer than the image's); htankSkid's axis is Z with its 
 cargo door is on its +X long face (heading 0 faces +X); floatTank's stair tower and gauge hut sit about 56 degrees from
 +Z toward +X; roofMonitor came out long along X and was turned (`--rot 0,90,0`) so it runs along Z with its louvres on
 +X, abut or stretch it along Z; crystalReactor's glass reconstructed opaque, so the building lights it with violet glow
-boxes inside its open-mullion bay; overheadCrane spans along Z (scale its span with `scale=[1, k, 1]`: the steel depot
+boxes inside its open-mullion bay; overheadCrane spans along Z (scale its span with `scale=[1, 1, k]`, part axes x, y up, z; v2 wrote [1, k, 1], which made it taller: the steel depot
 uses 1.5 for a 48 m bay); beamStack runs along Z, stack it at 2.62 m; portalColumn's lattice bay is on +X.
 
 Civic / science batch (trade_center, infrastructure, residence, university, library; 2026-10-06), orientation notes
@@ -274,8 +312,10 @@ Civic / science batch (trade_center, infrastructure, residence, university, libr
 podiumSegment (entrances on +X), atriumHall (canopy on +X) and portalTower (slot face on +X): turn them with heading 270
 to face +Z. facetedWing, steppedWing and marketArcade came out long along X with their front on +Z (heading 0).
 Hot texels (`--hot` 0.6-0.8): every one of these, for the lit windows, slots and lamps. `component()` takes a per-axis
-`scale=[x, y, z]` (Blender part axes: length, depth, height; assemble_place.py) as well as a number: the university
-stretches facetedWing to [0.8, 1.3, 1.35].
+`scale=[x, y, z]` in the part frame (x, y = UP, z; assemble_place.py `Matrix.Diagonal` after the +Y basis) as well as a
+number: the university stretches facetedWing to [0.8, 1.3, 1.35] (taller and deeper). v2's notes called the axes
+"length, depth, height": wrong, the second is the height (the silicon foundry's [1, 1, 0.75] shortened its monitors
+instead of lowering them, the steel depot's crane [1, 1.5, 1] grew 1.5x taller instead of spanning wider).
 
 
 Storage / military / science / orbital batch (silicon_depot, military_base, radio_telescope, transmitter; 2026-10-06),
@@ -286,9 +326,9 @@ dish, dockingHub's port, ringSegment's blue edge): heading -90 turns it to +Z. v
 wallSegment and ringSegment run along Z and abut along Z (ringSegment `--size 20,14,104`: the image's section came out
 square); ringModule runs along Z with its thruster quad at +Z; solarWing runs along Z with its boom at -Z and its panels
 rolled ~45 degrees about Z (transmitter.py places it with `B.R.place` and a roll); dishMount's azimuth drum is centred at
-part x = -3.45 (the dish overhangs +X; radio_telescope.py offsets it). The dish and the bays bake a mid grey-tan that reads
-dark and warm in the dusk studio: the modules lift them per material (`materials: { colony_dishMount: { color, colorScale,
-metalness } }`). Hot texels: all at 0.8 except armouredHangar (0.93: at 0.8 its amber-lit interior wall glowed as a flat
+part x = -3.45 (the dish overhangs +X; radio_telescope.py offsets it). The dish and the bays baked a mid grey-tan that read
+dark and warm in the dusk studio (v2 lifted them per material, the dish by 2.5x; v3 normalises every part at ingest,
+"Paint calibration"). Hot texels: all at 0.8 except armouredHangar (0.93: at 0.8 its amber-lit interior wall glowed as a flat
 orange panel) and dockingHub (0.75). Not meshed: an armoured car image (the yard instances the fleet's V-31 instead).
 
 Planned (decomposition of the other concepts; make each once, reuse across the buildings listed). Made parts to reuse

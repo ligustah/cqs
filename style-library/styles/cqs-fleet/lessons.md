@@ -172,15 +172,15 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
 41. **Make the concept's glow real.** Tripo bakes molten metal, furnace glow and the image's tiny amber lamps into the
     base colour, where they render unlit. `component.py --hot 0.8` copies bright, saturated orange texels into an
     emissive map (darker amber paint stays unlit). And Tripo paint reads a step darker than the concept's off-white
-    under the detail layer and worn finish: the colony factory lifts `colony_*` albedo by 1.25 (glbship `colorScale`).
+    under the detail layer and worn finish: v2 lifted `colony_*` albedo by 1.25 at runtime (superseded by 48).
 42. **A Tripo component's front is usually its +X, and its baked paint can read dark in the dusk studio.** All
     thirteen components of the silicon depot, military base, radio telescope and transmitter came out with the image's
     main face on +X (the civic batch saw the same): check the part sheet (`render-glb.mjs --angles "35:20,0:89"`) and
     turn it with heading -90 rather than trusting the pilots' +Z. A depth the image cannot show is guessed (the vault
     bay came out 17.5 m wide for an 11 m prompt; the ring girder's section square): fix it with `--size` at ingest. And a
     light surface Tripo bakes as mid grey-tan (the radio dish, sRGB ~80 mean) renders brown and dark in the dusk studio
-    even after the 1.25 lift: lift that one material per building (`materials: { colony_<part>: { color, colorScale } }`)
-    and keep the rest of the factory look.
+    even after the 1.25 lift: v2 lifted that one material per building (superseded by lesson 48:
+    every part is normalised at ingest against its image).
 43. **`--hot` can light a whole wall.** An image drawn with a warm-lit interior (the armoured hangar) has large
     bright amber areas, not just lamps: at `--hot 0.8` the back wall became one flat orange panel. Raise the threshold
     (0.93) or prompt the interior dark with small lamps; check the part on `--bg dark`.
@@ -207,3 +207,23 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
     1-5 m behind it now, on lowered runways.
 47. **Run `component.py` one at a time.** Each ingest reads, updates and rewrites `assets/parts-colony/parts.json`;
     three parallel ingests (and other agents' ingests) can drop each other's rows. Re-read the manifest after a batch.
+48. **Tripo's albedo is darker, warmer and flatter than its own image: normalise it once at ingest, never lift at
+    runtime.** v2 compensated with lifts of every size (factory 1.25, modules 1.2-1.6, the radio dish 2.5 with a cool
+    tint). Measured over all 50 colony components (surface-weighted texel samples vs the component image's foreground):
+    0.84-4.2x darker (median 1.6x), about twice the saturation on neutral paint (the brown cast), and a flattened tonal
+    range (the dish face near white, its yoke near black). The ingest itself preserved the values exactly. `component.py`
+    now white-balances on neutral texels, pulls near-neutral chroma to the image's, applies one gain to the trimmed
+    mean, matches the luminance quantiles at 60 % and caps mean metalness at 0.15 (README-colony.md "Paint calibration").
+49. **Calibrate the studio before the paint.** The colony dusk key at 0.5 of the ship studio's rendered even the kit's
+    calibrated panel paint at 0.55-0.8x the concepts' light-paint luminance, so every component looked "too dark" twice
+    over. Over all 16 buildings key 0.85, fill 0.4, env 0.45 puts the light band at a median 0.95x (key 1.0 alone
+    over-lit the big light roofs and slabs and flattened the shadows); six roof- or slab-dominated buildings trim the
+    key in their own hint (0.5-0.62) and two low-key ones raise it (1.15), lighting only, never a paint lift. Measure with a real mask: a border-colour or row-median backdrop
+    mask counts the radial backdrop's lighter centre as building and reads every shadow as blue; GrabCut seeded by the
+    frame border works on both the concepts and the renders (`tools/buildings/paint-check.py`).
+50. **A component's per-axis scale is in the part frame (x, y = up, z).** v2's notes said "length, depth, height", so
+    the silicon foundry's [1, 1, 0.75] shortened its roof monitors instead of lowering them and the steel depot's crane
+    [1, 1.5, 1] grew 1.5x taller instead of spanning 1.5x wider (heavy, and hidden behind the girder).
+51. **A big flat glow box reads as a flat panel.** The trade center's 22 x 16 m arcade floor glow became one orange
+    slab, the university atrium's warm interior box showed through the glazing as amber-brown panes (its texture was
+    cool blue). Use small warm pools and pendant lamps, and a dim cool volume behind glass.

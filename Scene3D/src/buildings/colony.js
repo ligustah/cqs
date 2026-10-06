@@ -15,7 +15,7 @@
 //     beacons, red 0.4 m obstruction lights on stacks (the only lights[]), 0.6 x 0.14 m door lamps over every kit crew
 //     door, amber jamb / corner slits, warm glow boxes behind real window glass (~55 % lit), interior glow (open
 //     bays, the pour), kit floodlights with lit lenses and one spot light each;
-//   - the dusk studio (like the shipyard): exposure 1.25, dimmed key / fill / rim, lightscape x1.3; camera hint
+//   - the dusk studio (like the shipyard): exposure 1.25, key 0.85 (v3), dimmed fill / rim / env, lightscape x1.3; camera hint
 //     from the concept (az / el); orbital buildings get a space backdrop and no plinth.
 // Phone tier: load() asks for the '.lite' copy (512 px textures, workers and vents dropped: build-artifact.mjs).
 import * as THREE from 'three';
@@ -31,8 +31,12 @@ const C = {
 
 // the dusk studio (shipyard's), overridable per building
 // the key comes from the front-left in the building's frame (sunaz / sunel), like the concepts' light; the backdrop is the
-// concepts' slate dusk (displayed sRGB centre / edge), a little greyer than the ship studio's navy
-export const DUSK = { exposure: 1.25, key: 0.5, fill: 0.6, rim: 0.5, kick: 0.6, env: 0.65, lightscapeGain: 1.3, az: 30, el: 28,
+// concepts' slate dusk (displayed sRGB centre / edge), a little greyer than the ship studio's navy.
+// v3 paint calibration (README-colony.md "Paint calibration", tools/buildings/paint-check.py): key 0.5 -> 0.85, fill
+// 0.6 -> 0.4, env 0.65 -> 0.45. At key 0.5 even the kit's calibrated panel paint rendered at 0.55-0.8x the concepts'
+// light-paint luminance (GrabCut-masked p70-97 band) and the shadows read flat; over all 16 buildings the light band is
+// now at a median 0.95x. Buildings dominated by big light roofs or slabs trim `key` in their own hint (0.6-1.15)
+export const DUSK = { exposure: 1.25, key: 0.85, fill: 0.4, rim: 0.5, kick: 0.6, env: 0.45, lightscapeGain: 1.3, az: 30, el: 28,
   sunaz: -35, sunel: 42, backdrop: { centre: [60, 67, 82], edge: [20, 23, 31], at: [0.5, 0.55] } };
 // orbital megaprojects: black-blue space behind them (displayed sRGB, env/lighting.js backdrop)
 export const SPACE_BACKDROP = { centre: [22, 27, 40], edge: [4, 6, 10], at: [0.56, 0.58] };
@@ -94,9 +98,11 @@ export function colonyBuilding({ id, DATA = {}, meta = {}, studio = {}, material
     livery: null, // light concept paint (correction 27)
     detail: { set: 'hull', tile: 6, normalStrength: 0.4, roughAmount: 0.3, cavity: 0.12 },
     finish: 'building',
-    // fal colony components (assets/parts-colony, material 'colony_<part>'): their baked albedo reads a step darker than
-    // the concept's off-white once the detail layer and worn finish are on; lift it (the parametric hull is unchanged)
-    materials: { 'colony_*': { colorScale: 1.25 }, ...(materials || {}) },
+    // fal colony components (assets/parts-colony, material 'colony_<part>') are albedo-normalised once at ingest against
+    // their source component image (component.py NORM: white balance, chroma, one linear gain, metal cap), which puts their
+    // light paint on the kit's 'panel' scale: no runtime lift (v2 lifted every colony_* by 1.25 and some modules by up to
+    // 2.5 more). `materials` stays for per-building looks that are not paint calibration.
+    materials: { ...(materials || {}) },
   };
   const st = { ...DUSK, ...(DATA.orbital ? { backdrop: SPACE_BACKDROP } : {}), ...studio };
   let GLTF = null;

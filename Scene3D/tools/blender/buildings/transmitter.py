@@ -72,8 +72,17 @@ def model(B):
     # --- the inner field: a faint blue hexagon (three overlapping rectangles), the transmission plane
     ai = A1 - 10.6
     side = 2 * ai * math.tan(math.radians(30))
-    for k in range(3):
-        B.R.glowbox((0.0, -6.0, 0.0), (side, 0.05, 2 * ai), color='#1d3a8a', radiance=0.022, roty=math.radians(60.0 * k))
+    # v3: a blue haze, brightest at the rim and deepening toward the centre (the concept's luminous field; v2 was a
+    # dark navy plane): eight nested hexagons, each a little nearer the camera, from a light sky blue to a deep blue
+    N = 16
+    for i in range(N):
+        u = i / (N - 1)                                         # 0 at the rim, 1 at the centre
+        f = 1.0 - 0.78 * u
+        c0, c1 = (0xa9, 0xcd, 0xf5), (0x50, 0x66, 0x89)
+        col = '#%02x%02x%02x' % tuple(round(a + (b - a) * u ** 0.7) for a, b in zip(c0, c1))
+        for k in range(3):
+            B.R.glowbox((0.0, -6.0 + 0.08 * i, 0.0), (side * f, 0.04, 2 * ai * f), color=col, radiance=0.30 - 0.17 * u ** 0.6,
+                        roty=math.radians(60.0 * k))
     # --- solar wings at 2x: one off each node but the hub's, boom toward the node, panels outboard
     for i, t in enumerate(corners):
         if t == 180.0:

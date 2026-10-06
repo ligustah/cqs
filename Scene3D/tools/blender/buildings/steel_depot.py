@@ -19,18 +19,18 @@ import bkit as K
 
 SPEC = {
     'title': 'Steel Depot', 'gameId': 'STEEL_DEPOT', 'group': 'storage',
-    'footprint': [62, 66], 'height': 24.0,
+    'footprint': [72, 66], 'height': 19.0,
     'camera': {'az': 38, 'el': 26},
     'about': 'open-sided portal shed with a deep front girder on massive braced columns, an amber overhead crane over rows of stacked steel, a clad store with roller doors at the back',
 }
 
 W, D = SPEC['footprint']
 X0, X1, Z0, Z1 = -W / 2, W / 2, -D / 2, D / 2
-RX0, RX1, RZ0, RZ1 = -28.0, 28.0, -30.0, 22.0       # roof
-EAVE = 20.0
+RX0, RX1, RZ0, RZ1 = -31.5, 31.5, -30.0, 22.0       # roof (v3: wider and lower, the concept's low wide shed)
+EAVE = 16.0
 RUN = (-25.0, 24.0)                                 # crane runway lines (x)
-RUN_Y = 11.5
-STORE = (8.5, 28.0, -30.0, -4.0)                    # clad store x0, x1, z0, z1
+RUN_Y = 7.5
+STORE = (13.5, 31.5, -30.0, -4.0)                    # clad store x0, x1, z0, z1
 
 
 def slab_tone(B):
@@ -40,7 +40,7 @@ def slab_tone(B):
 def frame(B):
     # the four massive portal columns at the roof corners (fal component portalColumn, 22 m with its clad cap)
     for (x, z, hd) in ((RX0 + 2.0, RZ1 - 1.5, 90.0), (RX1 - 2.0, RZ1 - 1.5, -90.0), (RX0 + 2.0, RZ0 + 2.0, 90.0)):
-        K.component(B, 'portalColumn', (x, 0.0, z), heading=hd)
+        K.component(B, 'portalColumn', (x, 0.0, z), heading=hd, scale=[1.0, (EAVE + 1.55) / 22.0, 1.0])   # its cap meets the girder top
         for y in (6.0, 12.0):
             B.R.pin((x + (2.0 if x > 0 else -2.0), y, z + 1.8))
     # runway columns and beams along Z on both crane lines, knee braces
@@ -58,12 +58,13 @@ def frame(B):
         B.rod((RX0 + 2.0, 1.0, za), (RX0 + 2.0, RUN_Y - 1.0, zb), 0.2, mat='frame', n=6)
         B.rod((RX0 + 2.0, 1.0, zb), (RX0 + 2.0, RUN_Y - 1.0, za), 0.2, mat='frame', n=6)
     # the deep front girder (dark box beam, light clad top band) and the side girders
-    B.box((RX1 - RX0, 2.4, 1.6), at=(0.0, EAVE - 0.6, RZ1), mat='frame', bevel=0.06)
-    B.box((RX1 - RX0 + 0.4, 1.6, 1.8), at=(0.0, EAVE + 1.4, RZ1), mat='panel', bevel=0.05)
-    B.box((RX1 - RX0 + 0.6, 0.3, 2.0), at=(0.0, EAVE + 2.3, RZ1), mat='frame', bevel=0.03)
+    # v3: a slimmer girder (1.4 m dark box beam under a 1 m light band, was 4.3 m deep) so the crane reads under it
+    B.box((RX1 - RX0, 1.4, 1.4), at=(0.0, EAVE - 0.3, RZ1), mat='frame', bevel=0.05)
+    B.box((RX1 - RX0 + 0.4, 1.0, 1.6), at=(0.0, EAVE + 0.9, RZ1), mat='panel', bevel=0.05)
+    B.box((RX1 - RX0 + 0.6, 0.2, 1.8), at=(0.0, EAVE + 1.5, RZ1), mat='frame', bevel=0.03)
     for x in (RX0, RX1):
-        B.box((1.4, 2.6, RZ1 - RZ0), at=(x, EAVE - 0.7, (RZ0 + RZ1) / 2), mat='frame', bevel=0.05)
-        B.box((1.6, 1.6, RZ1 - RZ0 + 0.4), at=(x, EAVE + 1.4, (RZ0 + RZ1) / 2), mat='panel', bevel=0.05)
+        B.box((1.2, 1.4, RZ1 - RZ0), at=(x, EAVE - 0.3, (RZ0 + RZ1) / 2), mat='frame', bevel=0.05)
+        B.box((1.4, 1.0, RZ1 - RZ0 + 0.4), at=(x, EAVE + 0.9, (RZ0 + RZ1) / 2), mat='panel', bevel=0.05)
     # open +X side at the front: a truss girder at the eaves between the corner column and the store
     K.truss(B, (RX1 - 0.5, EAVE - 3.6, RZ1 - 2.0), (RX1 - 0.5, EAVE - 3.6, STORE[3]), 2.4, bay=3.0, chord=0.3, web=0.14)
     B.box((1.0, EAVE, 1.0), at=(RX1 - 0.5, EAVE / 2, STORE[3] + 0.5), mat='frame', bevel=0.05)
@@ -71,9 +72,9 @@ def frame(B):
     B.box((RX1 - RX0, 0.5, RZ1 - RZ0), at=(0.0, EAVE + 0.75, (RZ0 + RZ1) / 2), mat='panel2', bevel=0.04)
     for k in range(int((RX1 - RX0) / 1.6)):
         B.box((0.06, 0.08, RZ1 - RZ0 - 0.4), at=(RX0 + 0.8 + k * 1.6, EAVE + 1.04, (RZ0 + RZ1) / 2), mat='frame2', bevel=0.0)
-    for x in (-17.0, -1.0, 15.0):
-        K.component(B, 'roofMonitor', (x, EAVE + 1.0, (RZ0 + RZ1) / 2 - 2.0), heading=0.0, scale=0.7)
-    for (x, z) in ((22.0, -24.0), (22.0, -18.5), (-22.0, -25.0), (4.0, -25.0)):
+    for x in (-24.0, -8.0, 8.0, 24.0):   # long low roof-light strips front to back (part axes x, y up, z)
+        K.component(B, 'roofMonitor', (x, EAVE + 1.0, (RZ0 + RZ1) / 2 - 1.0), heading=0.0, scale=[0.7, 0.5, 1.15])
+    for (x, z) in ((27.5, -24.0), (27.5, -18.5), (-27.5, -25.0), (16.0, -25.0)):
         K.hvac(B, (x, EAVE + 1.0, z), w=3.2, d=2.2, h=1.6, fans=2, rot=90)
     K.railing(B, [(RX1 - 0.6, EAVE + 1.0, RZ0 + 1.0), (RX1 - 0.6, EAVE + 1.0, STORE[3])], post=2.0)
     # under-roof lights: warm down-light boxes along the runway and the bay
@@ -139,8 +140,10 @@ def model(B):
     slab_tone(B)
     frame(B)
     # the amber crane over the stacks: span along X between the runway lines, cab toward +X
-    K.component(B, 'overheadCrane', ((RUN[0] + RUN[1]) / 2, RUN_Y + 0.6 - 6.4, 17.0), heading=90.0, scale=[1.0, 1.5, 1.0])
-    B.R.pin((RUN[1] - 2.0, RUN_Y - 1.0, 17.0))
-    B.R.beacon(((RUN[0] + RUN[1]) / 2, RUN_Y + 3.0, 17.0))
+    # v3: span stretched along the part's Z (its span axis; part axes are x, y up, z: the v2 [1, 1.5, 1] made it 1.5x
+    # taller instead), wheels (part y 3.5) on the runway rail, 3 m behind the front girder so it reads under it
+    K.component(B, 'overheadCrane', ((RUN[0] + RUN[1]) / 2, RUN_Y + 0.8 - 3.5, 19.0), heading=90.0, scale=[1.0, 1.0, 1.5])
+    B.R.pin((RUN[1] - 2.0, RUN_Y - 1.0, 19.0))
+    B.R.beacon(((RUN[0] + RUN[1]) / 2, RUN_Y + 6.6, 19.0))
     store(B)
     yard(B)

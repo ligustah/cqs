@@ -59,180 +59,9 @@
   {
    "part": "colony:portalColumn",
    "p": [
-    -26.0,
+    -29.5,
     0.0,
     20.5
-   ],
-   "n": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "up": [
-    1.0,
-    0.0,
-    0.0
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "along": [
-    0.0,
-    0.0,
-    -1.0
-   ],
-   "id": "portalColumn"
-  },
-  {
-   "part": "colony:portalColumn",
-   "p": [
-    26.0,
-    0.0,
-    20.5
-   ],
-   "n": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "up": [
-    -1.0,
-    0.0,
-    0.0
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "along": [
-    0.0,
-    0.0,
-    1.0
-   ],
-   "id": "portalColumn"
-  },
-  {
-   "part": "colony:portalColumn",
-   "p": [
-    -26.0,
-    0.0,
-    -28.0
-   ],
-   "n": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "up": [
-    1.0,
-    0.0,
-    0.0
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "along": [
-    0.0,
-    0.0,
-    -1.0
-   ],
-   "id": "portalColumn"
-  },
-  {
-   "part": "colony:roofMonitor",
-   "p": [
-    -17.0,
-    21.0,
-    -6.0
-   ],
-   "n": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "up": [
-    0.0,
-    0.0,
-    1.0
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "along": [
-    1.0,
-    0.0,
-    -0.0
-   ],
-   "scale": 0.7,
-   "id": "roofMonitor"
-  },
-  {
-   "part": "colony:roofMonitor",
-   "p": [
-    -1.0,
-    21.0,
-    -6.0
-   ],
-   "n": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "up": [
-    0.0,
-    0.0,
-    1.0
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "along": [
-    1.0,
-    0.0,
-    -0.0
-   ],
-   "scale": 0.7,
-   "id": "roofMonitor"
-  },
-  {
-   "part": "colony:roofMonitor",
-   "p": [
-    15.0,
-    21.0,
-    -6.0
-   ],
-   "n": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "up": [
-    0.0,
-    0.0,
-    1.0
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "along": [
-    1.0,
-    0.0,
-    -0.0
-   ],
-   "scale": 0.7,
-   "id": "roofMonitor"
-  },
-  {
-   "part": "colony:overheadCrane",
-   "p": [
-    -0.5,
-    5.7,
-    17.0
    ],
    "n": [
     0.0,
@@ -255,15 +84,246 @@
    ],
    "scale": [
     1.0,
-    1.5,
+    0.7977272727272727,
     1.0
+   ],
+   "id": "portalColumn"
+  },
+  {
+   "part": "colony:portalColumn",
+   "p": [
+    29.5,
+    0.0,
+    20.5
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "scale": [
+    1.0,
+    0.7977272727272727,
+    1.0
+   ],
+   "id": "portalColumn"
+  },
+  {
+   "part": "colony:portalColumn",
+   "p": [
+    -29.5,
+    0.0,
+    -28.0
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "scale": [
+    1.0,
+    0.7977272727272727,
+    1.0
+   ],
+   "id": "portalColumn"
+  },
+  {
+   "part": "colony:roofMonitor",
+   "p": [
+    -24.0,
+    17.0,
+    -5.0
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    1.0,
+    0.0,
+    -0.0
+   ],
+   "scale": [
+    0.7,
+    0.5,
+    1.15
+   ],
+   "id": "roofMonitor"
+  },
+  {
+   "part": "colony:roofMonitor",
+   "p": [
+    -8.0,
+    17.0,
+    -5.0
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    1.0,
+    0.0,
+    -0.0
+   ],
+   "scale": [
+    0.7,
+    0.5,
+    1.15
+   ],
+   "id": "roofMonitor"
+  },
+  {
+   "part": "colony:roofMonitor",
+   "p": [
+    8.0,
+    17.0,
+    -5.0
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    1.0,
+    0.0,
+    -0.0
+   ],
+   "scale": [
+    0.7,
+    0.5,
+    1.15
+   ],
+   "id": "roofMonitor"
+  },
+  {
+   "part": "colony:roofMonitor",
+   "p": [
+    24.0,
+    17.0,
+    -5.0
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    1.0,
+    0.0,
+    -0.0
+   ],
+   "scale": [
+    0.7,
+    0.5,
+    1.15
+   ],
+   "id": "roofMonitor"
+  },
+  {
+   "part": "colony:overheadCrane",
+   "p": [
+    -0.5,
+    4.8,
+    19.0
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "scale": [
+    1.0,
+    1.0,
+    1.5
    ],
    "id": "overheadCrane"
   },
   {
    "part": "door",
    "p": [
-    11.6,
+    16.6,
     1.2,
     -4.095
    ],
@@ -286,7 +346,7 @@
   {
    "part": "door",
    "p": [
-    27.905,
+    31.405,
     1.2,
     -26.6
    ],
@@ -981,7 +1041,7 @@
   {
    "part": "container",
    "p": [
-    22.0,
+    25.5,
     0.0,
     -1.0
    ],
@@ -1032,7 +1092,7 @@
   {
    "part": "yard:truck",
    "p": [
-    28.5,
+    33.5,
     0.0,
     6.0
    ],
@@ -1116,7 +1176,7 @@
   {
    "part": "yard:worker",
    "p": [
-    30.0,
+    33.5,
     0.0,
     0.0
    ],

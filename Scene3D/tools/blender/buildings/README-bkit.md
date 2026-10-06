@@ -30,6 +30,8 @@ containers) and the yard kit's vehicles and figures, which it places rather than
 |---|---|
 | `panel`, `panel2` | off-white cladding (light concept paint, correction 27) and its darker variant |
 | `frame`, `frame2` | dark gunmetal frames, posts, bands, legs; housings |
+| `frameL` | light grey trim (linear 0.25) for plain-panel walls: `facade(frame='frameL', base_mat='frame2')` keeps a dark lower course (v3: silicon foundry, refinery control block, radio telescope base) |
+| `stone` | pale civic stone, a touch warm (v3: the library's parametric stepped wings) |
 | `seam` | panel seams, slab joints |
 | `concrete`, `concrete2`, `kerb` | plinth top, sides and footings, the light kerb band |
 | `roof` | dark roof membrane (gable roofs default to `panel2`: the concepts' roofs are light) |
@@ -45,7 +47,7 @@ All true size. "Lights" says what each records in `B.R`.
 
 | Function | What | Lights / placements |
 |---|---|---|
-| `plinth(B, w, d, h=1.4, chamfer=2, kerb=0.5, slab=8, lamp_pitch=18, markings, grates, steps)` | chamfered concrete slab: light kerb band, dark toe and shadow line, slab joints, painted markings `[(polyline, width, mat)]`, drain grates, access stairs down the edge | amber pins in the kerb face at the corners and every `lamp_pitch` m along the front and left edges |
+| `plinth(B, w, d, h=1.4, chamfer=2, kerb=0.5, slab=8, lamp_pitch=18, markings, grates, steps, notch=None)` | chamfered concrete slab (`notch=(nx, nz)`: a notched cross, an nx x nz rectangle cut from each corner, lamps at every outline vertex; v3 infrastructure): light kerb band, dark toe and shadow line, slab joints, painted markings `[(polyline, width, mat)]`, drain grates, access stairs down the edge | amber pins in the kerb face at the corners and every `lamp_pitch` m along the front and left edges |
 | `facade(B, o, u, w, h, bay, storey, base, windows, win, doors, rollers, louvres, slots, seams, bands, ...)` | one wall face: off-white panels, gunmetal base band, storey bands, pilasters per bay, parapet cap, seams, recessed windows (dark glass, proud surround and sill), tall glazed slots, louvre panels, roller doors (ribbed shutter in a portal frame), crew-door canopies | ~55 % of windows lit (`window`), amber jamb slits on roller doors, kit `door` + 0.6 x 0.14 m door lamp per crew door |
 | `block(B, (x, y0, z), (w, h, d), sides={'+z': facade kwargs, ...}, roof={...}, post=0.6, chamfer)` | clad box building: core, four facades (`skip_face` to leave one open), corner posts, roof | amber pins at the top corners |
 | `roof_deck(B, c, (w, d), parapet, units=[(kind, x, z, kwargs)])` + `hvac`, `vent_box`, `fan`, `antenna`, `solar`, `roof_tank`, `roof_box` | roof membrane, parapet, roof units | - |

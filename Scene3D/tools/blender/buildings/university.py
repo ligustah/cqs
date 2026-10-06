@@ -47,7 +47,11 @@ def model(B):
     K.component(B, 'facetedWing', (WB[0], 0.0, WB[1]), heading=0.0, scale=WSB)
     # --- the atrium (fal atriumHall: faceted glass roof, stone fins, glazed lit walls, entrance canopy) facing the garden
     K.component(B, 'atriumHall', (AT[0], 0.0, AT[1]), heading=270.0)     # canopy face (+X of the part) to the front
-    B.R.glowbox((AT[0], 5.0, AT[1]), (22.0, 8.0, 20.0), color='#ffd8a8', radiance=0.12)
+    # v3: the interior seen through the glazing reads blue-grey with warm lamps (v2: one flat 22 x 8 x 20 m amber box
+    # showed through the glass as an amber-brown pane): a dim cool volume and a few small warm pendant lights
+    B.R.glowbox((AT[0], 5.0, AT[1]), (22.0, 8.0, 20.0), color='#8fa6bf', radiance=0.07)
+    for (dx, dz) in ((-6.0, -5.0), (6.0, -5.0), (-6.0, 5.0), (6.0, 5.0), (0.0, 0.0)):
+        B.R.glowbox((AT[0] + dx, 8.5, AT[1] + dz), (1.2, 0.3, 1.2), color='#ffd29a', radiance=1.2)
     # glazed two-storey links between the atrium and the wings
     for (x0, x1, z) in ((WL[0] + 15.0, AT[0] - 15.0, -4.0), (AT[0] + 15.0, WR[0] - 15.0, 2.0)):
         xm, w = (x0 + x1) / 2, abs(x1 - x0) + 2.0
