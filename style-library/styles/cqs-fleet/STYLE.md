@@ -14,6 +14,8 @@ shipyards.
   This is the hard cap for all further work in this style: check spend before every batch, and record
   every job in `Scene3D/pipeline/fal-pipeline.json`. The fleet itself cost about $78.
 
+- **Full pipeline** (correction 36): every asset goes through turnaround, blueprint mesh, fal parts
+  where useful, remodel and review. Do not skip stages to save credit while the budget allows.
 - **Concepts first:** when several assets are designed together, every concept is settled with the
   user before any turnaround, blueprint mesh or remodel of any of them (correction 23).
 
