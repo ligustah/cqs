@@ -23,6 +23,20 @@ export const BUILDINGS = {
   // colony buildings (src/buildings/colony.js factory; catalogue and menu groups in src/buildings/catalog.js)
   deuterium_depot: { module: '../buildings/deuterium_depot.js', fleet: false },
   steel_mill: { module: '../buildings/steel_mill.js', fleet: false },
+  refinery: { module: '../buildings/refinery.js', fleet: false },
+  residence: { module: '../buildings/residence.js', fleet: false },
+  processing_plant: { module: '../buildings/processing_plant.js', fleet: false },
+  oil_tanks: { module: '../buildings/oil_tanks.js', fleet: false },
+  silicon_foundry: { module: '../buildings/silicon_foundry.js', fleet: false },
+  steel_depot: { module: '../buildings/steel_depot.js', fleet: false },
+  silicon_depot: { module: '../buildings/silicon_depot.js', fleet: false },
+  military_base: { module: '../buildings/military_base.js', fleet: false },
+  trade_center: { module: '../buildings/trade_center.js', fleet: false },
+  infrastructure: { module: '../buildings/infrastructure.js', fleet: false },
+  university: { module: '../buildings/university.js', fleet: false },
+  library: { module: '../buildings/library.js', fleet: false },
+  radio_telescope: { module: '../buildings/radio_telescope.js', fleet: false },
+  transmitter: { module: '../buildings/transmitter.js', fleet: false },
 };
 /** Every class the ship path builds (studio, lineup): the fleet classes and the ground units. */
 export const LINEUP = [...GROUND, ...ORDER];

@@ -177,6 +177,10 @@ the README "Phone budget" table, the catalogue rows, and a line in `style-librar
 |---|---|---|---|---|---|
 | deuterium_depot (v2: 4 components) | 5.0 | 120k | 27 | 112 | 3.8 |
 | steel_mill (v2: 6 components) | 6.3 | 127k | 43 | 129 | 4.1 |
+| silicon_depot (v2: 5 components) | 3.9 | 71k | 32 | 116 | 5.7 |
+| military_base (v2: 23 components + 1 V-31) | 6.6 | 146k | 49 | 134 | 5.9 |
+| radio_telescope (v2: 2 components) | 3.3 | 58k | 21 | 102 | 6.3 |
+| transmitter (v2: 24 components, orbital) | 7.1 | 137k | 31 | 119 | 5.1 |
 | (v1, kit only: depot / mill) | 2.7 / 3.5 | 55k / 82k | 12 / 18 | 94 / 103 | 3.4 / 3.1 |
 | (shipyard, for scale) | 10.9 | 291k | 59 | 169 | 5.9 |
 
@@ -198,11 +202,84 @@ Made (pilots, 2026-10-06). Sizes are the ingested bbox (w x h x d, part frame: +
 | pourBay | 18.98 x 15.542 x 26 | 25,842 | `images/buildings/components/pourBay.jpg` | 01a110ea-70fa-7621-b809-e7a52fa8a855 (image), 01a110eb-efcf-7903-b342-56b00d4154c3 (mesh) | steel_mill |
 | skipGallery | 6 x 46 x 28 | 12,915 | `images/buildings/components/skipGallery.jpg` | 01a110ea-71ea-7212-b86a-5cc9123f8168 (image), 01a110eb-f0e4-71e3-a9c4-f713360bc9b5 (mesh) | steel_mill |
 | shedSegment | 28 x 24 x 36 | 7,534 | `images/buildings/components/shedSegment.jpg` | 01a110ea-72c4-7de3-b15f-4df2db490330 (image), 01a110eb-f1ca-7292-ae3e-72318ec0b68c (mesh) | steel_mill |
+| officeTower | 20.856 x 50 x 21.566 | 8,997 | `images/buildings/components/officeTower.jpg` | 01a11116-f7e4-7461-b783-172e835fa7cb (image), 01a11118-4c90-7262-97e2-a7578983f3d9 (mesh) | trade_center |
+| skyBridge | 11.074 x 11.349 x 42 | 5,997 | `images/buildings/components/skyBridge.jpg` | 01a11116-f8b8-7921-b06e-771343dd232b (image), 01a11118-4d6f-71f0-b841-2a52b77df730 (mesh) | trade_center |
+| marketArcade | 28 x 10.088 x 23.236 | 8,994 | `images/buildings/components/marketArcade.jpg` | 01a11118-30b7-7f60-bdd7-d2b815c57420 (image), 01a1111d-e0d9-76f1-8db4-10a0c07f3d8d (mesh) | trade_center |
+| loadingHall | 17.794 x 9.635 x 28 | 5,991 | `images/buildings/components/loadingHall.jpg` | 01a11116-fa88-71f3-9cf6-609880351ed2 (image), 01a11118-4e4e-72c1-aad3-93794c4f24de (mesh) | trade_center |
+| adminWing | 17.68 x 14.533 x 36 | 5,997 | `images/buildings/components/adminWing.jpg` | 01a11117-3aba-7f63-b887-44e5e564ad53 (image), 01a11118-94d7-7c33-9178-7e71f80e6261 (mesh) | infrastructure |
+| hubDrum | 26 x 26.586 x 27.576 | 8,000 | `images/buildings/components/hubDrum.jpg` | 01a11117-3b85-7011-9fdf-da7093340eb9 (image), 01a11118-95bd-7ae1-b944-31f8dd80326b (mesh) | infrastructure |
+| waterTower | 9.362 x 24 x 10.27 | 5,996 | `images/buildings/components/waterTower.jpg` | 01a11118-93f8-7880-b679-33e3a5ecbdbc (image), 01a1111d-e1ba-7662-a168-885cc9ce8a41 (mesh) | infrastructure |
+| vesselSkid | 4.432 x 6.107 x 13 | 5,997 | `images/buildings/components/vesselSkid.jpg` | 01a11117-3d36-7022-a35b-9e1ae0613d41 (image), 01a11118-967a-71d3-9238-928487c5fe98 (mesh) | infrastructure |
+| curvedTerrace | 17.378 x 32 x 52.496 | 11,996 | `images/buildings/components/curvedTerrace.jpg` | 01a11117-660f-70d1-b0b8-7936ca05a3eb (image), 01a1111a-7443-7123-b260-2bfd70a68407 (mesh) | residence |
+| podiumSegment | 14.866 x 12.454 x 40 | 5,997 | `images/buildings/components/podiumSegment.jpg` | 01a11117-66e0-7873-876f-def937b9d399 (image), 01a1111a-753f-7842-923c-58e3b0a19417 (mesh) | residence |
+| facetedWing | 40 x 15.689 x 16.944 | 6,999 | `images/buildings/components/facetedWing.jpg` | 01a11117-c648-7f32-b6af-b0821cba9c79 (image), 01a1111a-ccd8-7571-ad7c-3a652a641508 (mesh) | university |
+| atriumHall | 34 x 17.754 x 34.024 | 9,997 | `images/buildings/components/atriumHall.jpg` | 01a11117-c71c-7e72-9ea1-dae058e2ad48 (image), 01a1111a-7618-79c1-9a7a-911822c58e3b (mesh) | university |
+| obsDome | 10 x 9.195 x 9.908 | 4,406 | `images/buildings/components/obsDome.jpg` | 01a11117-c7fc-7240-bef1-f5557f083dec (image), 01a1111a-f27d-76b3-96df-8f45c4affc75 (mesh) | university |
+| portalTower | 24 x 46 x 28 | 9,994 | `images/buildings/components/portalTower.jpg` | 01a11117-c90d-7301-9057-1eefb4e34372 (image), 01a1111a-f36f-7522-b9b4-439a0670bf5e (mesh) | library |
+| steppedWing | 40 x 31.79 x 39.958 | 6,998 | `images/buildings/components/steppedWing.jpg` | 01a11117-c9ec-7361-8300-2212cdef8d62 (image), 01a1111a-f443-74c1-a70a-504b1c3452f9 (mesh) | library |
+| monumentPylon | 3.934 x 10 x 3.924 | 1,499 | `images/buildings/components/monumentPylon.jpg` | 01a11117-cae4-7941-95c3-d2db4439d2b0 (image), 01a1111a-f557-7911-9a04-2db398907478 (mesh) | library |
+| distColumn | 6.8 x 40 x 5.8 | 11,787 | `images/buildings/components/distColumn.jpg` | 01a11117-5a2f-7b93-8e7c-5315b36c54fb (image), 01a11118-543c-7311-a42a-7a573d6ec09d (mesh) | refinery |
+| htankSkid | 5.512 x 6.679 x 13 | 8,000 | `images/buildings/components/htankSkid.jpg` | 01a11117-5b08-7a33-904d-5291f6538c88 (image), 01a11118-7267-7601-bb84-49400e1aefa2 (mesh) | refinery |
+| processVessel | 17.45 x 32 x 17.72 | 13,907 | `images/buildings/components/processVessel.jpg` | 01a11117-5bf7-75d0-85fc-d761500f3d9b (image), 01a11119-222e-7bc3-8073-8c07e3a3d6df (mesh) | processing_plant |
+| bandedLowTank | 28 x 16.083 x 27.566 | 10,971 | `images/buildings/components/bandedLowTank.jpg` | 01a11117-5ccb-70c2-97a7-f78304b0e452 (image), 01a11119-2307-7a53-be29-1912ac5abf49 (mesh) | processing_plant |
+| plantBlock | 15.806 x 13.971 x 26 | 9,999 | `images/buildings/components/plantBlock.jpg` | 01a11117-5da0-7c73-9d92-c4e78843d6d1 (image), 01a11119-23cc-7993-8c12-6686126ea63e (mesh) | processing_plant |
+| bottleSkid | 2.988 x 4.601 x 7 | 6,000 | `images/buildings/components/bottleSkid.jpg` | 01a11117-5e67-7581-b0ad-02a13ff009ba (image), 01a11119-24b4-7ba0-b71c-5096e898e4d7 (mesh) | processing_plant |
+| floatTank | 28.956 x 17.255 x 29 | 8,495 | `images/buildings/components/floatTank.jpg` | 01a11117-5f32-7593-8386-1f6bee77f9c7 (image), 01a11119-4bec-79d3-b952-8a0c1818311c (mesh) | oil_tanks |
+| roofMonitor | 10 x 5.5 x 40 | 4,521 | `images/buildings/components/roofMonitor.jpg` | 01a11117-5ff2-7cd2-8778-e15677a13471 (image), 01a11119-4cb1-7ee0-bf1f-87ee25c798a0 (mesh) | silicon_foundry |
+| crystalReactor | 15.066 x 12 x 14.53 | 10,737 | `images/buildings/components/crystalReactor.jpg` | 01a11117-60b6-7212-9213-1301a79db914 (image), 01a11119-8d9e-7f51-b315-09b07c14f65a (mesh) | silicon_foundry |
+| overheadCrane | 13.364 x 8.948 x 32 | 9,695 | `images/buildings/components/overheadCrane.jpg` | 01a11119-8f2d-79b3-9a21-a05e89b91633 (image), 01a1111d-32d8-7b12-8093-7ebca85b3329 (mesh) | steel_depot |
+| beamStack | 3.6 x 2.6 x 12 | 2,996 | `images/buildings/components/beamStack.jpg` | 01a11119-8ffd-7132-9bbd-531284b4b26e (image), 01a1111d-33c9-7c81-94cc-58f977665cc5 (mesh) | steel_depot |
+| portalColumn | 6.304 x 22 x 7.198 | 6,000 | `images/buildings/components/portalColumn.jpg` | 01a11117-6354-7aa0-9fbf-d4b3e9f9508d (image), 01a11119-8e65-79e1-bf02-2ac79d627fa5 (mesh) | steel_depot |
+| vaultBay | 9 x 30 x 12.5 | 8,998 | `images/buildings/components/vaultBay.jpg` | 01a11117-ca3e-7df0-9b61-3ecabe52943f (image), 01a1111a-d2d9-7b61-b4b9-60f2216dff23 (mesh) | silicon_depot |
+| rackBay | 9 x 30 x 12.5 | 13,995 | `images/buildings/components/rackBay.jpg` | 01a11117-cb25-7f73-a725-e75545f565c3 (image), 01a1111a-d3d7-7183-b35b-6f9c1bca22f0 (mesh) | silicon_depot |
+| entrancePorch | 8 x 5.186 x 8.932 | 5,997 | `images/buildings/components/entrancePorch.jpg` | 01a11117-cc19-7e43-a3e7-73463c294731 (image), 01a1111a-d4a2-7312-a925-ca9c06899f81 (mesh) | silicon_depot |
+| armouredHangar | 34 x 11 x 30 | 11,998 | `images/buildings/components/armouredHangar.jpg` | 01a11117-cce0-79d3-9c2a-4b2b9bad5851 (image), 01a1111a-d581-7070-aa6e-25208b30f5f3 (mesh) | military_base |
+| guardTower | 8.722 x 17 x 8.154 | 3,999 | `images/buildings/components/guardTower.jpg` | 01a11117-cda8-7321-9a74-1a49db54a3c4 (image), 01a1111b-7305-7930-b1bb-1322a8794ce1 (mesh) | military_base |
+| wallSegment | 6.652 x 6.647 x 24 | 1,998 | `images/buildings/components/wallSegment.jpg` | 01a1111b-75bc-79c2-9cc9-3b01e5063f2e (image), 01a1111c-c924-7b61-9f31-10e2443e25b2 (mesh) | military_base |
+| gateHouse | 9.076 x 8.999 x 32 | 8,995 | `images/buildings/components/gateHouse.jpg` | 01a11117-d02d-7240-af01-a2eb8acefe1b (image), 01a1111b-74d1-7451-ab7d-ee8b7c6b226a (mesh) | military_base |
+| commandBunker | 29.902 x 19.099 x 30 | 13,703 | `images/buildings/components/commandBunker.jpg` | 01a11117-cf52-7d13-bdbf-95cb831fccf8 (image), 01a1111b-73eb-7ba2-8397-30181c06171b (mesh) | military_base |
+| dishMount | 26.902 x 32.941 x 33 | 25,601 | `images/buildings/components/dishMount.jpg` | 01a11117-d1e0-7360-b292-6d7fc8dad8f6 (image), 01a1111b-c062-7fe2-9894-955c96fc4b76 (mesh) | radio_telescope |
+| ringModule | 26.192 x 24.587 x 40 | 7,998 | `images/buildings/components/ringModule.jpg` | 01a11117-d2a0-7df0-aef0-3732b56ffae1 (image), 01a1111b-c16b-7160-8827-fdfd7f074abd (mesh) | transmitter |
+| ringSegment | 20 x 14 x 104 | 4,500 | `images/buildings/components/ringSegment.jpg` | 01a11117-d375-7160-9ef7-59ec4081f121 (image), 01a1111b-c25d-7b43-9124-44bc2c286954 (mesh) | transmitter |
+| solarWing | 15.948 x 17.749 x 34 | 3,996 | `images/buildings/components/solarWing.jpg` | 01a11117-d458-7500-bd18-e92d36b110e2 (image), 01a1111b-c341-7ac2-bbad-dae3479c85a6 (mesh) | transmitter |
+| dockingHub | 25.49 x 25.485 x 26 | 7,999 | `images/buildings/components/dockingHub.jpg` | 01a11117-d51a-7873-adf4-ed2dd6513e33 (image), 01a1111b-c419-7202-b00f-48ce7e46b590 (mesh) | transmitter |
 
 Orientation notes (part frame): plantHouse's door is on its +X long face, pipe stubs at +Z; pourBay opens to +X with
 its runner running out along +X; shedSegment's windowed long face is +X, gables at +-Z, segments abut along Z;
 skipGallery climbs from its drive house at +Z (low) to -Z (high); blastFurnace's square base is axis-aligned.
 Hot texels (`--hot`): pourBay (runner), blastFurnace (tuyere band, frame lamps), bandedStack and plantHouse (lamps).
+
+Production / storage batch (refinery, processing_plant, oil_tanks, silicon_foundry, steel_depot; 2026-10-06),
+orientation notes (part frame): distColumn's vapour line is on -X, ingested at 0.65 in plan (`--size 6.8,40,5.8`: the
+concept's columns are slimmer than the image's); htankSkid's axis is Z with its railed platform at +Z; plantBlock's
+cargo door is on its +X long face (heading 0 faces +X); floatTank's stair tower and gauge hut sit about 56 degrees from
++Z toward +X; roofMonitor came out long along X and was turned (`--rot 0,90,0`) so it runs along Z with its louvres on
++X, abut or stretch it along Z; crystalReactor's glass reconstructed opaque, so the building lights it with violet glow
+boxes inside its open-mullion bay; overheadCrane spans along Z (scale its span with `scale=[1, k, 1]`: the steel depot
+uses 1.5 for a 48 m bay); beamStack runs along Z, stack it at 2.62 m; portalColumn's lattice bay is on +X.
+
+Civic / science batch (trade_center, infrastructure, residence, university, library; 2026-10-06), orientation notes
+(part frame): the image's main face came out on the part's +X for officeTower (lit strips on +X and +Z), loadingHall
+(roller doors on its +X long face), curvedTerrace (balconies on +X, rounded end tower at +Z; plan is a gentle S),
+podiumSegment (entrances on +X), atriumHall (canopy on +X) and portalTower (slot face on +X): turn them with heading 270
+to face +Z. facetedWing, steppedWing and marketArcade came out long along X with their front on +Z (heading 0).
+Hot texels (`--hot` 0.6-0.8): every one of these, for the lit windows, slots and lamps. `component()` takes a per-axis
+`scale=[x, y, z]` (Blender part axes: length, depth, height; assemble_place.py) as well as a number: the university
+stretches facetedWing to [0.8, 1.3, 1.35].
+
+
+Storage / military / science / orbital batch (silicon_depot, military_base, radio_telescope, transmitter; 2026-10-06),
+orientation notes (part frame): the image's front came out on +X for every one of these (vaultBay / rackBay doors,
+entrancePorch ramp, armouredHangar opening, commandBunker entrance, gateHouse gate, wallSegment door face, dishMount's
+dish, dockingHub's port, ringSegment's blue edge): heading -90 turns it to +Z. vaultBay / rackBay were ingested at
+`--size 9,30,12.5` (12.5 m bay pitch; Tripo gave them 17.5 m faces) and armouredHangar at `--size 34,11,30`;
+wallSegment and ringSegment run along Z and abut along Z (ringSegment `--size 20,14,104`: the image's section came out
+square); ringModule runs along Z with its thruster quad at +Z; solarWing runs along Z with its boom at -Z and its panels
+rolled ~45 degrees about Z (transmitter.py places it with `B.R.place` and a roll); dishMount's azimuth drum is centred at
+part x = -3.45 (the dish overhangs +X; radio_telescope.py offsets it). The dish and the bays bake a mid grey-tan that reads
+dark and warm in the dusk studio: the modules lift them per material (`materials: { colony_dishMount: { color, colorScale,
+metalness } }`). Hot texels: all at 0.8 except armouredHangar (0.93: at 0.8 its amber-lit interior wall glowed as a flat
+orange panel) and dockingHub (0.75). Not meshed: an armoured car image (the yard instances the fleet's V-31 instead).
 
 Planned (decomposition of the other concepts; make each once, reuse across the buildings listed). Made parts to reuse
 first: plantHouse (oil_tanks, refinery, processing_plant), manifoldSkid / filterBank (every storage and production

@@ -173,4 +173,37 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
     base colour, where they render unlit. `component.py --hot 0.8` copies bright, saturated orange texels into an
     emissive map (darker amber paint stays unlit). And Tripo paint reads a step darker than the concept's off-white
     under the detail layer and worn finish: the colony factory lifts `colony_*` albedo by 1.25 (glbship `colorScale`).
-
+42. **A Tripo component's front is usually its +X, and its baked paint can read dark in the dusk studio.** All
+    thirteen components of the silicon depot, military base, radio telescope and transmitter came out with the image's
+    main face on +X (the civic batch saw the same): check the part sheet (`render-glb.mjs --angles "35:20,0:89"`) and
+    turn it with heading -90 rather than trusting the pilots' +Z. A depth the image cannot show is guessed (the vault
+    bay came out 17.5 m wide for an 11 m prompt; the ring girder's section square): fix it with `--size` at ingest. And a
+    light surface Tripo bakes as mid grey-tan (the radio dish, sRGB ~80 mean) renders brown and dark in the dusk studio
+    even after the 1.25 lift: lift that one material per building (`materials: { colony_<part>: { color, colorScale } }`)
+    and keep the rest of the factory look.
+43. **`--hot` can light a whole wall.** An image drawn with a warm-lit interior (the armoured hangar) has large
+    bright amber areas, not just lamps: at `--hot 0.8` the back wall became one flat orange panel. Raise the threshold
+    (0.93) or prompt the interior dark with small lamps; check the part on `--bg dark`.
+44. **Civic massing: read each block's run on the concept, then stretch the part to the concept's proportions.** The
+    residence r1-r3 laid its three curved blocks along Z, side by side; the concept wraps them diagonally round the
+    courtyard (the tallest from the front-left corner to the back), and only r4 (headings 315 / 300 / 0) read like it.
+    Trace each long block's base line on the concept against the two slab-edge directions before placing it. A component
+    whose proportions are wrong for the building (the university's faceted wing came out 40 x 17 x 16 m, low and long)
+    can be stretched at placement: `K.component(..., scale=[x, y, z])` (Blender part axes: length, depth, height), which
+    assemble_place.py already supports; the wings at [0.8, 1.3, 1.35] matched the concept's chunky blocks. Separate
+    mirrored masses (the library's two stepped wings) read as two buildings until they overlap behind the centre piece.
+    And a glow box placed at a component's facade floats outside its recessed glazing as a flat orange panel: give a
+    component's interior light only as a dim box well inside it (radiance <= 0.3) and rely on its `--hot` texels.
+45. **Check a raw Tripo mesh's long axis before `--size`, and its glass will be opaque.** Tripo usually puts the long
+    axis on Z, but the roof monitor came back long along X: `--size 10,5.5,40` squashed it into a block with its louvre
+    band crushed onto one end. Read the raw accessor bbox first and add `--rot 0,90,0` when X is long. The silicon
+    foundry's reactor came back with solid light-grey glass: show it through an open mullion grid (no glass pane, bkit
+    `glassW` is opaque) and light it with glow boxes inside (violet core, cool wash on the walls and ceiling).
+46. **`sunaz` is the key light's azimuth in the building frame, like the camera's `az`.** The refinery's key at -30
+    with the camera at 58 lit the faces the camera cannot see and left the block and columns black; a key 0-30 degrees
+    toward -X from the camera's azimuth lights the two visible faces like the concepts (refinery 62 / 58, processing
+    plant 20 / 50, oil tanks 15 / 45, silicon foundry 0 / 30, steel depot 30 / 38). And mind the sight line under a
+    deep roof girder: at 24-26 degrees down the steel depot's crane 16 m behind the front girder was invisible; it sits
+    1-5 m behind it now, on lowered runways.
+47. **Run `component.py` one at a time.** Each ingest reads, updates and rewrites `assets/parts-colony/parts.json`;
+    three parallel ingests (and other agents' ingests) can drop each other's rows. Re-read the manifest after a batch.

@@ -33,7 +33,7 @@ const timeout = parseInt(opt('timeout', '600000'));
 const desktop = flag('desktop');
 const still = flag('still'); // stills (?still=1): three frames at pixel ratio 1, then idle; screenshots of heavy views finish
 // colony buildings: one view each (#<id>), added as they are registered (src/ships/index.js BUILDINGS)
-const COLONY_VIEWS = ['deuterium_depot', 'steel_mill'];
+const COLONY_VIEWS = ['deuterium_depot', 'steel_mill', 'refinery', 'residence', 'processing_plant', 'oil_tanks', 'silicon_foundry', 'steel_depot', 'trade_center', 'infrastructure', 'university', 'library', 'silicon_depot', 'military_base', 'radio_telescope', 'transmitter'];
 const VIEWS = args.length ? args : ['fleet', 'lineup', 'fighter', 'corvette', 'freighter', 'destroyer', 'carrier', 'vehicle', 'shipyard', 'spaceport', ...COLONY_VIEWS];
 const CDN = 'https://cdn.jsdelivr.net/npm/three@0.186.1/';
 const ORIGIN = 'https://artifact.test/';

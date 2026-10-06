@@ -1,6 +1,7 @@
 // Building catalogue for the UI (the Buildings menu) and the registry: the 16 colony buildings of the brief
 // (style-library/styles/cqs-fleet/briefs/buildings.md) plus the two installations built earlier, grouped like the
 // brief. `orbital`: built in orbit (space backdrop, no plinth); every other building stands on its plinth.
+// `built`: modelled (v2, README-colony.md recipe); the menu still enables a building by its ships/index.js entry.
 // A building opens in the building view only once its module is registered in ships/index.js BUILDINGS; the menu
 // lists the rest as planned (disabled).
 export const BUILDING_GROUPS = [
@@ -14,11 +15,11 @@ export const BUILDING_GROUPS = [
 
 export const BUILDING_CATALOG = [
   { id: 'steel_mill', label: 'Steel Mill', gameId: 'STEEL_MILL', group: 'production' },
-  { id: 'refinery', label: 'Refinery', gameId: 'REFINERY', group: 'production' },
-  { id: 'silicon_foundry', label: 'Silicon Foundry', gameId: 'SILICON_FOUNDRY', group: 'production' },
-  { id: 'processing_plant', label: 'Processing Plant', gameId: 'PROCESSING_PLANT', group: 'production' },
-  { id: 'steel_depot', label: 'Steel Depot', gameId: 'STEEL_DEPOT', group: 'storage' },
-  { id: 'oil_tanks', label: 'Oil Tanks', gameId: 'OIL_TANKS', group: 'storage' },
+  { id: 'refinery', label: 'Refinery', gameId: 'REFINERY', group: 'production', built: true },
+  { id: 'silicon_foundry', label: 'Silicon Foundry', gameId: 'SILICON_FOUNDRY', group: 'production', built: true },
+  { id: 'processing_plant', label: 'Processing Plant', gameId: 'PROCESSING_PLANT', group: 'production', built: true },
+  { id: 'steel_depot', label: 'Steel Depot', gameId: 'STEEL_DEPOT', group: 'storage', built: true },
+  { id: 'oil_tanks', label: 'Oil Tanks', gameId: 'OIL_TANKS', group: 'storage', built: true },
   { id: 'silicon_depot', label: 'Silicon Depot', gameId: 'SILICON_DEPOT', group: 'storage' },
   { id: 'deuterium_depot', label: 'Deuterium Depot', gameId: 'DEUTERIUM_DEPOT', group: 'storage' },
   { id: 'trade_center', label: 'Trade Center', gameId: 'TRADE_CENTER', group: 'civic' },

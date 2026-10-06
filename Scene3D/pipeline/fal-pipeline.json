@@ -2248,6 +2248,1551 @@
    }
   ],
   "note_usd": "fal list prices: 4K edit ~$0.30, 2K edit ~$0.15, Tripo H3.1 ~$0.60",
-  "blocked_first_session": "fal tools denied in the first session (permission system); resolved by the project allow rules"
+  "blocked_first_session": "fal tools denied in the first session (permission system); resolved by the project allow rules",
+  "refinery": {
+   "date": "2026-10-06",
+   "about": "refinery v2 components (README-colony.md recipe; concept uploaded as the style reference). No turnaround (lesson 39: the concept gives the layout).",
+   "uploads": [
+    {
+     "file": "style-library/styles/cqs-fleet/images/buildings/refinery-concept.jpg",
+     "url": "https://v3b.fal.media/files/b/0aad49e2/Puv19AnLVJJiwCu8ujWX1_refinery-concept.jpg"
+    }
+   ],
+   "jobs": [
+    {
+     "key": "distColumn-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-5a2f-7b93-8e7c-5315b36c54fb",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/Puv19AnLVJJiwCu8ujWX1_refinery-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "3:4",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE tall distillation column, 4 m x 44 m: off-white shell, gunmetal seams, dark skirt, four ring platforms with amber rails, caged amber ladder, vapour pipe into the domed head, amber lamp ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, nothing else in frame, no plinth, no text"
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/distColumn.jpg (https://v3b.fal.media/files/b/0aad49ec/MjY-ceS3aAFdhLAimJ0Gt_5oDsNG4Q.png)"
+    },
+    {
+     "key": "distColumn-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11118-543c-7311-a42a-7a573d6ec09d",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49ec/MjY-ceS3aAFdhLAimJ0Gt_5oDsNG4Q.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 20000
+     },
+     "output": "Scene3D/assets/buildings/raw/distColumn.glb (https://v3b.fal.media/files/b/0aad4a11/ISVM16q5LMRtgSHOOQbMG_model.glb) -> assets/parts-colony/distColumn.glb (component.py)"
+    },
+    {
+     "key": "htankSkid-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-5b08-7a33-904d-5291f6538c88",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/Puv19AnLVJJiwCu8ujWX1_refinery-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE horizontal capsule pressure tank skid, 14 m x 3.6 m, on two concrete saddles, gunmetal straps, valves, amber railed end platform ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, nothing else in frame, no plinth, no text"
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/htankSkid.jpg (https://v3b.fal.media/files/b/0aad49ec/zsQS6sorLB_WHkESFbiwq_MgcgRvU9.png)"
+    },
+    {
+     "key": "htankSkid-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11118-7267-7601-bb84-49400e1aefa2",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49ec/zsQS6sorLB_WHkESFbiwq_MgcgRvU9.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 12000
+     },
+     "output": "Scene3D/assets/buildings/raw/htankSkid.glb (https://v3b.fal.media/files/b/0aad4a17/0JXUAzxrBvlCgILxgZ7zv_model.glb) -> assets/parts-colony/htankSkid.glb (component.py)"
+    }
+   ]
+  },
+  "processing_plant": {
+   "date": "2026-10-06",
+   "about": "processing_plant v2 components (README-colony.md recipe; concept uploaded as the style reference). No turnaround (lesson 39: the concept gives the layout).",
+   "uploads": [
+    {
+     "file": "style-library/styles/cqs-fleet/images/buildings/processing_plant-concept.jpg",
+     "url": "https://v3b.fal.media/files/b/0aad49e2/UImsZnk9WFzZ0mCYEvfFJ_processing_plant-concept.jpg"
+    }
+   ],
+   "jobs": [
+    {
+     "key": "processVessel-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-5bf7-75d0-85fc-d761500f3d9b",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/UImsZnk9WFzZ0mCYEvfFJ_processing_plant-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "3:4",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE tall banded process vessel 13 x 26 m: off-white panelled shell, broad cobalt band, gunmetal base and stepped domed head with railing and masts, riser pipes ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, nothing else in frame, no plinth, no text"
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/processVessel.jpg (https://v3b.fal.media/files/b/0aad49f0/TxDwam1Y9zWMYR_GHcWfI_zbZUyTd6.png)"
+    },
+    {
+     "key": "processVessel-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11119-222e-7bc3-8073-8c07e3a3d6df",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f0/TxDwam1Y9zWMYR_GHcWfI_zbZUyTd6.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 20000
+     },
+     "output": "Scene3D/assets/buildings/raw/processVessel.glb (https://v3b.fal.media/files/b/0aad4a19/ZEICp3G2CZMx-QlcMBDPt_model.glb) -> assets/parts-colony/processVessel.glb (component.py)"
+    },
+    {
+     "key": "bandedLowTank-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-5ccb-70c2-97a7-f78304b0e452",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/UImsZnk9WFzZ0mCYEvfFJ_processing_plant-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE low round storage tank 28 x 13 m: off-white wall, cobalt band, gunmetal bottom course, railed roof with central fan hatch ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, nothing else in frame, no plinth, no text"
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/bandedLowTank.jpg (https://v3b.fal.media/files/b/0aad49f0/5bh8jvTkVRHgovvhY6cXr_6YHmLjqE.png)"
+    },
+    {
+     "key": "bandedLowTank-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11119-2307-7a53-be29-1912ac5abf49",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f0/5bh8jvTkVRHgovvhY6cXr_6YHmLjqE.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 16000
+     },
+     "output": "Scene3D/assets/buildings/raw/bandedLowTank.glb (https://v3b.fal.media/files/b/0aad4a21/s0yFE9mRzu2IogN2pKm9s_model.glb) -> assets/parts-colony/bandedLowTank.glb (component.py)"
+    },
+    {
+     "key": "plantBlock-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-5da0-7c73-9d92-c4e78843d6d1",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/UImsZnk9WFzZ0mCYEvfFJ_processing_plant-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE armoured plant control block 26 x 16 x 10 m, chamfered upper edges, cargo door, ribbon window, roof HVAC ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, nothing else in frame, no plinth, no text"
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/plantBlock.jpg (https://v3b.fal.media/files/b/0aad49f0/bwUqbmLP3F2QOqovvp0oA_Cvx1ULZV.png)"
+    },
+    {
+     "key": "plantBlock-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11119-23cc-7993-8c12-6686126ea63e",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f0/bwUqbmLP3F2QOqovvp0oA_Cvx1ULZV.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 16000
+     },
+     "output": "Scene3D/assets/buildings/raw/plantBlock.glb (https://v3b.fal.media/files/b/0aad4a62/M0jIzEt70zrwIfPA1FYvg_model.glb) -> assets/parts-colony/plantBlock.glb (component.py)"
+    },
+    {
+     "key": "bottleSkid-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-5e67-7581-b0ad-02a13ff009ba",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/UImsZnk9WFzZ0mCYEvfFJ_processing_plant-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE gas bottle skid 7 x 3 m: three domed 2 x 5 m bottles on a dark skid frame ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, nothing else in frame, no plinth, no text"
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/bottleSkid.jpg (https://v3b.fal.media/files/b/0aad49f0/Rn_7Jw37k5EHO93jPaOVs_13aUvUmi.png)"
+    },
+    {
+     "key": "bottleSkid-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11119-24b4-7ba0-b71c-5096e898e4d7",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f0/Rn_7Jw37k5EHO93jPaOVs_13aUvUmi.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 10000
+     },
+     "output": "Scene3D/assets/buildings/raw/bottleSkid.glb (https://v3b.fal.media/files/b/0aad4a24/8mwUQ4iihQbWh9xfvoH7I_model.glb) -> assets/parts-colony/bottleSkid.glb (component.py)"
+    }
+   ]
+  },
+  "oil_tanks": {
+   "date": "2026-10-06",
+   "about": "oil_tanks v2 components (README-colony.md recipe; concept uploaded as the style reference). No turnaround (lesson 39: the concept gives the layout).",
+   "uploads": [
+    {
+     "file": "style-library/styles/cqs-fleet/images/buildings/oil_tanks-concept.jpg",
+     "url": "https://v3b.fal.media/files/b/0aad49e2/SicEqZywm6j6-81Pk-wNo_oil_tanks-concept.jpg"
+    }
+   ],
+   "jobs": [
+    {
+     "key": "floatTank-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-5f32-7593-8386-1f6bee77f9c7",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/SicEqZywm6j6-81Pk-wNo_oil_tanks-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE floating-roof oil tank 30 x 15 m: weathered off-white shell, gunmetal bottom course, amber lines, railed shallow roof, caged stair tower to a gauge hut ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, nothing else in frame, no plinth, no text"
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/floatTank.jpg (https://v3b.fal.media/files/b/0aad49f1/Ydvq2Kje0HaN8NajuNHYO_HQ08Bdo0.png)"
+    },
+    {
+     "key": "floatTank-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11119-4bec-79d3-b952-8a0c1818311c",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f1/Ydvq2Kje0HaN8NajuNHYO_HQ08Bdo0.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 16000
+     },
+     "output": "Scene3D/assets/buildings/raw/floatTank.glb (https://v3b.fal.media/files/b/0aad4a5b/JmbC841pxTlxmWDW2VMfr_model.glb) -> assets/parts-colony/floatTank.glb (component.py)"
+    }
+   ]
+  },
+  "silicon_foundry": {
+   "date": "2026-10-06",
+   "about": "silicon_foundry v2 components (README-colony.md recipe; concept uploaded as the style reference). No turnaround (lesson 39: the concept gives the layout).",
+   "uploads": [
+    {
+     "file": "style-library/styles/cqs-fleet/images/buildings/silicon_foundry-concept.jpg",
+     "url": "https://v3b.fal.media/files/b/0aad49e2/qr0MUoEgdI31fZSs7DRyq_silicon_foundry-concept.jpg"
+    }
+   ],
+   "jobs": [
+    {
+     "key": "roofMonitor-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-5ff2-7cd2-8778-e15677a13471",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/qr0MUoEgdI31fZSs7DRyq_silicon_foundry-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE raised roof monitor 32 x 10 x 5 m: asymmetric section, dark louvre band, off-white sloping side with skylight strips ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, nothing else in frame, no plinth, no text"
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/roofMonitor.jpg (https://v3b.fal.media/files/b/0aad49f2/kZhrNxFs_ow2Gsy1rhT1m_IXMY0amj.png)"
+    },
+    {
+     "key": "roofMonitor-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11119-4cb1-7ee0-bf1f-87ee25c798a0",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f2/kZhrNxFs_ow2Gsy1rhT1m_IXMY0amj.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 8000
+     },
+     "output": "Scene3D/assets/buildings/raw/roofMonitor.glb (https://v3b.fal.media/files/b/0aad4a20/hka7CUdMb5sJlXL9JJ0Hr_model.glb) -> assets/parts-colony/roofMonitor.glb (component.py)"
+    },
+    {
+     "key": "crystalReactor-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-60b6-7212-9213-1301a79db914",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/qr0MUoEgdI31fZSs7DRyq_silicon_foundry-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE crystal growth reactor 7 x 12 m: glowing violet-white glass chamber in a gunmetal ring frame, cabinets, round railed platform ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, nothing else in frame, no plinth, no text"
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/crystalReactor.jpg (https://v3b.fal.media/files/b/0aad49f2/EkqVe2zLCCgeI9DZCIuHh_LruiowM7.png)"
+    },
+    {
+     "key": "crystalReactor-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11119-8d9e-7f51-b315-09b07c14f65a",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f2/EkqVe2zLCCgeI9DZCIuHh_LruiowM7.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 16000
+     },
+     "output": "Scene3D/assets/buildings/raw/crystalReactor.glb (https://v3b.fal.media/files/b/0aad4a2a/fu2LtBx9nljFB7Ea3b0su_model.glb) -> assets/parts-colony/crystalReactor.glb (component.py)"
+    }
+   ]
+  },
+  "steel_depot": {
+   "date": "2026-10-06",
+   "about": "steel_depot v2 components (README-colony.md recipe; concept uploaded as the style reference). No turnaround (lesson 39: the concept gives the layout).",
+   "uploads": [
+    {
+     "file": "style-library/styles/cqs-fleet/images/buildings/steel_depot-concept.jpg",
+     "url": "https://v3b.fal.media/files/b/0aad49e2/yjoSCKnZAoXA-xn4CNPVQ_steel_depot-concept.jpg"
+    }
+   ],
+   "jobs": [
+    {
+     "key": "beamStack-image1",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-6279-7d53-986e-51bdfb2ffa92",
+     "status": "rejected",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/yjoSCKnZAoXA-xn4CNPVQ_steel_depot-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: (first wording) ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, nothing else in frame, no plinth, no text"
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49f3/ArtytNbeRhhR6MRLdeASv_WXqVTZP2.png",
+     "why": "a faded ghost layer floating over the stack; retried"
+    },
+    {
+     "key": "overheadCrane-image1",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-6196-78f0-9069-16467ad64332",
+     "status": "rejected",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/yjoSCKnZAoXA-xn4CNPVQ_steel_depot-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: (first wording) ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, nothing else in frame, no plinth, no text"
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49f2/5DKoGZZmq7mEfV-QKhGIk_i1aAOCps.png",
+     "why": "dark gradient floor with fog under the crane and the spreader floating far below: would mesh a floor; retried"
+    },
+    {
+     "key": "overheadCrane-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11119-8f2d-79b3-9a21-a05e89b91633",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/yjoSCKnZAoXA-xn4CNPVQ_steel_depot-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE amber double-girder overhead bridge crane, 32 m span, trolley, hook block, operator cab (retry: uniform background, no floor) ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, nothing else in frame, no plinth, no text"
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/overheadCrane.jpg (https://v3b.fal.media/files/b/0aad4a03/XGvZpjjXlo4vSTl3l45eH_NYV3Qf4A.png)"
+    },
+    {
+     "key": "overheadCrane-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111d-32d8-7b12-8093-7ebca85b3329",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad4a03/XGvZpjjXlo4vSTl3l45eH_NYV3Qf4A.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 14000
+     },
+     "output": "Scene3D/assets/buildings/raw/overheadCrane.glb (https://v3b.fal.media/files/b/0aad4a4c/lNj0qSXXJVVFJKFgg_gDd_model.glb) -> assets/parts-colony/overheadCrane.glb (component.py)"
+    },
+    {
+     "key": "beamStack-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11119-8ffd-7132-9bbd-531284b4b26e",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/yjoSCKnZAoXA-xn4CNPVQ_steel_depot-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE compact stack of steel sections 12 x 3.5 x 2 m on timber dunnage, amber straps (retry: no floating layers) ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, nothing else in frame, no plinth, no text"
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/beamStack.jpg (https://v3b.fal.media/files/b/0aad4a03/US2v4TfzL1CsDCtIhZ-pc_kl8fgBeg.png)"
+    },
+    {
+     "key": "beamStack-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111d-33c9-7c81-94cc-58f977665cc5",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad4a03/US2v4TfzL1CsDCtIhZ-pc_kl8fgBeg.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 6000
+     },
+     "output": "Scene3D/assets/buildings/raw/beamStack.glb (https://v3b.fal.media/files/b/0aad4a53/7VXkR4BbAPiq-gQtQgHVt_model.glb) -> assets/parts-colony/beamStack.glb (component.py)"
+    },
+    {
+     "key": "portalColumn-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-6354-7aa0-9fbf-d4b3e9f9508d",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/yjoSCKnZAoXA-xn4CNPVQ_steel_depot-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "3:4",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: ONE massive portal frame column 22 m: plated gunmetal box column, X-braced lattice bay, runway bracket, off-white clad cap ... three-quarter view from the front-left, slightly above, plain light-grey studio background, soft even light, nothing else in frame, no plinth, no text"
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/portalColumn.jpg (https://v3b.fal.media/files/b/0aad49f3/797wbKvU2YtgbEboewD_m_eeOu5qFW.png)"
+    },
+    {
+     "key": "portalColumn-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11119-8e65-79e1-bf02-2ac79d627fa5",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f3/797wbKvU2YtgbEboewD_m_eeOu5qFW.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 10000
+     },
+     "output": "Scene3D/assets/buildings/raw/portalColumn.glb (https://v3b.fal.media/files/b/0aad4a24/rrhtZut8qdCs9_cSUuN4q_model.glb) -> assets/parts-colony/portalColumn.glb (component.py)"
+    }
+   ]
+  },
+  "silicon_depot": {
+   "date": "2026-10-06",
+   "uploads": [
+    {
+     "file": "style-library/styles/cqs-fleet/images/buildings/silicon_depot-concept.jpg",
+     "url": "https://v3b.fal.media/files/b/0aad49e4/JxTnjNnW9-GnxKJffkmEr_silicon_depot-concept.jpg"
+    }
+   ],
+   "jobs": [
+    {
+     "key": "vaultBay-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-ca3e-7df0-9b61-3ecabe52943f",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e4/JxTnjNnW9-GnxKJffkmEr_silicon_depot-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "3:4",
+      "prompt": "Isolated component for an original near-future colony building kit (orbital megastructure kit for the transmitter), in exactly the style, paint, frames, markings and wear of the reference image: ONE tall vault bay module 11 x 30 x 8 m: chamfered off-white piers and hood, amber lamp bar, recessed dark 23 m vault door, guide rail with amber lamps, violet pier strip, loading block ... Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/vaultBay.jpg (https://v3b.fal.media/files/b/0aad49f9/uWNloubHgW5KTOwBiQent_pMf7UsCa.png)"
+    },
+    {
+     "key": "vaultBay-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111a-d2d9-7b61-b4b9-60f2216dff23",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f9/uWNloubHgW5KTOwBiQent_pMf7UsCa.png",
+      "face_limit": 20000,
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed"
+     },
+     "output": "assets/buildings/raw/vaultBay.glb (gitignored) -> component.py -> assets/parts-colony/vaultBay.glb"
+    },
+    {
+     "key": "rackBay-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-cb25-7f73-a725-e75545f565c3",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e4/JxTnjNnW9-GnxKJffkmEr_silicon_depot-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "3:4",
+      "prompt": "Isolated component for an original near-future colony building kit (orbital megastructure kit for the transmitter), in exactly the style, paint, frames, markings and wear of the reference image: ONE tall OPEN rack bay module 11 x 30 x 8 m: same piers and hood, open into dark racks of crated stock in five tiers with amber lamps ... Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/rackBay.jpg (https://v3b.fal.media/files/b/0aad49f9/ve0IoBAk0zifKet9q3-lS_leUM2dAi.png)"
+    },
+    {
+     "key": "rackBay-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111a-d3d7-7183-b35b-6f9c1bca22f0",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f9/ve0IoBAk0zifKet9q3-lS_leUM2dAi.png",
+      "face_limit": 30000,
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed"
+     },
+     "output": "assets/buildings/raw/rackBay.glb (gitignored) -> component.py -> assets/parts-colony/rackBay.glb"
+    },
+    {
+     "key": "entrancePorch-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-cc19-7e43-a3e7-73463c294731",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e4/JxTnjNnW9-GnxKJffkmEr_silicon_depot-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit (orbital megastructure kit for the transmitter), in exactly the style, paint, frames, markings and wear of the reference image: ONE armoured entrance porch 8 x 5.5 x 7 m: gunmetal portal, double crew door, amber lamp bar, off-white cheeks, louvred cabinet, hazard-edged ramp with amber rails and bollards ... Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/entrancePorch.jpg (https://v3b.fal.media/files/b/0aad49fc/OdbbuH_dJsORo80eO87Yp_AiDuOr56.png)"
+    },
+    {
+     "key": "entrancePorch-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111a-d4a2-7312-a925-ca9c06899f81",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49fc/OdbbuH_dJsORo80eO87Yp_AiDuOr56.png",
+      "face_limit": 15000,
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed"
+     },
+     "output": "assets/buildings/raw/entrancePorch.glb (gitignored) -> component.py -> assets/parts-colony/entrancePorch.glb"
+    }
+   ],
+   "count": 6,
+   "note": "no 4K turnaround (lesson 39; the layout is clear from the concept); one component image + one image-to-3d per component"
+  },
+  "military_base": {
+   "date": "2026-10-06",
+   "uploads": [
+    {
+     "file": "style-library/styles/cqs-fleet/images/buildings/military_base-concept.jpg",
+     "url": "https://v3b.fal.media/files/b/0aad49e4/ADNrKuCrOwI03MN_w_fcY_military_base-concept.jpg"
+    }
+   ],
+   "jobs": [
+    {
+     "key": "armouredHangar-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-cce0-79d3-9c2a-4b2b9bad5851",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e4/ADNrKuCrOwI03MN_w_fcY_military_base-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit (orbital megastructure kit for the transmitter), in exactly the style, paint, frames, markings and wear of the reference image: ONE armoured vehicle hangar 32 x 13 x 36 m: sloped chamfered concrete-clad walls, dark roof panel, wide OPEN front bay into a dark interior with amber strip lights ... Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/armouredHangar.jpg (https://v3b.fal.media/files/b/0aad49fc/g_HaW2uu4OGrVOccSCVNs_hRE6jMR0.png)"
+    },
+    {
+     "key": "armouredHangar-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111a-d581-7070-aa6e-25208b30f5f3",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49fc/g_HaW2uu4OGrVOccSCVNs_hRE6jMR0.png",
+      "face_limit": 30000,
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed"
+     },
+     "output": "assets/buildings/raw/armouredHangar.glb (gitignored) -> component.py -> assets/parts-colony/armouredHangar.glb"
+    },
+    {
+     "key": "guardTower-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-cda8-7321-9a74-1a49db54a3c4",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e4/ADNrKuCrOwI03MN_w_fcY_military_base-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "3:4",
+      "prompt": "Isolated component for an original near-future colony building kit (orbital megastructure kit for the transmitter), in exactly the style, paint, frames, markings and wear of the reference image: ONE corner guard tower 7 x 17 m: faceted dark gunmetal shaft, light observation drum with amber vision slits, antennas, sensor box ... Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/guardTower.jpg (https://v3b.fal.media/files/b/0aad49fc/4sTnDqckkuhmfRpdEJybh_59xthEUm.png)"
+    },
+    {
+     "key": "guardTower-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111b-7305-7930-b1bb-1322a8794ce1",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49fc/4sTnDqckkuhmfRpdEJybh_59xthEUm.png",
+      "face_limit": 15000,
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed"
+     },
+     "output": "assets/buildings/raw/guardTower.glb (gitignored) -> component.py -> assets/parts-colony/guardTower.glb"
+    },
+    {
+     "key": "commandBunker-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-cf52-7d13-bdbf-95cb831fccf8",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e4/ADNrKuCrOwI03MN_w_fcY_military_base-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit (orbital megastructure kit for the transmitter), in exactly the style, paint, frames, markings and wear of the reference image: ONE central command bunker 28 x 20 x 24 m: stepped faceted armoured block, recessed entrance with stair, octagonal control room with a band of lit windows, antenna cluster, radar dome ... Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/commandBunker.jpg (https://v3b.fal.media/files/b/0aad49fd/oi0nyMQe28x_2qOMZFdm0_PDycXKMN.png)"
+    },
+    {
+     "key": "commandBunker-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111b-73eb-7ba2-8397-30181c06171b",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49fd/oi0nyMQe28x_2qOMZFdm0_PDycXKMN.png",
+      "face_limit": 30000,
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed"
+     },
+     "output": "assets/buildings/raw/commandBunker.glb (gitignored) -> component.py -> assets/parts-colony/commandBunker.glb"
+    },
+    {
+     "key": "gateHouse-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-d02d-7240-af01-a2eb8acefe1b",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e4/ADNrKuCrOwI03MN_w_fcY_military_base-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "16:9",
+      "prompt": "Isolated component for an original near-future colony building kit (orbital megastructure kit for the transmitter), in exactly the style, paint, frames, markings and wear of the reference image: ONE fortified gate section 32 x 9 x 5 m: closed dark double blast gate with amber lamp bars, tapered light concrete pylons with lit slits, wall stubs, hazard apron ... Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/gateHouse.jpg (https://v3b.fal.media/files/b/0aad49fe/N4xupu4NGFO7DQKDax_-W_q2KOZ34U.png)"
+    },
+    {
+     "key": "gateHouse-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111b-74d1-7451-ab7d-ee8b7c6b226a",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49fe/N4xupu4NGFO7DQKDax_-W_q2KOZ34U.png",
+      "face_limit": 25000,
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed"
+     },
+     "output": "assets/buildings/raw/gateHouse.glb (gitignored) -> component.py -> assets/parts-colony/gateHouse.glb"
+    },
+    {
+     "key": "wallSegment-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a1111b-75bc-79c2-9cc9-3b01e5063f2e",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e4/ADNrKuCrOwI03MN_w_fcY_military_base-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "16:9",
+      "prompt": "Isolated component for an original near-future colony building kit (orbital megastructure kit for the transmitter), in exactly the style, paint, frames, markings and wear of the reference image: ONE single straight blast wall segment, ONE tier, 24 x 7 x 4 m: dark armour panels, light sloped coping, chamfered buttress piers, top railing, crew door with amber lamp; flat ends (second try: the first drew two stacked tiers) ... Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/wallSegment.jpg (https://v3b.fal.media/files/b/0aad4a09/xknZeTiniOklo6DbbXWLJ_1MF8GqAg.png)"
+    },
+    {
+     "key": "wallSegment-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111c-c924-7b61-9f31-10e2443e25b2",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad4a09/xknZeTiniOklo6DbbXWLJ_1MF8GqAg.png",
+      "face_limit": 10000,
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed"
+     },
+     "output": "assets/buildings/raw/wallSegment.glb (gitignored) -> component.py -> assets/parts-colony/wallSegment.glb"
+    },
+    {
+     "key": "wallSegment-image-try1",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-ce80-7033-9853-fff8ebc98a3a",
+     "status": "rejected",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e4/ADNrKuCrOwI03MN_w_fcY_military_base-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "16:9",
+      "prompt": "Isolated component for an original near-future colony building kit (orbital megastructure kit for the transmitter), in exactly the style, paint, frames, markings and wear of the reference image: ONE straight blast wall segment 24 x 7 x 4 m ... ... Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49fc/eEzV639ohXU8T5G9l0qxi_0Nh83SlE.png",
+     "why": "drew two stacked wall tiers; regenerated once with \"ONE tier only, not stacked\""
+    },
+    {
+     "key": "armouredCar-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-d119-7d53-9768-cefab86f7320",
+     "status": "unused",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e4/ADNrKuCrOwI03MN_w_fcY_military_base-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit (orbital megastructure kit for the transmitter), in exactly the style, paint, frames, markings and wear of the reference image: ONE six-wheeled armoured patrol vehicle 7.5 m ... ... Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49fe/qTt-lzSpfem5pP5KRW7Do_NpduYh4w.png",
+     "why": "not meshed: the fleet already has its own ground vehicle (assets/ships/vehicle.glb, V-31), instanced in the yard instead (corrections 26, 32)"
+    }
+   ],
+   "count": 12,
+   "note": "no 4K turnaround (lesson 39; the layout is clear from the concept); one component image + one image-to-3d per component"
+  },
+  "radio_telescope": {
+   "date": "2026-10-06",
+   "uploads": [
+    {
+     "file": "style-library/styles/cqs-fleet/images/buildings/radio_telescope-concept.jpg",
+     "url": "https://v3b.fal.media/files/b/0aad49e5/MnFUUHnfw_STo1TeTtrwj_radio_telescope-concept.jpg"
+    }
+   ],
+   "jobs": [
+    {
+     "key": "dishMount-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-d1e0-7360-b292-6d7fc8dad8f6",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e5/MnFUUHnfw_STo1TeTtrwj_radio_telescope-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit (orbital megastructure kit for the transmitter), in exactly the style, paint, frames, markings and wear of the reference image: ONE large radio telescope on its alt-az mount WITHOUT the base building: 34 m panelled off-white dish, gunmetal rim and backing truss, feed cabin on three lattice legs, yoke arms with bearing hubs, buttressed azimuth drum 15 m ... Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/dishMount.jpg (https://v3b.fal.media/files/b/0aad49fe/Ifz5iJT5JaF503qQglJp7_pz3dczLr.png)"
+    },
+    {
+     "key": "dishMount-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111b-c062-7fe2-9894-955c96fc4b76",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49fe/Ifz5iJT5JaF503qQglJp7_pz3dczLr.png",
+      "face_limit": 40000,
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed"
+     },
+     "output": "assets/buildings/raw/dishMount.glb (gitignored) -> component.py -> assets/parts-colony/dishMount.glb"
+    }
+   ],
+   "count": 2,
+   "note": "no 4K turnaround (lesson 39; the layout is clear from the concept); one component image + one image-to-3d per component"
+  },
+  "transmitter": {
+   "date": "2026-10-06",
+   "uploads": [
+    {
+     "file": "style-library/styles/cqs-fleet/images/buildings/transmitter-concept.jpg",
+     "url": "https://v3b.fal.media/files/b/0aad49e5/MhZi-wJRB0V93-632XikS_transmitter-concept.jpg"
+    }
+   ],
+   "jobs": [
+    {
+     "key": "ringModule-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-d2a0-7df0-aef0-3732b56ffae1",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e5/MhZi-wJRB0V93-632XikS_transmitter-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit (orbital megastructure kit for the transmitter), in exactly the style, paint, frames, markings and wear of the reference image: ONE heavy corner node module of a hexagonal orbital ring 40 x 30 x 32 m: off-white armoured boxes in gunmetal frames, tank and pipe bundles, two thruster quads with glowing amber nozzles, sensor dish, radiator fins, amber markers ... Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/ringModule.jpg (https://v3b.fal.media/files/b/0aad49fe/gJYDkI5pDy7xUVn5n0SNh_Rj5j1K7f.png)"
+    },
+    {
+     "key": "ringModule-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111b-c16b-7160-8827-fdfd7f074abd",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49fe/gJYDkI5pDy7xUVn5n0SNh_Rj5j1K7f.png",
+      "face_limit": 25000,
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed"
+     },
+     "output": "assets/buildings/raw/ringModule.glb (gitignored) -> component.py -> assets/parts-colony/ringModule.glb"
+    },
+    {
+     "key": "ringSegment-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-d375-7160-9ef7-59ec4081f121",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e5/MhZi-wJRB0V93-632XikS_transmitter-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "16:9",
+      "prompt": "Isolated component for an original near-future colony building kit (orbital megastructure kit for the transmitter), in exactly the style, paint, frames, markings and wear of the reference image: ONE straight girder segment of a hexagonal orbital ring 100 x 18 x 14 m: gunmetal box frame, bundled tanks and pipes, off-white cover panels on top, continuous cool blue light strip along one lower edge, amber edge markers ... Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/ringSegment.jpg (https://v3b.fal.media/files/b/0aad49ff/82ZKZhm0izsbspZp67pH4_sCFiwgAY.png)"
+    },
+    {
+     "key": "ringSegment-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111b-c25d-7b43-9124-44bc2c286954",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49ff/82ZKZhm0izsbspZp67pH4_sCFiwgAY.png",
+      "face_limit": 20000,
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed"
+     },
+     "output": "assets/buildings/raw/ringSegment.glb (gitignored) -> component.py -> assets/parts-colony/ringSegment.glb"
+    },
+    {
+     "key": "solarWing-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-d458-7500-bd18-e92d36b110e2",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e5/MhZi-wJRB0V93-632XikS_transmitter-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit (orbital megastructure kit for the transmitter), in exactly the style, paint, frames, markings and wear of the reference image: ONE solar array wing 34 x 24 m: two dark blue-black cell panels in a gunmetal frame with a lattice spine, boom and gimbal block, amber corner lamps ... Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/solarWing.jpg (https://v3b.fal.media/files/b/0aad4a01/jptK3dcOVpMt_H64hkdIC_4ITm1rkg.png)"
+    },
+    {
+     "key": "solarWing-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111b-c341-7ac2-bbad-dae3479c85a6",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad4a01/jptK3dcOVpMt_H64hkdIC_4ITm1rkg.png",
+      "face_limit": 10000,
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed"
+     },
+     "output": "assets/buildings/raw/solarWing.glb (gitignored) -> component.py -> assets/parts-colony/solarWing.glb"
+    },
+    {
+     "key": "dockingHub-image",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-d51a-7873-adf4-ed2dd6513e33",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e5/MhZi-wJRB0V93-632XikS_transmitter-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit (orbital megastructure kit for the transmitter), in exactly the style, paint, frames, markings and wear of the reference image: ONE round docking hub 26 x 22 m: gunmetal ring drum, docking port ringed by amber lamps with a blue core light, off-white boxes, pipes, small tanks ... Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "style-library/styles/cqs-fleet/images/buildings/components/dockingHub.jpg (https://v3b.fal.media/files/b/0aad4a01/Eyl6eN62ZWAkorskEHF9h_QKt6ejjI.png)"
+    },
+    {
+     "key": "dockingHub-mesh",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111b-c419-7202-b00f-48ce7e46b590",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad4a01/Eyl6eN62ZWAkorskEHF9h_QKt6ejjI.png",
+      "face_limit": 15000,
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed"
+     },
+     "output": "assets/buildings/raw/dockingHub.glb (gitignored) -> component.py -> assets/parts-colony/dockingHub.glb"
+    }
+   ],
+   "count": 8,
+   "note": "no 4K turnaround (lesson 39; the layout is clear from the concept); one component image + one image-to-3d per component"
+  },
+  "trade_center": {
+   "date": "2026-10-06",
+   "components": [
+    "officeTower",
+    "skyBridge",
+    "marketArcade",
+    "loadingHall"
+   ],
+   "concept_upload": "https://v3b.fal.media/files/b/0aad49e2/vinx9aHJWbltjZvrFMo4k_trade_center-concept.jpg",
+   "jobs": [
+    {
+     "key": "img-officeTower",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11116-f7e4-7461-b783-172e835fa7cb",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/vinx9aHJWbltjZvrFMo4k_trade_center-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: a free-standing office tower 18 x 16 m, 52 m: off-white cladding in gunmetal frames, dark two-storey glazed base, recessed lit window strips on two faces, roof plant, two masts. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49e9/PHi-f5zuVXL8nyK6pSlw4_mF1GKndR.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/officeTower.jpg",
+     "usedFor": "component image of officeTower"
+    },
+    {
+     "key": "mesh-officeTower",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11118-4c90-7262-97e2-a7578983f3d9",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49e9/PHi-f5zuVXL8nyK6pSlw4_mF1GKndR.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 20000
+     },
+     "output": "Scene3D/assets/buildings/raw/officeTower.glb (gitignored)",
+     "usedFor": "assets/parts-colony/officeTower.glb (component.py)"
+    },
+    {
+     "key": "img-skyBridge",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11116-f8b8-7921-b06e-771343dd232b",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/vinx9aHJWbltjZvrFMo4k_trade_center-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: a straight enclosed sky bridge segment 34 x 9 x 8 m, ends capped: dark box frame and bottom girder, lit glazing bands with mullions, light metal roof. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49e9/By_8d2OKJkS3km_uV95ot_wXQgmAg4.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/skyBridge.jpg",
+     "usedFor": "component image of skyBridge"
+    },
+    {
+     "key": "mesh-skyBridge",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11118-4d6f-71f0-b841-2a52b77df730",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49e9/By_8d2OKJkS3km_uV95ot_wXQgmAg4.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 10000
+     },
+     "output": "Scene3D/assets/buildings/raw/skyBridge.glb (gitignored)",
+     "usedFor": "assets/parts-colony/skyBridge.glb (component.py)"
+    },
+    {
+     "key": "img-marketArcade-try1",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11116-f99d-7430-8fcd-589ffe84bba7",
+     "status": "rejected",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/vinx9aHJWbltjZvrFMo4k_trade_center-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: an open market canopy 26 x 18 m, 9 m: six dark tree columns with branching brackets, three overlapping canopy roofs, stalls, planters, benches, open underneath. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "why": "ghost copy of the canopy and a basement slab"
+    },
+    {
+     "key": "img-marketArcade",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11118-30b7-7f60-bdd7-d2b815c57420",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/vinx9aHJWbltjZvrFMo4k_trade_center-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: an open market canopy 26 x 18 m, 9 m: six dark tree columns with branching brackets, three overlapping canopy roofs, stalls, planters, benches, open underneath. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad4a02/_hZUX3QCypseOv9KHL03P_W66RjQZi.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/marketArcade.jpg",
+     "usedFor": "component image of marketArcade"
+    },
+    {
+     "key": "mesh-marketArcade",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111d-e0d9-76f1-8db4-10a0c07f3d8d",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad4a02/_hZUX3QCypseOv9KHL03P_W66RjQZi.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 20000
+     },
+     "output": "Scene3D/assets/buildings/raw/marketArcade.glb (gitignored)",
+     "usedFor": "assets/parts-colony/marketArcade.glb (component.py)"
+    },
+    {
+     "key": "img-loadingHall",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11116-fa88-71f3-9cf6-609880351ed2",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/vinx9aHJWbltjZvrFMo4k_trade_center-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: a freight / loading hall 28 x 22 m, 10 m with a lower rear step: dark ribbed walls, light pilasters, two lit roller doors, crew door, dock kerb, roof units. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49e9/G5ZorMnBFZUb-lse_B6RD_ZrBKKoWt.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/loadingHall.jpg",
+     "usedFor": "component image of loadingHall"
+    },
+    {
+     "key": "mesh-loadingHall",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11118-4e4e-72c1-aad3-93794c4f24de",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49e9/G5ZorMnBFZUb-lse_B6RD_ZrBKKoWt.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 12000
+     },
+     "output": "Scene3D/assets/buildings/raw/loadingHall.glb (gitignored)",
+     "usedFor": "assets/parts-colony/loadingHall.glb (component.py)"
+    }
+   ],
+   "note": "components only (correction 38); the 4K turnaround was skipped (lesson 39: layout taken from the concept by eye)"
+  },
+  "infrastructure": {
+   "date": "2026-10-06",
+   "components": [
+    "adminWing",
+    "hubDrum",
+    "waterTower",
+    "vesselSkid"
+   ],
+   "concept_upload": "https://v3b.fal.media/files/b/0aad49e2/zvbFph5WAHQQl0QTVFv9y_infrastructure-concept.jpg",
+   "jobs": [
+    {
+     "key": "img-adminWing",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-3aba-7f63-b887-44e5e564ad53",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/zvbFph5WAHQQl0QTVFv9y_infrastructure-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: a two-storey administration wing 36 x 16 m, 9 m, rounded free end: off-white panels, dark base band and pilaster groups, ribbon windows, solar roof, HVAC. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49eb/JRpY408PHnZe56Kfuu_5W_03Fpy5Yt.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/adminWing.jpg",
+     "usedFor": "component image of adminWing"
+    },
+    {
+     "key": "mesh-adminWing",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11118-94d7-7c33-9178-7e71f80e6261",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49eb/JRpY408PHnZe56Kfuu_5W_03Fpy5Yt.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 12000
+     },
+     "output": "Scene3D/assets/buildings/raw/adminWing.glb (gitignored)",
+     "usedFor": "assets/parts-colony/adminWing.glb (component.py)"
+    },
+    {
+     "key": "img-hubDrum",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-3b85-7011-9fdf-da7093340eb9",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/zvbFph5WAHQQl0QTVFv9y_infrastructure-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: a command hub: chamfered octagonal dark base 24 m, stacked ringed drum 15 m with window band and rail, antenna cluster. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49eb/POEPQ5ZY-6-kR4PBt9Emb_nn8GgKzH.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/hubDrum.jpg",
+     "usedFor": "component image of hubDrum"
+    },
+    {
+     "key": "mesh-hubDrum",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11118-95bd-7ae1-b944-31f8dd80326b",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49eb/POEPQ5ZY-6-kR4PBt9Emb_nn8GgKzH.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 15000
+     },
+     "output": "Scene3D/assets/buildings/raw/hubDrum.glb (gitignored)",
+     "usedFor": "assets/parts-colony/hubDrum.glb (component.py)"
+    },
+    {
+     "key": "img-waterTower-try1",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-3c6e-7fe3-a58e-12cb810d513f",
+     "status": "rejected",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/zvbFph5WAHQQl0QTVFv9y_infrastructure-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: an elevated water tower 24 m: 10 m off-white tank with dark bands, open braced four-leg frame, caged ladder, riser (retry: product shot of one object only). Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "why": "drew the whole building with a fog band"
+    },
+    {
+     "key": "img-waterTower",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11118-93f8-7880-b679-33e3a5ecbdbc",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/zvbFph5WAHQQl0QTVFv9y_infrastructure-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "3:4",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: an elevated water tower 24 m: 10 m off-white tank with dark bands, open braced four-leg frame, caged ladder, riser (retry: product shot of one object only). Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad4a02/cpxcxKCqndvV5GUi-CXWe_K1ckThIp.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/waterTower.jpg",
+     "usedFor": "component image of waterTower"
+    },
+    {
+     "key": "mesh-waterTower",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111d-e1ba-7662-a168-885cc9ce8a41",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad4a02/cpxcxKCqndvV5GUi-CXWe_K1ckThIp.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 12000
+     },
+     "output": "Scene3D/assets/buildings/raw/waterTower.glb (gitignored)",
+     "usedFor": "assets/parts-colony/waterTower.glb (component.py)"
+    },
+    {
+     "key": "img-vesselSkid",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-3d36-7022-a35b-9e1ae0613d41",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/zvbFph5WAHQQl0QTVFv9y_infrastructure-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: a utility vessel skid 13 x 5 m: dark domed pressure vessels on a skid frame, pipes, valves, amber rings, off-white control cabinet. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49eb/R5epHiRWp1kqpfCFVEsIy_jIH25QI7.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/vesselSkid.jpg",
+     "usedFor": "component image of vesselSkid"
+    },
+    {
+     "key": "mesh-vesselSkid",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a11118-967a-71d3-9238-928487c5fe98",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49eb/R5epHiRWp1kqpfCFVEsIy_jIH25QI7.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 10000
+     },
+     "output": "Scene3D/assets/buildings/raw/vesselSkid.glb (gitignored)",
+     "usedFor": "assets/parts-colony/vesselSkid.glb (component.py)"
+    }
+   ],
+   "note": "components only (correction 38); the 4K turnaround was skipped (lesson 39: layout taken from the concept by eye)"
+  },
+  "residence": {
+   "date": "2026-10-06",
+   "components": [
+    "curvedTerrace",
+    "podiumSegment"
+   ],
+   "concept_upload": "https://v3b.fal.media/files/b/0aad49e2/-8P9Cwvgf1eUQCZvuOpno_residence-concept.jpg",
+   "jobs": [
+    {
+     "key": "img-curvedTerrace",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-660f-70d1-b0b8-7936ca05a3eb",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/-8P9Cwvgf1eUQCZvuOpno_residence-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: a curved 9-storey apartment block, ~48 m arc, 14 m deep, 30 m: teal accent panels, continuous balconies with lit windows, rounded end tower, roof garden and plant rooms. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49f6/ZZLQ8Ge0t94B4QP6Of0O4_AZKu6hOv.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/curvedTerrace.jpg",
+     "usedFor": "component image of curvedTerrace"
+    },
+    {
+     "key": "mesh-curvedTerrace",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111a-7443-7123-b260-2bfd70a68407",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f6/ZZLQ8Ge0t94B4QP6Of0O4_AZKu6hOv.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 25000
+     },
+     "output": "Scene3D/assets/buildings/raw/curvedTerrace.glb (gitignored)",
+     "usedFor": "assets/parts-colony/curvedTerrace.glb (component.py)"
+    },
+    {
+     "key": "img-podiumSegment",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-66e0-7873-876f-def937b9d399",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/-8P9Cwvgf1eUQCZvuOpno_residence-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: a two-storey apartment podium segment 40 x 12 m, 8 m: entrance portals, louvres, teal panels, roof terrace with railing and planters. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49f6/pq7-3sgWqRCdE13m_YB8O_8dMX3few.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/podiumSegment.jpg",
+     "usedFor": "component image of podiumSegment"
+    },
+    {
+     "key": "mesh-podiumSegment",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111a-753f-7842-923c-58e3b0a19417",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f6/pq7-3sgWqRCdE13m_YB8O_8dMX3few.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 10000
+     },
+     "output": "Scene3D/assets/buildings/raw/podiumSegment.glb (gitignored)",
+     "usedFor": "assets/parts-colony/podiumSegment.glb (component.py)"
+    }
+   ],
+   "note": "components only (correction 38); the 4K turnaround was skipped (lesson 39: layout taken from the concept by eye)"
+  },
+  "university": {
+   "date": "2026-10-06",
+   "components": [
+    "facetedWing",
+    "atriumHall",
+    "obsDome"
+   ],
+   "concept_upload": "https://v3b.fal.media/files/b/0aad49e2/4lJ4NqWKwoFJTM-WXxkYP_university-concept.jpg",
+   "jobs": [
+    {
+     "key": "img-facetedWing",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-c648-7f32-b6af-b0821cba9c79",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/4lJ4NqWKwoFJTM-WXxkYP_university-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: a faceted university wing 40 x 24 m, 17 m: battered stone walls, dark finned chamfered corners, tinted glazing bands, dark base, roof units. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49f6/6AJzmWEegCa_dCchJ8oJ5_ReZ7wY2i.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/facetedWing.jpg",
+     "usedFor": "component image of facetedWing"
+    },
+    {
+     "key": "mesh-facetedWing",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111a-ccd8-7571-ad7c-3a652a641508",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f6/6AJzmWEegCa_dCchJ8oJ5_ReZ7wY2i.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 12000
+     },
+     "output": "Scene3D/assets/buildings/raw/facetedWing.glb (gitignored)",
+     "usedFor": "assets/parts-colony/facetedWing.glb (component.py)"
+    },
+    {
+     "key": "img-atriumHall",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-c71c-7e72-9ea1-dae058e2ad48",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/4lJ4NqWKwoFJTM-WXxkYP_university-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: a glazed faceted atrium hall ~34 m, 16 m: faceted pyramidal glass roof, stone buttress fins, glazed lit walls, entrance canopy on columns. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49f6/8r1cT_bLGkfMdhuPpTfn5_ymf8NyOY.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/atriumHall.jpg",
+     "usedFor": "component image of atriumHall"
+    },
+    {
+     "key": "mesh-atriumHall",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111a-7618-79c1-9a7a-911822c58e3b",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f6/8r1cT_bLGkfMdhuPpTfn5_ymf8NyOY.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 20000
+     },
+     "output": "Scene3D/assets/buildings/raw/atriumHall.glb (gitignored)",
+     "usedFor": "assets/parts-colony/atriumHall.glb (component.py)"
+    },
+    {
+     "key": "img-obsDome",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-c7fc-7240-bef1-f5557f083dec",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/4lJ4NqWKwoFJTM-WXxkYP_university-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: a rooftop observatory: 9 m silver dome with slit shutter on a 10 m drum with dark band, door, railing. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49f7/HWtzkPbv80CQTPY78ygaR_FK359Dwl.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/obsDome.jpg",
+     "usedFor": "component image of obsDome"
+    },
+    {
+     "key": "mesh-obsDome",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111a-f27d-76b3-96df-8f45c4affc75",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f7/HWtzkPbv80CQTPY78ygaR_FK359Dwl.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 8000
+     },
+     "output": "Scene3D/assets/buildings/raw/obsDome.glb (gitignored)",
+     "usedFor": "assets/parts-colony/obsDome.glb (component.py)"
+    }
+   ],
+   "note": "components only (correction 38); the 4K turnaround was skipped (lesson 39: layout taken from the concept by eye)"
+  },
+  "library": {
+   "date": "2026-10-06",
+   "components": [
+    "portalTower",
+    "steppedWing",
+    "monumentPylon"
+   ],
+   "concept_upload": "https://v3b.fal.media/files/b/0aad49e2/Pzy6Vlq-Vj_BGpxNsRTFf_library-concept.jpg",
+   "jobs": [
+    {
+     "key": "img-portalTower",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-c90d-7301-9057-1eefb4e34372",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/Pzy6Vlq-Vj_BGpxNsRTFf_library-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: a monumental portal tower 24 x 20 m, 46 m: tall gold-lit glazed slot, dark fins, sloping buttresses, lit bronze entrance, stepped crown. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49f7/tPgwgV-2UYSzagYlugzS6_IajBnggD.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/portalTower.jpg",
+     "usedFor": "component image of portalTower"
+    },
+    {
+     "key": "mesh-portalTower",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111a-f36f-7522-b9b4-439a0670bf5e",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f7/tPgwgV-2UYSzagYlugzS6_IajBnggD.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 20000
+     },
+     "output": "Scene3D/assets/buildings/raw/portalTower.glb (gitignored)",
+     "usedFor": "assets/parts-colony/portalTower.glb (component.py)"
+    },
+    {
+     "key": "img-steppedWing",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-c9ec-7361-8300-2212cdef8d62",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/Pzy6Vlq-Vj_BGpxNsRTFf_library-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: a stepped monumental archive wing 36 x 40 m, 34 m: battered lower tier with dark slot windows on a dark base course, three set-back tiers with lit window bands. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49f9/O5X5dQsW9X6_3dt0GEwQL_YcjIBs6P.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/steppedWing.jpg",
+     "usedFor": "component image of steppedWing"
+    },
+    {
+     "key": "mesh-steppedWing",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111a-f443-74c1-a70a-504b1c3452f9",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f9/O5X5dQsW9X6_3dt0GEwQL_YcjIBs6P.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 15000
+     },
+     "output": "Scene3D/assets/buildings/raw/steppedWing.glb (gitignored)",
+     "usedFor": "assets/parts-colony/steppedWing.glb (component.py)"
+    },
+    {
+     "key": "img-monumentPylon",
+     "endpoint": "fal-ai/nano-banana-pro/edit",
+     "requestId": "01a11117-cae4-7941-95c3-d2db4439d2b0",
+     "status": "used",
+     "inputs": {
+      "image_urls": [
+       "https://v3b.fal.media/files/b/0aad49e2/Pzy6Vlq-Vj_BGpxNsRTFf_library-concept.jpg"
+      ],
+      "resolution": "2K",
+      "aspect_ratio": "4:3",
+      "prompt": "Isolated component for an original near-future colony building kit, in exactly the style, paint, frames, markings and wear of the reference image: a monumental pylon 10 m: dark stepped base with amber lamps, tapering bronze-grey shaft with gold-lit slots, stepped cap. Three-quarter view from the front-left, slightly above, on a plain light-grey studio background, soft even light, no shadows on the background, nothing else in frame, no plinth, no text."
+     },
+     "output": "https://v3b.fal.media/files/b/0aad49f9/cb_kQv6gEudjHaLVJcYQ6_L0jLq814.png",
+     "saved": "style-library/styles/cqs-fleet/images/buildings/components/monumentPylon.jpg",
+     "usedFor": "component image of monumentPylon"
+    },
+    {
+     "key": "mesh-monumentPylon",
+     "endpoint": "tripo3d/h3.1/image-to-3d",
+     "requestId": "01a1111a-f557-7911-9a04-2db398907478",
+     "status": "used",
+     "inputs": {
+      "image_url": "https://v3b.fal.media/files/b/0aad49f9/cb_kQv6gEudjHaLVJcYQ6_L0jLq814.png",
+      "texture": true,
+      "pbr": true,
+      "texture_quality": "detailed",
+      "geometry_quality": "detailed",
+      "face_limit": 4000
+     },
+     "output": "Scene3D/assets/buildings/raw/monumentPylon.glb (gitignored)",
+     "usedFor": "assets/parts-colony/monumentPylon.glb (component.py)"
+    }
+   ],
+   "note": "components only (correction 38); the 4K turnaround was skipped (lesson 39: layout taken from the concept by eye)"
+  }
  }
 }

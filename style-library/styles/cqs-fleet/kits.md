@@ -185,6 +185,47 @@ Fal-made components (an isolated component image with nano-banana-pro/edit in th
 | pourBay | 19 x 15.5 x 26 | open pour bay, opens +X: amber crane, glowing runner (emissive), ladle car |
 | skipGallery | 6 x 46 x 28 | inclined covered conveyor, low end with drive house at +Z |
 | shedSegment | 28 x 24 x 36 | shed segment, windowed long face +X, gables +-Z; segments abut along Z |
+| officeTower | 20.9 x 50 x 21.6 | 50 m office tower, lit window strips on +X and +Z, dark glazed base, roof plant (trade center x2) |
+| skyBridge | 11.1 x 11.3 x 42 | glazed sky bridge segment, long along Z (turn 90 to span X); give it a warm glow box inside |
+| marketArcade | 28 x 10.1 x 23.2 | open market canopy on tree columns with stalls, long along X, front +Z |
+| loadingHall | 17.8 x 9.6 x 28 | dark ribbed freight hall, roller doors on +X, lower step at +Z |
+| adminWing | 17.7 x 14.5 x 36 | two-storey admin wing with rounded ends, ribbon windows, solar roof (infrastructure x4) |
+| hubDrum | 26 x 26.6 x 27.6 | command hub: dark octagonal base, ringed drum, antenna cluster |
+| waterTower | 9.4 x 24 x 10.3 | elevated tank on an open braced frame |
+| vesselSkid | 4.4 x 6.1 x 13 | four dark domed vessels, header with valves, cabinet at +Z (infrastructure x3; any utility yard) |
+| curvedTerrace | 17.4 x 32 x 52.5 | curved 10-storey apartment block, balconies on +X, rounded tower at +Z (residence x3) |
+| podiumSegment | 14.9 x 12.5 x 40 | two-storey podium with entrances on +X and a roof terrace |
+| facetedWing | 40 x 15.7 x 16.9 | battered faceted teaching wing, long along X, glazing +Z; stretch per axis (university x3 at [0.8, 1.3, 1.35]) |
+| atriumHall | 34 x 17.8 x 34 | faceted glass atrium hall, canopy on +X |
+| obsDome | 10 x 9.2 x 9.9 | rooftop observatory dome on a drum (university x2) |
+| portalTower | 24 x 46 x 28 | monumental tower with a gold-lit glazed slot on +X (library) |
+| steppedWing | 40 x 31.8 x 40 | stepped battered archive block, front +Z (library x2 at 1.15) |
+| monumentPylon | 3.9 x 10 x 3.9 | lit pylon on a stepped base (library x6) |
+| distColumn | 6.8 x 40 x 5.8 | 40 m distillation column, amber platforms and caged ladder (refinery x3 at 1.25 / 0.98 / 0.7) |
+| htankSkid | 5.5 x 6.7 x 13 | capsule pressure tank on concrete saddles, valves, amber railed end platform at +Z |
+| processVessel | 17.5 x 32 x 17.7 | banded process vessel ~12 m across, cobalt band, stepped gunmetal head, riser pipes (processing plant x3) |
+| bandedLowTank | 28 x 16.1 x 27.6 | low round tank, cobalt band, railed roof with fan hatch |
+| plantBlock | 15.8 x 14 x 26 | armoured plant / control block, chamfered, cargo door on +X, roof HVAC |
+| bottleSkid | 3 x 4.6 x 7 | three domed gas bottles on a skid frame |
+| floatTank | 29 x 17.3 x 29 | floating-roof oil tank, amber lines, railed roof, stair tower and gauge hut (oil tanks x3 at 1.06) |
+| roofMonitor | 10 x 5.5 x 40 | clerestory roof monitor, louvres on +X, runs along Z (silicon foundry x6; steel depot roof lights at 0.7) |
+| crystalReactor | 15.1 x 12 x 14.5 | crystal growth reactor on a railed platform; glass came out opaque: light it with violet glow boxes |
+| overheadCrane | 13.4 x 8.9 x 32 | amber double-girder bridge crane, span along Z, cab, trolley, hook (steel depot, span x1.5) |
+| beamStack | 3.6 x 2.6 x 12 | stack of steel sections on dunnage with amber straps, along Z; stacks at 2.62 m |
+| portalColumn | 6.3 x 22 x 7.2 | massive plated portal column with a braced lattice bay (+X) and a clad cap |
+| vaultBay | 9 x 30 x 12.5 | sealed vault bay: chamfered off-white piers and hood, amber lamp bar, 23 m dark vault door, violet pier strip; front +X (heading -90), 12.5 m pitch side by side (silicon depot x3) |
+| rackBay | 9 x 30 x 12.5 | the same bay open onto racks of crated stock in five tiers with amber lamps; front +X (silicon depot) |
+| entrancePorch | 8 x 5.2 x 8.9 | armoured double-door porch with a hazard-edged ramp, amber rails and bollards; ramp +X |
+| armouredHangar | 34 x 11 x 30 | armoured vehicle hangar, sloped clad walls, dark roof panel, 20 m open bay +X (military base x2 at 1.2) |
+| guardTower | 8.7 x 17 x 8.2 | faceted gunmetal tower, light observation drum with amber slits, antennas (military base x4 at 0.85) |
+| wallSegment | 6.7 x 6.6 x 24 | blast wall: dark armour panels, light coping, buttress piers, top rail, crew door +X; abut along Z |
+| gateHouse | 9.1 x 9 x 32 | fortified gate: dark double blast gate, light tapered pylons, lit slits, wall stubs; gate +X, along Z |
+| commandBunker | 29.9 x 19.1 x 30 | stepped armoured bunker, lit control-room band, antenna cluster, radar dome; entrance +X |
+| dishMount | 26.9 x 32.9 x 33 | radio dish (~32 m) with feed tripod on a yoke and azimuth drum; dish faces +X, drum centre at x -3.45 (radio telescope at 1.3) |
+| ringModule | 26.2 x 24.6 x 40 | orbital ring corner node: armoured boxes, tanks, thruster quad at +Z, sensor dish (transmitter x6 at 2.2) |
+| ringSegment | 20 x 14 x 104 | orbital ring girder: frame, tanks and pipes, light top covers, blue light strip on +X; along Z (transmitter x12) |
+| solarWing | 15.9 x 17.7 x 34 | solar array wing on a boom (boom -Z), panels rolled ~45 deg about Z (transmitter x5 at 2.5, rolled flat) |
+| dockingHub | 25.5 x 25.5 x 26 | round docking drum, port ringed by amber lamps with a blue core on +X (transmitter at 1.4) |
 
 ## Built into asset scripts (not kit files)
 

@@ -528,6 +528,2457 @@
    },
    "kb": 472,
    "seconds": 3.3
+  },
+  "skyBridge": {
+   "file": "skyBridge.glb",
+   "part": "skyBridge",
+   "about": "enclosed glazed sky bridge segment: dark box frame and bottom girder, warm-lit glazing bands with mullions, light metal roof",
+   "bbox": {
+    "min": [
+     -5.537,
+     0.0,
+     -21.0
+    ],
+    "max": [
+     5.537,
+     11.349,
+     21.0
+    ],
+    "size": [
+     11.074,
+     11.349,
+     42.0
+    ]
+   },
+   "tris": 5997,
+   "trisRaw": 8330,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/skyBridge.jpg",
+   "fal": [
+    "01a11116-f8b8-7921-b06e-771343dd232b",
+    "01a11118-4d6f-71f0-b841-2a52b77df730"
+   ],
+   "usedBy": [
+    "trade_center"
+   ],
+   "hot": 0.75,
+   "hotTexels": 1,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.75,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 42.0,
+    "size": null,
+    "tris": 6000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 432,
+   "seconds": 7.8
+  },
+  "distColumn": {
+   "file": "distColumn.glb",
+   "part": "distColumn",
+   "about": "40 m distillation column (shell ~4 m, slimmed 0.65 in plan to the concept's ratio): off-white shell with gunmetal seams, dark skirt, four ring platforms with amber rails, caged amber ladder, domed head with valve and amber lamp",
+   "bbox": {
+    "min": [
+     -3.4,
+     0.0,
+     -2.9
+    ],
+    "max": [
+     3.4,
+     40.0,
+     2.9
+    ],
+    "size": [
+     6.8,
+     40.0,
+     5.8
+    ]
+   },
+   "tris": 11787,
+   "trisRaw": 18629,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/distColumn.jpg",
+   "fal": [
+    "01a11117-5a2f-7b93-8e7c-5315b36c54fb",
+    "01a11118-543c-7311-a42a-7a573d6ec09d"
+   ],
+   "usedBy": [
+    "refinery"
+   ],
+   "hot": 0.8,
+   "hotTexels": 622345,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": [
+     6.8,
+     40.0,
+     5.8
+    ],
+    "tris": 12000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 770,
+   "seconds": 7.4
+  },
+  "loadingHall": {
+   "file": "loadingHall.glb",
+   "part": "loadingHall",
+   "about": "freight / loading hall 28 x 22 m, 10 m: dark ribbed walls, light pilasters, two lit roller doors, dock kerb, roof units and rails, lower rear step",
+   "bbox": {
+    "min": [
+     -8.897,
+     0.0,
+     -14.0
+    ],
+    "max": [
+     8.897,
+     9.635,
+     14.0
+    ],
+    "size": [
+     17.794,
+     9.635,
+     28.0
+    ]
+   },
+   "tris": 5991,
+   "trisRaw": 8739,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/loadingHall.jpg",
+   "fal": [
+    "01a11116-fa88-71f3-9cf6-609880351ed2",
+    "01a11118-4e4e-72c1-aad3-93794c4f24de"
+   ],
+   "usedBy": [
+    "trade_center"
+   ],
+   "hot": 0.75,
+   "hotTexels": 18217,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.75,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 28.0,
+    "size": null,
+    "tris": 6000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 439,
+   "seconds": 11.7
+  },
+  "adminWing": {
+   "file": "adminWing.glb",
+   "part": "adminWing",
+   "about": "two-storey admin wing 36 x 16 m, 9 m: rounded ends, off-white panels, dark base band and pilaster groups, ribbon windows, solar roof and HVAC",
+   "bbox": {
+    "min": [
+     -8.84,
+     0.0,
+     -18.0
+    ],
+    "max": [
+     8.84,
+     14.533,
+     18.0
+    ],
+    "size": [
+     17.68,
+     14.533,
+     36.0
+    ]
+   },
+   "tris": 5997,
+   "trisRaw": 9907,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/adminWing.jpg",
+   "fal": [
+    "01a11117-3aba-7f63-b887-44e5e564ad53",
+    "01a11118-94d7-7c33-9178-7e71f80e6261"
+   ],
+   "usedBy": [
+    "infrastructure"
+   ],
+   "hot": 0.75,
+   "hotTexels": 39061,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.75,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 36.0,
+    "size": null,
+    "tris": 6000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 444,
+   "seconds": 12.3
+  },
+  "vesselSkid": {
+   "file": "vesselSkid.glb",
+   "part": "vesselSkid",
+   "about": "utility skid 13 x 5 m: four dark domed pressure vessels on a skid frame, header pipe with valves and amber rings, off-white control cabinet",
+   "bbox": {
+    "min": [
+     -2.216,
+     0.0,
+     -6.5
+    ],
+    "max": [
+     2.216,
+     6.107,
+     6.5
+    ],
+    "size": [
+     4.432,
+     6.107,
+     13.0
+    ]
+   },
+   "tris": 5997,
+   "trisRaw": 9124,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/vesselSkid.jpg",
+   "fal": [
+    "01a11117-3d36-7022-a35b-9e1ae0613d41",
+    "01a11118-967a-71d3-9238-928487c5fe98"
+   ],
+   "usedBy": [
+    "infrastructure"
+   ],
+   "hot": 0.8,
+   "hotTexels": 102,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 13.0,
+    "size": null,
+    "tris": 6000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 403,
+   "seconds": 12.5
+  },
+  "officeTower": {
+   "file": "officeTower.glb",
+   "part": "officeTower",
+   "about": "office tower 20 x 18 m, 50 m: off-white panels in gunmetal frames, recessed lit window strips on two faces, dark glazed two-storey base, roof plant and masts",
+   "bbox": {
+    "min": [
+     -10.428,
+     0.0,
+     -10.783
+    ],
+    "max": [
+     10.428,
+     50.0,
+     10.783
+    ],
+    "size": [
+     20.856,
+     50.0,
+     21.566
+    ]
+   },
+   "tris": 8997,
+   "trisRaw": 16575,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/officeTower.jpg",
+   "fal": [
+    "01a11116-f7e4-7461-b783-172e835fa7cb",
+    "01a11118-4c90-7262-97e2-a7578983f3d9"
+   ],
+   "usedBy": [
+    "trade_center"
+   ],
+   "hot": 0.75,
+   "hotTexels": 5275,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.75,
+    "height": 50.0,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": null,
+    "tris": 9000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 950,
+   "seconds": 17.6
+  },
+  "hubDrum": {
+   "file": "hubDrum.glb",
+   "part": "hubDrum",
+   "about": "command hub: chamfered octagonal dark base 26 m across with glazing and light pilasters, ringed off-white / dark drum with window band and rail, antenna cluster",
+   "bbox": {
+    "min": [
+     -13.0,
+     0.0,
+     -13.788
+    ],
+    "max": [
+     13.0,
+     26.586,
+     13.788
+    ],
+    "size": [
+     26.0,
+     26.586,
+     27.576
+    ]
+   },
+   "tris": 8000,
+   "trisRaw": 11348,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/hubDrum.jpg",
+   "fal": [
+    "01a11117-3b85-7011-9fdf-da7093340eb9",
+    "01a11118-95bd-7ae1-b944-31f8dd80326b"
+   ],
+   "usedBy": [
+    "infrastructure"
+   ],
+   "hot": 0.8,
+   "hotTexels": 0,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": 26.0,
+    "long": null,
+    "size": null,
+    "tris": 8000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 766,
+   "seconds": 12.7
+  },
+  "htankSkid": {
+   "file": "htankSkid.glb",
+   "part": "htankSkid",
+   "about": "capsule pressure tank skid: 13 m light-steel capsule with gunmetal straps on two concrete saddles, top valves and nozzles, amber railed end platform with ladder and lamp",
+   "bbox": {
+    "min": [
+     -2.756,
+     0.0,
+     -6.5
+    ],
+    "max": [
+     2.756,
+     6.679,
+     6.5
+    ],
+    "size": [
+     5.512,
+     6.679,
+     13.0
+    ]
+   },
+   "tris": 8000,
+   "trisRaw": 11538,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/htankSkid.jpg",
+   "fal": [
+    "01a11117-5b08-7a33-904d-5291f6538c88",
+    "01a11118-7267-7601-bb84-49400e1aefa2"
+   ],
+   "usedBy": [
+    "refinery"
+   ],
+   "hot": 0.8,
+   "hotTexels": 29159,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 13.0,
+    "size": null,
+    "tris": 8000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 562,
+   "seconds": 9.2
+  },
+  "bandedLowTank": {
+   "file": "bandedLowTank.glb",
+   "part": "bandedLowTank",
+   "about": "low round storage tank 28 m across, 13 m: off-white panelled wall, broad cobalt band, gunmetal bottom course, light roof with perimeter railing and central fan hatch, side pipes and ladder, amber rim lamps",
+   "bbox": {
+    "min": [
+     -14.0,
+     0.0,
+     -13.783
+    ],
+    "max": [
+     14.0,
+     16.083,
+     13.783
+    ],
+    "size": [
+     28.0,
+     16.083,
+     27.566
+    ]
+   },
+   "tris": 10971,
+   "trisRaw": 14204,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/bandedLowTank.jpg",
+   "fal": [
+    "01a11117-5ccb-70c2-97a7-f78304b0e452",
+    "01a11119-2307-7a53-be29-1912ac5abf49"
+   ],
+   "usedBy": [
+    "processing_plant"
+   ],
+   "hot": 0.8,
+   "hotTexels": 291,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": 28.0,
+    "long": null,
+    "size": null,
+    "tris": 12000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 943,
+   "seconds": 15.2
+  },
+  "processVessel": {
+   "file": "processVessel.glb",
+   "part": "processVessel",
+   "about": "banded process vessel ~11 m across, 32 m to the antennas: off-white panelled shell, broad cobalt band, gunmetal base ring and stepped domed head with railing and masts, two riser pipes, louvred vent, amber lamps",
+   "bbox": {
+    "min": [
+     -8.725,
+     0.0,
+     -8.86
+    ],
+    "max": [
+     8.725,
+     32.0,
+     8.86
+    ],
+    "size": [
+     17.45,
+     32.0,
+     17.72
+    ]
+   },
+   "tris": 13907,
+   "trisRaw": 18778,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/processVessel.jpg",
+   "fal": [
+    "01a11117-5bf7-75d0-85fc-d761500f3d9b",
+    "01a11119-222e-7bc3-8073-8c07e3a3d6df"
+   ],
+   "usedBy": [
+    "processing_plant"
+   ],
+   "hot": 0.8,
+   "hotTexels": 14185,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": 32.0,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": null,
+    "tris": 14000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 917,
+   "seconds": 15.7
+  },
+  "podiumSegment": {
+   "file": "podiumSegment.glb",
+   "part": "podiumSegment",
+   "about": "two-storey podium segment 40 x 12 m, 8 m: off-white panels, dark recessed lit entrance portals, louvres, teal accent panels, roof terrace with railing and planters",
+   "bbox": {
+    "min": [
+     -7.433,
+     0.0,
+     -20.0
+    ],
+    "max": [
+     7.433,
+     12.454,
+     20.0
+    ],
+    "size": [
+     14.866,
+     12.454,
+     40.0
+    ]
+   },
+   "tris": 5997,
+   "trisRaw": 8454,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/podiumSegment.jpg",
+   "fal": [
+    "01a11117-66e0-7873-876f-def937b9d399",
+    "01a1111a-753f-7842-923c-58e3b0a19417"
+   ],
+   "usedBy": [
+    "residence"
+   ],
+   "hot": 0.75,
+   "hotTexels": 13280,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.75,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 40.0,
+    "size": null,
+    "tris": 6000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 404,
+   "seconds": 8.9
+  },
+  "curvedTerrace": {
+   "file": "curvedTerrace.glb",
+   "part": "curvedTerrace",
+   "about": "curved 9-storey apartment block, ~48 m arc, 30 m: off-white panels, teal accent panels, continuous curved balconies with dark rails and lit windows, rounded end tower, roof garden and plant rooms",
+   "bbox": {
+    "min": [
+     -8.689,
+     0.0,
+     -26.248
+    ],
+    "max": [
+     8.689,
+     32.0,
+     26.248
+    ],
+    "size": [
+     17.378,
+     32.0,
+     52.496
+    ]
+   },
+   "tris": 11996,
+   "trisRaw": 23061,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/curvedTerrace.jpg",
+   "fal": [
+    "01a11117-660f-70d1-b0b8-7936ca05a3eb",
+    "01a1111a-7443-7123-b260-2bfd70a68407"
+   ],
+   "usedBy": [
+    "residence"
+   ],
+   "hot": 0.75,
+   "hotTexels": 30220,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.75,
+    "height": 32.0,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": null,
+    "tris": 12000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 1221,
+   "seconds": 14.6
+  },
+  "atriumHall": {
+   "file": "atriumHall.glb",
+   "part": "atriumHall",
+   "about": "glazed faceted atrium hall ~34 m, 16 m: faceted pyramidal glass roof in dark frames, stone buttress fins, glazed lit walls, entrance canopy on columns",
+   "bbox": {
+    "min": [
+     -17.0,
+     0.0,
+     -17.012
+    ],
+    "max": [
+     17.0,
+     17.754,
+     17.012
+    ],
+    "size": [
+     34.0,
+     17.754,
+     34.024
+    ]
+   },
+   "tris": 9997,
+   "trisRaw": 17156,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/atriumHall.jpg",
+   "fal": [
+    "01a11117-c71c-7e72-9ea1-dae058e2ad48",
+    "01a1111a-7618-79c1-9a7a-911822c58e3b"
+   ],
+   "usedBy": [
+    "university"
+   ],
+   "hot": 0.75,
+   "hotTexels": 0,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.75,
+    "height": null,
+    "length": null,
+    "width": 34.0,
+    "long": null,
+    "size": null,
+    "tris": 10000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 882,
+   "seconds": 13.7
+  },
+  "obsDome": {
+   "file": "obsDome.glb",
+   "part": "obsDome",
+   "about": "rooftop observatory: 9 m silver dome with slit shutter on a 10 m off-white drum with a dark band, door, railing",
+   "bbox": {
+    "min": [
+     -5.0,
+     0.0,
+     -4.954
+    ],
+    "max": [
+     5.0,
+     9.195,
+     4.954
+    ],
+    "size": [
+     10.0,
+     9.195,
+     9.908
+    ]
+   },
+   "tris": 4406,
+   "trisRaw": 5939,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/obsDome.jpg",
+   "fal": [
+    "01a11117-c7fc-7240-bef1-f5557f083dec",
+    "01a1111a-f27d-76b3-96df-8f45c4affc75"
+   ],
+   "usedBy": [
+    "university"
+   ],
+   "hot": 0.8,
+   "hotTexels": 35,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": 10.0,
+    "long": null,
+    "size": null,
+    "tris": 5000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 339,
+   "seconds": 8.4
+  },
+  "portalTower": {
+   "file": "portalTower.glb",
+   "part": "portalTower",
+   "about": "monumental portal tower 28 m wide, 46 m: stone walls, tall gold-lit glazed slot with dark fins, sloping buttresses, lit bronze entrance, stepped crown (front = its +X face)",
+   "bbox": {
+    "min": [
+     -12.0,
+     0.0,
+     -14.0
+    ],
+    "max": [
+     12.0,
+     46.0,
+     14.0
+    ],
+    "size": [
+     24.0,
+     46.0,
+     28.0
+    ]
+   },
+   "tris": 9994,
+   "trisRaw": 15857,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/portalTower.jpg",
+   "fal": [
+    "01a11117-c90d-7301-9057-1eefb4e34372",
+    "01a1111a-f36f-7522-b9b4-439a0670bf5e"
+   ],
+   "usedBy": [
+    "library"
+   ],
+   "hot": 0.7,
+   "hotTexels": 385196,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.7,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": [
+     24.0,
+     46.0,
+     28.0
+    ],
+    "tris": 10000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 891,
+   "seconds": 13.2
+  },
+  "bottleSkid": {
+   "file": "bottleSkid.glb",
+   "part": "bottleSkid",
+   "about": "gas bottle skid 7 x 3 m: three domed 2 m steel bottles with gunmetal bands on a dark skid frame, linking pipes, valves and gauges, amber kick rail",
+   "bbox": {
+    "min": [
+     -1.494,
+     0.0,
+     -3.5
+    ],
+    "max": [
+     1.494,
+     4.601,
+     3.5
+    ],
+    "size": [
+     2.988,
+     4.601,
+     7.0
+    ]
+   },
+   "tris": 6000,
+   "trisRaw": 8274,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/bottleSkid.jpg",
+   "fal": [
+    "01a11117-5e67-7581-b0ad-02a13ff009ba",
+    "01a11119-24b4-7ba0-b71c-5096e898e4d7"
+   ],
+   "usedBy": [
+    "processing_plant"
+   ],
+   "hot": 0.0,
+   "hotTexels": 0,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.0,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 7.0,
+    "size": null,
+    "tris": 6000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 409,
+   "seconds": 4.0
+  },
+  "monumentPylon": {
+   "file": "monumentPylon.glb",
+   "part": "monumentPylon",
+   "about": "monumental pylon 10 m: dark stepped base with amber corner lamps, tapering bronze-grey shaft with gold-lit slots, stepped cap",
+   "bbox": {
+    "min": [
+     -1.967,
+     0.0,
+     -1.962
+    ],
+    "max": [
+     1.967,
+     10.0,
+     1.962
+    ],
+    "size": [
+     3.934,
+     10.0,
+     3.924
+    ]
+   },
+   "tris": 1499,
+   "trisRaw": 3107,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/monumentPylon.jpg",
+   "fal": [
+    "01a11117-cae4-7941-95c3-d2db4439d2b0",
+    "01a1111a-f557-7911-9a04-2db398907478"
+   ],
+   "usedBy": [
+    "library"
+   ],
+   "hot": 0.6,
+   "hotTexels": 1484636,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.6,
+    "height": 10.0,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": null,
+    "tris": 1500,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 228,
+   "seconds": 8.4
+  },
+  "roofMonitor": {
+   "file": "roofMonitor.glb",
+   "part": "roofMonitor",
+   "about": "raised roof monitor (clerestory ridge) 10 x 5.5 x 40 m: asymmetric section, dark louvre band on the steep side, off-white panels and skylight strips on the slope, gunmetal end caps and base flange; abut or stretch along Z",
+   "bbox": {
+    "min": [
+     -5.0,
+     0.0,
+     -20.0
+    ],
+    "max": [
+     5.0,
+     5.5,
+     20.0
+    ],
+    "size": [
+     10.0,
+     5.5,
+     40.0
+    ]
+   },
+   "tris": 4521,
+   "trisRaw": 5983,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/roofMonitor.jpg",
+   "fal": [
+    "01a11117-5ff2-7cd2-8778-e15677a13471",
+    "01a11119-4cb1-7ee0-bf1f-87ee25c798a0"
+   ],
+   "usedBy": [
+    "silicon_foundry"
+   ],
+   "hot": 0.0,
+   "hotTexels": 0,
+   "params": {
+    "rot": [
+     0.0,
+     90.0,
+     0.0
+    ],
+    "hotV": 0.0,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": [
+     10.0,
+     5.5,
+     40.0
+    ],
+    "tris": 5000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 357,
+   "seconds": 3.0
+  },
+  "crystalReactor": {
+   "file": "crystalReactor.glb",
+   "part": "crystalReactor",
+   "about": "crystal growth reactor 12 m: glass chamber (reconstructed opaque: add a violet glow box inside) in a gunmetal ring frame with collars and posts, service cabinets and pipes on a round railed platform with steps",
+   "bbox": {
+    "min": [
+     -7.533,
+     0.0,
+     -7.265
+    ],
+    "max": [
+     7.533,
+     12.0,
+     7.265
+    ],
+    "size": [
+     15.066,
+     12.0,
+     14.53
+    ]
+   },
+   "tris": 10737,
+   "trisRaw": 14078,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/crystalReactor.jpg",
+   "fal": [
+    "01a11117-60b6-7212-9213-1301a79db914",
+    "01a11119-8d9e-7f51-b315-09b07c14f65a"
+   ],
+   "usedBy": [
+    "silicon_foundry"
+   ],
+   "hot": 0.0,
+   "hotTexels": 0,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.0,
+    "height": 12.0,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": null,
+    "tris": 12000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 598,
+   "seconds": 3.5
+  },
+  "portalColumn": {
+   "file": "portalColumn.glb",
+   "part": "portalColumn",
+   "about": "portal frame column 22 m: dark plated box column with an X-braced lattice bay, runway bracket, off-white clad cap block, concrete footing with amber bollard",
+   "bbox": {
+    "min": [
+     -3.152,
+     0.0,
+     -3.599
+    ],
+    "max": [
+     3.152,
+     22.0,
+     3.599
+    ],
+    "size": [
+     6.304,
+     22.0,
+     7.198
+    ]
+   },
+   "tris": 6000,
+   "trisRaw": 9402,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/portalColumn.jpg",
+   "fal": [
+    "01a11117-6354-7aa0-9fbf-d4b3e9f9508d",
+    "01a11119-8e65-79e1-bf02-2ac79d627fa5"
+   ],
+   "usedBy": [
+    "steel_depot"
+   ],
+   "hot": 0.0,
+   "hotTexels": 0,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.0,
+    "height": 22.0,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": null,
+    "tris": 6000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 425,
+   "seconds": 3.3
+  },
+  "rackBay": {
+   "file": "rackBay.glb",
+   "part": "rackBay",
+   "about": "open vault bay, 12.5 m wide (z) x 30 m tall, 9 m deep, FRONT +X: chamfered off-white piers and hood, amber lamp bar, dark interior with racks of crated stock in five tiers, violet pier strip, loading block at the foot",
+   "bbox": {
+    "min": [
+     -4.5,
+     0.0,
+     -6.25
+    ],
+    "max": [
+     4.5,
+     30.0,
+     6.25
+    ],
+    "size": [
+     9.0,
+     30.0,
+     12.5
+    ]
+   },
+   "tris": 13995,
+   "trisRaw": 25926,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/rackBay.jpg",
+   "fal": [
+    "01a11117-cb25-7f73-a725-e75545f565c3",
+    "01a1111a-d3d7-7183-b35b-6f9c1bca22f0"
+   ],
+   "usedBy": [
+    "silicon_depot"
+   ],
+   "hot": 0.8,
+   "hotTexels": 4413,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": [
+     9.0,
+     30.0,
+     12.5
+    ],
+    "tris": 14000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 976,
+   "seconds": 14.6
+  },
+  "entrancePorch": {
+   "file": "entrancePorch.glb",
+   "part": "entrancePorch",
+   "about": "8 m armoured entrance porch: gunmetal portal round a double crew door with an amber lamp bar, off-white cheeks with louvres, a 6 m hazard-edged ramp with amber rails and bollards",
+   "bbox": {
+    "min": [
+     -4.0,
+     0.0,
+     -4.466
+    ],
+    "max": [
+     4.0,
+     5.186,
+     4.466
+    ],
+    "size": [
+     8.0,
+     5.186,
+     8.932
+    ]
+   },
+   "tris": 5997,
+   "trisRaw": 12740,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/entrancePorch.jpg",
+   "fal": [
+    "01a11117-cc19-7e43-a3e7-73463c294731",
+    "01a1111a-d4a2-7312-a925-ca9c06899f81"
+   ],
+   "usedBy": [
+    "silicon_depot"
+   ],
+   "hot": 0.8,
+   "hotTexels": 182553,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": 8.0,
+    "long": null,
+    "size": null,
+    "tris": 6000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 424,
+   "seconds": 8.5
+  },
+  "armouredHangar": {
+   "file": "armouredHangar.glb",
+   "part": "armouredHangar",
+   "about": "armoured vehicle hangar 30 m wide (z) x 11 m x 34 m deep, OPEN FRONT +X: sloped chamfered concrete-clad walls, dark roof panel with hatches, a 20 m open bay into a lit interior, gunmetal footings",
+   "bbox": {
+    "min": [
+     -17.0,
+     0.0,
+     -15.0
+    ],
+    "max": [
+     17.0,
+     11.0,
+     15.0
+    ],
+    "size": [
+     34.0,
+     11.0,
+     30.0
+    ]
+   },
+   "tris": 11998,
+   "trisRaw": 25652,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/armouredHangar.jpg",
+   "fal": [
+    "01a11117-cce0-79d3-9c2a-4b2b9bad5851",
+    "01a1111a-d581-7070-aa6e-25208b30f5f3"
+   ],
+   "usedBy": [
+    "military_base"
+   ],
+   "hot": 0.93,
+   "hotTexels": 358,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.93,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": [
+     34.0,
+     11.0,
+     30.0
+    ],
+    "tris": 12000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 884,
+   "seconds": 13.4
+  },
+  "overheadCrane": {
+   "file": "overheadCrane.glb",
+   "part": "overheadCrane",
+   "about": "amber double-girder overhead bridge crane, 32 m span along Z: twin box girders with railed catwalk, gunmetal end carriages, trolley with hoist drum, hook block, operator cab with lamp under one end",
+   "bbox": {
+    "min": [
+     -6.682,
+     0.0,
+     -16.0
+    ],
+    "max": [
+     6.682,
+     8.948,
+     16.0
+    ],
+    "size": [
+     13.364,
+     8.948,
+     32.0
+    ]
+   },
+   "tris": 9695,
+   "trisRaw": 11888,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/overheadCrane.jpg",
+   "fal": [
+    "01a11119-8f2d-79b3-9a21-a05e89b91633",
+    "01a1111d-32d8-7b12-8093-7ebca85b3329"
+   ],
+   "usedBy": [
+    "steel_depot"
+   ],
+   "hot": 0.8,
+   "hotTexels": 1373,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 32.0,
+    "size": null,
+    "tris": 10000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 586,
+   "seconds": 12.0
+  },
+  "beamStack": {
+   "file": "beamStack.glb",
+   "part": "beamStack",
+   "about": "stack of steel sections 12 x 3.6 x 2.6 m: four layers of dark I-beams and hollow sections on timber dunnage, amber banding straps; long axis Z",
+   "bbox": {
+    "min": [
+     -1.8,
+     0.0,
+     -6.0
+    ],
+    "max": [
+     1.8,
+     2.6,
+     6.0
+    ],
+    "size": [
+     3.6,
+     2.6,
+     12.0
+    ]
+   },
+   "tris": 2996,
+   "trisRaw": 4556,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/beamStack.jpg",
+   "fal": [
+    "01a11119-8ffd-7132-9bbd-531284b4b26e",
+    "01a1111d-33c9-7c81-94cc-58f977665cc5"
+   ],
+   "usedBy": [
+    "steel_depot"
+   ],
+   "hot": 0.0,
+   "hotTexels": 0,
+   "params": {
+    "rot": [
+     0.0,
+     90.0,
+     0.0
+    ],
+    "hotV": 0.0,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": [
+     3.6,
+     2.6,
+     12.0
+    ],
+    "tris": 3000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 334,
+   "seconds": 3.3
+  },
+  "vaultBay": {
+   "file": "vaultBay.glb",
+   "part": "vaultBay",
+   "about": "sealed vault bay, 12.5 m wide (z) x 30 m tall, 9 m deep, FRONT +X: chamfered off-white piers and hood, amber lamp bar, recessed dark 23 m vault door with guide rail, violet pier strip, loading block",
+   "bbox": {
+    "min": [
+     -4.5,
+     0.0,
+     -6.25
+    ],
+    "max": [
+     4.5,
+     30.0,
+     6.25
+    ],
+    "size": [
+     9.0,
+     30.0,
+     12.5
+    ]
+   },
+   "tris": 8998,
+   "trisRaw": 15839,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/vaultBay.jpg",
+   "fal": [
+    "01a11117-ca3e-7df0-9b61-3ecabe52943f",
+    "01a1111a-d2d9-7b61-b4b9-60f2216dff23"
+   ],
+   "usedBy": [
+    "silicon_depot"
+   ],
+   "hot": 0.8,
+   "hotTexels": 3748,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": [
+     9.0,
+     30.0,
+     12.5
+    ],
+    "tris": 9000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 518,
+   "seconds": 8.6
+  },
+  "guardTower": {
+   "file": "guardTower.glb",
+   "part": "guardTower",
+   "about": "17 m corner guard tower: ribbed dark gunmetal shaft on a faceted base with a crew door, light observation drum with amber vision slits, antenna and sensor box",
+   "bbox": {
+    "min": [
+     -4.361,
+     0.0,
+     -4.077
+    ],
+    "max": [
+     4.361,
+     17.0,
+     4.077
+    ],
+    "size": [
+     8.722,
+     17.0,
+     8.154
+    ]
+   },
+   "tris": 3999,
+   "trisRaw": 12418,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/guardTower.jpg",
+   "fal": [
+    "01a11117-cda8-7321-9a74-1a49db54a3c4",
+    "01a1111b-7305-7930-b1bb-1322a8794ce1"
+   ],
+   "usedBy": [
+    "military_base"
+   ],
+   "hot": 0.8,
+   "hotTexels": 2577,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": 17.0,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": null,
+    "tris": 4000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 313,
+   "seconds": 8.5
+  },
+  "commandBunker": {
+   "file": "commandBunker.glb",
+   "part": "commandBunker",
+   "about": "stepped armoured command bunker, 30 m: sloped light concrete lower tier with a recessed entrance and stair, octagonal control room with a band of lit windows, antenna cluster and radar dome",
+   "bbox": {
+    "min": [
+     -14.951,
+     0.0,
+     -15.0
+    ],
+    "max": [
+     14.951,
+     19.099,
+     15.0
+    ],
+    "size": [
+     29.902,
+     19.099,
+     30.0
+    ]
+   },
+   "tris": 13703,
+   "trisRaw": 26933,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/commandBunker.jpg",
+   "fal": [
+    "01a11117-cf52-7d13-bdbf-95cb831fccf8",
+    "01a1111b-73eb-7ba2-8397-30181c06171b"
+   ],
+   "usedBy": [
+    "military_base"
+   ],
+   "hot": 0.8,
+   "hotTexels": 61656,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 30.0,
+    "size": null,
+    "tris": 14000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 954,
+   "seconds": 12.6
+  },
+  "gateHouse": {
+   "file": "gateHouse.glb",
+   "part": "gateHouse",
+   "about": "32 m fortified gate section: closed dark double blast gate 12 x 6 m with amber lamp bars, tapered light concrete pylons, lit slits, wall stubs with flat ends, hazard apron",
+   "bbox": {
+    "min": [
+     -4.538,
+     0.0,
+     -16.0
+    ],
+    "max": [
+     4.538,
+     8.999,
+     16.0
+    ],
+    "size": [
+     9.076,
+     8.999,
+     32.0
+    ]
+   },
+   "tris": 8995,
+   "trisRaw": 22169,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/gateHouse.jpg",
+   "fal": [
+    "01a11117-d02d-7240-af01-a2eb8acefe1b",
+    "01a1111b-74d1-7451-ab7d-ee8b7c6b226a"
+   ],
+   "usedBy": [
+    "military_base"
+   ],
+   "hot": 0.8,
+   "hotTexels": 12764,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 32.0,
+    "size": null,
+    "tris": 9000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 547,
+   "seconds": 9.1
+  },
+  "plantBlock": {
+   "file": "plantBlock.glb",
+   "part": "plantBlock",
+   "about": "armoured plant / control block 26 x 16 m, 10 m: chamfered upper edges, off-white panels in thick gunmetal frames, recessed double cargo door and ribbon window on the long face, slot windows on the ends, four roof HVAC units, amber corner lamps",
+   "bbox": {
+    "min": [
+     -7.903,
+     0.0,
+     -13.0
+    ],
+    "max": [
+     7.903,
+     13.971,
+     13.0
+    ],
+    "size": [
+     15.806,
+     13.971,
+     26.0
+    ]
+   },
+   "tris": 9999,
+   "trisRaw": 13393,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/plantBlock.jpg",
+   "fal": [
+    "01a11117-5da0-7c73-9d92-c4e78843d6d1",
+    "01a11119-23cc-7993-8c12-6686126ea63e"
+   ],
+   "usedBy": [
+    "processing_plant"
+   ],
+   "hot": 0.8,
+   "hotTexels": 161,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 26.0,
+    "size": null,
+    "tris": 10000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 935,
+   "seconds": 16.0
+  },
+  "floatTank": {
+   "file": "floatTank.glb",
+   "part": "floatTank",
+   "about": "floating-roof oil tank ~28 m across, 14.5 m: weathered off-white plate shell, gunmetal bottom course with amber lines, shallow radial-seam roof with perimeter rail and lit centre hatch, caged stair tower to a gauge hut, shell pipes",
+   "bbox": {
+    "min": [
+     -14.478,
+     0.0,
+     -14.5
+    ],
+    "max": [
+     14.478,
+     17.255,
+     14.5
+    ],
+    "size": [
+     28.956,
+     17.255,
+     29.0
+    ]
+   },
+   "tris": 8495,
+   "trisRaw": 14831,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/floatTank.jpg",
+   "fal": [
+    "01a11117-5f32-7593-8386-1f6bee77f9c7",
+    "01a11119-4bec-79d3-b952-8a0c1818311c"
+   ],
+   "usedBy": [
+    "oil_tanks"
+   ],
+   "hot": 0.8,
+   "hotTexels": 91842,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 29.0,
+    "size": null,
+    "tris": 12000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 758,
+   "seconds": 14.0
+  },
+  "wallSegment": {
+   "file": "wallSegment.glb",
+   "part": "wallSegment",
+   "about": "24 m blast wall segment, FRONT +X: dark armour-panel wall, light sloped coping, chamfered buttress piers at both ends, top railing, one crew door with an amber lamp; flat ends, abut along Z",
+   "bbox": {
+    "min": [
+     -3.326,
+     0.0,
+     -12.0
+    ],
+    "max": [
+     3.326,
+     6.647,
+     12.0
+    ],
+    "size": [
+     6.652,
+     6.647,
+     24.0
+    ]
+   },
+   "tris": 1998,
+   "trisRaw": 8432,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/wallSegment.jpg",
+   "fal": [
+    "01a1111b-75bc-79c2-9cc9-3b01e5063f2e",
+    "01a1111c-c924-7b61-9f31-10e2443e25b2"
+   ],
+   "usedBy": [
+    "military_base"
+   ],
+   "hot": 0.8,
+   "hotTexels": 7550,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 24.0,
+    "size": null,
+    "tris": 2000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 285,
+   "seconds": 9.1
+  },
+  "dishMount": {
+   "file": "dishMount.glb",
+   "part": "dishMount",
+   "about": "large radio telescope on its alt-az mount: ~32 m panelled off-white dish with gunmetal rim and backing truss, feed cabin on three lattice legs, yoke arms with bearing hubs, buttressed azimuth drum (flat foot)",
+   "bbox": {
+    "min": [
+     -13.451,
+     0.0,
+     -16.5
+    ],
+    "max": [
+     13.451,
+     32.941,
+     16.5
+    ],
+    "size": [
+     26.902,
+     32.941,
+     33.0
+    ]
+   },
+   "tris": 25601,
+   "trisRaw": 38326,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/dishMount.jpg",
+   "fal": [
+    "01a11117-d1e0-7360-b292-6d7fc8dad8f6",
+    "01a1111b-c062-7fe2-9894-955c96fc4b76"
+   ],
+   "usedBy": [
+    "radio_telescope"
+   ],
+   "hot": 0.8,
+   "hotTexels": 0,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 33.0,
+    "size": null,
+    "tris": 26000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 1318,
+   "seconds": 14.1
+  },
+  "ringModule": {
+   "file": "ringModule.glb",
+   "part": "ringModule",
+   "about": "40 m orbital ring corner node, long axis Z, thrusters at +Z: off-white armoured boxes in gunmetal frames, tank and pipe bundles, two thruster quads with amber-lit nozzles, sensor dish, radiator fins, amber markers",
+   "bbox": {
+    "min": [
+     -13.096,
+     0.0,
+     -20.0
+    ],
+    "max": [
+     13.096,
+     24.587,
+     20.0
+    ],
+    "size": [
+     26.192,
+     24.587,
+     40.0
+    ]
+   },
+   "tris": 7998,
+   "trisRaw": 22393,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/ringModule.jpg",
+   "fal": [
+    "01a11117-d2a0-7df0-aef0-3732b56ffae1",
+    "01a1111b-c16b-7160-8827-fdfd7f074abd"
+   ],
+   "usedBy": [
+    "transmitter"
+   ],
+   "hot": 0.8,
+   "hotTexels": 6124,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 40.0,
+    "size": null,
+    "tris": 8000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 1010,
+   "seconds": 14.6
+  },
+  "ringSegment": {
+   "file": "ringSegment.glb",
+   "part": "ringSegment",
+   "about": "104 m orbital ring girder segment (20 x 14 m section), long axis Z, blue edge on +X: gunmetal box frame with bundled tanks and pipes, off-white cover panels on top, a strip of cool blue light panels along the lower +X edge, amber edge markers; flat ends",
+   "bbox": {
+    "min": [
+     -10.0,
+     0.0,
+     -52.0
+    ],
+    "max": [
+     10.0,
+     14.0,
+     52.0
+    ],
+    "size": [
+     20.0,
+     14.0,
+     104.0
+    ]
+   },
+   "tris": 4500,
+   "trisRaw": 16885,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/ringSegment.jpg",
+   "fal": [
+    "01a11117-d375-7160-9ef7-59ec4081f121",
+    "01a1111b-c25d-7b43-9124-44bc2c286954"
+   ],
+   "usedBy": [
+    "transmitter"
+   ],
+   "hot": 0.8,
+   "hotTexels": 3785,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": [
+     20.0,
+     14.0,
+     104.0
+    ],
+    "tris": 4500,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 813,
+   "seconds": 13.5
+  },
+  "solarWing": {
+   "file": "solarWing.glb",
+   "part": "solarWing",
+   "about": "34 m orbital solar array wing: two dark blue-black cell panels in a gunmetal frame with a lattice spine, boom and gimbal block, amber corner lamps",
+   "bbox": {
+    "min": [
+     -7.974,
+     0.0,
+     -17.0
+    ],
+    "max": [
+     7.974,
+     17.749,
+     17.0
+    ],
+    "size": [
+     15.948,
+     17.749,
+     34.0
+    ]
+   },
+   "tris": 3996,
+   "trisRaw": 8808,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/solarWing.jpg",
+   "fal": [
+    "01a11117-d458-7500-bd18-e92d36b110e2",
+    "01a1111b-c341-7ac2-bbad-dae3479c85a6"
+   ],
+   "usedBy": [
+    "transmitter"
+   ],
+   "hot": 0.8,
+   "hotTexels": 6685,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 34.0,
+    "size": null,
+    "tris": 4000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 432,
+   "seconds": 10.0
+  },
+  "dockingHub": {
+   "file": "dockingHub.glb",
+   "part": "dockingHub",
+   "about": "26 m round docking hub: gunmetal ring drum with a docking port ringed by amber lamps and a blue core light, off-white boxes, pipes and small tanks round it",
+   "bbox": {
+    "min": [
+     -12.745,
+     0.0,
+     -13.0
+    ],
+    "max": [
+     12.745,
+     25.485,
+     13.0
+    ],
+    "size": [
+     25.49,
+     25.485,
+     26.0
+    ]
+   },
+   "tris": 7999,
+   "trisRaw": 13583,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/dockingHub.jpg",
+   "fal": [
+    "01a11117-d51a-7873-adf4-ed2dd6513e33",
+    "01a1111b-c419-7202-b00f-48ce7e46b590"
+   ],
+   "usedBy": [
+    "transmitter"
+   ],
+   "hot": 0.75,
+   "hotTexels": 17315,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.75,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 26.0,
+    "size": null,
+    "tris": 8000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 595,
+   "seconds": 8.1
+  },
+  "facetedWing": {
+   "file": "facetedWing.glb",
+   "part": "facetedWing",
+   "about": "faceted teaching wing 40 x 24 m, 17 m: battered off-white stone walls, chamfered corners with dark vertical fins, tinted glazing bands, dark base, roof units and rail",
+   "bbox": {
+    "min": [
+     -20.0,
+     0.0,
+     -8.472
+    ],
+    "max": [
+     20.0,
+     15.689,
+     8.472
+    ],
+    "size": [
+     40.0,
+     15.689,
+     16.944
+    ]
+   },
+   "tris": 6999,
+   "trisRaw": 10126,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/facetedWing.jpg",
+   "fal": [
+    "01a11117-c648-7f32-b6af-b0821cba9c79",
+    "01a1111a-ccd8-7571-ad7c-3a652a641508"
+   ],
+   "usedBy": [
+    "university"
+   ],
+   "hot": 0.75,
+   "hotTexels": 6142,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.75,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 40.0,
+    "size": null,
+    "tris": 7000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 758,
+   "seconds": 14.2
+  },
+  "steppedWing": {
+   "file": "steppedWing.glb",
+   "part": "steppedWing",
+   "about": "stepped monumental archive wing ~40 m square, 34 m: battered stone lower tier with dark slot windows on a dark base course with lit doors, three set-back tiers with lit window bands and dark cornices",
+   "bbox": {
+    "min": [
+     -20.0,
+     0.0,
+     -19.979
+    ],
+    "max": [
+     20.0,
+     31.79,
+     19.979
+    ],
+    "size": [
+     40.0,
+     31.79,
+     39.958
+    ]
+   },
+   "tris": 6998,
+   "trisRaw": 12551,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/steppedWing.jpg",
+   "fal": [
+    "01a11117-c9ec-7361-8300-2212cdef8d62",
+    "01a1111a-f443-74c1-a70a-504b1c3452f9"
+   ],
+   "usedBy": [
+    "library"
+   ],
+   "hot": 0.7,
+   "hotTexels": 9597,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.7,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 40.0,
+    "size": null,
+    "tris": 7000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 680,
+   "seconds": 14.5
+  },
+  "marketArcade": {
+   "file": "marketArcade.glb",
+   "part": "marketArcade",
+   "about": "open market canopy 26 x 18 m, 9 m: dark tree columns with branching brackets carrying three overlapping canopy roofs with lit edges, market stalls, benches, thin paved pad",
+   "bbox": {
+    "min": [
+     -14.0,
+     0.0,
+     -11.618
+    ],
+    "max": [
+     14.0,
+     10.088,
+     11.618
+    ],
+    "size": [
+     28.0,
+     10.088,
+     23.236
+    ]
+   },
+   "tris": 8994,
+   "trisRaw": 16349,
+   "loosePiecesDropped": 0,
+   "tex": 2048,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/marketArcade.jpg",
+   "fal": [
+    "01a11118-30b7-7f60-bdd7-d2b815c57420",
+    "01a1111d-e0d9-76f1-8db4-10a0c07f3d8d"
+   ],
+   "usedBy": [
+    "trade_center"
+   ],
+   "hot": 0.75,
+   "hotTexels": 133839,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.75,
+    "height": null,
+    "length": null,
+    "width": null,
+    "long": 28.0,
+    "size": null,
+    "tris": 9000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 953,
+   "seconds": 15.5
+  },
+  "waterTower": {
+   "file": "waterTower.glb",
+   "part": "waterTower",
+   "about": "elevated water tower 24 m: 10 m off-white tank with dark bands, top rail and vent, open braced four-leg dark steel frame on footings, caged ladder, riser",
+   "bbox": {
+    "min": [
+     -4.681,
+     0.0,
+     -5.135
+    ],
+    "max": [
+     4.681,
+     24.0,
+     5.135
+    ],
+    "size": [
+     9.362,
+     24.0,
+     10.27
+    ]
+   },
+   "tris": 5996,
+   "trisRaw": 10113,
+   "loosePiecesDropped": 0,
+   "tex": 1024,
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
+   },
+   "source": "images/buildings/components/waterTower.jpg",
+   "fal": [
+    "01a11118-93f8-7880-b679-33e3a5ecbdbc",
+    "01a1111d-e1ba-7662-a168-885cc9ce8a41"
+   ],
+   "usedBy": [
+    "infrastructure"
+   ],
+   "hot": 0.8,
+   "hotTexels": 0,
+   "params": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hotV": 0.8,
+    "height": 24.0,
+    "length": null,
+    "width": null,
+    "long": null,
+    "size": null,
+    "tris": 6000,
+    "weld": 0.004,
+    "minPiece": 0.01,
+    "dissolve": 1.0
+   },
+   "kb": 418,
+   "seconds": 8.3
   }
  }
 }
