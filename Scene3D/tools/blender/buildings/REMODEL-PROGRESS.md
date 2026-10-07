@@ -339,3 +339,13 @@ block into the casthouse block; the casthouse wall run out of and back into the 
 the shed wall; bundles shed wall -> switchgear skid, pump skid -> shed wall, pump skid -> buried main (`drop_end`); roof
 ducts out of a roof curb into capped exhaust stubs. `bkit.pipe` supports now ceil-spaced (never a gap over the pitch).
 r19: 195.0k tris desktop; light 1.07x, shadow 0.98x. Guide: checklist row P1, gotcha.
+r20 (behind-the-tower drop moved to its +X side) still hid the drop from the concept camera; r21 put it at the tower's
+front-left corner, braced to the corner: in the main view the main now runs down the gallery and continues as a visible
+vertical on clamp bands beside the tower (evidence $S/mill/r21-crowncrop.png, aud2-drop.png, aud2-top.png).
+Checklist review r21 (evidence $S/mill/r21-blind.jpg, r21-closesheet.jpg, grit-crops-r20.png):
+C1-C3 PASS; S1 PASS; D1 / D2 PASS; G0 shell 0.86x / wall 0.75x std (hp 1.62 / 1.0), roof 0.86, plinth 1.02: PASS-ish
+(the wall crop's concept variance includes light falloff); G1-G4 PASS (photo weathering, drips, roof soot, stains,
+seams); W1 PASS (light 1.07x, hue 27.6 vs 23.2), W2 PASS; M1 PASS (shadow 0.98-1.09x); L1 PASS (hearth glow, crusted
+runner with bright cracks and core, ladle crust; spill pools local), L2 PASS; T1 PASS; T2 PASS (no acne dot grid with
+shadowNB 6; hull walls sharp); T3 PASS; P1 PASS (every run traced: see rounds 19-20); I1 not re-run (final);
+phone tris: 194.7k desktop (see the STYLE proposals; the phone tier is measured at the final).
