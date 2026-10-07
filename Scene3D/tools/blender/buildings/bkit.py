@@ -70,6 +70,7 @@ BKIT_MATS = {
     'frame2':    ((0.075, 0.078, 0.082), 'paint', 0.6, 0.0),   # its lighter variant (housings, legs)
     'stone':     ((0.54, 0.525, 0.49), 'paint', 0.8, 0.0),   # pale civic stone, a touch warm (library, monuments)
     'frameL':    ((0.25, 0.252, 0.255), 'paint', 0.62, 0.0),   # light grey trim: plain-panel walls (sRGB ~137)
+    'panelW':    ((0.37, 0.35, 0.32), 'paint', 0.82, 0.0),    # v6 r22: weathered grey-beige panels (the mill's annexes)
     'seam':      ((0.016, 0.017, 0.018), 'paint', 0.8, 0.0),   # panel seams, slab joints (near black)
     'concrete':  ((0.30, 0.295, 0.28), 'paint', 0.9, 0.0),     # plinth top: light concrete
     'concrete2': ((0.20, 0.197, 0.19), 'paint', 0.9, 0.0),     # plinth sides, footings

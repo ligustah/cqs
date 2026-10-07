@@ -248,14 +248,15 @@ def model(B):
     # furnace plinth; the concept's light block with the big elbow pipe on its roof), the dust catcher behind
     # r7: the concept's tall light annex under the big elbow pipe (15 m)
     # r8 (coordinator: plain tall blocks, dark frames, light panels, one window row at most)
-    K.block(B, (-37.0, 0.0, 30.0), (6.0, 15.0, 15.0), panel='panel2',
+    K.block(B, (-37.0, 0.0, 30.0), (6.0, 15.0, 15.0), panel='panelW', frame='frameL', post=0.35,   # r22 (judge A: toy-like black trim, too white)
+           
             sides={'+z': {'bay': 6.0, 'storey': 15.0, 'windows': [], 'doors': [3.0], 'seams': False, 'bands': False},
                    '+x': {'bay': 7.5, 'storey': 7.5, 'windows': [1], 'win': (1.2, 0.9), 'seams': False, 'bands': False},
                    '-x': {'bay': 7.5, 'storey': 15.0, 'doors': [7.5], 'louvres': [(11.0, 7.5, 2.0, 2.0)], 'seams': False, 'bands': False},
                    '-z': {'bay': 6.0, 'storey': 15.0, 'seams': False, 'bands': False}},
             roof={'parapet': 0.6, 'units': [('vent', 1.0, -5.0, {}), ('antenna', -1.5, 6.0, {'h': 5.0})]})
     K.ladder(B, (-40.4, 0.0, 26.0), (-1, 0, 0), 15.0)
-    K.block(B, (-35.5, 0.0, -2.0), (7.0, 7.0, 8.0),
+    K.block(B, (-35.5, 0.0, -2.0), (7.0, 7.0, 8.0), panel='panelW', post=0.35,
             sides={'+z': {'bay': 3.5, 'doors': [3.5], 'windows': []}, '+x': {'bay': 4.0, 'windows': [0], 'win': (1.2, 1.0)}},
             roof={'parapet': 0.4, 'units': [('hvac', 0.0, 0.0, {'w': 2.6, 'd': 1.8, 'fans': 1})]}, frame='frameL')
     K.vtank(B, (-34.0, 7.5), 2.6, 9.0, y0=0.0, top='cone', mat='frame2', skirt=5.0, ladder_side=90.0,
@@ -280,7 +281,8 @@ def model(B):
     # foot and the shed's front gable (the concept's tall light block between the furnace and the pour bay): dark frame,
     # light panels, doors with lamps, a roller door, louvres, a single small window row; no roof clutter
     # r13: dark posts at the corners only, no bands or seam grid (bays of 5 m drew a bold half-timbered grid)
-    K.block(B, (6.25, 0.0, 33.5), (15.5, 12.0, 10.0), panel='panel2',   # r14: weathered mid-grey panels (judge A: not bright white)
+    K.block(B, (6.25, 0.0, 33.5), (15.5, 12.0, 10.0), panel='panelW', frame='frameL', post=0.35,   # r22 (judge A: toy-like black trim, too white)
+              # r14: weathered mid-grey panels (judge A: not bright white)
             sides={'+z': {'bay': 15.5, 'storey': 12.0, 'windows': [], 'doors': [2.6, 12.9], 'rollers': [(7.75, 5.0, 5.6)],
                           'louvres': [(5.0, 8.4, 2.0, 1.6), (10.5, 8.4, 2.0, 1.6)], 'seams': False, 'bands': False},
                    '+x': {'bay': 10.0, 'storey': 6.0, 'windows': [1], 'win': (1.2, 0.8), 'doors': [5.0], 'seams': False, 'bands': False},
@@ -318,7 +320,7 @@ def model(B):
     # r14 (judge A r13 density): the furnace foot wrapped in stepped concrete blocks, a stair tower to the tuyere deck, pipe
     # runs at its base; a pipe rack and a switchgear skid across the right yard; catwalks with rails along the shed ridges
     for (dx, dz, w_, d_, h_) in ((-13.5, -6.0, 5.0, 9.0, 4.5), (-13.5, 4.5, 5.0, 7.0, 3.0), (6.5, -13.5, 9.0, 5.0, 4.0)):
-        K.block(B, (FX + dx, 3.0, FZ + dz), (w_, h_, d_), frame='frameL', corner_lamps=True,
+        K.block(B, (FX + dx, 3.0, FZ + dz), (w_, h_, d_), frame='frameL', panel='panelW', post=0.35, corner_lamps=True,
                 sides={'+z': {'bay': w_, 'storey': h_, 'seams': False, 'bands': False}, '-x': {'bay': d_, 'storey': h_, 'seams': False, 'bands': False},
                        '+x': {'bay': d_, 'storey': h_, 'seams': False, 'bands': False}, '-z': {'bay': w_, 'storey': h_, 'seams': False, 'bands': False}},
                 roof={'parapet': 0.3})
@@ -365,11 +367,13 @@ def model(B):
     # front between the hugging legs (on the furnace plinth), a 10 m annex block on the -X side, and an annex attached to
     # the shed's front end beside the pour bay (it replaces the free-standing control house)
     # r12: the furnace-front block went (merged into the 12 m block beside the furnace)
-    K.block(B, (-37.0, 0.0, 17.8), (6.0, 11.0, 8.4), panel='panel2',
+    K.block(B, (-37.0, 0.0, 17.8), (6.0, 11.0, 8.4), panel='panelW', frame='frameL', post=0.35,   # r22 (judge A: toy-like black trim, too white)
+           
             sides={'+z': {'bay': 3.0, 'storey': 5.5, 'doors': [3.0]}, '+x': {'bay': 4.2, 'storey': 5.5},
                    '-x': {'bay': 4.2, 'storey': 5.0, 'louvres': [(4.2, 6.5, 2.0, 1.6)]}},
             roof={'parapet': 0.4, 'units': [('hvac', 0.0, 0.0, {'w': 2.2, 'd': 1.6, 'fans': 1})]})
-    K.block(B, (25.5, 0.0, 30.8), (12.0, 10.0, 6.4), panel='panel2',     # r12: plain, 10 m, no windows, no roof clutter
+    K.block(B, (25.5, 0.0, 30.8), (12.0, 10.0, 6.4), panel='panelW', frame='frameL', post=0.35,   # r22 (judge A: toy-like black trim, too white)
+                # r12: plain, 10 m, no windows, no roof clutter
             sides={'+z': {'bay': 12.0, 'storey': 10.0, 'doors': [2.2, 9.8], 'windows': [], 'louvres': [(6.0, 6.0, 2.0, 1.6)], 'seams': False, 'bands': False},
                    '+x': {'bay': 6.4, 'storey': 10.0, 'seams': False, 'bands': False}},
             roof={'parapet': 0.5})

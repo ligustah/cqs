@@ -1,0 +1,7 @@
+{
+ "about": "review cameras (shots.sh): the main shot uses the module's studio hint (the concept camera); close-ups at az 52, el 22, fov 38 within 34 m (the 5 cm / 2 px test, BUILDING-GUIDE T2); concept crops for the close sheet (evidence.sh), boxes in concept pixels",
+ "close": {"az": 52, "el": 22, "fov": 38},
+ "views": {"furnace": {"focus": "-18,22,28", "dist": 34}, "pour": {"focus": "30,6,16", "dist": 32}, "shed": {"focus": "24,8,-22", "dist": 30}},
+ "concept_crops": {"furnace": [215, 120, 495, 470], "pour": [400, 380, 780, 640], "shed": [800, 330, 1100, 580]},
+ "audit": {"top": "az=0&el=89&fov=38&focus=0,0,-4&dist=150", "back": "az=250&el=18&fov=38&focus=-12,20,-6&dist=70", "drop": "az=165&el=12&fov=38&focus=-9,16,-10&dist=42"}
+}

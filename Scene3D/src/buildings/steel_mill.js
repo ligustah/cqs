@@ -24,6 +24,7 @@ export const { meta, asset, studio, load, build } = colonyBuilding({
   // a toy"): fill 1.5 -> 0.6, env 0.5, key 1.15: grit-check shadow side 1.20x -> ~0.97x of the concept's, light band kept;
   // r16: the photo weathering darkened the light paint (light band 0.76x): key 1.25 -> 1.5, keyColor #fff3e8, a warm fill
   // #f0dcc8 (mid band hue 232 -> 12): light 1.04x, shadow 1.04x;
+  // r22 (judge A: higher and more top-down than the concept; plinth-edge slopes 0.35 / 0.28 vs 0.29 / 0.24): el 10, dist 0.88
   // shadowNB 6: the key shadow's normal bias x6 (the shed wall's acne dot grid at the close views, judge B's 'moire')
-  studio: { az: 48, el: 12, fov: 22, sunaz: 42, sunel: 44, dist: 0.95, key: 1.5, keyColor: '#fff3e8', fill: 0.6, env: 0.5, fillColor: '#f0dcc8', shadowNB: 6 },
+  studio: { az: 48, el: 10, fov: 22, sunaz: 42, sunel: 44, dist: 0.88, key: 1.5, keyColor: '#fff3e8', fill: 0.6, env: 0.5, fillColor: '#f0dcc8', shadowNB: 6 },
 });

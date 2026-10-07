@@ -466,6 +466,15 @@ FURNACE_V6['header'] = None
 FURNACE_V6['rings'] = [(49.0, 5.05, 7.0), (54.0, 3.75, 6.0), (59.6, 2.65, 4.4)]
 FURNACE_V6['segments'] = 52      # r8 (phone budget 150k): 60 -> 52
 FURNACE_V6['bustle_torus'] = True
+# r22 (judge B r21: "the bustle ring dies into the front column"): at R 12.6 the ring ran through all four raking legs
+# (their inner corners reach 10.8 m radial at the bosh). A slimmer main hugging the bosh between the shell (9.6) and the
+# legs: R 10.15, tube 0.45 at 19.5 m (above the 18.3 m collar); also lighter for judge A's "heavy cage"
+FURNACE_V6['bustle'] = (10.15, 19.5, 0.45, 16)
+# r22 (judge A r21: "a rounder, bulging cage with heavy ribs and a dark dome"; the concept: a light cone narrowing up to
+# a slim dark upper section): the hood cone light (shell), slimmer posts, no mid-cone deck band
+FURNACE_V6['cone_mat'] = 'shell'
+FURNACE_V6['tower'] = dict(FURNACE_V6['tower'], post=(0.95, 0.75))
+FURNACE_V6['decks'] = [(26.6, 11.45, 13.6), (43.1, 8.45, 10.6)]
 # r10 (judge A: "pipes running down the tower"): hot-blast drops from the bustle main to the base between the legs
 FURNACE_V6['drops'] = [(20.0, 0.55), (160.0, 0.55), (200.0, 0.55)]   # r14: 250 deg ran into the new base block
 FURNACE_V6['cap_mat'] = 'frame2'   # r8: the concept's crown is stepped DARK drums (a light cap read as a lantern)
@@ -666,7 +675,7 @@ def furnace(B, P=FURNACE):
     rf, f0, f1 = P['flange']
     B.lathe([(0, f0), (rf, f0), (rf, f1), (0, f1)], (0, 0, 0), mat='frame', n=n, bevel=0.05)
     cone = P['cone']
-    B.lathe([(0, cone[0][1])] + cone + [(0, cone[-1][1])], (0, 0, 0), mat='frame2', n=n, bevel=0.0, sharp=30)
+    B.lathe([(0, cone[0][1])] + cone + [(0, cone[-1][1])], (0, 0, 0), mat=P.get('cone_mat', 'frame2'), n=n, bevel=0.0, sharp=30)
     hoop(B, c, cone[1][0] - 0.1, cone[1][1] - 0.2, 0.4, 0.15, mat='frame', n=n)
     rth, h0, h1 = P['throat']
     B.lathe([(0, h0), (rth, h0), (rth, h1), (0, h1)], (0, 0, 0), mat=P.get('throat_mat', 'shell'), n=40, bevel=0.03)
@@ -715,6 +724,18 @@ def furnace(B, P=FURNACE):
             B.cyl(rd + 0.3, 0.45, at=(0, 0, 1.4), mat='frame', n=24, bevel=0.02)
         e_ = V(dpath[-1])
         B.vcyl(rd + 0.35, 0.5, (e_.x, e_.y + 0.4, e_.z), mat='frame', n=24)
+        # r22 (judge B r21: "the downcomer has no flanges or supports"): a flanged joint mid-way on each leg and a
+        # braced column under the elbow, standing on the stepped base block there (roof 6 m)
+        for (pa_, pb_) in zip(dpath[:-2], dpath[1:-1]):
+            a_, b_ = V(pa_), V(pb_)
+            with B.at(M=K.frame_along(a_, b_)):
+                B.cyl(rd + 0.18, 0.35, at=(0, 0, (b_ - a_).length * 0.5), mat='frame', n=24, bevel=0.02)
+        q_ = V(dpath[1])
+        ys_ = P.get('downcomer_seat', 6.0)
+        B.box((0.9, q_.y - rd - ys_, 0.9), at=(q_.x, (q_.y - rd + ys_) / 2, q_.z), mat='frame2', bevel=0.03)
+        B.box((rd * 2.0 + 0.4, 0.5, 1.2), at=(q_.x, q_.y - rd - 0.25, q_.z), mat='frame', bevel=0.03)
+        B.box((1.6, 0.4, 1.6), at=(q_.x, ys_ + 0.2, q_.z), mat='frame', bevel=0.03)
+        B.bar((q_.x, ys_ + 0.4, q_.z + 2.4), (q_.x, q_.y - rd - 2.0, q_.z), 0.3, 0.3, mat='frame', bevel=0.02)
     for t in ((0.35, 0.6, 0.85) if not P.get('header') else ()):
         a, b = V(dpath[-2]), V(dpath[-1])
         q = a + (b - a) * t
@@ -1014,12 +1035,14 @@ def _shed_dressing(B, P, hx, hz, E, Rg, ov, bay, nb, pd):
         for (za, zb) in _spans(-hz + 1.5, hz - 1.5, cuts):
             if zb - za < 3.0:
                 continue
-            K.pipe(B, [(x, y, za), (x, y, zb)], r=r, mat='pipeDark', flanges=True, rings=True, ring_mat='amber')
+            # r22 (correction 45; judge B r21: "the upper wall pipe drops and ends in mid-air"): each run leaves the wall,
+            # runs along it on brackets and drops back into the wall (no free ends)
+            xw = sx * (hx - 0.3)
+            ye = 0.9 if y < 6 else y - 2.2
+            K.pipe(B, [(xw, y, za), (x, y, za), (x, y, zb), (x, ye, zb), (xw, ye, zb)], r=r, mat='pipeDark', flanges=True, rings=True, ring_mat='amber')
             for zz in [za + 0.8 + k * 3.6 for k in range(int((zb - za - 1.0) / 3.6) + 1)]:
                 B.bar((sx * (hx + 0.05), y - r - 0.12, zz), (x + sx * r, y - r - 0.12, zz), 0.12, 0.12, mat='frame', bevel=0.0)
                 B.box((0.08, 0.5, 0.3), at=(sx * (hx + 0.06), y - r - 0.1, zz), mat='frame', bevel=0.0)
-            # a drop at the far end into a valve on the dado
-            K.pipe(B, [(x, y, zb), (x, 0.9, zb)] if y < 6 else [(x, y, zb), (x, y - 2.2, zb)], r=r * 0.8, mat='pipeDark', flanges=True, rings=False)
     if P.get('tray'):
         sx, y = P['tray']
         x = sx * (hx + pd + 0.45)
@@ -1239,10 +1262,10 @@ POUR_V5.update({
 # off the shed face (xb -2.6 with the part at x 28: dark plates in front of the light cladding = a deep dark interior),
 # a full dark roof deck behind the lattice girder, the crane under it; the tapping platforms move forward with the wall
 POUR_V6 = dict(POUR_V5)
-POUR_V6.update({'xb': -2.6, 'xf': 6.4, 'roof': True, 'tap_dx': 5.8, 'tap_upper': False, 'runner_glow': 1.2,   # r8: 3.2 read pink-white
+POUR_V6.update({'xb': -2.6, 'xf': 6.4, 'roof': True, 'tap_dx': 5.8, 'tap_upper': False, 'runner_glow': 1.6,   # r22: 1.6, core 0.8 (judge A: the runner as the second hot spot)   # r8: 3.2 read pink-white
                 'crane_x': 3.6, 'ladle_x': 4.4, 'rails': (7.2, 0.6, 7.4), 'control': (1.6, 5.8, -6.4, -2.2, 3.8),
                 # r2: the runner on the apron in front of the portal, along the wall (the concept's long glowing trough)
-                'runner': (0.0, 24.0, 0.0, 3.6), 'runner_at': (8.9, -9.0, -90.0), 'runner_core': 0.55, 'runner_lip': 1.8,   # r16: a 1.8 m stream in a dark lined trough
+                'runner': (0.0, 24.0, 0.0, 3.6), 'runner_at': (8.9, -9.0, -90.0), 'runner_core': 0.8, 'runner_lip': 1.8,   # r16: a 1.8 m stream in a dark lined trough
                
                 'runner_color': '#ffa03c'})      # r11: the hearth's yellow-orange (#ffb050 at 1.5 read pastel pink on the wide core)
 
@@ -1455,8 +1478,9 @@ def pour_bay(B, P=POUR):
         # r10 (judge B: the ladle and booth read as a wooden barrel and hut): no fixed-pitch seams or streak columns on
         # small objects: the ladle gets two welded courses and mottling, the booth's panel no column streaks
         # r14: the ladle a rough, scorched steel shell: dark brown-grey, slag drips from the lip (vstreak), blotchy heat tint
-        'rust': {'color': [0.36, 0.27, 0.21], 'rust': 0.0, 'edge': 1.0, 'course': 1.6, 'joint': 1e3, 'blot': 0.28, 'tone': 0.06, 'rough': 0.8,
-                 'metal': 0.15, 'vstreak': 1.0, 'vsrc': 4.0, 'photo': ('wxSteel', 2.0, 0.8, 0.0, 0.3, 0.0)},
+        # r22 (judge B r21: "a polished copper / bronze pot"): near-black scorched steel, matte, non-metal, heavier blotching
+        'rust': {'color': [0.15, 0.135, 0.125], 'rust': 0.0, 'edge': 0.6, 'course': 1.6, 'joint': 1e3, 'blot': 0.4, 'tone': 0.1, 'rough': 0.93,
+                 'metal': 0.0, 'vstreak': 1.0, 'vsrc': 4.0, 'photo': ('wxSteel', 2.0, 1.0, 0.0, 0.3, 0.0)},
         'panel': {'vstreak': 0.0, 'mstreak': 0.0, 'blot': 0.12},
         'hot': {'crust': 0.95},     # r16 0.95 (r12 0.65): a darker cooled skin broken by bright cracks (judge B: flat orange paint)
     })
@@ -1704,7 +1728,7 @@ def _trestle(B, c, w, d, h):
 # ------------------------------------------------------------------------------------------------------------------
 # v5: parts whose light shell gets its own texture set (remodel.py: zones -> a second atlas and material colony_<name>_2)
 # v6: a third set for the furnace's dark legs and bosh (frame2: 28 px/m in the main atlas, soft at the close-up)
-SPLIT = {'blastFurnace': [({'shell'}, 4096), ({'frame2'}, 4096)]}
+SPLIT = {'blastFurnace': [({'shell'}, 4096), ({'frame2', 'pipeDark'}, 4096)]}
 # v6 r10: main-set UV weights per part (remodel.py): the furnace main set holds only dark structure, plinth, pipes, glow
 UV_W = {'blastFurnace': {'frame': 0.95, 'pipeDark': 0.9, 'grate': 0.5, 'concrete': 0.55, 'concrete2': 0.55}}
 
