@@ -209,6 +209,8 @@ Tools (all in this folder):
 PY=<python with bpy 5.x, numpy, pillow>
 $PY tools/blender/buildings/cmeasure.py <name> <work>/m-<name> --res 0.07              # R1 measure the blueprint
 $PY tools/blender/buildings/remodel.py <name> --dry                                   # R2 model: tris, bbox, zones
+$PY tools/blender/buildings/remodel.py <name> --preview <work>/<name>.glb             # R2 geometry check, flat colours
+node tools/render-glb.mjs <work>/<name>.glb <work>/p-<name> --angles "35:15"           #   (40 s; before any bake)
 node tools/render-glb.mjs assets/parts-colony/<name>.glb <work>/<name> --angles "35:20,215:25"   # (after R3-R5)
 $PY tools/blender/buildings/remodel.py <name> [<name> ...] [--tex 2048] --work <work>  # R3-R5 bake, paint, install
 $PY tools/blender/buildings/cmeasure.py <name> <work>/c-<name> --compare assets/parts-colony/<name>.glb  # vs blueprint
@@ -223,7 +225,8 @@ Tripo mesh stays in `assets/buildings/raw/`.)
    from stations: `furnace`; any chimney / column / silo: `banded_stack`; any clad portal shed: `gable_shed`; an open
    crane bay: `pour_bay`; an inclined conveyor or bridge: `incline_gallery`), or write a new generic one in `ckit.py`
    from the shared details. A new builder takes a parameter dict, so a sister part is a new dict, not new code.
-2. **Measure** (`cmeasure.py`, 10 min). Read off the ortho sheets and `profile.json`: the envelope (keep the
+2. **Measure** (`cmeasure.py`, 10 min), then **fit the concept** (below): blueprint for the envelope, concept for the
+   stations and the light / dark rhythm. Read off the ortho sheets and `profile.json`: the envelope (keep the
    ingested bbox: the building scripts place the part by it), radii and heights of every station (plinth, hearth,
    bands, flanges, cone, throat), deck and platform heights (`ledges.json`), bay and panel counts, column positions
    (top view), openings. Correct what is a reconstruction error, not a design (the skip gallery's stretched drive
@@ -253,7 +256,8 @@ Tripo mesh stays in `assets/buildings/raw/`.)
    shells and cladding get the texels: the furnace's shell 31 px/m and the shed's cladding 47 px/m at 4096 (v3: one
    2048 texture over the whole Tripo furnace). Hero parts at 4096 (furnace, shed, pour bay), the rest 2048; the phone
    copy caps all at 512 (`lite-glb.mjs`).
-6. **Check** each part alone (`render-glb.mjs`, two angles), then the building (`colony_build.py`, `compare.mjs`,
+6. **Check** each part alone: geometry first with the flat-colour preview (`ckit` builder -> zone colours ->
+   `remodel.py <name> --preview <out.glb>`, then `render-glb.mjs`: 40 s), then the baked part (`render-glb.mjs`, two angles), then the building (`colony_build.py`, `compare.mjs`,
    `paint-check.py`) and a 1:1 close-up next to the old one at the same camera (`shoot.mjs` with `focus=` / `dist=`).
    Fix the largest difference first: occluding decks (the furnace's first full square decks hid the shaft: rings and
    side walkways instead), the glow placement (the tuyere band above its platform, not under a deck), the crane under
@@ -262,18 +266,36 @@ Tripo mesh stays in `assets/buildings/raw/`.)
 
 ### Steel mill parts (v4)
 
-| part | builder | blueprint measures used | tris (v3 -> v4) | texture | px/m (light zones) |
-|---|---|---|---|---|---|
-| blastFurnace | `furnace` | plinth 27.4 x 3 x 29.2; hearth r 9.7 to 8.2 m; tuyere band 8.2-10.2; shaft r 9.45 -> 6.45 from 10.9 to 46.8 m (11 stations); hoops at 12.2, 16.6, 23.4, 35.8, 42.0; cone to r 2.5 at 51.2; throat r 2.3 to 58; legs at +-10.6, decks at 17 / 30 / 44 | 29,137 -> 55,548 | 4096 | 31 (shell) |
-| bandedStack | `banded_stack` | base 11 x 3.1; flare r 5.0 -> 3.78 (3.1-9.6 m); shaft r 3.75 to 42.6; platforms 19.4 / 42.8; lip r 4.05 at 46 | 8,959 -> 13,976 | 2048 | 42 (shell) |
-| shedSegment | `gable_shed` | 28 x 36 (wall 27.2); eaves 14.4, ridge 21.2; 5 bays of 7.2 m; windows 8.9-10.5 m; monitor 5.6 x 27 to 24 m | 7,534 -> 8,588 | 4096 | 47 (cladding) |
-| pourBay | `pour_bay` | x -9.5..9.5 open to +X, z -13..13, 15.5 m; columns at x +-8.4, z +-12; eaves girder 12.2-13.6; truss to 15.4 | 25,842 -> 13,046 | 4096 | 64 (frame2) |
-| skipGallery | `incline_gallery` | 6 x 46 x 28: gallery (0, 9.5, 9.6) -> (0, 39.8, -9.6), drive house z 9.6-14, head house y 36-46, trestle at z -4.5 | 12,915 -> 7,168 | 2048 | 41 (cladding) |
+| part | builder (params) | measured / fitted stations | tris (v3 Tripo -> v4) | texture | px/m (light zones) | chain at final size |
+|---|---|---|---|---|---|---|
+| blastFurnace | `furnace` (`FURNACE_V4`) | blueprint plinth 27.4 x 3 x 29.2 and envelope; stations refitted to the CONCEPT (15.5 px/m on the concept, ground to 60 m): light plated hearth drum r 7.6 to 17.4 m with hoops and modelled course laps, glowing tuyere band 17.6-19.8 (30 windows), stepped dark bosh in four lipped courses to 29, light cone r 8.4 -> 6.5 to 42, dark stepped hood to 46.5, upper drum r 3.9 to 55, cap to 60; four raking plated legs (2.8 -> 2.0 m box, stiffener bands, base shoes, plate-girder ties to the tuyere deck) to the first deck at 29, laced columns to the top deck at 52.6 | 29,137 -> 70,680 | 4096 | 33.9 (shell) | 3.6 min |
+| bandedStack | `banded_stack` (`STACK`) | base 11 x 3.1; flare r 5.0 -> 3.78 (3.1-9.6 m); shaft r 3.75 to 42.6; platforms 19.4 / 42.8; lip r 4.05 at 46; lap rings every 2.2 m | 8,959 -> 23,912 | 2048 | 39.9 (shell) | 0.8 min |
+| shedSegment | `gable_shed` (`SHED_V4`) | 28 x 36 (wall 27.2); eaves 14.4, ridge 21.2; 5 bays of 7.2 m; monitor 5.6 x 27 to 24 m; concept wall: flat panel grid (2.8 x 2.4 m, aligned), modelled course joints, 1.0 x 0.75 m pilasters, roller door in the back bay, two kit crew doors, no high windows; standing-seam ribs on the roof | 7,534 -> 8,042 | 4096 | 50.9 (cladding) | 3.8 min |
+| pourBay | `pour_bay` (`POUR`) | x -9.5..9.5 open to +X, z -13..13, 15.5 m; columns at x +-8.4, z +-12; eaves girder 12.2-13.6; truss to 15.4; dark ribbed steel deck | 25,842 -> 15,426 | 4096 | 66.5 (frame2), 54 (apron) | 4.6 min |
+| skipGallery | `incline_gallery` (`GALLERY`) | 6 x 46 x 28: gallery (0, 9.5, 9.6) -> (0, 39.8, -9.6), drive house z 9.6-14, head house y 36-46, trestle at z -4.5 | 12,915 -> 7,168 | 2048 | 45.3 (cladding) | 1.1 min |
 
-Time per part (authoring the builder from the measures, then the chain at the final texture size): blastFurnace ~45 min
-+ 4.5 min; bandedStack ~15 min + 1 min; shedSegment ~25 min + 5 min; pourBay ~35 min + 6 min; skipGallery ~20 min +
-1 min; plus the shared tools once (cmeasure, ckit details, cpaint, remodel: ~1.5 h) and three fix rounds on the
-building (~15 min each). A sister part (another stack, shed or vessel) is a new parameter dict: ~10 min + the chain.
+Measured times (4 CPU threads, 2026-10-07): the chain above per part (bake 23-142 s, paint 21-126 s); all five parts
+in one `remodel.py` run 14 min; the building review build (`colony_build.py --tex 2048 --samples 6`) 68 s; the final
+(`--tex 4096 --samples 10`) ~10 min; one `compare.mjs` render 50 s; a geometry-only preview of a part (model, flat zone
+colours, `render-glb.mjs`) 40 s. Authoring per part, first time (builder from the measures): furnace ~45 min + 30 min
+concept refit, stack ~15 min, shed ~25 min + 15 min refit, pour bay ~35 min, gallery ~20 min; a sister part is a new
+parameter dict (~10 min + the chain).
+
+**Fit the CONCEPT, not only the blueprint.** The first v4 furnace followed its Tripo blueprint (dark staved hearth, one
+tall light shaft, a square laced tower with four decks) and was crisp but did not read as the concept's furnace. The
+concept's stations, read off the image against its height, are what make the icon: a light drum, the glow, a dark
+stepped bosh, a light cone, a dark hood, the narrow top, heavy raking legs. Use the blueprint for the envelope and the
+anchor, the concept for the stations and the light / dark rhythm. The same for the shed: the concept's wall is a flat
+panel grid with heavy pilasters, not corrugation with high window strips.
+
+**Texel density: stack the thin structure** (`remodel.unwrap`, v4 r3). A lattice-heavy part is thousands of islands a
+few texels wide (the furnace: 10,900 islands, 86 % of them rails, lacing, rods and rungs holding 9 % of the surface),
+and each paid a 1.5 px margin: the atlas filled 37 %. Islands under 2 m2 in the structural zones (`STACK_ZONES`), and
+any island narrower than 0.25 m or under 0.15 m2 in any zone but `hot`, `lamp` and glass, are now normalised into one
+shared square swatch per zone and packed as one island (`merge_overlap`); a 10 cm bar shows one painted tone with its
+edge wear at any distance, which the swatch still carries. Fill rose to 0.55-0.88 and the light zones gained 20-90 %
+(furnace shell 27.6 -> 38.4 px/m on the blueprint-shaped furnace; shed cladding 47 -> 51; pour bay 64 -> 77; stack
+and gallery ~40-45 at 2048). Concrete weight 0.7 (it was 1.0: the furnace plinth took as many texels as the shell).
 
 ### Gotchas
 

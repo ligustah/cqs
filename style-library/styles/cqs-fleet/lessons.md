@@ -248,4 +248,19 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
     tower level) covered the shaft from the game camera; the concept shows rings round the shell and walkways along the
     frame with open corners. Likewise the pour bay's solid roof hid the crane: the bay is open on top, the runway lowered
     so the amber bridge girder shows under the front eaves girder (lesson 46).
-
+56. **A remodel fits the concept, not the blueprint.** The first v4 furnace was measured faithfully off its Tripo
+    blueprint and was crisp, but it was the blueprint's furnace (dark staved hearth, one tall light shaft, a square
+    four-deck tower), not the concept's. The icon lives in the concept's stations and light / dark rhythm (light drum,
+    glow, dark stepped bosh, light cone, dark hood, narrow top, raking legs); read them off the concept against its
+    height and keep only the envelope and anchor from the blueprint. Same for walls: the concept's shed is a flat panel
+    grid with heavy pilasters, not the blueprint's corrugation and high windows.
+57. **Island margins, not texture size, starve a lattice part.** The furnace's 10,900 UV islands were 86 % thin
+    structure (rails, lacing, rungs) holding 9 % of its surface, each paying a 1.5 px margin: the atlas was 37 % full.
+    Stacking those islands into one overlapping swatch per paint zone lifted the fill to 0.55-0.88 and the light shells
+    and cladding 20-90 % in px/m at the same texture size; a 10 cm bar reads as one painted tone at any distance anyway.
+58. **Check geometry before baking.** A flat-colour export of the model (`remodel.py --preview`, 40 s with
+    `render-glb.mjs`) caught the furnace's splayed stick legs and the shed's misplaced doors; each bake round of the five
+    parts is ~14 min.
+59. **Light plinth-level blocks carry depth.** An empty apron in front of a light gable read as a flat stage; the
+    concept layers a low casthouse block (light panels, doors, lamps, roof units) between the furnace and the pour bay.
+    A tall dark annex beside the furnace hid its light hearth drum: annexes stay low and light.

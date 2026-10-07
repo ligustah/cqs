@@ -17,7 +17,8 @@ For each part (ckit.REMODELS[name] = (builder, params, texture size, about)):
                assets/parts-colony/<name>.glb; parts.json keeps the fal jobs and the source image and records
                'remodel' (builder, about, texture, px/m, times, paint check), the bbox, tris, and the part's 'lights' and
                'placements' in the part frame (bkit.component() adds them to the building's lights, transformed)
---dry builds R1-R2 only and prints tris and bbox.
+--dry builds R1-R2 only and prints tris and bbox; --preview <out.glb> also exports that model with flat zone colours
+(check the geometry with tools/render-glb.mjs before spending a bake).
 """
 import json
 import os
@@ -233,7 +234,7 @@ def xform_lights(R):
     return {'lights': R.light_data(), 'placements': R.placements}
 
 
-def build(name, tex, samples, work, dry=False):
+def build(name, tex, samples, work, dry=False, preview=None):
     builder, params, tex0, about = ckit.REMODELS[name]
     tex = tex or tex0
     t0 = time.time()
@@ -249,6 +250,23 @@ def build(name, tex, samples, work, dry=False):
     zones = [s.material.name for s in ob.material_slots]
     print(f'[remodel] {name}: {tris} tris, bbox {np.round(lo, 2).tolist()} .. {np.round(hi, 2).tolist()}, zones {zones}, {t1 - t0:.0f}s', flush=True)
     if dry:
+        if preview:
+            # geometry check before any bake: flat zone colours (lib.MATS), exported like the final part (40 s with
+            # render-glb.mjs); hot and lamp zones orange
+            for s_ in ob.material_slots:
+                m = s_.material
+                col = (lib.MATS.get(m.name) or ((1.0, 0.0, 1.0),))[0]
+                if m.name in ('hot', 'lamp'):
+                    col = (1.0, 0.45, 0.1)
+                t = m.node_tree
+                t.nodes.clear()
+                o = t.nodes.new('ShaderNodeOutputMaterial')
+                bs = t.nodes.new('ShaderNodeBsdfPrincipled')
+                bs.inputs['Base Color'].default_value = (*list(col)[:3], 1)
+                bs.inputs['Roughness'].default_value = 0.6
+                t.links.new(bs.outputs[0], o.inputs[0])
+            export(ob, preview)
+            print(f'[remodel] preview -> {preview}', flush=True)
         return {'tris': tris, 'bbox': [lo.tolist(), hi.tolist()]}
     ppm, (a3, a2) = unwrap(ob, margin=max(0.0005, 1.5 / tex))
     ppm = {z: v * tex for z, v in ppm.items()}
@@ -302,11 +320,12 @@ def main():
     tex = arg('--tex', None, int)
     samples = arg('--samples', 24, int)
     work = arg('--work', os.path.join('/tmp', 'remodel'))
-    dry = has('--dry')
+    preview = arg('--preview', None)     # --preview <out.glb>: model only, flat zone colours (implies --dry; one part)
+    dry = has('--dry') or bool(preview)
     names = sys.argv[1:] or list(ckit.REMODELS)
     os.makedirs(work, exist_ok=True)
     for name in names:
-        rec = build(name, tex, samples, work, dry)
+        rec = build(name, tex, samples, work, dry, preview)
         if not dry:
             register(name, rec)
 
