@@ -590,7 +590,7 @@ def _grit(g, name, base, col, obj, ao):
     sep = g.node('ShaderNodeSeparateXYZ')
     g.put(sep.inputs[0], geo.outputs['Normal'])
     ny = g.math('ABSOLUTE', sep.outputs['Y'])
-    if name in ('concrete', 'concrete2', 'kerb'):
+    if name in ('concrete', 'concrete2', 'kerb', 'concreteD'):
         top = g.mr(ny, 0.6, 0.9)
         # r2: the r1 stains were too faint to read at the concept camera: bigger, darker, more of them
         stain = g.mr(g.noise(obj, 0.045, 4, 0.6), 0.38, 0.6, 0.0, 1.0)

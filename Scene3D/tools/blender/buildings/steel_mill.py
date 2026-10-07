@@ -216,7 +216,9 @@ def model(B):
     """v2: composed from fal components (assets/parts-colony: blastFurnace, skipGallery, bandedStack x2, shedSegment x2,
     pourBay; README-colony.md catalogue) on the shared kit's plinth, with parametric annexes, pipes, dressing, lights."""
     W, D = SPEC['footprint']
-    K.plinth(B, W, D, h=2.0, kerb_h=1.1, chamfer=2.4, slab=4.6, lamp_pitch=4.6,   # r8: the concept's dense lamp line   # r7: a thick light slab edge centre=(0.0, -4.0),   # v6: lamps every 9 m (concept)
+    # v6: a thick light slab edge (r7), lamps every 4.6 m (r8), a mid-grey stained top (r12). r12: `centre` had been
+    # commented out by an r1 edit (the slab sat 4 m forward of the plant: the "spread apron" of the r7 review)
+    K.plinth(B, W, D, h=2.0, kerb_h=1.1, chamfer=2.4, slab=4.6, lamp_pitch=4.6, top='concreteD', centre=(0.0, -4.0),
              markings=[([(37.5, 40.0), (37.5, -48.0)], 0.2, 'frame2'), ([(-38.0, 39.5), (38.0, 39.5)], 0.2, 'frame2'),
                        ([(30.0, 30.0), (39.0, 30.0)], 0.35, 'hazard'), ([(30.0, -2.0), (39.0, -2.0)], 0.35, 'hazard')],
              grates=[(37.0, -16.0, 0.8, 3.0), (37.0, 32.0, 0.8, 3.0), (-2.0, 34.0, 3.0, 0.8)],
@@ -271,21 +273,20 @@ def model(B):
     # volumes instead of over an empty apron
     # r4 (judges: "the boxy office in front of the furnace"): a LOW casthouse block (7 m, the concept's low light block
     # between the furnace and the pour bay): doors, a roller door and louvres, two small windows, no office strip
-    K.block(B, (8.0, 0.0, 34.0), (21.0, 7.0, 9.0), frame='frameL',   # r9: dark frames read as a busy half-timber grid
-            sides={'+z': {'bay': 5.25, 'storey': 7.0, 'windows': [], 'doors': [2.6, 18.4], 'rollers': [(10.5, 5.0, 5.6)],
-                          'louvres': [(6.0, 4.4, 2.0, 1.4), (15.0, 4.4, 2.0, 1.4)]},
-                   '+x': {'bay': 4.5, 'storey': 7.0, 'windows': [0], 'win': (1.2, 1.0), 'doors': [4.5]},
-                   '-x': {'bay': 4.5, 'storey': 7.0}, '-z': {'bay': 5.25, 'storey': 7.0}},
-            roof={'parapet': 0.5, 'units': [('hvac', -6.0, -1.0, {'w': 3.0, 'd': 2.0}), ('vent', 0.5, 1.5, {}), ('hvac', 6.0, -1.2, {'w': 2.4, 'd': 1.8, 'fans': 1})]})
-    K.pipe(B, [(-3.6, 7.0, 31.0), (-2.0, 7.0, 31.0), (-2.0, 8.4, 31.0), (8.0, 8.4, 31.0)], r=0.45, mat='pipeDark', supports=False)
-    # v5: more of the concept's secondary layer: a pipe run and cable tray along the casthouse front, door canopies,
-    # a stair to its roof, crates and a skid on the apron, extra roof units
-    K.pipe(B, [(-2.0, 3.6, 38.9), (18.0, 3.6, 38.9)], r=0.3, mat='pipe', supports=False)
-    K.cable_tray(B, (-2.0, 5.9, 38.8), (18.0, 5.9, 38.8), w=0.45)
-    K.ladder(B, (18.6, 0.0, 36.0), (1, 0, 0), 7.0)
+    # r12 (coordinator, judges r7-r11: "three windowed office boxes"): ONE plain 12 m block pressed against the furnace
+    # foot and the shed's front gable (the concept's tall light block between the furnace and the pour bay): dark frame,
+    # light panels, doors with lamps, a roller door, louvres, a single small window row; no roof clutter
+    K.block(B, (6.25, 0.0, 33.5), (15.5, 12.0, 10.0),
+            sides={'+z': {'bay': 5.17, 'storey': 12.0, 'windows': [], 'doors': [2.6, 12.9], 'rollers': [(7.75, 5.0, 5.6)],
+                          'louvres': [(5.0, 8.4, 2.0, 1.6), (10.5, 8.4, 2.0, 1.6)]},
+                   '+x': {'bay': 5.0, 'storey': 6.0, 'windows': [1], 'win': (1.2, 0.8), 'doors': [5.0]},
+                   '-x': {'bay': 5.0, 'storey': 12.0}, '-z': {'bay': 5.17, 'storey': 12.0}},
+            roof={'parapet': 0.6, 'units': [('vent', -4.0, 0.0, {})]})
+    K.pipe(B, [(-1.5, 3.6, 38.9), (14.0, 3.6, 38.9)], r=0.3, mat='pipe', supports=False)
+    K.cable_tray(B, (-1.5, 9.6, 38.8), (14.0, 9.6, 38.8), w=0.45)
+    K.ladder(B, (14.6, 0.0, 36.0), (1, 0, 0), 12.0)
     for (cx, cz, sz) in ((21.0, 39.5, (1.6, 1.2, 1.6)), (22.6, 39.8, (1.2, 1.0, 1.2)), (21.6, 39.5, (1.0, 0.8, 1.0))):
         K.crate(B, (cx, 0.0 if sz[1] > 0.9 else 1.2, cz), sz)
-    K.hvac(B, (12.0, 7.0, 32.0), w=2.6, d=1.8, fans=2)
     # switch room, control box, stairs, crates on the +X apron
     # r4: the switch-room hut went (judges: scattered huts); stacked plate and coils by the shed wall instead
     for (x, z) in ((33.0, -8.0), (34.4, -8.0), (33.0, -9.4), (34.4, -9.4), (33.7, -11.2)):
@@ -324,19 +325,15 @@ def model(B):
     # r7 (judges: merge the small cabins into fewer, larger attached blocks): one light casthouse block across the furnace
     # front between the hugging legs (on the furnace plinth), a 10 m annex block on the -X side, and an annex attached to
     # the shed's front end beside the pour bay (it replaces the free-standing control house)
-    # r9: 3.6 m (5.5 hid half of the light hearth drum, the concept's lower light band)
-    K.block(B, (FX, 3.0, FZ + 13.3), (12.0, 3.6, 4.6), frame='frameL',
-            sides={'+z': {'bay': 4.0, 'storey': 3.6, 'doors': [2.0, 10.0], 'windows': []},
-                   '+x': {'bay': 2.3, 'storey': 3.6}, '-x': {'bay': 2.3, 'storey': 3.6}},
-            roof={'parapet': 0.4, 'units': [('vent', -3.0, 0.0, {}), ('hvac', 2.5, 0.0, {'w': 2.4, 'd': 1.6, 'fans': 1})]})
+    # r12: the furnace-front block went (merged into the 12 m block beside the furnace)
     K.block(B, (-37.0, 0.0, 17.8), (6.0, 11.0, 8.4),
             sides={'+z': {'bay': 3.0, 'storey': 5.5, 'doors': [3.0]}, '+x': {'bay': 4.2, 'storey': 5.5},
                    '-x': {'bay': 4.2, 'storey': 5.0, 'louvres': [(4.2, 6.5, 2.0, 1.6)]}},
             roof={'parapet': 0.4, 'units': [('hvac', 0.0, 0.0, {'w': 2.2, 'd': 1.6, 'fans': 1})]})
-    K.block(B, (26.0, 0.0, 30.8), (13.0, 8.0, 6.4), frame='frameL',
-            sides={'+z': {'bay': 4.33, 'storey': 4.0, 'doors': [2.2, 10.8], 'windows': [1], 'win': (1.6, 1.0), 'louvres': [(6.5, 1.6, 2.0, 1.4)]},
-                   '+x': {'bay': 3.2, 'storey': 4.0, 'windows': [1], 'win': (1.4, 1.0)}},
-            roof={'parapet': 0.4, 'units': [('hvac', -3.0, 0.0, {'w': 2.6, 'd': 1.8}), ('vent', 3.0, 0.0, {})]})
+    K.block(B, (25.5, 0.0, 30.8), (12.0, 10.0, 6.4),     # r12: plain, 10 m, no windows, no roof clutter
+            sides={'+z': {'bay': 4.0, 'storey': 10.0, 'doors': [2.2, 9.8], 'windows': [], 'louvres': [(6.0, 6.0, 2.0, 1.6)]},
+                   '+x': {'bay': 3.2, 'storey': 10.0}},
+            roof={'parapet': 0.5})
 
 
 

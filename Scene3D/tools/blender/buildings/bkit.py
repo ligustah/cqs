@@ -73,6 +73,7 @@ BKIT_MATS = {
     'seam':      ((0.016, 0.017, 0.018), 'paint', 0.8, 0.0),   # panel seams, slab joints (near black)
     'concrete':  ((0.30, 0.295, 0.28), 'paint', 0.9, 0.0),     # plinth top: light concrete
     'concrete2': ((0.20, 0.197, 0.19), 'paint', 0.9, 0.0),     # plinth sides, footings
+    'concreteD': ((0.215, 0.208, 0.196), 'paint', 0.9, 0.0),   # v6: a darker, mid-grey plinth top (the steel mill's concept)
     'kerb':      ((0.40, 0.395, 0.38), 'paint', 0.88, 0.0),    # kerb and edge band (the light rim of the slab)
     'roof':      ((0.16, 0.162, 0.165), 'paint', 0.8, 0.0),    # roof membrane / deck
     'pipe':      ((0.36, 0.365, 0.37), 'metal', 0.42, 0.55),   # bare-ish pipe metal (light steel)
@@ -532,7 +533,7 @@ def notch_rect(w, d, c, notch=None):
 
 
 def plinth(B, w, d, h=1.4, chamfer=2.0, kerb=0.5, slab=8.0, lamp_pitch=18.0, centre=(0, 0), markings=None,
-           grates=(), lamps=True, steps=(), notch=None, kerb_h=0.34):
+           grates=(), lamps=True, steps=(), notch=None, kerb_h=0.34, top='concrete'):
     """Slab w (x) by d (z) with chamfered plan corners, top at y = 0, `h` deep: a light kerb band round the top edge,
     a darker skirt, slab joints every `slab` m, amber edge lamps (corners + every lamp_pitch m along the front and
     left edges, R.pin), optional markings [(polyline [(x, z)...], width, mat)] and drain grates [(x, z, w, d)].
@@ -544,7 +545,7 @@ def plinth(B, w, d, h=1.4, chamfer=2.0, kerb=0.5, slab=8.0, lamp_pitch=18.0, cen
     B.prism(out, -h, -0.02 - kerb_h, mat='concrete2', bevel=0.06)
     B.prism(out, -0.02 - kerb_h, -0.02, mat='kerb', bevel=0.05)     # v6: kerb_h (the mill's thick light slab edge)
     inner = [(cx + x, cz + z) for x, z in R(w - 2 * kerb, d - 2 * kerb, max(0.2, chamfer - kerb * 0.6))]
-    B.prism(inner, -0.06, 0.0, mat='concrete', bevel=0.0)
+    B.prism(inner, -0.06, 0.0, mat=top, bevel=0.0)
     # skirt shadow line half-way down and a dark toe
     B.prism([(cx + x, cz + z) for x, z in R(w + 0.16, d + 0.16, chamfer + 0.06)], -h * 0.62, -h * 0.55, mat='seam', bevel=0.0)
     B.prism([(cx + x, cz + z) for x, z in R(w + 0.1, d + 0.1, chamfer + 0.04)], -h - 0.02, -h + 0.18, mat='frame2', bevel=0.0)

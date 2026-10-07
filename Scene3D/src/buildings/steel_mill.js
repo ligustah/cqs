@@ -20,6 +20,7 @@ export const { meta, asset, studio, load, build } = colonyBuilding({
   // v3 paint check: light-paint luminance trimmed to the concept's with the key alone (no paint lift)
   // v6: the concept's lens and warmth: plinth edge slopes 0.30 / 0.24 on the concept = az 48, el 12 with a long lens
   // (fov 22); a mildly warm key (a saturated one browned the gunmetal), a neutral fill lifted for the concept's
-  // low-contrast tonality; r1 paint-check: light band 0.90x, all 0.99x, hue 27.5 (concept 23)
-  studio: { az: 48, el: 12, fov: 22, sunaz: 42, sunel: 44, dist: 0.95, key: 0.95, keyColor: '#fff0e0', fill: 1.5, fillColor: '#e8e2da' },
+  // low-contrast tonality; r1 paint-check: light band 0.90x, all 0.99x, hue 27.5 (concept 23). r12 (judge A: "evenly lit,
+  // a toy"): fill 1.5 -> 0.6, env 0.5, key 1.15: grit-check shadow side 1.20x -> ~0.97x of the concept's, light band kept
+  studio: { az: 48, el: 12, fov: 22, sunaz: 42, sunel: 44, dist: 0.95, key: 1.15, keyColor: '#fff0e0', fill: 0.6, env: 0.5, fillColor: '#e8e2da' },
 });

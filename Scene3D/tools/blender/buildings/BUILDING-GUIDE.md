@@ -237,6 +237,10 @@ lessons, REMODEL-PROGRESS.
 | Small curved props read as wood (a barrel, a hut) | fixed-pitch plate seams and streak columns on objects under ~3 m | no seams / column streaks on small props: 1-2 welded courses, mottling, metal roughness | mill v6 r10 |
 | Edge line only on some parts | narrow flange / trim islands (< 0.25 m) stacked into a shared swatch (random geometry per texel); 5 cm curvature radius too tight | `STACK_NARROW` 0.12, curvature bake radius 8 cm, edge line from curvature 0.03-0.12 | mill v6 r10 |
 | A ring main shows a kink and open ends | a closed tube path has a joint | revolve a circle profile (`bustle_torus`): a true torus, no joint | mill v6 r10 |
+| The plinth sits off-centre / the apron reads "spread" | an edit appended a comment mid-call and swallowed the `centre=` argument (r1 -> r12 unnoticed) | never append comments inside a call's argument lines; after a round, grep for `#.*key=` / `#.*'key':` in edited lines | mill v6 r12 |
+| "Evenly lit, a toy / diorama" (judge A) | a strong fill (1.5) lifted the shadow side 1.2x over the concept's | lower fill / env, raise key to keep the light band; measure with grit-check `shadow` | mill v6 r12 |
+| Moire grain on a wall at review size | 8 cm bolt heads on a 25 px/m texture (2 px): aliasing | band-limit fine features by texel density (`cpaint` bolts fade below ~3 texels a head) | mill v6 r12 |
+| Streaks read as soft rectangular stamps | constant-width columns | taper the width down the run and wobble the centre line (`vstreaks` r12) | mill v6 r12 |
 | Rails / braces glow orange at 4096 only | a tiny emissive island packed inside a stacked swatch | stack lamp lenses too; check the final size | mill v5 |
 | Glow box reads as a solid orange slab or sticker | glow box thicker than 0.1 m, or square over a round surface | thin glow boxes for runners and openings only; emissive paint for round hot surfaces | mill v4-v5 |
 | Black scaffold round a thin cylinder | a lattice tower around the hero shape | broad light hero shape in front, slim posts, lattice only at the top | mill v5 |
@@ -254,6 +258,8 @@ lights, package, pkg-diff, phone). The colony-building rows on top of them:
 | C1 | Camera | plinth edge slopes on the render vs the concept, and by eye (roof tops visible as much as on the concept) | slopes within 0.15 (AI concepts are not consistent projections: by eye wins) `[r1]` |
 | C2 | Framing | whole plant inside the 1600 x 1000 frame incl. the hero's top; plinth width / frame width | nothing cut; 0.8-0.95 `[r2]` |
 | C3 | Silhouette | side by side at 1600 x 1000 | same signature shapes in the same places (hero forward-left etc.) |
+| G0 | Grit, measured | `python3 tools/buildings/grit-check.py <concept> <render> tools/buildings/grit-regions/<id>.json`: per surface (hero shell, wall, roof, plinth) luminance std and high-pass energy, render / concept; regions must be BARE surface (no posts, pipes or edges: structure dominates the variance) | each ratio 0.8-1.2 `[r12]` |
+| M1 | Mood, measured | grit-check `shadow`: the darkest 20 % of the building's pixels, render / concept | 0.8-1.2 (the mill: fill 1.5 gave 1.20 = "evenly lit, a toy"; fill 0.6, env 0.5, key 1.15 gave ~0.97) `[r12]` |
 | G1 | Streak crispness | close-up wall crop | vertical streaks with hard sides (<= 3 px edge at 1:1), sourced at seams / edges |
 | G2 | Roof soot | concept-camera crop of the roofs | roofs read mid-grey-warm, not white; dark lap lines visible |
 | G3 | Plinth staining | concept-camera crop of the slab | visible stains, darkening at wall feet and joints |

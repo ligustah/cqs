@@ -236,3 +236,30 @@ read at the concept camera near the furnace), macro grit visible on the furnace,
 W1 FAIL (0.84x); L1 runner core read pastel pink (FAIL) -> r11.
 ### v6 round 11 (16:40-16:55, pourBay + build): runner #ffa03c at 1.2; key 0.95. paint-check light 0.90x, all
 0.96x, hue 26.7 (c 23.2): W1 PASS. Evidence $S/mill/r11-blind.jpg, r11-closesheet.jpg. Judges requested.
+- r11 judges: both NOT YET. A: silhouette, warmth match; mood NO (evenly lit, pale clean plinth: a diorama), grit NO,
+  density NO (sparse tower and shed, detail in small boxes). B (all three gaps "major"): grime texel quality (soft
+  rectangular stamps, repeating columns, moire grain on the shed wall), flat molten metal and floor, edges on I-beams /
+  truss / girder, bustle banding. Coordinator: stop the final; crown and annexes first; make grit and mood measurable.
+- The 4096 final started at 16:44 was stopped (16:55) on that instruction.
+
+### v6 round 12 (started ~17:15)
+- Measurable grit / mood: `tools/buildings/grit-check.py` + `grit-regions/steel_mill.json`. r11 at the concept
+  camera: shell std 0.71x / hp 1.17x, wall 1.02 / 0.87, roof 1.17 / 0.98, plinth 1.01 / 1.55 (crops not yet fully bare);
+  shadow side 1.20x (FAIL) -> studio fill 1.5 -> 0.6, env 0.5, key 1.15: shadow 0.97x, light band 0.88x (test on r11).
+- Found: since r1 the plinth's `centre=(0, -4)` sat inside an appended comment (slab 4 m forward: the spread apron).
+- Crown: cap2 (a second, narrower dark drum), a railed deck on the cap, three straight uptakes into its side, no header.
+- Annexes: one plain 12 m block between the furnace foot and the shed gable (one window row), a plain 10 m shed-end
+  annex, the furnace-front block removed. Plinth top 'concreteD' (mid grey) with the stains.
+- Paint: organic tapered / wobbling drips; bolts band-limited by texel density; macro tone 0.18 and streaks 0.32;
+  shell and clad seams 9 cm, darker, halo 0.22; molten crust 0.65. Kit: warren chords / webs and I-beam flanges
+  chamfered for an edge line.
+
+## STYLE.md proposals (for the coordinator to merge)
+- Section 4 phone row "≤ 150k tris": the mill measures 163k on the phone tier (r7, doors and workers dropped) with
+  heap+gpu 134 MB, fetched 6.1 MB, ready 6.1 s (all far inside budget). Propose ≤ 175k tris for hero process
+  buildings, or state tris as advisory with heap+gpu the binding limit.
+- Section 4 "dark structure ≥ 25 px/m": met by crisp sets (furnace frame2 ~50 at 4096) but not by stacked lattice /
+  rail swatches (their density is not measurable as a density); propose "≥ 25 px/m on dark members ≥ 0.3 m wide".
+- Section 8: add the grit / mood measures (grit-check std and high-pass 0.8-1.2x on bare-surface crops; shadow side
+  0.8-1.2x), and "close-up views at ≤ 34 m with fov 38" (the 5 cm / 2 px test cannot pass further away).
+- The 15 m bare-apron rule held as written; icon fill ≥ 0.6 held (0.71).

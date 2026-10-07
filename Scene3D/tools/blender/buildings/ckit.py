@@ -61,8 +61,9 @@ WORKS = {
     # dark lap lines (`soot`, `lap`); the soft fbm run-off (`streak`) kept low under them
     # light paint a step greyer and darker, frames a step lighter (the concept's lower contrast; the studio lifts the whole)
     # r4: the soft fbm run-off off (`streak` 0: judge B read it as UV stretch), per-zone roughness (satin everywhere)
-    'shell': {'color': [0.73, 0.70, 0.665], 'rust': 0.6, 'streak': 0.0, 'dark': 0.55, 'seam_w': 0.045, 'vstreak': 1.0, 'halo': 0.16, 'rough': 0.66},
-    'clad': {'color': [0.73, 0.70, 0.66], 'rust': 0.5, 'streak': 0.0, 'vstreak': 1.0, 'halo': 0.16, 'rough': 0.7},
+    # r12: seams 9 cm and darker, a stronger halo: the concept's plate grid reads at its camera (4.5 cm seams were ~0.2 px)
+    'shell': {'color': [0.73, 0.70, 0.665], 'rust': 0.6, 'streak': 0.0, 'dark': 0.7, 'seam_w': 0.09, 'vstreak': 1.0, 'halo': 0.22, 'rough': 0.66},
+    'clad': {'color': [0.73, 0.70, 0.66], 'rust': 0.5, 'streak': 0.0, 'vstreak': 1.0, 'halo': 0.22, 'rough': 0.7, 'seam_w': 0.09},
     'clad2': {'color': [0.64, 0.62, 0.59], 'rust': 0.45, 'blot': 0.035, 'patina': 0.03, 'soot': 0.9, 'lap': 2.9},   # roofs: sooty with dark laps
     'panel': {'color': [0.75, 0.72, 0.685], 'rust': 0.45, 'streak': 0.0, 'vstreak': 0.95, 'halo': 0.12, 'rough': 0.68},
     # r7 (judge A: "clean, bright, toy-like"): dark steel a step darker with stronger mottling (blot), still neutral
@@ -96,7 +97,7 @@ def ibeam(B, p0, p1, h=0.6, b=0.3, tw=0.03, tf=0.04, mat='frame', up=(0, 1, 0)):
     if abs(d.dot(u.normalized())) > 0.99:
         u = V((1, 0, 0)) if abs(d.x) < 0.9 else V((0, 0, 1))
     with B.at(M=K.frame_along(p0, p1, u)):
-        bv = min(0.025, tf * 0.4)       # r4: flange edges catch a lit line (0.012 vanished at the close views)
+        bv = min(0.03, tf * 0.6)        # r4 / r12: flange edges catch a lit line (0.012 vanished at the close views)
         B.box((b, tf, L), at=(0, h / 2 - tf / 2, L / 2), mat=mat, bevel=bv)
         B.box((b, tf, L), at=(0, -h / 2 + tf / 2, L / 2), mat=mat, bevel=bv)
         B.box((tw, h - 2 * tf, L), at=(0, 0, L / 2), mat=mat, bevel=0.0)
@@ -158,18 +159,18 @@ def warren(B, p0, p1, depth, up=(0, 1, 0), bay=None, chord=0.3, web=0.14, mat='f
     L = (p1 - p0).length
     bay = bay or depth * 1.2
     n = max(1, int(round(L / bay)))
-    B.bar(p0, p1, chord, chord, mat=mat, up=up, bevel=0.02)
-    B.bar(p0 + u, p1 + u, chord, chord, mat=mat, up=up, bevel=0.02)
+    B.bar(p0, p1, chord, chord, mat=mat, up=up, bevel=min(0.04, chord * 0.14))       # r12: chords chamfered enough to carry an edge line
+    B.bar(p0 + u, p1 + u, chord, chord, mat=mat, up=up, bevel=min(0.04, chord * 0.14))
     for i in range(n + 1):
         a = p0 + (p1 - p0) * (i / n)
         if verticals:
-            B.bar(a, a + u, web, web, mat=mat, bevel=0.0)
+            B.bar(a, a + u, web, web, mat=mat, bevel=0.015)
         if i < n:
             b = p0 + (p1 - p0) * ((i + 1) / n)
             if i % 2 == 0:
-                B.bar(a, b + u, web, web, mat=mat, bevel=0.0)
+                B.bar(a, b + u, web, web, mat=mat, bevel=0.015)
             else:
-                B.bar(a + u, b, web, web, mat=mat, bevel=0.0)
+                B.bar(a + u, b, web, web, mat=mat, bevel=0.015)
 
 
 def square_deck(B, c, y, half, r_in, t=0.14, n=32, mat='grate', toe=True):
@@ -454,7 +455,12 @@ FURNACE_V6['downcomer'] = (1.7, [(-8.6, 23.4, 1.6), (-13.5, 23.4, 3.6), (-19.0, 
 FURNACE_V6['risers'] = [(20.0, 0.35), (32.0, 0.25), (75.0, 0.28), (150.0, 0.3), (210.0, 0.35), (300.0, 0.28)]
 # r8 (coordinator / judge A: "a caged dome with bent pipes, a lantern"): the uptakes rise straight beside the upper drum
 # and turn in to join the header; slimmer
-FURNACE_V6['uptakes'] = (4, 0.45, [(5.4, 48.4), (5.4, 57.0), (4.3, 59.2), (1.9, 60.6)])
+# r12 (coordinator: still a caged dome): three straight uptakes rising beside the drums into the side of a second,
+# narrower dark drum (cap2) over the cap, a railed deck on the cap; no pipes arching over the top
+FURNACE_V6['uptakes'] = (3, 0.42, [(5.5, 48.4), (5.5, 59.4), (4.0, 61.6), (2.7, 61.9)])
+FURNACE_V6['cap2'] = (2.6, 59.6, 63.6)
+FURNACE_V6['header'] = None
+FURNACE_V6['rings'] = [(49.0, 5.05, 7.0), (54.0, 3.75, 6.0), (59.6, 2.65, 4.4)]
 FURNACE_V6['segments'] = 52      # r8 (phone budget 150k): 60 -> 52
 FURNACE_V6['bustle_torus'] = True
 # r10 (judge A: "pipes running down the tower"): hot-blast drops from the bustle main to the base between the legs
@@ -666,6 +672,12 @@ def furnace(B, P=FURNACE):
     rcap, k0, k1 = P['cap']
     B.lathe([(0, k0), (rcap + 0.15, k0), (rcap + 0.15, k0 + 0.3), (rcap, k0 + 0.3), (rcap, k1 - 0.3), (rcap + 0.15, k1 - 0.3),
              (rcap + 0.15, k1), (rcap - 0.3, k1), (rcap - 0.3, k1 - 0.6), (0, k1 - 0.6)], (0, 0, 0), mat=P.get('cap_mat', 'shell'), n=40, bevel=0.03, sharp=30)
+    if P.get('cap2'):
+        r2_, c0_, c1_ = P['cap2']
+        B.lathe([(0, c0_), (r2_, c0_), (r2_, c1_ - 0.5), (r2_ - 0.6, c1_), (0, c1_)], (0, 0, 0), mat='frame2', n=32, bevel=0.03, sharp=30)
+        hoop(B, c, r2_, c0_ + 1.0, 0.3, 0.12, mat='frame', n=32)
+        B.vcyl(0.35, 1.6, (0.8, c1_ - 0.2, 0.6), mat='pipeDark', n=10)          # bleeder stubs
+        B.vcyl(0.3, 1.3, (-0.9, c1_ - 0.2, -0.4), mat='pipeDark', n=10)
     if P.get('top_deck'):
         ty, tr = P['top_deck']
         K.platform_ring(B, c, ty, rth + 0.05, tr, n=32, brackets=8)
@@ -940,8 +952,8 @@ SHED_V5.update({
     'pilaster_lamps': (4.2, 10.4),
     'paint': {
         # v6: soft fbm run-off down (0.2 -> 0.08), the crisp seam streaks (WORKS vstreak) carry the grit; heavier drips
-        'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.4, 'tone': 0.22, 'dark': 0.6, 'stagger': False,
-                 'seam_w': 0.05, 'streak': 0.0, 'drip': 0.0},     # r4: fbm run-off and smeared drips off (read as stretch)
+        'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.4, 'tone': 0.22, 'dark': 0.72, 'stagger': False,
+                 'seam_w': 0.09, 'streak': 0.0, 'drip': 0.0},     # r4: fbm run-off and smeared drips off (read as stretch); r12 seams 9 cm
         'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.4, 'tone': 0.07, 'dark': 0.35, 'streak': 0.1},
         'frame2': {'rust': 0.15},
     },
@@ -1427,7 +1439,7 @@ def pour_bay(B, P=POUR):
         # small objects: the ladle gets two welded courses and mottling, the booth's panel no column streaks
         'rust': {'rust': 0.0, 'edge': 1.0, 'course': 1.6, 'joint': 1e3, 'blot': 0.22, 'tone': 0.06, 'rough': 0.55, 'metal': 0.3},
         'panel': {'vstreak': 0.0, 'mstreak': 0.0, 'blot': 0.12},
-        'hot': {'crust': 0.45},
+        'hot': {'crust': 0.65},     # r12: a darker cooled skin broken by bright cracks (judge B: flat orange paint)
     })
 
 
