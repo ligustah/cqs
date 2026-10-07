@@ -1,5 +1,55 @@
 {
- "about": "grit-check regions (fractions of each image): bare SURFACE only (no posts, pipes or edges in the box: structure dominates the variance), the same four surfaces in both: the furnace's light cone, a shed wall panel field, the shed roof, the plinth top; render at the studio hint camera, 1600 x 1000",
- "concept": {"shell": [0.247, 0.26, 0.33, 0.365], "wall": [0.764, 0.586, 0.816, 0.651], "roof": [0.608, 0.488, 0.694, 0.521], "plinth": [0.486, 0.788, 0.608, 0.827]},
- "render": {"shell": [0.284, 0.30, 0.316, 0.345], "wall": [0.734, 0.61, 0.759, 0.66], "roof": [0.663, 0.56, 0.719, 0.59], "plinth": [0.80, 0.735, 0.86, 0.765]}
+ "about": "grit-check regions (fractions of each image): bare SURFACE only (no posts, pipes or edges in the box: structure dominates the variance), the same four surfaces in both: the furnace's light cone, a shed wall panel field, the shed roof, the plinth top; render boxes for the r13+ camera (studio hint, plinth centred at z -4), 1600 x 1000",
+ "concept": {
+  "shell": [
+   0.247,
+   0.26,
+   0.33,
+   0.365
+  ],
+  "wall": [
+   0.764,
+   0.586,
+   0.816,
+   0.651
+  ],
+  "roof": [
+   0.608,
+   0.488,
+   0.694,
+   0.521
+  ],
+  "plinth": [
+   0.3,
+   0.8,
+   0.36,
+   0.83
+  ]
+ },
+ "render": {
+  "shell": [
+   0.2137,
+   0.33,
+   0.24,
+   0.372
+  ],
+  "wall": [
+   0.7125,
+   0.61,
+   0.7325,
+   0.66
+  ],
+  "roof": [
+   0.6438,
+   0.56,
+   0.6937,
+   0.588
+  ],
+  "plinth": [
+   0.7812,
+   0.742,
+   0.825,
+   0.765
+  ]
+ }
 }

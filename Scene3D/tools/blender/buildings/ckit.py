@@ -62,8 +62,9 @@ WORKS = {
     # light paint a step greyer and darker, frames a step lighter (the concept's lower contrast; the studio lifts the whole)
     # r4: the soft fbm run-off off (`streak` 0: judge B read it as UV stretch), per-zone roughness (satin everywhere)
     # r12: seams 9 cm and darker, a stronger halo: the concept's plate grid reads at its camera (4.5 cm seams were ~0.2 px)
-    'shell': {'color': [0.73, 0.70, 0.665], 'rust': 0.6, 'streak': 0.0, 'dark': 0.7, 'seam_w': 0.09, 'vstreak': 1.0, 'halo': 0.22, 'rough': 0.66},
-    'clad': {'color': [0.73, 0.70, 0.66], 'rust': 0.5, 'streak': 0.0, 'vstreak': 1.0, 'halo': 0.22, 'rough': 0.7, 'seam_w': 0.09},
+    # r14 (grit-check r13: shell std 0.69x, wall 0.71x of the concept's): stronger macro panel tone and long streaks
+    'shell': {'color': [0.73, 0.70, 0.665], 'rust': 0.6, 'streak': 0.0, 'dark': 0.7, 'seam_w': 0.09, 'vstreak': 1.0, 'halo': 0.22, 'rough': 0.66, 'mtone': 0.26, 'mstreak': 0.4},
+    'clad': {'color': [0.73, 0.70, 0.66], 'rust': 0.5, 'streak': 0.0, 'vstreak': 1.0, 'halo': 0.22, 'rough': 0.7, 'seam_w': 0.09, 'mtone': 0.26, 'mstreak': 0.4},
     'clad2': {'color': [0.64, 0.62, 0.59], 'rust': 0.45, 'blot': 0.035, 'patina': 0.03, 'soot': 0.9, 'lap': 2.9},   # roofs: sooty with dark laps
     'panel': {'color': [0.75, 0.72, 0.685], 'rust': 0.45, 'streak': 0.0, 'vstreak': 0.95, 'halo': 0.12, 'rough': 0.68},
     # r7 (judge A: "clean, bright, toy-like"): dark steel a step darker with stronger mottling (blot), still neutral

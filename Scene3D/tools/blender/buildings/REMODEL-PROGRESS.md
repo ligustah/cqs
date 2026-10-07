@@ -263,3 +263,13 @@ W1 FAIL (0.84x); L1 runner core read pastel pink (FAIL) -> r11.
 - Section 8: add the grit / mood measures (grit-check std and high-pass 0.8-1.2x on bare-surface crops; shadow side
   0.8-1.2x), and "close-up views at ≤ 34 m with fov 38" (the 5 cm / 2 px test cannot pass further away).
 - The 15 m bare-apron rule held as written; icon fill ≥ 0.6 held (0.71).
+Round 12 result (17:04-17:27): 178.9k tris; light 0.87x; the new 12 m block and annexes drew a bold dark half-timber
+grid (5 m bays of dark posts and bands). Evidence $S/mill/r12-blind.jpg, r12-closesheet.jpg.
+### v6 round 13 (17:30-17:45, build only): plain facades (corner posts only, no bands / seam grid) on the 12 m block
+and all annexes; key 1.25. paint-check light 1.00x, hue 27.4 (c 23.2); grit-check (regions re-fitted to the r13 camera,
+still approximate: see grit-crops-r13.png): shell std 0.69x / hp 1.59x, wall 0.71 / 1.0, roof 0.84 / 0.97, plinth
+0.86 / 1.81; shadow 1.00x.
+Checklist review r13: S1 PASS (compact tower, stepped dark crown), C2 / C3 PASS, D2 PASS (one block + annexes, no
+cabins), W1 PASS (1.00x), M1 PASS (shadow 1.00x), G0 FAIL on shell / wall std (0.69 / 0.71x) -> mtone 0.26, mstreak 0.4
+for the next bake, G1 PASS (tapered drips), G2 PASS, G3 PASS-ish, L1 / L2 PASS, T2 PASS at 4096 (seams 2-4 px), T3
+PASS-ish (edge line on chamfered members), phone tris FAIL (see STYLE proposals). Judges requested.
