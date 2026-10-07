@@ -81,7 +81,8 @@ STACK_ZONES = {'frame', 'frame2', 'grate', 'pipeDark', 'pipe', 'soot', 'refracto
                'amber', 'hazard', 'roof'}
 STACK_AREA = 2.0
 ANGLE = float(os.environ.get('REMODEL_ANGLE', 55))   # smart projection angle limit (degrees)
-SHAPE = 'CONCAVE'       # pack_islands shape method
+SHAPE = os.environ.get('REMODEL_SHAPE', 'CONCAVE')       # pack_islands shape method
+MERGE = os.environ.get('REMODEL_MERGE', '1') == '1'
 STACK_NARROW = 0.12     # any zone: islands narrower than this (m; ribs, trims, rungs) are stacked too
 # v5: lamp lenses ARE stacked (one emissive swatch): left as tiny islands, the concave packer dropped them into gaps
 # inside the 'frame' swatch, and every rail and brace that samples that swatch glowed orange at 4096
@@ -143,29 +144,56 @@ def unwrap(ob, margin, weights=UV_WEIGHT):
     bm.faces.ensure_lookup_table()
     if CYL:
         _unroll(bm, uvl, names)
-    parent = list(range(len(bm.faces)))
+    def islands():
+        parent = list(range(len(bm.faces)))
 
-    def find(a):
-        while parent[a] != a:
-            parent[a] = parent[parent[a]]; a = parent[a]
-        return a
-    for e in bm.edges:
-        if len(e.link_faces) != 2:
-            continue
-        f1, f2 = e.link_faces
-        l1 = [l for l in f1.loops if l.edge == e][0]
-        l2 = [l for l in f2.loops if l.edge == e][0]
-        # shared edge with matching UVs on both sides (l1 runs v0 -> v1, l2 the other way)
-        a1, b1 = l1[uvl].uv, l1.link_loop_next[uvl].uv
-        a2, b2 = l2.link_loop_next[uvl].uv, l2[uvl].uv
-        if (a1 - a2).length < 1e-5 and (b1 - b2).length < 1e-5:
-            ra, rb = find(f1.index), find(f2.index)
-            if ra != rb:
-                parent[ra] = rb
-    isl = {}
-    for f in bm.faces:
-        isl.setdefault(find(f.index), []).append(f)
+        def find(a):
+            while parent[a] != a:
+                parent[a] = parent[parent[a]]; a = parent[a]
+            return a
+        for e in bm.edges:
+            if len(e.link_faces) != 2:
+                continue
+            f1, f2 = e.link_faces
+            l1 = [l for l in f1.loops if l.edge == e][0]
+            l2 = [l for l in f2.loops if l.edge == e][0]
+            # shared edge with matching UVs on both sides (l1 runs v0 -> v1, l2 the other way)
+            a1, b1 = l1[uvl].uv, l1.link_loop_next[uvl].uv
+            a2, b2 = l2.link_loop_next[uvl].uv, l2[uvl].uv
+            if (a1 - a2).length < 1e-5 and (b1 - b2).length < 1e-5:
+                ra, rb = find(f1.index), find(f2.index)
+                if ra != rb:
+                    parent[ra] = rb
+        out = {}
+        for f in bm.faces:
+            out.setdefault(find(f.index), []).append(f)
+        return out
+    isl = islands()
     import math as _m
+    # v6 r22 (judge B r7-r21: "the bustle torus is faceted", "blocky texel patches" on the furnace's dark pipes; the
+    # furnace main set packed at 0.14 fill, 11 px/m): big HOLLOW islands (grating decks and ring girders round the
+    # shaft, 100-200 m2 annuli, too big for the hollow-island stack below) left their huge empty boxes in the pack. Cut
+    # each into 15-degree wedges about its own centre (in plan), parked apart so they pack as compact pieces
+    kuv0 = sum(abs(sum(q[i].x * q[i - 1].y - q[i - 1].x * q[i].y for i in range(len(q)))) / 2
+               for f in bm.faces for q in [[l[uvl].uv for l in f.loops]]) / max(1e-9, sum(f.calc_area() for f in bm.faces))
+    ncut = 0
+    for k, fs in list(isl.items()):
+        uvs = [l[uvl].uv for f in fs for l in f.loops]
+        bw = (max(u.x for u in uvs) - min(u.x for u in uvs)) / _m.sqrt(kuv0)
+        bh = (max(u.y for u in uvs) - min(u.y for u in uvs)) / _m.sqrt(kuv0)
+        a = sum(f.calc_area() for f in fs)
+        if a >= 12.0 and a < 0.3 * bw * bh and len(fs) >= 8:
+            cs = [f.calc_center_median() for f in fs]
+            cx = sum(c.x for c in cs) / len(cs); cz = sum(c.z for c in cs) / len(cs)
+            for f, c in zip(fs, cs):
+                sec = _m.floor((_m.atan2(c.x - cx, c.z - cz) + _m.pi) / (2 * _m.pi / 24))
+                for l in f.loops:       # parked apart from everything (each island its own row below the square)
+                    l[uvl].uv.x += 3.0 * sec
+                    l[uvl].uv.y -= 5.0 * (ncut + 1)
+            ncut += 1
+    if ncut:
+        isl = islands()
+        print(f'[remodel] cut {ncut} hollow islands into wedges', flush=True)
 
     def uv_area(fs):
         a = 0.0
@@ -224,7 +252,7 @@ def unwrap(ob, margin, weights=UV_WEIGHT):
     bm.to_mesh(me); bm.free()
     bpy.ops.object.mode_set(mode='EDIT')
     bpy.ops.mesh.select_all(action='SELECT')
-    bpy.ops.uv.pack_islands(rotate=True, margin=margin, merge_overlap=True, shape_method=SHAPE)
+    bpy.ops.uv.pack_islands(rotate=True, margin=margin, merge_overlap=MERGE, shape_method=SHAPE)
     print(f'[remodel] stacked {nst} tiny islands of {sorted(stacks)} into {len(stacks)} swatches; {len(isl) - len(stacks)} islands packed', flush=True)
     bpy.ops.object.mode_set(mode='OBJECT')
     uv = np.empty(len(me.loops) * 2); me.uv_layers.active.data.foreach_get('uv', uv); uv = uv.reshape(-1, 2)

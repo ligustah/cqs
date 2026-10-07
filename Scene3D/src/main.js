@@ -215,6 +215,10 @@ function start() {
     if (fc) for (const L of lighting.lights || []) if (L.name === 'studio-fill') L.color.set(fc);
     // shadowNB: the key shadow's normal bias x this (a large building's lit walls showed a Vogel-disk acne dot grid)
     if (BSTUDIO.shadowNB) lighting.sun.userData.nbScale = BSTUDIO.shadowNB;
+    // shadowRadius: the key's PCF disk radius in texels (?srad= calibrates; the penumbra dither of a wide disk read as a
+    // dot grid on large walls at the close views)
+    const srad = params.get('srad') ?? BSTUDIO.shadowRadius;
+    if (srad != null) lighting.sun.shadow.radius = parseFloat(srad);
   }
   // the studio has no sky (star field, sun glare): its backdrop is part of the lighting rig
   const sky = studio ? { update() {} } : createSky(scene);
