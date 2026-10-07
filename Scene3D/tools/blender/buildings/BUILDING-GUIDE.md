@@ -11,9 +11,44 @@ top to bottom; it is enough to run the whole process. Details live in:
 This guide is living: every step, setting and fix that worked and every trap hit goes in **in the round it was learned**,
 tagged `[mill vN rM]` (building, version, round). The pilot is the steel mill (v4-v6).
 
-Conventions: `PY` = the venv python with bpy 5.x, numpy, pillow
-(`scratchpad/blender-venv/bin/python`); paths from `Scene3D/`; `$W` = a scratch work dir (never in the repo).
-Run heavy Blender jobs one at a time, in the background, with a log (`nohup ... > $W/x.log 2>&1 &`).
+Conventions: `PY` / `BPY` = a Python with the bpy module (section 0b); paths from `Scene3D/`; `$W` / `REVIEW_DIR` =
+a scratch work dir outside the repo (default `${TMPDIR:-/tmp}/cqs-review`). Nothing in the recipe depends on a
+session's scratchpad: every script it calls is in the repo (section 0b). Run heavy Blender jobs one at a time, in the
+background, with a log (`nohup ... > $W/x.log 2>&1 &`).
+
+**Iteration budget (correction 46)** `[mill v6 r22]`: at most **25 review rounds per building**, the last one being
+the 4096 final (with the release checks, the evidence and the checklist review). Plan the rounds: the big structural
+fixes first, polish later; if the budget runs out, ship and list what is left.
+
+## 0b. Environment and the review toolkit `[mill v6 r22]`
+
+- **bpy venv** (Blender as a Python module; no Blender install needed):
+  `python3.11 -m venv $HOME/bpy-venv && $HOME/bpy-venv/bin/pip install bpy==5.0.1 numpy==1.26.4 pillow scipy==1.13.1`
+  then `export BPY=$HOME/bpy-venv/bin/python` (bpy 5.0 needs Python 3.11 exactly). The system `python3` runs the
+  measuring tools: `pip install numpy pillow opencv-python-headless` (grit-check's GrabCut). Node: `npm ci` in `Scene3D/`
+  (three, playwright-core + a Chromium for `tools/shoot.mjs`, `@gltf-transform/*`, `meshoptimizer`, sharp).
+- **The weathering library** (fal PATINA, `v27_mill_weathering` in `pipeline/fal-pipeline.json`) is in the repo:
+  `tools/blender/buildings/weather/<set>/{base,base_clean}.jpg, rough.png, height.png` (+ `wxprep.py`). No fal call is
+  needed to rebuild.
+- **Review toolkit** `tools/buildings/review/` (bash + python; `env.sh` sets `SCENE3D`, `REVIEW_DIR`, `BPY`, `IMAGES`):
+
+| script | does |
+|---|---|
+| `round.sh <id> <tag> [parts]` | a review round: remodel the parts at 2048, build at 2048 x 6, shots, checks, blind sheet (concept / `PREV` / tag) and close sheet -> `$REVIEW_DIR/<id>/` |
+| `final.sh <id> <tag> <parts>` | the final: parts at their registry size, build 4096 x 10, shots, checks |
+| `shots.sh <id> <tag>` | main shot at the module's studio hint + the close-ups of `cams/<id>.json` (1600 x 1000) |
+| `audit.sh <id> <tag>` | top / rear audit views of `cams/<id>.json` (pipe logic, P1) |
+| `check.sh <id> <render> [crops]` | paint-check + grit-check vs the concept (W1, G0, M1) |
+| `sheet.py <out> <title> "a=img|b=img" ...` | labelled row sheets |
+| `prev.sh <part> [az:el]` | flat-colour geometry preview of a remodel part |
+| `shoot-rev.sh <id> <git-rev> <tag>` | shoot an earlier version from git (its GLBs + DATA) with today's studio and cameras |
+| `evidence.sh <id> <final> <prev> <vN>` | the evidence sheets into `images/buildings/` |
+| `glbppm.py <glb> <tex> [box]` | px/m per mesh (and of the triangles in a world box) from a built GLB: run `decode.mjs` first (meshopt) |
+| `decode.mjs <in.glb> <out.glb>` | meshopt + quantization -> plain GLB (run from `Scene3D/`) |
+| `uvdraw.py <glb> <tex> <out.png>` | draw a part's UV layout (pack and fill problems) |
+
+  The per-building cameras and concept crops live in `tools/buildings/review/cams/<id>.json`, the grit regions in
+  `tools/buildings/grit-regions/<id>.json`.
 
 ## 0. Targets (read before building)
 
@@ -192,9 +227,9 @@ $PY tools/blender/buildings/colony_build.py <id> $W/b --tex 4096 --samples 10   
 **Round scripts and times** `[mill v6]` (4 CPU threads): a review round = remodel the changed parts at `--tex 2048`
 (1.5-5 min a part; all five ~11 min), `colony_build.py --tex 2048 --samples 6` (~1.5 min), four shots at 1600 x 1000
 (concept camera ~2 min, each close-up ~2-3.5 min; ~9 min); total ~22 min, ~12 min for a building-only change. A part
-preview is ~40 s. Keep the round driver as a script (`round.sh <tag> [parts]`: remodel -> build -> shots, each step
-logged) and a sheet maker (concept | previous | current; close-ups). Run one heavy job at a time; poll the round log
-for a `done` line.
+preview is ~40 s. The round driver is `tools/buildings/review/round.sh <id> <tag> [parts]` (section 0b): remodel ->
+build -> shots -> checks -> sheets, each step logged. Run one heavy job at a time; poll the round output for a `done`
+line.
 
 **Studio calibration** `[mill v6 r1]`: test lighting on the installed GLB with URL overrides (`&key=&fill=&keycolor=
 ffeedd&fillcolor=`) and `paint-check` each; then write the winner into the studio hint. Mill: key 0.85, keyColor
@@ -260,6 +295,11 @@ lessons, REMODEL-PROGRESS.
 | Procedural grime reads "synthetic, tile-like", whatever the amplitude (judges r2-r13) | noise and hash fields have no photographic structure | the photographic weathering library (above); keep procedural layers for seams, edges and macro tone | mill v6 r14 |
 | Walls read as a window / tile grid | 9 cm dark seams + halo, plus the photo's own joints | seams 6-7 cm at 0.5-0.6, halo 0.12-0.16; remove the photo's joints | mill v6 r14 |
 | A kit block's wall is "a smeared photo" at 1:1 | the hull's single smart projection gave the 80 x 92 m plinth most of the atlas | the hull uses `remodel.unwrap` (stacking, concrete weighted 0.3) | mill v6 r14 |
+| A fault "fixed" in round N is reported again in rounds N+2, N+4 ... (torus facets r7-r21, the smeared wall r13-r21, the shed moire r9-r21) | the fix was checked on the part or a texture, not on the frame the judge looked at | crop the judge's exact region from the round's render at 1:1, diagnose from that crop, then confirm on the BUILT GLB (`decode.mjs` + `glbppm.py`; tris, segment count, px/m in a world box) | mill v6 r22 |
+| Bustle "faceted" and "dies into the column" at the furnace close-up | not geometry (the GLB had all 72 segments, sagitta ~1 cm): the ring (R 12.6) ran through the four raking legs, whose inner corners reach 10.8 m radial, and its dark pipe zone sat in the furnace main set at ~11 px/m (2048), so every UV island seam showed as a facet | fit the ring between shell and legs (R 10.15, tube 0.45); `pipeDark` into the frame2 texture set (`ckit.SPLIT`, fill ~0.7); check the radii against the leg corners (`b - s/2` times sqrt 2) | mill v6 r22 |
+| A kit block wall smeared at the close-up although the hull UV was fixed | the hull atlas still held the plinth's underside and its buried slab layers (~32 %): the casthouse wall measured 37 px/m at 2048 (`glbppm.py` with a box round the wall) | `colony_build.py` deletes down-facing faces at plinth level and runs `remodel.cull_buried` on the hull before the unwrap; the final at 4096 doubles it | mill v6 r22 |
+| A fine dot grid on lit walls at the close views (moire) survived the acne fix | the key's PCF samples a Vogel disk 3.5 texels wide: its pattern shows in every penumbra; `?ao=0`, `?finish=off`, `?snb=12` leave it, `?srad=1.5` removes it | studio hint `shadowRadius: 1.5` (`?srad=` calibrates) with `shadowNB` | mill v6 r22 |
+| The furnace main set packs at 0.10-0.14 fill | open: not the hollow-annulus rule (wedge cuts: no change), not the pack shape (AABB 0.09) or the margin method; the layout (`uvdraw.py`) shows the packer leaving half the square empty | worked around (pipes moved to the frame2 set); investigate `remodel.unwrap`'s pack on the main set before the next hero (`REMODEL_SHAPE` / `REMODEL_MERGE` / `REMODEL_MARGIN` env hooks) | mill v6 r22 |
 | A big pipe "comes out of the housing for no apparent reason" (user, correction 45) | the gallery's gas main dropped behind the foot tower and ended at 3 m in the air; drops, mains and bundles elsewhere also had free ends | route each run source -> destination with flanges and supports (`GALLERY_V6['pipe_support']`, `pipe_bundle(drop_end=)`, `pipe(support_pitch=)` now ceil-spaced); audit on a top + rear view | mill v6 r18 |
 | A multi-part remodel dies on the second part with `ReferenceError: StructRNA of type Image has been removed` | a module-level cache of a bpy image outlives the scene reset between parts | validate cached datablocks (`.name` in try / except ReferenceError) and reload | mill v6 r15 |
 | Molten trough still a pale peach slab after the AO heat gradient | on a flat open trough the AO is high everywhere: heat ~1 over the whole stream, the crust suppressed, emission clipped above the tone-map knee | with a crust, heat is a minor term (x 0.35); open metal from noise + a narrow glow core; crust plates near black with bright cracks; body x 0.55-1.0 below the knee; check the part's emit texture, not only the render | mill v6 r16-r17 |

@@ -78,12 +78,29 @@ def stage_hull(bid, work, tex, samples, threads):
         n0 = len(ob.data.polygons)
         RM.cull_buried(ob)
         print(f'[colony] hull: {len(under)} underside faces, {n0 - len(ob.data.polygons)} buried faces culled', flush=True)
-        w = dict(RM.UV_WEIGHT, concrete=0.3, concreteD=0.3, concrete2=0.35, kerb=0.45, seam=0.3, hazard=0.5)
-        ppm, (a3, a2) = RM.unwrap(ob, margin=max(0.0008, 1.5 / tex), weights=w)
-        print('[colony] hull px/m at %d: ' % tex + ', '.join(f'{z} {v * tex:.1f}' for z, v in sorted(ppm.items(), key=lambda kv: -kv[1])), flush=True)
+        w = dict(RM.UV_WEIGHT, concrete=0.3, concreteD=0.3, concrete2=0.22, kerb=0.25, seam=0.3, hazard=0.5)   # r22: kerb / sides held 23 % at 107 px/m
+        # v6 r22 (judge B: block walls still soft at the close-up: ~18-26 px/m on the big walls at 2048, ~9000 m2 of
+        # weighted surface in one atlas): a building module may set HULL_SPLIT (zones): those (the ground: slab, kerb,
+        # stains) get a second hull texture set (base + ORM: 2 more samplers), the walls the whole first atlas
+        split = [z for z in getattr(mod, 'HULL_SPLIT', ()) if z in [s_.material.name for s_ in ob.material_slots]]
+        ob2 = RM.split_off(ob, set(split), '_ground') if split else None
+        for o_, w_ in ((ob, w), (ob2, dict(w, concrete=1.0, concreteD=1.0, concrete2=0.6, kerb=0.7, seam=0.6, hazard=1.0))):
+            if o_ is None:
+                continue
+            ppm, (a3, a2) = RM.unwrap(o_, margin=max(0.0008, 1.5 / tex), weights=w_)
+            print(f'[colony] {o_.name} px/m at %d: ' % tex + ', '.join(f'{z} {v * tex:.1f}' for z, v in sorted(ppm.items(), key=lambda kv: -kv[1])), flush=True)
     t2 = time.time()
     print(f'[colony] unwrap {t2 - t1:.0f}s', flush=True)
     tb = lib.bake(ob, tex, samples)
+    if not os.environ.get('COLONY_SIMPLE_UV') and ob2 is not None:
+        tb += lib.bake(ob2, tex, samples)
+        import bpy
+        vl = bpy.context.view_layer
+        for o_ in vl.objects:
+            o_.select_set(False)
+        ob.select_set(True); ob2.select_set(True); vl.objects.active = ob
+        bpy.ops.object.join()
+        print(f'[colony] hull: two texture sets (walls, ground {split})', flush=True)
     print(f'[colony] bake {tex}px x{samples}: {tb:.0f}s', flush=True)
     import numpy as np
     co = np.empty(len(ob.data.vertices) * 3)

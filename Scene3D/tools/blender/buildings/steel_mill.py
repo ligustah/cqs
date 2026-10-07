@@ -26,6 +26,9 @@ SPEC = {
     'about': 'blast furnace in a steel tower frame with a skip-hoist gallery, glowing pour bay with an overhead crane, two banded stacks, long clad shed',
 }
 
+# v6 r22: the hull's ground (slab top, sides, kerb, stains, markings) in its own texture set (colony_build.py), so the
+# block walls get the whole first atlas (judge B: soft walls at the close-up)
+HULL_SPLIT = ('concrete', 'concreteD', 'concrete2', 'kerb', 'seam', 'hazard')
 FX, FZ = -18.0, 24.0         # furnace axis (front-left of the slab; v5: 2 m back for the broader furnace)
 SH_X, SH_SEGMENTS = 10.0, (-27.0, 9.0)   # shed: two 36 m fal segments along Z, x -4..24
 PB_X, PB_Z = 28.0, 13.0       # pour bay centre (against the shed's +X face)
@@ -400,7 +403,7 @@ def clutter(B):
             B.R.pin((FX + sx * b, y, FZ + sz * b))
     B.R.spill((PB_X + 11.0, 4.0, PB_Z - 4.0), color='#ff9a40', intensity=170.0, distance=12.0)   # r14: two pools along the runner
     B.R.spill((PB_X + 11.0, 4.0, PB_Z + 9.0), color='#ff9a40', intensity=170.0, distance=12.0)
-    B.R.spill((PB_X + 2.0, 6.0, PB_Z + 2.0), color='#ffa850', intensity=110.0, distance=12.0)    # inside the portal
+    B.R.spill((PB_X + 2.0, 6.0, PB_Z + 2.0), color='#ffa850', intensity=70.0, distance=10.0)    # inside the portal (r23: 110 tinted the ladle bronze)
     # --- +X apron along the shed (x 33-40, z -48..0): a pipe cluster on stools at the edge, sheds, pallets, skids
     # r18 (correction 45): shed wall -> switchgear skid; pump skid -> shed wall (both had free ends at the kerb)
     K.pipe_bundle(B, [(23.6, 0.0, -40.0), (38.6, 0.0, -40.0), (38.6, 0.0, -31.3), (36.5, 0.0, -31.3)], n=3, r=0.22)

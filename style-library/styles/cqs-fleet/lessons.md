@@ -317,3 +317,15 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
 74. **Blind judges find what self-review misses.** From round 2 on, the two fresh judges (vibes, blind; 1:1 quality)
     named the derrick silhouette, the scattered props, the salmon glow, the smeared streaks and the uniform roughness
     before self-review did; run them every round from round 2.
+75. **Every pipe needs a source, a destination and supports (correction 45).** A gas main that elbowed down behind a
+    tower and stopped at 3 m read as "coming out of the housing for no reason"; the audit also found free ends on drops,
+    bundles, wall runs and ducts. Trace each run on a top and a rear view: nozzle or wall -> flanged run on supports
+    every <= 6 m -> vessel, stack inlet, wall or buried service; and make the key run legible from the hero camera.
+76. **Diagnose a repeat fault from the judge's crop and the built file.** Three faults came back for 3-6 rounds after
+    being "fixed" on the part: the torus facets were a ring running through the legs plus an 11 px/m pipe atlas, the
+    smeared wall was hidden plinth faces eating the hull atlas, the moire was the soft-shadow sample pattern. Crop the
+    exact region at 1:1, then measure the built GLB (segments, px/m in a world box).
+77. **A wide PCF disk draws its sample pattern.** A 3.5-texel Vogel-disk shadow filter left a regular dot grid in every
+    penumbra on large lit walls; a larger normal bias does not remove it, a 1.5-texel radius does.
+78. **Iteration budget (correction 46).** At most 25 review rounds per building, the last being the 4096 final with the
+    checks and evidence; front-load the structural fixes.
