@@ -166,7 +166,7 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
             # PATINA plate tone at the runtime tile
             if c['light'] or c['kind'] == 'paint':
                 hp = HP.triplanar(hm, p, nn, 6.0)
-                col *= (1 + 0.06 * (hp / hmean - 1))[:, None]
+                col *= (1 + c.get('patina', 0.06) * (hp / hmean - 1))[:, None]
             # AO grime
             g = c['grime']
             col *= (1 - 0.35 * g * (1 - a))[:, None]
@@ -176,7 +176,7 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
             rg += 0.12 * crease
             # blotches and run-off streaks
             blot = HP.fbm(p, 0.08, 3, seed=1 + zi)
-            col *= (1 + 0.07 * (blot - 0.5) * 2)[:, None]
+            col *= (1 + c.get('blot', 0.07) * (blot - 0.5) * 2)[:, None]
             st = HP.fbm(p * np.array([1.0, 0.06, 1.0], np.float32), 1.4, 3, seed=9)
             streak = wall * HP.smooth(0.5, 0.7, st) * 0.16 * g
             col *= (1 - streak)[:, None]
@@ -209,7 +209,27 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
                 col = col * (1 - wear[:, None]) + (ec if ec.ndim == 2 else ec[None]) * wear[:, None]
                 mt = np.maximum(mt, wear * (0.15 if c['light'] else 0.6))
                 rg -= 0.15 * wear
-            if c['hot'] is not None:
+            if c['hot'] is not None and zone_names[zi] == 'hot':
+                # molten metal / furnace glow (v4 r2): a deep orange body under the tone curve's knee with hotter yellow
+                # cores and a dark cooling crust broken by glowing cracks (one flat bright orange tone-mapped to a flat
+                # salmon slab at the building camera). Hue goes yellow with heat, never toward pink.
+                f1 = HP.fbm(p, 0.9, 3, seed=3)
+                core = HP.smooth(0.5, 0.78, f1)
+                deep = HP.srgb2lin([0.86, 0.30, 0.04])
+                bright = HP.srgb2lin([1.0, 0.78, 0.36])
+                e = deep[None] * (1 - core[:, None]) + bright[None] * core[:, None]
+                cr = float(c.get('crust', 0.35))
+                if cr > 0:
+                    cells = HP.fbm(p, 2.6, 3, seed=31)
+                    crack = HP.smooth(0.03, 0.0, np.abs(cells - 0.5))     # thin bright seams between crust plates
+                    crust = HP.smooth(0.42, 0.62, HP.fbm(p, 0.7, 2, seed=37)) * cr * (1 - crack)
+                    e = e * (1 - 0.85 * crust[:, None]) + bright[None] * 0.6 * crack[:, None] * crust[:, None]
+                else:
+                    crust = np.zeros(len(mm), np.float32)
+                emit[mm] = np.clip(e * c['hot'][1], 0, 1)
+                col = np.clip(deep[None] * 0.12 * (1 - crust[:, None]) + HP.srgb2lin([0.10, 0.08, 0.07])[None] * crust[:, None], 0, 1)
+                rg = 0.55 + 0.35 * crust
+            elif c['hot'] is not None:
                 hc, k = c['hot']
                 fl = 0.8 + 0.4 * HP.fbm(p, 1.5, 2, seed=3)
                 emit[mm] = np.clip(hc[None] * fl[:, None] * k, 0, 1)
@@ -233,6 +253,11 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
     col8 = (HP.lin2srgb(img).reshape(S, S, 3) * 255 + 0.5).astype(np.uint8)
     orm = np.zeros((S * S, 3), np.float32)
     orm[:, 0] = 1.0
+    # v4 r2: the baked AO (1.2 m) in the glTF occlusion channel as well: three applies it to the indirect light only (the
+    # studio's environment and fill), so recesses, the undersides of decks and the feet of walls darken on the shadow
+    # side where the grime in the base colour alone left them flat (the runtime GTAO adds the building-scale contact)
+    occ = np.clip(0.18 + 0.82 * ao, 0, 1)
+    orm[idx, 0] = np.where(np.isin(Zn, [i for i, c in enumerate(cfgs) if c['hot'] is not None]), 1.0, occ)
     orm[:, 1] = 0.6
     orm[idx, 1] = np.clip(rough, 0.05, 1)
     orm[idx, 2] = np.clip(metal, 0, 1)

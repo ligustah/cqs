@@ -56,7 +56,7 @@ lib.MATS.update({
 WORKS = {
     'shell': {'color': [0.75, 0.715, 0.66], 'rust': 0.75},
     'clad': {'color': [0.77, 0.74, 0.69], 'rust': 0.6},
-    'clad2': {'color': [0.70, 0.665, 0.61], 'rust': 0.5},
+    'clad2': {'color': [0.70, 0.665, 0.61], 'rust': 0.5, 'blot': 0.035, 'patina': 0.03},   # roofs: big planes, blotches read as camouflage
     'panel': {'color': [0.78, 0.75, 0.70], 'rust': 0.5},
     'frame': {'rust': 0.55, 'edge': 0.9},
     'frame2': {'color': [0.30, 0.285, 0.27], 'rust': 0.65},
@@ -258,6 +258,57 @@ def hoop(B, c, r, y, h=0.6, out=0.2, mat='frame', n=48, base_y=0.0):
     B.lathe([(r - 0.05, y), (r + out, y), (r + out, y + h), (r - 0.05, y + h)], (x, base_y, z), mat=mat, n=n, closed=True, bevel=0.03, sharp=30)
 
 
+def lap_rings(B, rfun, y0, y1, pitch, mat='shell', skip=(), n=48, out=0.035, h=0.14, c=(0.0, 0.0)):
+    """Modelled plate courses on a round shell (v4 r2): a thin lap ring at every course seam y = k * pitch in (y0, y1)
+    (the paint's course seams sit on the same multiples), its lower edge chamfered so each seam catches the key light
+    as a crisp line at any distance (a painted seam alone fades into the plate tone beyond ~40 m). rfun(y) is the shell
+    radius; seams within 0.7 m of a `skip` height (hoops, bands) are left out."""
+    x, z = c
+    for k in range(int(math.ceil(y0 / pitch)), int(y1 / pitch) + 1):
+        y = k * pitch
+        if y < y0 + 0.3 or y > y1 - 0.3 or any(abs(y - s) < 0.7 for s in skip):
+            continue
+        r = rfun(y)
+        B.lathe([(r - 0.04, y - h / 2), (r + out * 0.4, y - h / 2), (r + out, y - h / 2 + 0.03), (r + out, y + h / 2), (r - 0.04, y + h / 2)],
+                (x, 0.0, z), mat=mat, n=n, closed=True, bevel=0.0, sharp=25)
+
+
+def ribbed_slope(B, a, b, z0, z1, pitch=0.9, w=0.09, h=0.07, mat='clad2', margin=0.25, stop=None):
+    """Standing-seam ribs on a sloped sheet (v4 r2): the sheet's top surface runs from a = (x, y) (eaves) to b = (x, y)
+    (ridge) and is extruded along Z from z0 to z1; a rib every `pitch` m runs down the slope. stop(z) -> x (optional)
+    ends a rib early (under a roof monitor). Ribs are real geometry so the roof reads as profiled sheeting from the
+    building camera, not as a flat painted plane."""
+    a3, b3 = V((a[0], a[1], 0.0)), V((b[0], b[1], 0.0))
+    t = (b3 - a3).normalized()
+    nrm = V((-t.y, t.x, 0.0))
+    if nrm.y < 0:
+        nrm = -nrm
+    n = max(1, int(round((z1 - z0 - 2 * margin) / pitch)))
+    for i in range(n + 1):
+        z = z0 + margin + (z1 - z0 - 2 * margin) * i / n
+        e = b3
+        if stop is not None:
+            xs = stop(z)
+            if xs is not None:
+                f = (xs - a3.x) / (b3.x - a3.x) if abs(b3.x - a3.x) > 1e-6 else 1.0
+                e = a3 + (b3 - a3) * max(0.0, min(1.0, f))
+        B.bar(a3 + nrm * (h / 2) + V((0, 0, z)), e + nrm * (h / 2) + V((0, 0, z)), w, h, mat=mat, up=tuple(nrm), bevel=0.0)
+
+
+def ribbed_flat(B, x0, x1, z0, z1, y, pitch=0.9, w=0.09, h=0.07, mat='clad2', along='x'):
+    """Standing-seam ribs on a flat roof deck at top height y (ribs along X or Z)."""
+    if along == 'x':
+        n = max(1, int(round((z1 - z0) / pitch)))
+        for i in range(1, n):
+            z = z0 + (z1 - z0) * i / n
+            B.box((x1 - x0, h, w), at=((x0 + x1) / 2, y + h / 2, z), mat=mat, bevel=0.0)
+    else:
+        n = max(1, int(round((x1 - x0) / pitch)))
+        for i in range(1, n):
+            x = x0 + (x1 - x0) * i / n
+            B.box((w, h, z1 - z0), at=(x, y + h / 2, (z0 + z1) / 2), mat=mat, bevel=0.0)
+
+
 # ------------------------------------------------------------------------------------------------------------------
 # furnace: vertical vessel from stations, with the optional four-column tower
 # ------------------------------------------------------------------------------------------------------------------
@@ -290,7 +341,7 @@ def _shaft_r(prof, y):
 
 
 def furnace(B, P=FURNACE):
-    n = 48
+    n = P.get('segments', 72)       # 72 round a 19 m shell: facets ~0.8 m, a smooth silhouette at the 1:1 close-up
     c = (0.0, 0.0)
     # plinth: a chamfered concrete block with a kerb and anchor plinths under the tower legs
     bw, bh, bd = P['base']
@@ -325,7 +376,7 @@ def furnace(B, P=FURNACE):
         with B.at(at=(rt * math.sin(a), (t0 + t1) / 2, rt * math.cos(a)), rot=(0, math.degrees(a), 0)):
             B.box((0.42, t1 - t0 - 0.6, 0.55), at=(0, 0, 0), mat='frame', bevel=0.03)
             B.cyl(0.14, 0.9, at=(0, -0.15, 0.55), mat='pipeDark', n=10)        # tuyere stock nose
-    K.glow_ring(B, c, rt - 0.2, (t0 + t1) / 2, h=(t1 - t0) - 0.7, n=nw, color='#ff7010', radiance=1.3)
+    K.glow_ring(B, c, rt - 0.2, (t0 + t1) / 2, h=(t1 - t0) - 0.7, n=nw, color='#ff8a28', radiance=0.7)
     # collar and bosh shoulder
     rc, c0, c1 = P['collar']
     B.lathe([(0, c0), (rc, c0), (rc, c1), (0, c1)], (0, 0, 0), mat='frame', n=n, bevel=0.04)
@@ -334,6 +385,8 @@ def furnace(B, P=FURNACE):
     B.lathe([(0, prof[0][1])] + prof + [(0, prof[-1][1])], (0, 0, 0), mat='shell', n=n, bevel=0.0, sharp=50)
     for (yy, hh) in P['hoops']:
         hoop(B, c, _shaft_r(prof, yy + hh / 2), yy, hh, 0.22, mat='frame', n=n)
+    lap_rings(B, lambda y: _shaft_r(prof, y), prof[0][1], prof[-1][1], P.get('course', 2.25), mat='shell',
+              skip=[yy + hh / 2 for (yy, hh) in P['hoops']], n=n)
     # bustle main (a torus) and the tuyere downlegs with their goosenecks
     rb, yb, tb, nl = P['bustle']
     pts = [(rb * math.sin(2 * math.pi * k / 40), yb, rb * math.cos(2 * math.pi * k / 40)) for k in range(41)]
@@ -445,6 +498,7 @@ def furnace(B, P=FURNACE):
         'frame2': {'axis': (0, 0), 'course': 1.6, 'joint': 1.6, 'rust': 0.5, 'tone': 0.08},
         'concrete2': {'course': 1.5, 'joint': 3.0, 'rust': 0.0, 'dark': 0.25},
         'concrete': {'course': 3.0, 'joint': 3.0, 'rust': 0.0, 'dark': 0.3},
+        'hot': {'crust': 0.0},
     })
 
 
@@ -462,7 +516,7 @@ STACK['bands'] = [(9.6, 18.6, 'shell'), (18.6, 25.0, 'frame2'), (25.0, 33.8, 'sh
 
 
 def banded_stack(B, P=STACK):
-    n = 40
+    n = P.get('segments', 56)
     c = (0.0, 0.0)
     bw, bh = P['base']
     B.prism(lib.chamfer_rect(bw, bw, 0.35), 0.0, bh, mat='frame2', bevel=0.05)
@@ -480,6 +534,7 @@ def banded_stack(B, P=STACK):
     for (y0, y1, m) in P['bands']:
         B.lathe([(r, y0), (r, y1)], (0, 0, 0), mat=m, n=n, bevel=0.0)
         hoop(B, c, r, y0 - 0.18, 0.36, 0.12, mat='frame', n=n)
+        lap_rings(B, lambda y: r, y0, y1, P.get('course', 2.2), mat=m, skip=[py for (py, _) in P['platforms']], n=n, out=0.03, h=0.12)
     top0 = P['bands'][-1][1]
     T = P['top']
     B.lathe([(r, top0), (r, T - 1.4), (r + 0.3, T - 0.6), (r + 0.3, T), (r - 0.3, T), (r - 0.3, T - 3.0), (0, T - 3.0)], (0, 0, 0), mat='frame2', n=n, bevel=0.03, sharp=25)
@@ -575,8 +630,21 @@ def gable_shed(B, P=SHED):
             prof = list(reversed(prof))
         B.add(lib.bm_prism(prof, -hz, hz), mat='clad2', bevel=0.02)
     B.box((0.7, 0.35, L), at=(0, Rg + 0.08, 0), mat='frame', bevel=0.04)
-    # roof monitor: louvred sides, light cheeks, a shallow roof with dark trims
     mw, ml, mh, mr = P['monitor']
+    # standing-seam ribs down both slopes (stopping at the monitor's cheeks) and a lap flashing every sheet length
+    rp = P.get('rib', 0.9)
+    for sx in (1, -1):
+        ribbed_slope(B, (sx * (hx + ov - 0.05), E), (sx * 0.4, Rg - 0.4 * (Rg - E) / (hx + ov)), -hz, hz, pitch=rp,
+                     stop=lambda z, sx=sx: (sx * (mw / 2 + 0.25)) if abs(z) < ml / 2 + 0.3 else None)
+        ang = math.atan2(Rg - E, hx + ov)
+        for f in (0.36, 0.7):      # sheet end laps: a low step across the slope
+            xa = sx * (hx + ov) * (1 - f)
+            ya = E + (Rg - E) * f
+            B.bar((xa, ya + 0.02, -hz + 0.1), (xa, ya + 0.02, hz - 0.1), 0.18, 0.05, mat='clad2', up=(sx * math.sin(ang), math.cos(ang), 0), bevel=0.0)
+    # dark eaves band under the gutter on the long faces (the concept's fascia line)
+    for sx in (1, -1):
+        B.box((0.12, 0.7, L - 0.2), at=(sx * (hx + 0.06), E - 0.62, 0), mat='frame2', bevel=0.02)
+    # roof monitor: louvred sides, light cheeks, a shallow roof with dark trims
     ang = math.atan2(Rg - E, hx + ov)
     ybase = Rg - (mw / 2) * math.tan(ang)
     for sx in (1, -1):
@@ -592,6 +660,7 @@ def gable_shed(B, P=SHED):
         if sx < 0:
             prof = list(reversed(prof))
         B.add(lib.bm_prism(prof, -ml / 2 - 0.2, ml / 2 + 0.2), mat='clad2', bevel=0.02)
+        ribbed_slope(B, (sx * (mw / 2 + 0.3), ybase + mh), (sx * 0.3, ybase + mh + mr * (1 - 0.3 / (mw / 2 + 0.3))), -ml / 2 - 0.2, ml / 2 + 0.2, pitch=rp, w=0.08, h=0.06)
     B.box((0.5, 0.25, ml + 0.4), at=(0, ybase + mh + mr + 0.06, 0), mat='frame', bevel=0.03)
     # crew door (fleet kit) on the +X face
     side, dz = P['door']
@@ -625,6 +694,12 @@ def pour_bay(B, P=POUR):
             for dx in (-0.66, 0.66):   # flange edges proud of the web plates (a built-up section)
                 B.box((0.06, E - 0.6, 1.7), at=(x + dx, 0.8 + (E - 0.6) / 2, z), mat='frame', bevel=0.0)
             B.box((1.6, 0.3, 1.8), at=(x, E + 0.35, z), mat='frame', bevel=0.03)
+            for yy in [1.6 + 2.4 * k for k in range(int((E - 2.0) / 2.4))]:   # diaphragm / batten plates
+                B.box((1.36, 0.1, 1.56), at=(x, yy, z), mat='frame', bevel=0.01)
+            B.box((1.9, 0.06, 2.1), at=(x, 0.83, z), mat='frame', bevel=0.01)                  # base plate
+            for dx in (-0.8, 0.8):
+                for dz in (-0.9, 0.9):
+                    B.cyl(0.05, 0.12, at=(x + dx, 0.9, z + dz), rot=(90, 0, 0), mat='frame', n=6)  # anchor nuts
             # runway corbel
             B.box((1.2, 1.0, 0.9), at=(x - (0.9 if x > 0 else -0.9), P['runway'] - 0.95, z - sz * 0.9), mat='frame', bevel=0.03)
             lamp(B, (x + (0.68 if x > 0 else -0.68), 8.2, z), (1 if x > 0 else -1, 0, 0), size=0.3)
@@ -659,6 +734,12 @@ def pour_bay(B, P=POUR):
         B.rod((xb, H - 0.1, zb), (xf, H - 0.1, za), 0.06, mat='frame', n=6)
     for x in (xb, xf):
         B.box((0.5, 0.35, 2 * zs + 2.0), at=(x, H + 0.05, 0), mat='frame', bevel=0.03)
+    # v4 r2: a profiled roof deck on the purlins (the open roof read as loose rafters poking over the shed from the
+    # building camera); the crane still shows through the open +X face under the eaves girder, as in the concept
+    if P.get('roof', True):
+        B.box((xf - xb + 0.6, 0.16, 2 * zs + 1.6), at=((xf + xb) / 2, H - 0.05 + 0.08, 0), mat='clad2', bevel=0.03)
+        ribbed_flat(B, xb - 0.3, xf + 0.3, -zs - 0.8, zs + 0.8, H + 0.11, pitch=P.get('rib', 0.9), along='x')
+        B.box((0.3, 0.55, 2 * zs + 1.9), at=(xf + 0.42, H - 0.02, 0), mat='frame2', bevel=0.03)     # front fascia
     # back wall: dark plates with stiffeners and girts, a doorway with the warm interior beyond
     xw = xb - 0.4
     B.box((0.25, E, 2 * zs - 1.5), at=(xw, E / 2, 0), mat='frame2', bevel=0.03)
@@ -720,11 +801,11 @@ def pour_bay(B, P=POUR):
     for x in (rx0 + 2.0, rx1 - 2.0):
         for s in (-1, 1):
             B.box((0.25, 0.9, 0.12), at=(x, 1.0, rz + s * (rw / 2 + 0.06)), mat='frame', bevel=0.0)
-    B.R.glowbox(((rx0 + rx1) / 2, 1.46, rz), (rx1 - rx0 - 0.3, 0.06, rw - 1.2), color='#ff6a10', radiance=2.2)
+    B.R.glowbox(((rx0 + rx1) / 2, 1.45, rz), (rx1 - rx0 - 1.2, 0.03, 0.32), color='#ffb050', radiance=1.6)   # the hot core of the stream only: the crust shows round it
     B.box((3.0, 1.9, 3.2), at=(rx0 - 1.2, 1.12, rz), mat='frame2', bevel=0.06)
     B.box((2.6, 0.12, 2.8), at=(rx0 - 1.2, 2.1, rz), mat='hot', bevel=0.0)
     B.box((3.2, 0.3, 3.4), at=(rx0 - 1.2, 2.2, rz), mat='frame', bevel=0.03)
-    B.R.glowbox((rx0 - 1.2, 2.16, rz), (2.5, 0.05, 2.7), color='#ff6a10', radiance=1.8)
+    B.R.glowbox((rx0 - 1.2, 2.17, rz), (1.0, 0.03, 1.0), color='#ffb050', radiance=1.4)
     K.railing(B, [(rx0 + 0.5, 1.4, rz - rw / 2 - 0.4), (rx1 - 0.2, 1.4, rz - rw / 2 - 0.4)], post=1.8)
     # rails and sleepers; the ladle car with its pot
     zr0, x0, x1 = P['rails']
@@ -743,7 +824,7 @@ def pour_bay(B, P=POUR):
     B.lathe([(0, 3.62), (1.42, 3.62), (1.42, 3.66), (0, 3.66)], (lx, 0, zr0), mat='hot', n=32, bevel=0.0)
     for s in (-1, 1):
         B.cyl(0.25, 0.5, at=(lx, 2.9, zr0 + s * 1.75), mat='frame', n=12)
-    B.R.glowbox((lx, 3.7, zr0), (2.6, 0.05, 2.6), color='#ff6a10', radiance=1.6)
+    B.R.glowbox((lx, 3.68, zr0), (1.0, 0.03, 1.0), color='#ffb050', radiance=1.4)
     K.railing(B, [(lx - 2.2, 1.4, zr0 + 1.25), (lx + 2.2, 1.4, zr0 + 1.25)], post=1.4)
     # tapping platforms (two levels) with stairs on the -Z side
     def deck(x0_, x1_, z0_, z1_, y):
@@ -766,6 +847,7 @@ def pour_bay(B, P=POUR):
         'concrete2': {'course': 3.0, 'joint': 3.0, 'rust': 0.0, 'dark': 0.3},
         'amber': {'color': [0.80, 0.52, 0.16], 'rust': 0.4, 'edge': 0.9, 'tone': 0.08},
         'rust': {'rust': 0.0},
+        'hot': {'crust': 0.45},
     })
 
 

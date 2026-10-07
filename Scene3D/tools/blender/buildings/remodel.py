@@ -133,9 +133,24 @@ def unwrap(ob, margin, weights=UV_WEIGHT):
     return ppm, (sum(a3.values()), sum(a2.values()))
 
 
+def gltf_occlusion(mt):
+    """Route the ORM's red channel (the baked AO) to the glTF exporter's occlusion slot (the 'glTF Material Output'
+    custom group the Blender glTF add-on reads); the exporter then writes occlusionTexture on the same ORM image."""
+    g = bpy.data.node_groups.get('glTF Material Output')
+    if g is None:
+        g = bpy.data.node_groups.new('glTF Material Output', 'ShaderNodeTree')
+        g.interface.new_socket('Occlusion', in_out='INPUT', socket_type='NodeSocketFloat')
+    t = mt.node_tree
+    sep = next(n for n in t.nodes if n.bl_idname == 'ShaderNodeSeparateColor')
+    gn = t.nodes.new('ShaderNodeGroup')
+    gn.node_tree = g
+    t.links.new(sep.outputs['Red'], gn.inputs['Occlusion'])
+
+
 def final_material(ob, name, paths):
     HC.set_final_material(ob, paths['base'], paths['orm'], name=name, normal_png=paths['normal'])
     mt = ob.data.materials[0]
+    gltf_occlusion(mt)
     if paths.get('emit'):
         t = mt.node_tree
         bsdf = t.nodes['Principled BSDF']
