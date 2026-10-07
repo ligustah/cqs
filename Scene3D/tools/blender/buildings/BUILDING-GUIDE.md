@@ -173,6 +173,13 @@ python3 tools/buildings/paint-check.py ../style-library/styles/cqs-fleet/images/
   shots/buildings/<id>-rN.png
 $PY tools/blender/buildings/colony_build.py <id> $W/b --tex 4096 --samples 10     # final (~10 min)
 ```
+**Round scripts and times** `[mill v6]` (4 CPU threads): a review round = remodel the changed parts at `--tex 2048`
+(1.5-5 min a part; all five ~11 min), `colony_build.py --tex 2048 --samples 6` (~1.5 min), four shots at 1600 x 1000
+(concept camera ~2 min, each close-up ~2-3.5 min; ~9 min); total ~22 min, ~12 min for a building-only change. A part
+preview is ~40 s. Keep the round driver as a script (`round.sh <tag> [parts]`: remodel -> build -> shots, each step
+logged) and a sheet maker (concept | previous | current; close-ups). Run one heavy job at a time; poll the round log
+for a `done` line.
+
 **Studio calibration** `[mill v6 r1]`: test lighting on the installed GLB with URL overrides (`&key=&fill=&keycolor=
 ffeedd&fillcolor=`) and `paint-check` each; then write the winner into the studio hint. Mill: key 0.85, keyColor
 #fff0e0, fill 1.5, fillColor #e8e2da -> light band 0.90x, all 0.99x, hue 27.5 (concept 23). A saturated key
