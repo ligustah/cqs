@@ -1,5 +1,5 @@
 {
- "about": "grit-check regions (fractions of each image): bare SURFACE only (no posts, pipes or edges in the box: structure dominates the variance), the same four surfaces in both: the furnace's light cone, a shed wall panel field, the shed roof, the plinth top; render boxes for the r13+ camera (studio hint, plinth centred at z -4), 1600 x 1000",
+ "about": "grit-check regions (fractions of each image): bare SURFACE only (no posts, pipes or edges in the box: structure dominates the variance), the same four surfaces in both: the furnace's light cone, a shed wall panel field, the shed roof, the plinth top; render boxes for the r22+ camera (studio hint el 10, dist 0.88), 1600 x 1000",
  "concept": {
   "shell": [
    0.247,
@@ -28,28 +28,28 @@
  },
  "render": {
   "shell": [
-   0.2137,
-   0.33,
-   0.24,
-   0.372
+   0.2469,
+   0.32,
+   0.2687,
+   0.37
   ],
   "wall": [
-   0.7125,
+   0.7638,
    0.61,
-   0.7325,
+   0.7844,
    0.66
   ],
   "roof": [
-   0.6438,
-   0.56,
-   0.6937,
-   0.588
+   0.7,
+   0.582,
+   0.7406,
+   0.602
   ],
   "plinth": [
-   0.7812,
-   0.742,
-   0.825,
-   0.765
+   0.4406,
+   0.955,
+   0.4656,
+   0.972
   ]
  }
 }

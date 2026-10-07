@@ -334,12 +334,12 @@ final 4096 build. Evidence: `images/buildings/steel_mill-v5.jpg` (concept | v4 |
 
 ### v6: "very similar vibes" (2026-10-07, corrections 43-45; the step-by-step is BUILDING-GUIDE.md)
 
-Twenty-one 2048 review rounds against the concept with two blind judges (vibes; real-time quality at 1:1) from round 2.
+Twenty-four 2048 review rounds and the 4096 final (round 25; correction 46 caps a building at 25) against the concept with two blind judges (vibes; real-time quality at 1:1) from round 2.
 What changed in the shared tools (all generic; the other 15 buildings get them by default):
 
 | area | change |
 |---|---|
-| studio | `main.js` reads `fov`, `keyColor`, `fillColor`, `shadowNB` (key shadow normal bias x; the Vogel-disk acne dot grid on large walls) from a building's studio hint, `?snb=` calibrates; the mill: az 48, el 12, fov 22, dist 0.95, key 1.5 #fff3e8, fill 0.6 #f0dcc8, env 0.5, shadowNB 6 (paint-check light ~1.05x, shadow side ~1.0x) |
+| studio | `main.js` reads `fov`, `keyColor`, `fillColor`, `shadowNB` (key shadow normal bias x; acne) and `shadowRadius` (the PCF disk in texels; a wide disk drew a dot grid in every penumbra) from a building's studio hint, `?snb=` / `?srad=` calibrate; the mill: az 48, el 10, fov 22, dist 0.88, key 1.5 #fff3e8, fill 0.6 #f0dcc8, env 0.5, shadowNB 6, shadowRadius 1.5 (paint-check light ~1.05x, shadow side ~1.0x) |
 | weathering library | four fal PATINA sets (`weather/wxCladding`, `wxSteel`, `wxConcrete`, `wxRoof`; joints removed by `cpaint._unline`): `cpaint.PHOTO` layer per zone (band-limited, per-row offsets) and `lib._wx_photo` box-projected in the hull bake; procedural layers kept for seams, edges, macro tone |
 | molten | `cpaint` hot zone with a crust: dark crust plates and bright cracks, open metal from noise + a narrow glow core, body below the tone-map knee (an AO heat term saturates on a flat trough); runner 1.8 m in a lined trough |
 | pipes (correction 45) | `GALLERY_V6['pipe_support']` (nozzle / inlet flanges, roof saddles, corner or face brackets, stool); `pipe_bundle(drop_end=)` (buried service through a curb); `pipe` supports ceil-spaced (gaps <= pitch); checklist row P1 |
@@ -348,6 +348,9 @@ What changed in the shared tools (all generic; the other 15 buildings get them b
 | UV / sets (`remodel.py`) | `ckit.SPLIT` may list several sets (furnace: shell, frame2); per-part main-set weights `ckit.UV_W`; `STACK_NARROW` 0.12; curvature bake 8 cm; hot zone weight 1.0; `REMODEL_OUT` / `REMODEL_ANGLE` for experiments |
 | kit (`bkit.py`) | clutter: `pallet`, `drums`, `pump_skid`, `gas_bottles`, `pipe_bundle`; `Rec.spill` (process-glow point lights -> `colony.js` interiorLights 'point'); chamfers up to 6 cm on members >= 0.3 m; 8-segment bends on mains; `plinth(kerb_h)` |
 | kit (`ckit.py`) | FURNACE_V6 (legs on the diagonals hugging the drum, slim posts following the bell, ring decks, risers, drops, dark base band, thin slit, elbow downcomer, stepped dark crown, true-torus bustle); SHED_V6 (14 deg roof, gable parapets, half monitors, deeper pilasters, door surrounds, 3 lamp rows); POUR_V6 (portal against the wall, dark back, runner on the apron); GALLERY_V6 (clad box gallery; gas main from a crown nozzle down beside the foot tower into stack 1); `window_frame` |
+| hull (`colony_build.py`) | culls the plinth's underside and buried faces before the unwrap (~32 % of the atlas freed); kerb / sides weighted 0.25 / 0.22; opt-in second ground texture set `HULL_SPLIT` (off for the mill: the walls packed worse) |
+| furnace (r22) | bustle R 10.15 / tube 0.45 between the bosh and the legs; pipeDark in the frame2 texture set; light hood cone; slimmer posts; downcomer flanges, joints, a braced column and a roof curb |
+| review toolkit | `tools/buildings/review/` (round, final, shots, audit, check, sheets, evidence, shoot an earlier git revision, GLB px/m and UV tools); BUILDING-GUIDE section 0b |
 | phone | `artifact-tiers.mjs` LITE_COLONY and `colony_build.py` also drop `parts_door` on the phone tier |
 
 Steel mill parameter sets: FURNACE_V6, SHED_V6, POUR_V6, GALLERY_V6, STACK (32 segments, laps every 6.6 m).

@@ -91,10 +91,18 @@ def stage_hull(bid, work, tex, samples, threads):
             print(f'[colony] {o_.name} px/m at %d: ' % tex + ', '.join(f'{z} {v * tex:.1f}' for z, v in sorted(ppm.items(), key=lambda kv: -kv[1])), flush=True)
     t2 = time.time()
     print(f'[colony] unwrap {t2 - t1:.0f}s', flush=True)
+    import bpy
+
+    def _only(o_):     # bpy.ops.object.bake bakes the SELECTED / active object: select the one being baked (r23: the
+        vl_ = bpy.context.view_layer   # ground set's unwrap left it active through the walls' bake: black slab)
+        for x_ in vl_.objects:
+            x_.select_set(False)
+        o_.select_set(True); vl_.objects.active = o_
+    _only(ob)
     tb = lib.bake(ob, tex, samples)
     if not os.environ.get('COLONY_SIMPLE_UV') and ob2 is not None:
+        _only(ob2)
         tb += lib.bake(ob2, tex, samples)
-        import bpy
         vl = bpy.context.view_layer
         for o_ in vl.objects:
             o_.select_set(False)

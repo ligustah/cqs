@@ -349,3 +349,39 @@ seams); W1 PASS (light 1.07x, hue 27.6 vs 23.2), W2 PASS; M1 PASS (shadow 0.98-1
 runner with bright cracks and core, ladle crust; spill pools local), L2 PASS; T1 PASS; T2 PASS (no acne dot grid with
 shadowNB 6; hull walls sharp); T3 PASS; P1 PASS (every run traced: see rounds 19-20); I1 not re-run (final);
 phone tris: 194.7k desktop (see the STYLE proposals; the phone tier is measured at the final).
+- r21 judges: both NOT YET. A: mood, density, warmth now MATCH; silhouette (a bulging cage with heavy ribs and a dark
+  dome; camera too high) and grit (toy-like white annexes with black trim) do not. B: shadows pass; repeat faults:
+  torus facets, a smeared wall in the pour view, shed moire; the ladle reads as polished copper; three pipe-logic faults.
+- Correction 46 (user): at most 25 rounds; r25 = the 4096 final. Coordinator: the session migrates after the mill:
+  everything needed in the repo.
+
+### v6 round 22 (21:26-21:44; scratch now $REVIEW_DIR = scratchpad/review, driver tools/buildings/review/round.sh)
+Diagnosed each repeat fault from a 1:1 crop of r21 and the BUILT GLB (tools/buildings/review/decode.mjs + glbppm.py):
+- Torus facets: the GLB had all 72 segments (5 deg, sagitta ~1 cm). Causes: the ring (R 12.6) ran through the four
+  raking legs (inner corners at 10.8 m radial) and its pipeDark zone sat in the furnace main set at ~11 px/m (2048).
+  Fix: R 10.15 / tube 0.45 at 19.5 m between bosh and legs; pipeDark into the frame2 set (17.4 px/m at 2048, ~35 at 4096).
+  The main set's 0.10-0.14 fill is a separate packer problem left open (wedge cuts, AABB / CONVEX, FRACTION margins
+  tested: no change; env hooks REMODEL_SHAPE / _MERGE / _MARGIN kept).
+- Smeared pour-left wall: the shed-end annex's +X face, 25.7 px/m area-weighted at 2048; the hull atlas also held the
+  plinth's underside and buried slab layers (~32 %). Fix: colony_build culls down-facing plinth faces + buried faces
+  (58.7k -> 52.8k hull tris; light walls 49 -> 64 px/m mean, casthouse wall 37 -> 49); r23 adds a second hull texture
+  set for the ground (`HULL_SPLIT`) and lower kerb / side weights.
+- Shed moire: unchanged with ?ao=0, ?finish=off, ?snb=12; gone with ?srad=1.5: the key's 3.5-texel Vogel-disk PCF
+  pattern in every penumbra. Fix: studio hint shadowRadius 1.5 (main.js reads it; ?srad= calibrates). r22 crop clean.
+- Pipe logic: the shed's upper wall pipes leave and re-enter the wall (the 2.2 m drop ended in the air); the bustle no
+  longer meets the legs; the downcomer has a nozzle flange, flanged joints, a braced column on the base block and a
+  roof curb.
+- Annexes: new kit material panelW (weathered grey-beige), light-grey 0.35 m corner posts (frameL) instead of the black
+  0.6 m trim on all annexes and the furnace-foot blocks. Ladle: near-black matte scorched steel. Furnace form: the hood
+  cone light (shell), posts 0.95 x 0.75 (1.5 x 1.1), no 35 m deck band. Camera: el 10, dist 0.88 (plinth-edge slopes
+  0.35 / 0.28 vs the concept's 0.29 / 0.24). Runner glow 1.6, core 0.8.
+r22 check (grit regions not re-fitted to the new camera, so G0 numbers are not comparable): light 1.15x, shadow 1.21x.
+### v6 rounds 23-24 (22:07-22:30)
+- r23 (pour bay + build): ladle drip streaks 1.0 -> 0.25 (they read as barrel staves), portal spill 110 -> 70 cd;
+  the hull ground in a second texture set (`HULL_SPLIT`): the slab came out black (bake selection + a stale
+  BAKE_TARGET node; both fixed, unit-tested with `--stage hull --tex 512`). A comment had swallowed the ladle paint
+  line's closing brace (r23's first start died; fixed in 81aeb53).
+- r24 (build only): walls fine, slab still black (the second cause). After the fix the unit test showed the split
+  makes the wall set pack worse (3.0 px/m at 512 on the annex walls, ~half the single set): HULL_SPLIT is off for the
+  mill; kept as an opt-in. Grit regions re-fitted to the r22 camera (tools/buildings/grit-regions/steel_mill.json).
+- r25 = the 4096 final (correction 46: 25 rounds).

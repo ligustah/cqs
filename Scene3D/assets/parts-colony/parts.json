@@ -341,7 +341,7 @@
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "tris": 50140,
+   "tris": 48697,
    "bbox": {
     "min": [
      -21.05,
@@ -360,45 +360,45 @@
     ]
    },
    "tex": 2048,
-   "kb": 4273,
+   "kb": 3980,
    "about": "60 m blast furnace remodel: concrete plinth, dark staved hearth, recessed glowing tuyere band with 24 window frames, bustle main and downlegs, light plated shaft with five hoops, flange, cone, throat, uptakes and downcomer; four laced columns, four square grating decks on ring girders, X bracing, caged ladder, lamps",
    "remodel": {
     "builder": "ckit.furnace",
     "script": "tools/blender/buildings/remodel.py",
     "pxPerM": {
-     "concrete2": 6.5,
-     "concrete": 7.0,
-     "frame": 12.0,
-     "pipeDark": 10.9,
-     "hot": 12.5,
-     "grate": 6.4,
-     "shell (set 2)": 37.1,
-     "frame2 (set 3)": 24.7
+     "concrete2": 6.3,
+     "concrete": 7.3,
+     "frame": 12.3,
+     "hot": 13.0,
+     "grate": 6.6,
+     "shell (set 2)": 33.2,
+     "frame2 (set 3)": 27.0,
+     "pipeDark (set 3)": 17.4
     },
-    "surfaceM2": 13190,
+    "surfaceM2": 12535,
     "paint": {
      "colony_blastFurnace": {
-      "Y_all": 0.0787,
-      "Y_light": 0.1993,
-      "light_share": 0.08
+      "Y_all": 0.0606,
+      "Y_light": 0.213,
+      "light_share": 0.099
      },
      "colony_blastFurnace_2": {
-      "Y_all": 0.312,
-      "Y_light": 0.312,
+      "Y_all": 0.2955,
+      "Y_light": 0.2955,
       "light_share": 1.0
      },
      "colony_blastFurnace_3": {
-      "Y_all": 0.0711,
+      "Y_all": 0.0737,
       "Y_light": null,
       "light_share": 0.0
      }
     },
     "seconds": {
-     "model": 306,
-     "unwrap": -105,
-     "bake": 43,
-     "paint": 62,
-     "export": 6
+     "model": 271,
+     "unwrap": -97,
+     "bake": 39,
+     "paint": 58,
+     "export": 5
     },
     "date": "2026-10-07"
    },
@@ -423,26 +423,6 @@
       -13.523,
       27.9,
       3.623
-     ],
-     [
-      3.106,
-      36.3,
-      11.591
-     ],
-     [
-      11.591,
-      36.3,
-      -3.106
-     ],
-     [
-      -3.106,
-      36.3,
-      -11.591
-     ],
-     [
-      -11.591,
-      36.3,
-      3.106
      ],
      [
       2.847,
@@ -981,7 +961,7 @@
     ]
    },
    "tex": 2048,
-   "kb": 1448,
+   "kb": 1447,
    "about": "19 x 26 m pour bay remodel: built-up columns, lattice side, plate girders and Warren roof trusses, runways and an amber double-girder bridge crane with trolley and hook, plated back wall, glowing runner and tundish, rails and ladle car, two tapping platforms with stairs",
    "remodel": {
     "builder": "ckit.pour_bay",
@@ -1003,15 +983,15 @@
     },
     "surfaceM2": 3918,
     "paint": {
-     "Y_all": 0.0911,
+     "Y_all": 0.0907,
      "Y_light": 0.2008,
      "light_share": 0.102
     },
     "seconds": {
      "model": 138,
-     "unwrap": -123,
-     "bake": 48,
-     "paint": 74,
+     "unwrap": -122,
+     "bake": 54,
+     "paint": 69,
      "export": 2
     },
     "date": "2026-10-07"
@@ -1147,10 +1127,10 @@
       "size": [
        22.8,
        0.03,
-       0.55
+       0.8
       ],
       "color": "#ffa03c",
-      "radiance": 1.2,
+      "radiance": 1.6,
       "rotY": -1.5708
      },
      {
@@ -1476,7 +1456,7 @@
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "tris": 12923,
+   "tris": 13964,
    "bbox": {
     "min": [
      -15.436,
@@ -1495,35 +1475,35 @@
     ]
    },
    "tex": 2048,
-   "kb": 1380,
+   "kb": 1413,
    "about": "28 x 36 m clad shed segment remodel: corrugated walls between I-section pilasters, recessed window strips, dark dado, gables with outward verges, corrugated roof, gutters, ridge, louvred monitor, downpipes, kit crew door",
    "remodel": {
     "builder": "ckit.gable_shed",
     "script": "tools/blender/buildings/remodel.py",
     "pxPerM": {
-     "frame2": 22.1,
-     "frame": 11.7,
-     "clad": 26.2,
-     "clad2": 25.9,
+     "frame2": 21.9,
+     "frame": 11.5,
+     "clad": 25.9,
+     "clad2": 25.6,
      "interior": 6.5,
-     "louvre": 9.5,
-     "concrete": 18.3,
-     "pipeDark": 14.9,
-     "panel": 26.1,
-     "concrete2": 19.6,
-     "hazard": 26.1
+     "louvre": 9.4,
+     "concrete": 18.0,
+     "pipeDark": 14.6,
+     "panel": 25.7,
+     "concrete2": 19.4,
+     "hazard": 25.9
     },
-    "surfaceM2": 7105,
+    "surfaceM2": 7188,
     "paint": {
-     "Y_all": 0.196,
-     "Y_light": 0.2362,
-     "light_share": 0.768
+     "Y_all": 0.1923,
+     "Y_light": 0.235,
+     "light_share": 0.748
     },
     "seconds": {
-     "model": 126,
-     "unwrap": -114,
-     "bake": 44,
-     "paint": 70,
+     "model": 105,
+     "unwrap": -95,
+     "bake": 39,
+     "paint": 56,
      "export": 2
     },
     "date": "2026-10-07"

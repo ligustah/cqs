@@ -720,6 +720,11 @@ def bake(ob, size=512, samples=16):
     met = bpy.data.images.new(f'{ob.name}_metal', size, size, alpha=False, is_data=True)
     mats = [s.material for s in ob.material_slots]
     for mt in mats:
+        # v6 r24: a second bake over the same zone materials (colony_build's ground set) found the FIRST bake's target
+        # by name ('BAKE_TARGET.001' was the new one): the ground baked nothing and exported black
+        old_ = mt.node_tree.nodes.get('BAKE_TARGET')
+        if old_ is not None:
+            mt.node_tree.nodes.remove(old_)
         tn = mt.node_tree.nodes.new('ShaderNodeTexImage')
         tn.name = 'BAKE_TARGET'
         mt.node_tree.nodes.active = tn

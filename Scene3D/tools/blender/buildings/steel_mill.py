@@ -26,9 +26,9 @@ SPEC = {
     'about': 'blast furnace in a steel tower frame with a skip-hoist gallery, glowing pour bay with an overhead crane, two banded stacks, long clad shed',
 }
 
-# v6 r22: the hull's ground (slab top, sides, kerb, stains, markings) in its own texture set (colony_build.py), so the
-# block walls get the whole first atlas (judge B: soft walls at the close-up)
-HULL_SPLIT = ('concrete', 'concreteD', 'concrete2', 'kerb', 'seam', 'hazard')
+# v6 r23-r24: HULL_SPLIT (the ground in a second hull texture set, colony_build.py) was tried and is OFF: without the big
+# plinth islands the walls' set packed worse (3.0 px/m at 512 on the annex walls vs ~6 single-set; the open packer
+# problem, BUILDING-GUIDE gotchas). Enable per building with HULL_SPLIT = ('concrete', 'concreteD', ...).
 FX, FZ = -18.0, 24.0         # furnace axis (front-left of the slab; v5: 2 m back for the broader furnace)
 SH_X, SH_SEGMENTS = 10.0, (-27.0, 9.0)   # shed: two 36 m fal segments along Z, x -4..24
 PB_X, PB_Z = 28.0, 13.0       # pour bay centre (against the shed's +X face)

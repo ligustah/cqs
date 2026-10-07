@@ -228,7 +228,7 @@ def unwrap(ob, margin, weights=UV_WEIGHT):
     bm.to_mesh(me); bm.free()
     bpy.ops.object.mode_set(mode='EDIT')
     bpy.ops.mesh.select_all(action='SELECT')
-    bpy.ops.uv.pack_islands(rotate=True, margin=margin, margin_method=os.environ.get('REMODEL_MARGIN', 'SCALED'), merge_overlap=MERGE, shape_method=SHAPE)
+    bpy.ops.uv.pack_islands(udim_source=os.environ.get('REMODEL_UDIM', 'CLOSEST_UDIM'), rotate=True, margin=margin, margin_method=os.environ.get('REMODEL_MARGIN', 'SCALED'), merge_overlap=MERGE, shape_method=SHAPE)
     print(f'[remodel] stacked {nst} tiny islands of {sorted(stacks)} into {len(stacks)} swatches; {len(isl) - len(stacks)} islands packed', flush=True)
     bpy.ops.object.mode_set(mode='OBJECT')
     uv = np.empty(len(me.loops) * 2); me.uv_layers.active.data.foreach_get('uv', uv); uv = uv.reshape(-1, 2)
