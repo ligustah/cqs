@@ -18,6 +18,39 @@ export function setLiveryScheme(s) { LIVERY_SCHEME = s || null; }
 
 const loader = new GLTFLoader();
 loader.setMeshoptDecoder(MeshoptDecoder);
+// Embedded (bufferView) images decode straight from their bytes, never through a URL. GLTFLoader's own path wraps them in
+// a blob: URL and fetch()es it (ImageBitmapLoader), and the artifact host's Content-Security-Policy refuses fetch() of
+// blob: URLs (connect-src): every embedded texture then failed to load while URI textures (assets/tex/*.webp, plain
+// relative fetches) loaded, so the package showed untextured hulls and parts. createImageBitmap(Blob) is not a fetch.
+// Same options as the loader's ImageBitmapLoader (premultiplyAlpha 'none', colorSpaceConversion 'none'); without
+// createImageBitmap (old Safari / Firefox) the loader's TextureLoader path (an <img> on the blob: URL) is kept.
+class EmbeddedImageBitmaps {
+  constructor(parser) { this.parser = parser; this.name = 'embedded_image_bitmaps'; }
+  beforeRoot() {
+    const parser = this.parser;
+    if (!parser.textureLoader?.isImageBitmapLoader || typeof createImageBitmap !== 'function') return null;
+    const own = parser.loadImageSource.bind(parser);
+    parser.loadImageSource = (sourceIndex, imageLoader) => {
+      const def = parser.json.images[sourceIndex];
+      if (def.bufferView === undefined || parser.sourceCache[sourceIndex] !== undefined) return own(sourceIndex, imageLoader);
+      const opts = { ...parser.textureLoader.options, colorSpaceConversion: 'none' };
+      const promise = parser.getDependency('bufferView', def.bufferView)
+        .then((view) => createImageBitmap(new Blob([view], { type: def.mimeType }), opts))
+        .then((bitmap) => {
+          const texture = new THREE.Texture(bitmap);
+          texture.needsUpdate = true;
+          if (def.extras && typeof def.extras === 'object') Object.assign(texture.userData, def.extras);
+          texture.userData.mimeType = def.mimeType;
+          return texture;
+        })
+        .catch((e) => { console.error(`THREE.GLTFLoader: Couldn't decode embedded image ${sourceIndex}`, e); throw e; });
+      parser.sourceCache[sourceIndex] = promise; // later users get clones, as in GLTFParser.loadImageSource
+      return promise;
+    };
+    return null;
+  }
+}
+loader.register((parser) => new EmbeddedImageBitmaps(parser));
 const cache = new Map();
 const DEG = Math.PI / 180;
 

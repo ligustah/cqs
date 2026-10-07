@@ -252,6 +252,21 @@ buffer behind the tier's JSON and parses it. Desktop gets the authored textures,
 colony buildings' own 4096 px metallic-roughness map, which goes out at 2048 px (base colour
 and normals stay at 4096). 358 MB in 246 files before, ~208 MB in ~387 files after.
 
+Embedded textures decode with `createImageBitmap(Blob)` (glbship.js `EmbeddedImageBitmaps`), never by URL:
+three's GLTFLoader wraps them in a `blob:` URL and `fetch()`es it, and the artifact host's CSP
+(`connect-src`) refuses that, so on the published page every texture inside a GLB failed to load
+(untextured carrier hull and parts, white colony components) while the `assets/tex/*.webp` URI
+textures loaded. Local servers have no CSP, so only a check under the host's policy shows it.
+
+**Package check** (`tools/check-package.mjs`, run at the end of `build-artifact.mjs`; `--no-check`
+skips it): every model tier is decoded the way the published page does it (glbship.js `loadGLB`,
+files through `dist/files.json`, the host's CSP) and compared with its source GLB in three's own
+loader: nodes, meshes, triangles, materials, textures per material slot, every texture decoded,
+within its tier's cap and looking like the source's (16 px thumbnails). The build fails on any
+difference. `node tools/check-package.mjs [--only <name>]` runs it alone;
+`CHECK_VARIANT=nob64` / `noibm` exercise the loader's fallbacks (no `Uint8Array` base64, no
+`createImageBitmap`).
+
 Measured with `tools/phone-check.mjs` (headless Chromium, SwiftShader, so times are
 relative). Before = commit 73c9ec2 (vehicle, shipyard, spaceport added); after = this fix.
 GPU = textures + geometry + render targets; heap = retained after GC / transient peak.

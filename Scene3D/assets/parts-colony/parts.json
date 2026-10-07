@@ -327,417 +327,1595 @@
    "seconds": 6.8
   },
   "blastFurnace": {
-   "file": "blastFurnace.glb",
    "part": "blastFurnace",
-   "about": "60 m blast furnace: light shaft with dark hoops, glowing tuyere band, dark hearth, top cone with uptakes, gunmetal tower frame with four platform levels, square base block",
-   "bbox": {
-    "min": [
-     -13.728,
-     0.0,
-     -14.671
-    ],
-    "max": [
-     13.728,
-     60.0,
-     14.671
-    ],
-    "size": [
-     27.456,
-     60.0,
-     29.342
-    ]
-   },
-   "tris": 29137,
-   "trisRaw": 52845,
-   "loosePiecesDropped": 0,
-   "tex": 2048,
-   "mount": {
-    "normal": "+Y",
-    "anchor": "footprint centre at y = 0, front +Z"
-   },
-   "source": "style-library/styles/cqs-fleet/images/buildings/components/blastFurnace.jpg",
+   "file": "blastFurnace.glb",
    "fal": [
     "01a110ea-6f2f-78b2-ba37-48609d9e64d4",
     "01a110eb-ee16-7f12-ab38-0addcf0f67fb"
    ],
+   "source": "style-library/styles/cqs-fleet/images/buildings/components/blastFurnace.jpg",
    "usedBy": [
     "steel_mill"
    ],
-   "hot": 0.8,
-   "hotTexels": 49953,
-   "albedo": {
-    "gain": 1.577,
-    "wb": [
-     1.008,
-     0.993,
-     1.047
-    ],
-    "chroma": 1.0,
-    "source": "style-library/styles/cqs-fleet/images/buildings/components/blastFurnace.jpg",
-    "texY": 0.067,
-    "texSat": 0.122,
-    "srcY": 0.108,
-    "srcSat": 0.118,
-    "outY": 0.106,
-    "outSat": 0.102,
-    "metalMean": 0.113,
-    "metalFactor": 1.0
-   },
-   "glassTint": 0.0,
-   "params": {
-    "rot": [
-     0.0,
-     0.0,
-     0.0
-    ],
-    "hotV": 0.8,
-    "hotSat": 0.45,
-    "glass": false,
-    "norm": true,
-    "height": 60.0,
-    "length": null,
-    "width": null,
-    "long": null,
-    "size": null,
-    "tris": 45000,
-    "weld": 0.004,
-    "minPiece": 0.01,
-    "dissolve": 1.0
-   },
-   "kb": 2224,
-   "seconds": 23.0
-  },
-  "bandedStack": {
-   "file": "bandedStack.glb",
-   "part": "bandedStack",
-   "about": "46 m banded chimney, 6.5 m shaft: dark / off-white bands, two platform rings, caged ladder, flared base on a plinth block",
-   "bbox": {
-    "min": [
-     -6.333,
-     0.0,
-     -6.6
-    ],
-    "max": [
-     6.333,
-     46.0,
-     6.6
-    ],
-    "size": [
-     12.666,
-     46.0,
-     13.2
-    ]
-   },
-   "tris": 8959,
-   "trisRaw": 14346,
-   "loosePiecesDropped": 0,
-   "tex": 1024,
    "mount": {
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "source": "style-library/styles/cqs-fleet/images/buildings/components/bandedStack.jpg",
+   "tris": 55548,
+   "bbox": {
+    "min": [
+     -13.7,
+     -0.0,
+     -14.6
+    ],
+    "max": [
+     13.7,
+     60.0,
+     14.6
+    ],
+    "size": [
+     27.4,
+     60.0,
+     29.2
+    ]
+   },
+   "tex": 4096,
+   "kb": 5396,
+   "about": "60 m blast furnace remodel: concrete plinth, dark staved hearth, recessed glowing tuyere band with 24 window frames, bustle main and downlegs, light plated shaft with five hoops, flange, cone, throat, uptakes and downcomer; four laced columns, four square grating decks on ring girders, X bracing, caged ladder, lamps",
+   "remodel": {
+    "builder": "ckit.furnace",
+    "script": "tools/blender/buildings/remodel.py",
+    "pxPerM": {
+     "concrete2": 24.4,
+     "concrete": 32.6,
+     "frame2": 26.9,
+     "frame": 14.4,
+     "soot": 11.8,
+     "refractory": 18.1,
+     "pipeDark": 18.3,
+     "hot": 16.2,
+     "shell": 31.3,
+     "grate": 11.4,
+     "lamp": 15.4
+    },
+    "surfaceM2": 15683,
+    "paint": {
+     "Y_all": 0.1319,
+     "Y_light": 0.265,
+     "light_share": 0.43
+    },
+    "seconds": {
+     "model": 1,
+     "unwrap": 2,
+     "bake": 159,
+     "paint": 85,
+     "export": 7
+    },
+    "date": "2026-10-06"
+   },
+   "lights": {
+    "pins": [
+     [
+      -11.562,
+      45.8,
+      -11.562
+     ],
+     [
+      11.562,
+      45.8,
+      -11.562
+     ],
+     [
+      11.562,
+      45.8,
+      11.562
+     ],
+     [
+      -11.562,
+      45.8,
+      11.562
+     ],
+     [
+      11.25,
+      18.4,
+      0.0
+     ],
+     [
+      0.0,
+      18.4,
+      11.25
+     ],
+     [
+      11.25,
+      31.4,
+      0.0
+     ],
+     [
+      0.0,
+      31.4,
+      11.25
+     ],
+     [
+      11.25,
+      45.4,
+      0.0
+     ],
+     [
+      0.0,
+      45.4,
+      11.25
+     ]
+    ],
+    "beacons": [],
+    "nav": [],
+    "slits": [],
+    "windows": [],
+    "glow": [
+     {
+      "p": [
+       0.806,
+       9.2,
+       9.215
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 0.0873
+     },
+     {
+      "p": [
+       2.394,
+       9.2,
+       8.935
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 0.2618
+     },
+     {
+      "p": [
+       3.909,
+       9.2,
+       8.383
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 0.4363
+     },
+     {
+      "p": [
+       5.306,
+       9.2,
+       7.577
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 0.6109
+     },
+     {
+      "p": [
+       6.541,
+       9.2,
+       6.541
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 0.7854
+     },
+     {
+      "p": [
+       7.577,
+       9.2,
+       5.306
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 0.9599
+     },
+     {
+      "p": [
+       8.383,
+       9.2,
+       3.909
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 1.1345
+     },
+     {
+      "p": [
+       8.935,
+       9.2,
+       2.394
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 1.309
+     },
+     {
+      "p": [
+       9.215,
+       9.2,
+       0.806
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 1.4835
+     },
+     {
+      "p": [
+       9.215,
+       9.2,
+       -0.806
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 1.6581
+     },
+     {
+      "p": [
+       8.935,
+       9.2,
+       -2.394
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 1.8326
+     },
+     {
+      "p": [
+       8.383,
+       9.2,
+       -3.909
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 2.0071
+     },
+     {
+      "p": [
+       7.577,
+       9.2,
+       -5.306
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 2.1817
+     },
+     {
+      "p": [
+       6.541,
+       9.2,
+       -6.541
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 2.3562
+     },
+     {
+      "p": [
+       5.306,
+       9.2,
+       -7.577
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 2.5307
+     },
+     {
+      "p": [
+       3.909,
+       9.2,
+       -8.383
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 2.7053
+     },
+     {
+      "p": [
+       2.394,
+       9.2,
+       -8.935
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 2.8798
+     },
+     {
+      "p": [
+       0.806,
+       9.2,
+       -9.215
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 3.0543
+     },
+     {
+      "p": [
+       -0.806,
+       9.2,
+       -9.215
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 3.2289
+     },
+     {
+      "p": [
+       -2.394,
+       9.2,
+       -8.935
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 3.4034
+     },
+     {
+      "p": [
+       -3.909,
+       9.2,
+       -8.383
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 3.5779
+     },
+     {
+      "p": [
+       -5.306,
+       9.2,
+       -7.577
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 3.7525
+     },
+     {
+      "p": [
+       -6.541,
+       9.2,
+       -6.541
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 3.927
+     },
+     {
+      "p": [
+       -7.577,
+       9.2,
+       -5.306
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 4.1015
+     },
+     {
+      "p": [
+       -8.383,
+       9.2,
+       -3.909
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 4.2761
+     },
+     {
+      "p": [
+       -8.935,
+       9.2,
+       -2.394
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 4.4506
+     },
+     {
+      "p": [
+       -9.215,
+       9.2,
+       -0.806
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 4.6251
+     },
+     {
+      "p": [
+       -9.215,
+       9.2,
+       0.806
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 4.7997
+     },
+     {
+      "p": [
+       -8.935,
+       9.2,
+       2.394
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 4.9742
+     },
+     {
+      "p": [
+       -8.383,
+       9.2,
+       3.909
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 5.1487
+     },
+     {
+      "p": [
+       -7.577,
+       9.2,
+       5.306
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 5.3233
+     },
+     {
+      "p": [
+       -6.541,
+       9.2,
+       6.541
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 5.4978
+     },
+     {
+      "p": [
+       -5.306,
+       9.2,
+       7.577
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 5.6723
+     },
+     {
+      "p": [
+       -3.909,
+       9.2,
+       8.383
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 5.8469
+     },
+     {
+      "p": [
+       -2.394,
+       9.2,
+       8.935
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 6.0214
+     },
+     {
+      "p": [
+       -0.806,
+       9.2,
+       9.215
+      ],
+      "size": [
+       1.324,
+       1.3,
+       0.06
+      ],
+      "color": "#ff7010",
+      "radiance": 1.3,
+      "rotY": 6.1959
+     }
+    ],
+    "floods": [],
+    "lenses": []
+   },
+   "placements": [],
+   "blueprint": {
+    "raw": "assets/buildings/raw/blastFurnace.glb",
+    "params": {
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "hotV": 0.8,
+     "hotSat": 0.45,
+     "glass": false,
+     "norm": true,
+     "height": 60.0,
+     "length": null,
+     "width": null,
+     "long": null,
+     "size": null,
+     "tris": 45000,
+     "weld": 0.004,
+     "minPiece": 0.01,
+     "dissolve": 1.0
+    },
+    "albedo": {
+     "gain": 1.577,
+     "wb": [
+      1.008,
+      0.993,
+      1.047
+     ],
+     "chroma": 1.0,
+     "source": "style-library/styles/cqs-fleet/images/buildings/components/blastFurnace.jpg",
+     "texY": 0.067,
+     "texSat": 0.122,
+     "srcY": 0.108,
+     "srcSat": 0.118,
+     "outY": 0.106,
+     "outSat": 0.102,
+     "metalMean": 0.113,
+     "metalFactor": 1.0
+    },
+    "tris": 29137,
+    "tex": 2048,
+    "hot": 0.8,
+    "bbox": {
+     "min": [
+      -13.728,
+      0.0,
+      -14.671
+     ],
+     "max": [
+      13.728,
+      60.0,
+      14.671
+     ],
+     "size": [
+      27.456,
+      60.0,
+      29.342
+     ]
+    }
+   }
+  },
+  "bandedStack": {
+   "part": "bandedStack",
+   "file": "bandedStack.glb",
    "fal": [
     "01a110ea-7011-7942-9813-46e1fcb46b82",
     "01a110eb-eee5-7f93-9e32-3b89a6d7f2a9"
    ],
+   "source": "style-library/styles/cqs-fleet/images/buildings/components/bandedStack.jpg",
    "usedBy": [
     "steel_mill"
    ],
-   "hot": 0.85,
-   "hotTexels": 2902,
-   "albedo": {
-    "gain": 2.029,
-    "wb": [
-     0.983,
-     1.0,
-     1.06
-    ],
-    "chroma": 1.0,
-    "source": "style-library/styles/cqs-fleet/images/buildings/components/bandedStack.jpg",
-    "texY": 0.098,
-    "texSat": 0.1,
-    "srcY": 0.196,
-    "srcSat": 0.066,
-    "outY": 0.193,
-    "outSat": 0.059,
-    "metalMean": 0.032,
-    "metalFactor": 1.0
-   },
-   "glassTint": 0.0,
-   "params": {
-    "rot": [
-     0.0,
-     0.0,
-     0.0
-    ],
-    "hotV": 0.85,
-    "hotSat": 0.45,
-    "glass": false,
-    "norm": true,
-    "height": 46.0,
-    "length": null,
-    "width": null,
-    "long": null,
-    "size": null,
-    "tris": 12000,
-    "weld": 0.004,
-    "minPiece": 0.01,
-    "dissolve": 1.0
-   },
-   "kb": 679,
-   "seconds": 11.5
-  },
-  "pourBay": {
-   "file": "pourBay.glb",
-   "part": "pourBay",
-   "about": "open pour bay 19 x 26 x 15.5 m: gunmetal portal frame with truss girder, amber overhead crane, glowing runner trough, ladle car on rails, platforms and stair",
-   "bbox": {
-    "min": [
-     -9.49,
-     0.0,
-     -13.0
-    ],
-    "max": [
-     9.49,
-     15.542,
-     13.0
-    ],
-    "size": [
-     18.98,
-     15.542,
-     26.0
-    ]
-   },
-   "tris": 25842,
-   "trisRaw": 41028,
-   "loosePiecesDropped": 0,
-   "tex": 2048,
    "mount": {
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "source": "style-library/styles/cqs-fleet/images/buildings/components/pourBay.jpg",
+   "tris": 13976,
+   "bbox": {
+    "min": [
+     -6.23,
+     -0.0,
+     -6.23
+    ],
+    "max": [
+     6.23,
+     46.0,
+     6.23
+    ],
+    "size": [
+     12.46,
+     46.0,
+     12.46
+    ]
+   },
+   "tex": 2048,
+   "kb": 1285,
+   "about": "46 m banded stack remodel: base block, gusseted flared foot, light / dark plated bands with hoops, two railed platforms, caged ladders, sooted lip, lamps, obstruction light",
+   "remodel": {
+    "builder": "ckit.banded_stack",
+    "script": "tools/blender/buildings/remodel.py",
+    "pxPerM": {
+     "frame2": 36.3,
+     "concrete2": 33.0,
+     "frame": 19.1,
+     "shell": 41.9,
+     "soot": 16.6,
+     "grate": 15.4,
+     "lamp": 19.5
+    },
+    "surfaceM2": 2517,
+    "paint": {
+     "Y_all": 0.1338,
+     "Y_light": 0.337,
+     "light_share": 0.303
+    },
+    "seconds": {
+     "model": 0,
+     "unwrap": 2,
+     "bake": 41,
+     "paint": 24,
+     "export": 1
+    },
+    "date": "2026-10-06"
+   },
+   "lights": {
+    "pins": [
+     [
+      2.878,
+      20.4,
+      2.878
+     ],
+     [
+      2.878,
+      20.4,
+      -2.878
+     ],
+     [
+      -2.878,
+      20.4,
+      -2.878
+     ],
+     [
+      -2.878,
+      20.4,
+      2.878
+     ],
+     [
+      2.878,
+      43.8,
+      2.878
+     ],
+     [
+      2.878,
+      43.8,
+      -2.878
+     ],
+     [
+      -2.878,
+      43.8,
+      -2.878
+     ],
+     [
+      -2.878,
+      43.8,
+      2.878
+     ]
+    ],
+    "beacons": [],
+    "nav": [
+     [
+      2.835,
+      46.45,
+      2.835
+     ]
+    ],
+    "slits": [],
+    "windows": [],
+    "glow": [],
+    "floods": [],
+    "lenses": []
+   },
+   "placements": [],
+   "blueprint": {
+    "raw": "assets/buildings/raw/bandedStack.glb",
+    "params": {
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "hotV": 0.85,
+     "hotSat": 0.45,
+     "glass": false,
+     "norm": true,
+     "height": 46.0,
+     "length": null,
+     "width": null,
+     "long": null,
+     "size": null,
+     "tris": 12000,
+     "weld": 0.004,
+     "minPiece": 0.01,
+     "dissolve": 1.0
+    },
+    "albedo": {
+     "gain": 2.029,
+     "wb": [
+      0.983,
+      1.0,
+      1.06
+     ],
+     "chroma": 1.0,
+     "source": "style-library/styles/cqs-fleet/images/buildings/components/bandedStack.jpg",
+     "texY": 0.098,
+     "texSat": 0.1,
+     "srcY": 0.196,
+     "srcSat": 0.066,
+     "outY": 0.193,
+     "outSat": 0.059,
+     "metalMean": 0.032,
+     "metalFactor": 1.0
+    },
+    "tris": 8959,
+    "tex": 1024,
+    "hot": 0.85,
+    "bbox": {
+     "min": [
+      -6.333,
+      0.0,
+      -6.6
+     ],
+     "max": [
+      6.333,
+      46.0,
+      6.6
+     ],
+     "size": [
+      12.666,
+      46.0,
+      13.2
+     ]
+    }
+   }
+  },
+  "pourBay": {
+   "part": "pourBay",
+   "file": "pourBay.glb",
    "fal": [
     "01a110ea-70fa-7621-b809-e7a52fa8a855",
     "01a110eb-efcf-7903-b342-56b00d4154c3"
    ],
+   "source": "style-library/styles/cqs-fleet/images/buildings/components/pourBay.jpg",
    "usedBy": [
     "steel_mill"
    ],
-   "hot": 0.8,
-   "hotTexels": 15227,
-   "albedo": {
-    "gain": 3.2,
-    "wb": [
-     0.929,
-     1.016,
-     1.07
-    ],
-    "chroma": 0.797,
-    "source": "style-library/styles/cqs-fleet/images/buildings/components/pourBay.jpg",
-    "texY": 0.035,
-    "texSat": 0.194,
-    "srcY": 0.148,
-    "srcSat": 0.146,
-    "outY": 0.123,
-    "outSat": 0.101,
-    "metalMean": 0.038,
-    "metalFactor": 1.0
-   },
-   "glassTint": 0.0,
-   "params": {
-    "rot": [
-     0.0,
-     0.0,
-     0.0
-    ],
-    "hotV": 0.8,
-    "hotSat": 0.45,
-    "glass": false,
-    "norm": true,
-    "height": null,
-    "length": null,
-    "width": null,
-    "long": 26.0,
-    "size": null,
-    "tris": 35000,
-    "weld": 0.004,
-    "minPiece": 0.01,
-    "dissolve": 1.0
-   },
-   "kb": 1791,
-   "seconds": 22.5
-  },
-  "skipGallery": {
-   "file": "skipGallery.glb",
-   "part": "skipGallery",
-   "about": "inclined covered conveyor gallery (skip hoist): clad box on a lattice truss with a trestle tower, drive house at the low (+Z) end; ingested 6 x 46 x 28 m to climb from the yard to the furnace top",
-   "bbox": {
-    "min": [
-     -3.0,
-     0.0,
-     -14.0
-    ],
-    "max": [
-     3.0,
-     46.0,
-     14.0
-    ],
-    "size": [
-     6.0,
-     46.0,
-     28.0
-    ]
-   },
-   "tris": 12915,
-   "trisRaw": 18034,
-   "loosePiecesDropped": 0,
-   "tex": 1024,
    "mount": {
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "source": "style-library/styles/cqs-fleet/images/buildings/components/skipGallery.jpg",
+   "tris": 13046,
+   "bbox": {
+    "min": [
+     -9.5,
+     -0.115,
+     -13.2
+    ],
+    "max": [
+     9.6,
+     15.625,
+     13.2
+    ],
+    "size": [
+     19.1,
+     15.74,
+     26.4
+    ]
+   },
+   "tex": 4096,
+   "kb": 2065,
+   "about": "19 x 26 m pour bay remodel: built-up columns, lattice side, plate girders and Warren roof trusses, runways and an amber double-girder bridge crane with trolley and hook, plated back wall, glowing runner and tundish, rails and ladle car, two tapping platforms with stairs",
+   "remodel": {
+    "builder": "ckit.pour_bay",
+    "script": "tools/blender/buildings/remodel.py",
+    "pxPerM": {
+     "concrete2": 56.8,
+     "concrete": 74.6,
+     "frame": 33.7,
+     "lamp": 36.6,
+     "frame2": 64.2,
+     "interior": 18.9,
+     "pipe": 37.8,
+     "amber": 60.1,
+     "hazard": 74.9,
+     "grate": 26.5,
+     "pipeDark": 43.4,
+     "glassW": 30.3,
+     "refractory": 45.2,
+     "hot": 37.9,
+     "rust": 58.0
+    },
+    "surfaceM2": 5159,
+    "paint": {
+     "Y_all": 0.0845,
+     "Y_light": 0.1772,
+     "light_share": 0.223
+    },
+    "seconds": {
+     "model": 0,
+     "unwrap": 1,
+     "bake": 196,
+     "paint": 111,
+     "export": 7
+    },
+    "date": "2026-10-06"
+   },
+   "lights": {
+    "pins": [
+     [
+      9.38,
+      8.2,
+      -12.0
+     ],
+     [
+      9.38,
+      8.2,
+      12.0
+     ],
+     [
+      -9.38,
+      8.2,
+      -12.0
+     ],
+     [
+      -9.38,
+      8.2,
+      12.0
+     ],
+     [
+      -1.3,
+      5.6,
+      -7.7
+     ],
+     [
+      -4.2,
+      9.0,
+      -9.1
+     ]
+    ],
+    "beacons": [],
+    "nav": [],
+    "slits": [],
+    "windows": [
+     {
+      "p": [
+       7.92,
+       9.0,
+       8.7
+      ],
+      "n": [
+       1.0,
+       0.0,
+       0.0
+      ],
+      "size": [
+       1.4,
+       0.8
+      ]
+     }
+    ],
+    "glow": [
+     {
+      "p": [
+       -8.5,
+       1.6,
+       7.0
+      ],
+      "size": [
+       0.05,
+       3.0,
+       2.8
+      ],
+      "color": "#ffb060",
+      "radiance": 0.5
+     },
+     {
+      "p": [
+       2.75,
+       1.46,
+       -2.6
+      ],
+      "size": [
+       12.0,
+       0.06,
+       1.2
+      ],
+      "color": "#ff6a10",
+      "radiance": 2.2
+     },
+     {
+      "p": [
+       -4.6,
+       2.16,
+       -2.6
+      ],
+      "size": [
+       2.5,
+       0.05,
+       2.7
+      ],
+      "color": "#ff6a10",
+      "radiance": 1.8
+     },
+     {
+      "p": [
+       1.6,
+       3.7,
+       3.4
+      ],
+      "size": [
+       2.6,
+       0.05,
+       2.6
+      ],
+      "color": "#ff6a10",
+      "radiance": 1.6
+     }
+    ],
+    "floods": [],
+    "lenses": []
+   },
+   "placements": [],
+   "blueprint": {
+    "raw": "assets/buildings/raw/pourBay.glb",
+    "params": {
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "hotV": 0.8,
+     "hotSat": 0.45,
+     "glass": false,
+     "norm": true,
+     "height": null,
+     "length": null,
+     "width": null,
+     "long": 26.0,
+     "size": null,
+     "tris": 35000,
+     "weld": 0.004,
+     "minPiece": 0.01,
+     "dissolve": 1.0
+    },
+    "albedo": {
+     "gain": 3.2,
+     "wb": [
+      0.929,
+      1.016,
+      1.07
+     ],
+     "chroma": 0.797,
+     "source": "style-library/styles/cqs-fleet/images/buildings/components/pourBay.jpg",
+     "texY": 0.035,
+     "texSat": 0.194,
+     "srcY": 0.148,
+     "srcSat": 0.146,
+     "outY": 0.123,
+     "outSat": 0.101,
+     "metalMean": 0.038,
+     "metalFactor": 1.0
+    },
+    "tris": 25842,
+    "tex": 2048,
+    "hot": 0.8,
+    "bbox": {
+     "min": [
+      -9.49,
+      0.0,
+      -13.0
+     ],
+     "max": [
+      9.49,
+      15.542,
+      13.0
+     ],
+     "size": [
+      18.98,
+      15.542,
+      26.0
+     ]
+    }
+   }
+  },
+  "skipGallery": {
+   "part": "skipGallery",
+   "file": "skipGallery.glb",
    "fal": [
     "01a110ea-71ea-7212-b86a-5cc9123f8168",
     "01a110eb-f0e4-71e3-a9c4-f713360bc9b5"
    ],
+   "source": "style-library/styles/cqs-fleet/images/buildings/components/skipGallery.jpg",
    "usedBy": [
     "steel_mill"
    ],
-   "hot": 0.0,
-   "hotTexels": 0,
-   "albedo": {
-    "gain": 2.149,
-    "wb": [
-     1.031,
-     0.994,
-     0.966
-    ],
-    "chroma": 0.655,
-    "source": "style-library/styles/cqs-fleet/images/buildings/components/skipGallery.jpg",
-    "texY": 0.151,
-    "texSat": 0.041,
-    "srcY": 0.312,
-    "srcSat": 0.019,
-    "outY": 0.302,
-    "outSat": 0.015,
-    "metalMean": 0.102,
-    "metalFactor": 1.0
-   },
-   "glassTint": 0.0,
-   "params": {
-    "rot": [
-     0.0,
-     0.0,
-     0.0
-    ],
-    "hotV": 0.0,
-    "hotSat": 0.45,
-    "glass": false,
-    "norm": true,
-    "height": null,
-    "length": null,
-    "width": null,
-    "long": null,
-    "size": [
-     6.0,
-     46.0,
-     28.0
-    ],
-    "tris": 15000,
-    "weld": 0.004,
-    "minPiece": 0.01,
-    "dissolve": 1.0
-   },
-   "kb": 822,
-   "seconds": 7.0
-  },
-  "shedSegment": {
-   "file": "shedSegment.glb",
-   "part": "shedSegment",
-   "about": "steel-works shed segment 28 x 36 m, eaves ~18 m: ribbed light cladding, gunmetal pilasters, high windows, gable roof with ridge monitor, closed gable ends",
-   "bbox": {
-    "min": [
-     -14.0,
-     0.0,
-     -18.0
-    ],
-    "max": [
-     14.0,
-     24.0,
-     18.0
-    ],
-    "size": [
-     28.0,
-     24.0,
-     36.0
-    ]
-   },
-   "tris": 7534,
-   "trisRaw": 8329,
-   "loosePiecesDropped": 0,
-   "tex": 1024,
    "mount": {
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "source": "style-library/styles/cqs-fleet/images/buildings/components/shedSegment.jpg",
+   "tris": 7168,
+   "bbox": {
+    "min": [
+     -3.075,
+     0.0,
+     -14.075
+    ],
+    "max": [
+     3.11,
+     46.23,
+     14.075
+    ],
+    "size": [
+     6.185,
+     46.23,
+     28.15
+    ]
+   },
+   "tex": 2048,
+   "kb": 1198,
+   "about": "inclined skip gallery remodel: clad enclosed gallery with portal ribs and windows on two Warren trusses, lattice trestle, drive house with roller and crew doors, head house",
+   "remodel": {
+    "builder": "ckit.incline_gallery",
+    "script": "tools/blender/buildings/remodel.py",
+    "pxPerM": {
+     "frame2": 32.8,
+     "clad": 41.0,
+     "clad2": 40.8,
+     "frame": 17.6,
+     "glassW": 16.5,
+     "panel": 38.2,
+     "roof": 22.0,
+     "interior": 10.2,
+     "louvre": 13.5,
+     "lamp": 19.3,
+     "concrete": 37.8
+    },
+    "surfaceM2": 3260,
+    "paint": {
+     "Y_all": 0.2117,
+     "Y_light": 0.3606,
+     "light_share": 0.539
+    },
+    "seconds": {
+     "model": 0,
+     "unwrap": 1,
+     "bake": 68,
+     "paint": 25,
+     "export": 2
+    },
+    "date": "2026-10-06"
+   },
+   "lights": {
+    "pins": [
+     [
+      3.18,
+      12.0,
+      10.1
+     ],
+     [
+      3.18,
+      45.4,
+      -13.5
+     ]
+    ],
+    "beacons": [],
+    "nav": [],
+    "slits": [
+     {
+      "p": [
+       2.0,
+       2.72,
+       14.1
+      ],
+      "u": [
+       1.0,
+       0.0,
+       0.0
+      ],
+      "n": [
+       0.0,
+       0.0,
+       1.0
+      ],
+      "len": 0.6,
+      "width": 0.14,
+      "door": true
+     }
+    ],
+    "windows": [],
+    "glow": [],
+    "floods": [],
+    "lenses": []
+   },
+   "placements": [
+    {
+     "part": "door",
+     "p": [
+      2.0,
+      1.2,
+      14.005
+     ],
+     "n": [
+      0.0,
+      0.0,
+      1.0
+     ],
+     "up": [
+      0.0,
+      1.0,
+      0.0
+     ],
+     "snap": false,
+     "seat": {
+      "check": false
+     },
+     "id": "crew door"
+    }
+   ],
+   "blueprint": {
+    "raw": "assets/buildings/raw/skipGallery.glb",
+    "params": {
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "hotV": 0.0,
+     "hotSat": 0.45,
+     "glass": false,
+     "norm": true,
+     "height": null,
+     "length": null,
+     "width": null,
+     "long": null,
+     "size": [
+      6.0,
+      46.0,
+      28.0
+     ],
+     "tris": 15000,
+     "weld": 0.004,
+     "minPiece": 0.01,
+     "dissolve": 1.0
+    },
+    "albedo": {
+     "gain": 2.149,
+     "wb": [
+      1.031,
+      0.994,
+      0.966
+     ],
+     "chroma": 0.655,
+     "source": "style-library/styles/cqs-fleet/images/buildings/components/skipGallery.jpg",
+     "texY": 0.151,
+     "texSat": 0.041,
+     "srcY": 0.312,
+     "srcSat": 0.019,
+     "outY": 0.302,
+     "outSat": 0.015,
+     "metalMean": 0.102,
+     "metalFactor": 1.0
+    },
+    "tris": 12915,
+    "tex": 1024,
+    "hot": 0.0,
+    "bbox": {
+     "min": [
+      -3.0,
+      0.0,
+      -14.0
+     ],
+     "max": [
+      3.0,
+      46.0,
+      14.0
+     ],
+     "size": [
+      6.0,
+      46.0,
+      28.0
+     ]
+    }
+   }
+  },
+  "shedSegment": {
+   "part": "shedSegment",
+   "file": "shedSegment.glb",
    "fal": [
     "01a110ea-72c4-7de3-b15f-4df2db490330",
     "01a110eb-f1ca-7292-ae3e-72318ec0b68c"
    ],
+   "source": "style-library/styles/cqs-fleet/images/buildings/components/shedSegment.jpg",
    "usedBy": [
     "steel_mill"
    ],
-   "hot": 0.0,
-   "hotTexels": 0,
-   "albedo": {
-    "gain": 1.229,
-    "wb": [
-     0.94,
-     1.008,
-     1.134
-    ],
-    "chroma": 1.0,
-    "source": "style-library/styles/cqs-fleet/images/buildings/components/shedSegment.jpg",
-    "texY": 0.205,
-    "texSat": 0.11,
-    "srcY": 0.254,
-    "srcSat": 0.07,
-    "outY": 0.25,
-    "outSat": 0.038,
-    "metalMean": 0.028,
-    "metalFactor": 1.0
+   "mount": {
+    "normal": "+Y",
+    "anchor": "footprint centre at y = 0, front +Z"
    },
-   "glassTint": 0.0,
-   "params": {
-    "rot": [
+   "tris": 8588,
+   "bbox": {
+    "min": [
+     -14.445,
      0.0,
-     0.0,
-     0.0
+     -18.395
     ],
-    "hotV": 0.0,
-    "hotSat": 0.45,
-    "glass": false,
-    "norm": true,
-    "height": null,
-    "length": null,
-    "width": null,
-    "long": null,
+    "max": [
+     14.445,
+     24.025,
+     18.395
+    ],
     "size": [
-     28.0,
-     24.0,
-     36.0
-    ],
-    "tris": 8000,
-    "weld": 0.004,
-    "minPiece": 0.01,
-    "dissolve": 1.0
+     28.89,
+     24.025,
+     36.79
+    ]
    },
-   "kb": 534,
-   "seconds": 7.4
+   "tex": 4096,
+   "kb": 2018,
+   "about": "28 x 36 m clad shed segment remodel: corrugated walls between I-section pilasters, recessed window strips, dark dado, gables with outward verges, corrugated roof, gutters, ridge, louvred monitor, downpipes, kit crew door",
+   "remodel": {
+    "builder": "ckit.gable_shed",
+    "script": "tools/blender/buildings/remodel.py",
+    "pxPerM": {
+     "glassW": 18.9,
+     "frame": 20.9,
+     "clad": 47.1,
+     "frame2": 39.8,
+     "lamp": 22.9,
+     "clad2": 45.4,
+     "interior": 11.8,
+     "louvre": 17.6
+    },
+    "surfaceM2": 7625,
+    "paint": {
+     "Y_all": 0.2745,
+     "Y_light": 0.3703,
+     "light_share": 0.717
+    },
+    "seconds": {
+     "model": 0,
+     "unwrap": 2,
+     "bake": 167,
+     "paint": 103,
+     "export": 7
+    },
+    "date": "2026-10-06"
+   },
+   "lights": {
+    "pins": [
+     [
+      14.37,
+      4.2,
+      -10.8
+     ],
+     [
+      14.37,
+      4.2,
+      -3.6
+     ],
+     [
+      14.37,
+      4.2,
+      3.6
+     ],
+     [
+      14.37,
+      4.2,
+      10.8
+     ],
+     [
+      -14.37,
+      4.2,
+      -10.8
+     ],
+     [
+      -14.37,
+      4.2,
+      -3.6
+     ],
+     [
+      -14.37,
+      4.2,
+      3.6
+     ],
+     [
+      -14.37,
+      4.2,
+      10.8
+     ]
+    ],
+    "beacons": [],
+    "nav": [],
+    "slits": [
+     {
+      "p": [
+       13.72,
+       2.72,
+       14.8
+      ],
+      "u": [
+       0.0,
+       0.0,
+       -1.0
+      ],
+      "n": [
+       1.0,
+       0.0,
+       0.0
+      ],
+      "len": 0.6,
+      "width": 0.14,
+      "door": true
+     }
+    ],
+    "windows": [],
+    "glow": [],
+    "floods": [],
+    "lenses": []
+   },
+   "placements": [
+    {
+     "part": "door",
+     "p": [
+      13.625,
+      1.2,
+      14.8
+     ],
+     "n": [
+      1.0,
+      0.0,
+      0.0
+     ],
+     "up": [
+      0.0,
+      1.0,
+      0.0
+     ],
+     "snap": false,
+     "seat": {
+      "check": false
+     },
+     "id": "crew door"
+    }
+   ],
+   "blueprint": {
+    "raw": "assets/buildings/raw/shedSegment.glb",
+    "params": {
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "hotV": 0.0,
+     "hotSat": 0.45,
+     "glass": false,
+     "norm": true,
+     "height": null,
+     "length": null,
+     "width": null,
+     "long": null,
+     "size": [
+      28.0,
+      24.0,
+      36.0
+     ],
+     "tris": 8000,
+     "weld": 0.004,
+     "minPiece": 0.01,
+     "dissolve": 1.0
+    },
+    "albedo": {
+     "gain": 1.229,
+     "wb": [
+      0.94,
+      1.008,
+      1.134
+     ],
+     "chroma": 1.0,
+     "source": "style-library/styles/cqs-fleet/images/buildings/components/shedSegment.jpg",
+     "texY": 0.205,
+     "texSat": 0.11,
+     "srcY": 0.254,
+     "srcSat": 0.07,
+     "outY": 0.25,
+     "outSat": 0.038,
+     "metalMean": 0.028,
+     "metalFactor": 1.0
+    },
+    "tris": 7534,
+    "tex": 1024,
+    "hot": 0.0,
+    "bbox": {
+     "min": [
+      -14.0,
+      0.0,
+      -18.0
+     ],
+     "max": [
+      14.0,
+      24.0,
+      18.0
+     ],
+     "size": [
+      28.0,
+      24.0,
+      36.0
+     ]
+    }
+   }
   },
   "skyBridge": {
    "file": "skyBridge.glb",

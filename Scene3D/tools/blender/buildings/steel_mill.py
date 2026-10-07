@@ -3,7 +3,9 @@
 
 v2: model() composes fal components (assets/parts-colony: blastFurnace, skipGallery, bandedStack x2, shedSegment x2,
 pourBay) with the shared kit; furnace() / shed() / stacks() / gas_cleaner() are the v1 parametric versions, kept as
-kit examples (unused). Built by colony_build.py:
+kit examples (unused). v4 (2026-10-07, corrections 40-42): the five components are remodelled parametric parts
+(ckit.furnace / banded_stack / gable_shed / pour_bay / incline_gallery via remodel.py) at the same names and anchors,
+so model() is unchanged; their lamps, glow and kit doors come with them (bkit.component). Built by colony_build.py:
     $PY tools/blender/buildings/colony_build.py steel_mill <work> [--tex 4096]
 
 Frame: metres, plinth top y = 0, +Z front, +X left. The concept camera looks from the front-left (az ~40, el ~27):

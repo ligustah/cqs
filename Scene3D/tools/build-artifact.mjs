@@ -7,12 +7,12 @@
 // Models (tools/split-glb.mjs): each GLB goes out split by tier, so the tiers share one copy of the geometry and the
 // big textures are plain WebP files (base64 costs a third more, and artifact hosting does not serve model/gltf-binary):
 //   <name>.glb.shared.b64.txt    geometry (meshopt, bit-identical) + the textures every tier uses unchanged
-//   <name>.glb.b64.txt           desktop tier: the model's JSON + its own textures (originals; see DESKTOP_ROLE_CAPS)
+//   <name>.glb.b64.txt           desktop tier: the model's JSON + its own textures (originals; desktop role caps in tools/artifact-tiers.mjs)
 //   <name>.glb.<tier>.b64.txt    phone tiers (src/lib/device.js, README "Phone budget"): JSON + downscaled textures
 //   assets/tex/<hash>.webp       every texture of 2048 px or more, as a WebP file (shared by content hash)
 //   ships      .lite  1024 px textures (the subject of a ship studio)
 //              .mini   256 px, the carrier 512 px (ships in a crowd: fleet, lineup, parked loads, building scenes)
-//   buildings  .lite   512 px, small dressing parts left out of the scene graph (LITE_BUILDINGS); the bbox must not move
+//   buildings  .lite   512 px, small dressing parts left out of the scene graph (tools/artifact-tiers.mjs LITE_BUILDINGS); the bbox must not move
 // PATINA sets ship only the maps the runtime loads (manifest runtimeMaps / maps), each with a 512 px .lite copy.
 // Package limits (one artifact version): 256 MiB in all, 511 files, 15 MB per binary and 16 MB per text file.
 //   node tools/build-artifact.mjs [--out dist]  -> <out>/orbital-fleet.html + <out>/files.json
@@ -21,6 +21,8 @@ import { join, relative, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { splitGLB } from './split-glb.mjs';
+import { modelTiers } from './artifact-tiers.mjs';
+import { checkPackage } from './check-package.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const argv = process.argv.slice(2);
@@ -44,27 +46,15 @@ const files = {};
 const TYPES = { '.glb': 'model/gltf-binary', '.webp': 'image/webp', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg' };
 const MAX_BIN = 15e6, MAX_TEXT = 16e6;
 const LIMIT = { bytes: 256 * 2 ** 20, files: 511 };
-// phone-tier dressing left out of the building's scene graph: workers, ladders, hand rails and vents are below a pixel
-// on a phone; the bollards stay (amber pins sit on them)
-const LITE_BUILDINGS = {
-  'assets/buildings/shipyard.glb': ['parts_ladder', 'parts_rail', 'parts_vent', 'parts_yard-worker'],
-  'assets/buildings/spaceport.glb': ['parts_rail'],
-};
-// colony buildings (src/buildings/colony.js) not listed above: the 1.8 m workers and the kit vents are below a pixel
-// on a phone (their amber pins and lamps are lightscape, not geometry, so they stay)
-const LITE_COLONY = ['parts_yard-worker', 'parts_vent'];
-// desktop texture caps by material role, to keep the package inside the limit: the colony buildings' own
-// metallic-roughness map (4096 px) goes out at 2048 px; base colour, normals and every ship texture stay as authored
-const DESKTOP_ROLE_CAPS = (rel) => (rel.startsWith('assets/buildings/') && !LITE_BUILDINGS[rel] ? { metallicRoughness: 2048 } : {});
-const tiersOf = (rel) => [{ name: 'full', cap: 0, roleCaps: DESKTOP_ROLE_CAPS(rel) }, ...(rel.startsWith('assets/buildings/')
-  ? [{ name: 'lite', cap: 512, drop: LITE_BUILDINGS[rel] || LITE_COLONY }]
-  : [{ name: 'lite', cap: 1024 }, { name: 'mini', cap: rel.endsWith('carrier.glb') ? 512 : 256 }])];
+// model tiers (desktop full; phone lite/mini; buildings' dropped dressing; desktop role caps): tools/artifact-tiers.mjs
+const tiersOf = modelTiers;
 const SKIP = ['assets/ships/raw', 'assets/buildings/raw', 'assets/parts', 'assets/parts-blender', 'assets/parts-yard', 'assets/parts-spaceport', 'assets/parts-colony'];
 // PATINA: only the maps loadPatinaLibrary fetches
 const manifest = JSON.parse(await readFile(join(ROOT, 'assets/materials/manifest.json'), 'utf8'));
 const patinaMaps = (set) => { const m = manifest.sets?.[set]; return m ? (m.runtimeMaps || m.maps || ['basecolor', 'normal', 'roughness', 'metalness', 'height']) : []; };
 const report = [];
 const sizes = {};
+const models = []; // { rel, tiers } for the package check
 const emit = async (key, abs, contentType, bytes) => {
   if (bytes !== undefined) { await mkdir(dirname(abs), { recursive: true }); await writeFile(abs, bytes); }
   const size = (await stat(abs)).size;
@@ -84,6 +74,7 @@ async function walk(dir, keep) {
     if (e.name.endsWith('.lite.glb')) continue;
     if (ext === '.glb') {
       const tiers = tiersOf(rel);
+      models.push({ rel, tiers });
       const r = await splitGLB(p, tiers, { ext: 2048 });
       await emit(`${rel}.shared.b64.txt`, join(DIST, `${rel}.shared.b64.txt`), 'text/plain', r.shared.toString('base64'));
       for (const t of tiers) {
@@ -120,3 +111,12 @@ for (const r of report) console.log(`  ${r}`);
 console.log(`${OUT}/orbital-fleet.html (${(page / 1e3).toFixed(1)} kB page) + ${count - 1} supporting files: ${(total / 1e6).toFixed(1)} MB (${(total / 2 ** 20).toFixed(1)} MiB) of ${LIMIT.bytes / 2 ** 20} MiB, ${count} of ${LIMIT.files} files`);
 console.log(`largest: ${largest.join(', ')}`);
 if (total > LIMIT.bytes || count > LIMIT.files) throw new Error('package exceeds the artifact limits');
+// Package check (tools/check-package.mjs): every model tier decoded the way the published page does it (glbship.js
+// loadGLB, files through files.json, the host's CSP) must match its source GLB: nodes, meshes, triangles, materials,
+// textures per material slot, each texture decoded and looking like the source's. --no-check skips it.
+if (!argv.includes('--no-check')) {
+  console.log(`package check: ${models.length} models ...`);
+  const r = await checkPackage({ root: ROOT, models, distFiles: join(OUT, 'files.json'), log: (l) => { if (!l.startsWith('ok')) console.log(l); } });
+  if (!r.ok) throw new Error(`package check failed (${r.failures.length}):\n  ${r.failures.join('\n  ')}`);
+  console.log(`package check: ${r.rows.length} model tiers match their source GLB`);
+}

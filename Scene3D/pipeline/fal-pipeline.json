@@ -3839,5 +3839,13 @@
    }
   ],
   "approx_usd": 0.6
+ },
+ "v26_remodel": {
+  "date": "2026-10-07",
+  "asset": "colony component remodel pilot: steel_mill (blastFurnace, bandedStack, shedSegment, pourBay, skipGallery)",
+  "about": "Corrections 40-42: the five steel-mill components rebuilt as parametric hard-surface Blender parts (tools/blender/buildings/ckit.py, remodel.py, cmeasure.py, cpaint.py) from their existing fal blueprints (the v24 component images and Tripo meshes, jobs recorded under v24_buildings). No new fal jobs were needed: the measurements came from the ingested blueprints and the paint from the kit and procedural texture-space layers.",
+  "uploads": [],
+  "jobs": [],
+  "approx_usd": 0.0
  }
 }

@@ -166,6 +166,20 @@ Lights and placements go into the building's record (`B.R`), not geometry.
 | tree / planter / crate / cabinet / bollards / lamp_post / hazard_band / stencil | true size | lamp posts: one pin at the head |
 | truck / forklift / worker / container / flood_on_wall | yard-kit and fleet-kit parts | placements (`heading` sets `along` for +Y parts) |
 
+## Colony component remodels: `tools/blender/buildings/ckit.py` (`remodel.py`, `cmeasure.py`, `cpaint.py`)
+
+Corrections 40-42: every large colony component is a parametric hard-surface part built from its fal blueprint, at
+the same name, size and anchor in `assets/parts-colony/` (parts.json `remodel`). Generic builders, each a parameter
+dict per part (the steel mill's five are the first sets): `furnace` (vertical vessel from stations, optional four-leg
+laced tower with ring decks and side walkways: blastFurnace), `banded_stack` (chimney with flared gusseted foot,
+paint bands, hoops, platforms, caged ladders: bandedStack), `gable_shed` (corrugated portal shed segment with
+pilasters, recessed window strips, outward verges so segments abut, louvred monitor: shedSegment), `pour_bay` (open
+crane bay with built-up columns, lattice side, plate girders, Warren trusses, amber double-girder crane, runner,
+tundish, ladle car, platforms: pourBay), `incline_gallery` (clad gallery on Warren trusses, trestle, drive and head
+houses: skipGallery). Shared details: `laced_column`, `ibeam`, `plate_girder`, `warren`, `square_deck`, `hoop`,
+`plate`, `clad_panel`, `window_strip`, `louvre_bank`, `lamp`. Paint zones added: `shell`, `clad`, `clad2`, `hot`,
+`lamp`, `louvre`, `rust`; heavy-industry paint `ckit.WORKS`. Recipe: README-colony.md "Component remodel".
+
 ## Colony components: `Scene3D/assets/parts-colony/` (`tools/blender/buildings/component.py`)
 
 Fal-made components (an isolated component image with nano-banana-pro/edit in the concept's style, then

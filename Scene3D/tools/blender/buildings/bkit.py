@@ -1211,13 +1211,67 @@ def worker(B, p, heading=0.0):
     _yard(B, 'yard:worker', p, heading, 'worker')
 
 
-def component(B, name, p, heading=0.0, scale=None, tag=None):
-    """A fal-made colony component (assets/parts-colony/<name>.glb, component.py: true size, +Y mount, footprint
-    centre at its origin, front +Z) placed at p, its front turned `heading` degrees about +Y. Components are kit
-    parts: reuse them across buildings (README-colony.md catalogue) before making a new one."""
+_PARTS = {}
+
+
+def _colony_part(name):
+    if not _PARTS:
+        import json
+        pj = os.path.join(ROOT, 'assets', 'parts-colony', 'parts.json')
+        _PARTS.update(json.load(open(pj))['parts'] if os.path.exists(pj) else {})
+    return _PARTS.get(name, {})
+
+
+def component(B, name, p, heading=0.0, scale=None, tag=None, lights=True):
+    """A colony component (assets/parts-colony/<name>.glb: true size, +Y mount, footprint centre at its origin, front
+    +Z) placed at p, its front turned `heading` degrees about +Y. Components are kit parts: reuse them across buildings
+    (README-colony.md catalogue) before making a new one. A remodelled part (remodel.py) carries its own lights (lamps,
+    glow, obstruction lights) and kit placements (crew doors) in its part frame (parts.json 'lights', 'placements'):
+    they are added to the building's record here, through the same transform (scale, heading about +Y, then p)."""
     a = heading * DEG
     B.R.place(f'colony:{name}', p, n=(0, 1, 0), up=(math.sin(a), 0, math.cos(a)), along=(math.cos(a), 0, -math.sin(a)),
               id=tag or name, **({'scale': scale} if scale is not None else {}))
+    rec = _colony_part(name)
+    if not lights or not (rec.get('lights') or rec.get('placements')):
+        return
+    s = scale if isinstance(scale, (list, tuple)) else ((scale, scale, scale) if scale is not None else (1.0, 1.0, 1.0))
+    ca, sa = math.cos(a), math.sin(a)
+    o = B.world(p)
+
+    def P(q):      # part frame -> building frame (rotation about +Y by heading: part +Z -> (sin a, 0, cos a))
+        x, y, z = q[0] * s[0], q[1] * s[1], q[2] * s[2]
+        return (o.x + x * ca + z * sa, o.y + y, o.z - x * sa + z * ca)
+
+    def D(q):
+        x, y, z = q
+        return (x * ca + z * sa, y, -x * sa + z * ca)
+    L = rec.get('lights') or {}
+    for q in L.get('pins', []):
+        B.R.pin(P(q))
+    for q in L.get('beacons', []):
+        B.R.beacon(P(q))
+    for q in L.get('nav', []):
+        B.R.obstruction(P(q))
+    for q in L.get('slits', []):
+        B.R.slits.append({**q, 'p': lst(P(q['p'])), 'u': lst(D(q['u'])), 'n': lst(D(q['n']))})
+    for q in L.get('windows', []):
+        B.R.windows.append({**q, 'p': lst(P(q['p'])), 'n': lst(D(q['n']))})
+    for q in L.get('glow', []):
+        g = {**q, 'p': lst(P(q['p'])), 'size': lst((q['size'][0] * s[0], q['size'][1] * s[1], q['size'][2] * s[2]))}
+        ry = q.get('rotY', 0.0) + a
+        g.pop('rotY', None)
+        if abs(ry) > 1e-6:
+            g['rotY'] = round(ry, 4)
+        B.R.glow.append(g)
+    for q in L.get('floods', []):
+        B.R.floods.append({'p': lst(P(q['p'])), 'target': lst(P(q['target']))})
+    for q in L.get('lenses', []):
+        B.R.lenses.append(lst(P(q)))
+    for q in rec.get('placements') or []:
+        pl = {**q, 'p': lst(P(q['p'])), 'n': lst(D(q['n'])), 'up': lst(D(q['up']))}
+        if 'along' in q:
+            pl['along'] = lst(D(q['along']))
+        B.R.placements.append(pl)
 
 
 def container(B, p, heading=0.0):

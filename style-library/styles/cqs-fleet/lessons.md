@@ -227,3 +227,25 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
 51. **A big flat glow box reads as a flat panel.** The trade center's 22 x 16 m arcade floor glow became one orange
     slab, the university atrium's warm interior box showed through the glazing as amber-brown panes (its texture was
     cool blue). Use small warm pools and pendant lamps, and a dim cool volume behind glass.
+52. **A component mesh is a blueprint; the part is rebuilt (corrections 40-42).** Ingested Tripo components read
+    "mushy" at the building camera and "low res" up close however well they are cleaned: the chamfers are soft, the
+    facets wavy, rails and lacing melt, and one 2048 texture is stretched over a 60 m furnace. The steel mill v4 rebuilt
+    its five components as parametric hard-surface parts measured off the blueprints (`cmeasure.py`: ortho sheets on a
+    metre grid, the radial profile and its stations, ledge heights), modelled on the building kit (`ckit.py`: vessel
+    from stations, banded stack, gable shed, pour bay, inclined gallery; 2-6 cm bevels, real flanges, laced columns,
+    I-beams, railings, ladders, exact openings) and painted in texture space from the kit's calibrated colours
+    (`cpaint.py`: plate seams and bolts, corrugation, PATINA tone, AO grime, rust and run-off streaks, edge wear, a
+    normal map), same names and anchors, so the building scripts did not change (`remodel.py`).
+53. **Weight the UV atlas by what carries texture.** A lattice-heavy part is mostly thin dark structure: with 3 px
+    island margins the furnace used 16 % of its atlas (6.5 px/m). 1.5 px margins and per-zone island scales before
+    packing (frames 0.45, grating 0.35, interiors 0.25, light shells 1.0) gave the shell 31 px/m at 4096 and the shed's
+    cladding 47 px/m. One-sided cladding plates (no inside faces) saved another 17 % of the shed's surface.
+54. **Hot zones: dark albedo, bright emission.** The remodelled tuyere windows painted with a light orange albedo took
+    the dusk studio's cool fill and tone-mapped to salmon pink; the albedo is now the hot colour at 0.18 and the light
+    comes from the emissive map (plus a thin runtime glow box). A 1.8 m tall glow "haze" box over the runner drew as an
+    opaque orange slab (lesson 51 again): glow boxes stay thin.
+55. **Do not hide the signature behind its own platforms.** The furnace's first full square grating decks (one per
+    tower level) covered the shaft from the game camera; the concept shows rings round the shell and walkways along the
+    frame with open corners. Likewise the pour bay's solid roof hid the crane: the bay is open on top, the runway lowered
+    so the amber bridge girder shows under the front eaves girder (lesson 46).
+

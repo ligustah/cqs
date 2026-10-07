@@ -5,6 +5,7 @@ a clean, true-size, reusable kit part in assets/parts-colony/ (README-colony.md,
         [--rot x,y,z] [--tris 12000] [--weld 0.004] [--min-piece 0.01] [--dissolve 1.0] [--flatten 0.04]
         [--tex 1024] [--hot 0.85] [--about "..."] [--source <image path or url>] [--fal <job-id>,<job-id>] [--used-by a,b]
     $PY tools/blender/buildings/component.py --rebuild [name ...]   # re-ingest from the params recorded in parts.json
+                                                                     # (skips remodelled parts: remodel.py owns them)
 
 Steps (Blender, the part frame of the building kits: metres, +Y up, the part stands on y = 0, origin at the centre of
 its footprint, front +Z; mount.normal '+Y', placed by assemble.py as 'colony:<name>'):
@@ -323,7 +324,14 @@ def main():
     no_norm = '--no-norm' in sys.argv
     if no_norm:
         sys.argv.remove('--no-norm')
+    force = '--force-ingest' in sys.argv
+    if force:
+        sys.argv.remove('--force-ingest')
     src, name = os.path.abspath(sys.argv[1]), sys.argv[2]
+    _man = os.path.join(OUT, 'parts.json')
+    if not force and os.path.exists(_man) and 'remodel' in json.load(open(_man))['parts'].get(name, {}):
+        sys.exit(f'component.py: {name} is a remodelled part (README-colony.md "Component remodel"): rebuild it with remodel.py; '
+                 f'--force-ingest replaces the remodel with the raw blueprint mesh')
     if not (height or length or width or long_ or size):
         sys.exit('component.py: give --height, --length, --width, --long or --size')
 
@@ -479,6 +487,9 @@ def rebuild(names):
     man = json.load(open(os.path.join(OUT, 'parts.json')))['parts']
     for n in names or list(man):
         q = man[n]
+        if 'remodel' in q:   # rebuilt as parametric geometry: remodel.py owns it (the raw mesh is only its blueprint)
+            print(f'[component] {n}: remodelled part, skipped (tools/blender/buildings/remodel.py {n})', flush=True)
+            continue
         pr = q['params']
         cmd = [sys.executable, __file__, os.path.join(SCENE3D, 'assets', 'buildings', 'raw', f'{n}.glb'), n,
                '--rot', ','.join(str(v) for v in pr['rot']), '--tris', str(pr['tris']), '--weld', str(pr['weld']),

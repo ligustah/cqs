@@ -9,6 +9,14 @@ whole-building mesh (the user, 2026-10-06: "use the fal 3d model to create small
 simplify and compose them in blender as opposed to generating the full 3d model"); a whole-building mesh, if one
 exists, is only a measuring reference.
 
+**Every large component is rebuilt in Blender** (corrections 40-42, 2026-10-07: "one-shot creations from the fal
+model ... very mushy", "extremely low res", "like from a 20 year old video game"). A fal / Tripo component mesh is a
+BLUEPRINT only: it is measured, then the part is remodelled as clean parametric hard-surface geometry with its own
+texture-space paint (section "Component remodel" below), under the same name and anchor. fal meshes may survive only
+as small kit parts (about 3 m and under: valves, lamps, small machinery), and those too are cleaned and flattened
+(planar faces, straight edges). No raw fal geometry, and no Tripo texture, stays on anything large or is scaled up.
+The steel mill (v4) is the remodel pilot; the other 15 buildings follow it.
+
 Pilots: `deuterium_depot`, `steel_mill`, v2: each composed from four to six fal components plus the parametric kit.
 The v1 pilots (kit only, built while fal was blocked) are kept as the compare sheets `<id>-v1.jpg`; v2 sheets are
 `<id>-v2.jpg`.
@@ -28,7 +36,8 @@ The v1 pilots (kit only, built while fal was blocked) are kept as the compare sh
 |---|---|---|---|
 | A | sizes and camera from the concept | by eye + the rulers | 10 min |
 | B | 4K turnaround (layout, proportions; not meshed) | `fal-ai/nano-banana-pro/edit` | 5 min |
-| C | components: image, mesh, ingest (reuse the catalogue first) | nano-banana-pro/edit, `tripo3d/h3.1/image-to-3d`, `component.py` | 15-40 min |
+| C | components: image, mesh, ingest as a blueprint (reuse the catalogue first) | nano-banana-pro/edit, `tripo3d/h3.1/image-to-3d`, `component.py` | 15-40 min |
+| R | remodel every large component: measure, parametric model, bake, paint, install | `cmeasure.py`, `ckit.py`, `remodel.py` | 20-60 min a part |
 | D | the building script `<id>.py` on bkit + components | Blender (bpy) | 30-40 min |
 | E | build, register, compare, fix (2-3 rounds), final 4096 bake | `colony_build.py`, `tools/buildings/compare.mjs` | 30 min |
 | F | phone check, docs | `tools/build-artifact.mjs`, `tools/phone-check.mjs` | 10 min |
@@ -173,6 +182,109 @@ node tools/scale-check.mjs                                           # must prin
 
 Building phone copies are 512 px with workers and vents dropped (`build-artifact.mjs` `LITE_COLONY`). Add the row to
 the README "Phone budget" table, the catalogue rows, and a line in `style-library/styles/cqs-fleet/assets.md`.
+
+## Component remodel (v4, 2026-10-07: corrections 40-42; pilot: the steel mill)
+
+Why: the v2 / v3 components were the Tripo meshes themselves, cleaned and sized (`component.py`). Image-to-3D averages
+detail into soft lumps and de-lights its texture at a fraction of the source image's resolution, so at the building
+camera they read "mushy" (soft chamfers, wavy facets, melted rails and ladders, smeared bands; correction 40) and up
+close "extremely low res" (correction 41). The ships met the bar by rebuilding every hull as parametric hard-surface
+geometry with the generated mesh as a blueprint (lessons 4-5, `../hulls/README.md`); the components now do the same.
+
+Rule: **a fal component mesh is a blueprint, never the part.** Every large component (anything over about 3 m, every
+signature shape) is remodelled. A small fal part may stay (valves, lamps, small machinery), cleaned and flattened.
+Nothing from Tripo is scaled up, and no Tripo texture is kept on a remodelled part: colour comes from the kit's calibrated
+paint and procedural texture-space layers, with the component image and the concept as the colour and wear reference.
+
+Tools (all in this folder):
+
+| file | role |
+|---|---|
+| `cmeasure.py` | measure a blueprint in the part frame: ray-cast ortho views (front from +Z, left from +X, top) on a 1 / 5 / 10 m grid, the radial profile r(y) about a vertical axis with its stations (steps > 0.25 m: flanges, bands, the bosh / shaft break), the ledge heights (up-facing area per 0.25 m: decks, platforms, eaves); `--compare remodel.glb` overlays the remodel's silhouettes (red) and profile on the blueprint's and reports the silhouette IoU |
+| `ckit.py` | the parametric remodel kit on `bkit.Build`: generic builders `furnace`, `banded_stack`, `gable_shed`, `pour_bay`, `incline_gallery`; details `laced_column`, `ibeam`, `plate_girder`, `warren`, `square_deck`, `hoop`, `plate`, `clad_panel` (sheets split round exact openings), `window_strip` (recessed glazing), `louvre_bank`, `lamp`; the extra paint zones (`shell`, `clad`, `clad2`, `hot`, `lamp`, `louvre`, `rust`); the `WORKS` heavy-industry paint; `REMODELS` (part name -> builder, measured parameters, texture size, about) |
+| `cpaint.py` | texture-space paint from the baked maps (part frame): zone colours from `lib.MATS` (the calibrated kit scale) with per-zone overrides; plating seams (courses in y, staggered joints along the face or round an axis), per-plate tone, bolt rows, corrugation, grating; PATINA 'hull' plate tone at the runtime 6 m tile; AO grime, ground dirt, run-off and rust streaks, rust bleeding from seams, curvature edge wear (primer on light paint, bare steel and rust on dark); emissive for `hot` and `lamp`; a tangent-space normal map from the seam / bolt / corrugation / grating height |
+| `remodel.py` | the chain for one part: model -> bevel + weighted normals -> UV (per-zone texel weights) -> Cycles bakes (position, normal, zone, AO 1.2 m, curvature) -> paint -> one material `colony_<name>` (base, ORM, normal, emissive) -> `assets/parts-colony/<name>.glb` (WebP) -> `parts.json` (the remodel record, the part's lights and kit placements; the blueprint's ingest record kept under `blueprint`) |
+
+```sh
+PY=<python with bpy 5.x, numpy, pillow>
+$PY tools/blender/buildings/cmeasure.py <name> <work>/m-<name> --res 0.07              # R1 measure the blueprint
+$PY tools/blender/buildings/remodel.py <name> --dry                                   # R2 model: tris, bbox, zones
+node tools/render-glb.mjs assets/parts-colony/<name>.glb <work>/<name> --angles "35:20,215:25"   # (after R3-R5)
+$PY tools/blender/buildings/remodel.py <name> [<name> ...] [--tex 2048] --work <work>  # R3-R5 bake, paint, install
+$PY tools/blender/buildings/cmeasure.py <name> <work>/c-<name> --compare assets/parts-colony/<name>.glb  # vs blueprint
+```
+
+(For `--compare` keep a copy of the blueprint GLB first: `remodel.py` replaces `assets/parts-colony/<name>.glb`; the raw
+Tripo mesh stays in `assets/buildings/raw/`.)
+
+### The recipe, per component
+
+1. **Decide.** Over about 3 m, or a signature shape: remodel. Pick the generic builder that fits (a vessel or tower
+   from stations: `furnace`; any chimney / column / silo: `banded_stack`; any clad portal shed: `gable_shed`; an open
+   crane bay: `pour_bay`; an inclined conveyor or bridge: `incline_gallery`), or write a new generic one in `ckit.py`
+   from the shared details. A new builder takes a parameter dict, so a sister part is a new dict, not new code.
+2. **Measure** (`cmeasure.py`, 10 min). Read off the ortho sheets and `profile.json`: the envelope (keep the
+   ingested bbox: the building scripts place the part by it), radii and heights of every station (plinth, hearth,
+   bands, flanges, cone, throat), deck and platform heights (`ledges.json`), bay and panel counts, column positions
+   (top view), openings. Correct what is a reconstruction error, not a design (the skip gallery's stretched drive
+   house; the stack's off-centre radial profile) by the component image and the concept.
+3. **Model** (`ckit.py`, 15-45 min). Rules that made the edges crisp:
+   - every volume a closed solid (lathes from pole to pole, prisms, boxes); profile points in increasing y so
+     normals face out; 40-48 segments on round shells (smooth shading, sharp angle 30-50 degrees);
+   - bevels 2-6 cm on every box and band (`lib.Part` angle-limited bevel with harden normals: each edge one chamfer
+     that catches the light), none on thin bars, rails and lacing (they would only add triangles);
+   - true size from the fleet rulers: rails 1.1 m (posts 1.5-1.8 m), caged ladders 0.62 m, stair treads 0.18 / 0.28 m,
+     crew doors as the fleet kit door (a Rec placement), grating decks 0.14 m, I-beams with real flanges and webs,
+     laced columns with angle chords and X lacing, plate girders with stiffeners;
+   - exact openings, not boolean cutters: `clad_panel` splits the sheet round each hole and `window_strip` /
+     `louvre_bank` put recessed glass, mullions, reveals and blades in it; one-sided `plate` for cladding whose inside is
+     never seen (no texels spent on it);
+   - lights live in the part: `lamp()` housings with a lit lens and a pin, `B.R.glowbox` / `K.glow_ring` for hot
+     zones, `B.R.obstruction` on stack tops, `B.R.door` kit doors; `remodel.py` stores them in `parts.json` and
+     `bkit.component()` adds them to every building that places the part, through its heading and scale.
+4. **Paint spec** (returned by the builder, merged over `ckit.WORKS`): per zone `course` / `joint` (m), `axis` (x, z)
+   for round shells (joints as arc length), `bolts` (pitch), `corr` (corrugation pitch), `rust`, `edge`, `tone`,
+   `dark`, `color` (sRGB override). Calibrate light paint with `tools/buildings/paint-check.py` on the building render:
+   the steel mill's light paint is a warm weathered grey (`WORKS`: shell sRGB (191, 182, 168), cladding (196, 189, 176)),
+   which brought its light band from 1.31x the concept (v3) to 1.23x with the building hull unchanged and the hue from
+   15 to 29 degrees (concept 23).
+5. **Bake and paint** (`remodel.py`, 1-6 min a part at 2048-4096). UVs: smart projection at one scale, then islands of
+   dark structure, grating, glass and interiors scaled down (`UV_WEIGHT`, 0.25-0.85) before packing, so the light
+   shells and cladding get the texels: the furnace's shell 31 px/m and the shed's cladding 47 px/m at 4096 (v3: one
+   2048 texture over the whole Tripo furnace). Hero parts at 4096 (furnace, shed, pour bay), the rest 2048; the phone
+   copy caps all at 512 (`lite-glb.mjs`).
+6. **Check** each part alone (`render-glb.mjs`, two angles), then the building (`colony_build.py`, `compare.mjs`,
+   `paint-check.py`) and a 1:1 close-up next to the old one at the same camera (`shoot.mjs` with `focus=` / `dist=`).
+   Fix the largest difference first: occluding decks (the furnace's first full square decks hid the shaft: rings and
+   side walkways instead), the glow placement (the tuyere band above its platform, not under a deck), the crane under
+   the eaves girder (lowered runway), opaque glow volumes (a 1.8 m haze glow box over the runner drew as a solid orange
+   slab: keep glow boxes thin), camouflage blotches (blotch tone +-7 %, not +-16 %).
+
+### Steel mill parts (v4)
+
+| part | builder | blueprint measures used | tris (v3 -> v4) | texture | px/m (light zones) |
+|---|---|---|---|---|---|
+| blastFurnace | `furnace` | plinth 27.4 x 3 x 29.2; hearth r 9.7 to 8.2 m; tuyere band 8.2-10.2; shaft r 9.45 -> 6.45 from 10.9 to 46.8 m (11 stations); hoops at 12.2, 16.6, 23.4, 35.8, 42.0; cone to r 2.5 at 51.2; throat r 2.3 to 58; legs at +-10.6, decks at 17 / 30 / 44 | 29,137 -> 55,548 | 4096 | 31 (shell) |
+| bandedStack | `banded_stack` | base 11 x 3.1; flare r 5.0 -> 3.78 (3.1-9.6 m); shaft r 3.75 to 42.6; platforms 19.4 / 42.8; lip r 4.05 at 46 | 8,959 -> 13,976 | 2048 | 42 (shell) |
+| shedSegment | `gable_shed` | 28 x 36 (wall 27.2); eaves 14.4, ridge 21.2; 5 bays of 7.2 m; windows 8.9-10.5 m; monitor 5.6 x 27 to 24 m | 7,534 -> 8,588 | 4096 | 47 (cladding) |
+| pourBay | `pour_bay` | x -9.5..9.5 open to +X, z -13..13, 15.5 m; columns at x +-8.4, z +-12; eaves girder 12.2-13.6; truss to 15.4 | 25,842 -> 13,046 | 4096 | 64 (frame2) |
+| skipGallery | `incline_gallery` | 6 x 46 x 28: gallery (0, 9.5, 9.6) -> (0, 39.8, -9.6), drive house z 9.6-14, head house y 36-46, trestle at z -4.5 | 12,915 -> 7,168 | 2048 | 41 (cladding) |
+
+Time per part (authoring the builder from the measures, then the chain at the final texture size): blastFurnace ~45 min
++ 4.5 min; bandedStack ~15 min + 1 min; shedSegment ~25 min + 5 min; pourBay ~35 min + 6 min; skipGallery ~20 min +
+1 min; plus the shared tools once (cmeasure, ckit details, cpaint, remodel: ~1.5 h) and three fix rounds on the
+building (~15 min each). A sister part (another stack, shed or vessel) is a new parameter dict: ~10 min + the chain.
+
+### Gotchas
+
+- `hulls/common.bake_maps` returns the SHIP frame (x, z, -y of Blender); the kit authors the part frame directly in
+  Blender with +Y up, so `remodel.py` converts pos / nrm back (x, -z, y) before painting.
+- Smart UV margins of 3 px on a part with thousands of small islands (lacing, rails) left 16 % of the atlas used
+  (6.5 px/m on the furnace); 1.5 px margins and the per-zone weights gave 46-76 %.
+- `component.py` refuses to re-ingest a remodelled part (`--force-ingest` to replace it with the raw mesh again) and
+  `--rebuild` skips them.
+- The glow (`hot`) zone is emissive in the texture and gets a runtime glow box too; keep glow boxes thin (< 0.1 m)
+  or they read as solid slabs in the dusk studio.
 
 ## Paint calibration (v3, 2026-10-06)
 

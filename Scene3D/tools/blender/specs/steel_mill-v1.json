@@ -113,6 +113,29 @@
    "id": "skipGallery"
   },
   {
+   "part": "door",
+   "p": [
+    -8.807,
+    1.2,
+    -2.045
+   ],
+   "n": [
+    0.259,
+    0.0,
+    -0.966
+   ],
+   "up": [
+    0.0,
+    1.0,
+    -0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "id": "crew door"
+  },
+  {
    "part": "colony:bandedStack",
    "p": [
     -15.0,
@@ -198,6 +221,29 @@
    "id": "shedSegment"
   },
   {
+   "part": "door",
+   "p": [
+    23.625,
+    1.2,
+    -12.2
+   ],
+   "n": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "up": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "id": "crew door"
+  },
+  {
    "part": "colony:shedSegment",
    "p": [
     10.0,
@@ -224,6 +270,29 @@
     -0.0
    ],
    "id": "shedSegment"
+  },
+  {
+   "part": "door",
+   "p": [
+    23.625,
+    1.2,
+    23.8
+   ],
+   "n": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "up": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "id": "crew door"
   },
   {
    "part": "colony:pourBay",
