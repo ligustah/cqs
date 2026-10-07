@@ -867,7 +867,7 @@ SHED_V5.update({
 # 21.2 -> 17.8 (26 -> 14 degrees), dark firewall parapets on the gable rakes, lighter roof sheeting with less soot, more
 # roof machinery
 SHED_V6 = dict(SHED_V5)
-SHED_V6.update({'ridge': 17.8, 'parapet': True, 'monitor': (5.6, 27.0, 2.4, 0.5),
+SHED_V6.update({'ridge': 17.8, 'parapet': True, 'rib': 1.8,      # standing seams every 1.8 m (the concept's wide sheets; -3k tris) 'monitor': (5.6, 27.0, 2.4, 0.5),
                 'roof_units': [(1, -13.0), (1, -4.0), (1, 9.0), (-1, -8.0), (-1, 4.0), (-1, 13.0)], 'ridge_vents': 4})
 SHED_V6['paint'] = dict(SHED_V5['paint'])
 SHED_V6['paint']['clad2'] = dict(SHED_V5['paint']['clad2'], color=[0.70, 0.68, 0.65], soot=0.6)
@@ -1357,14 +1357,16 @@ GALLERY_V6 = {
     'pipe': (1.15, [(0.0, 54.6, -9.6), (0.0, 36.1, 7.6), (0.0, 36.1, 15.2), (0.0, 3.0, 15.2)]),
 }
 # r4: the furnace frame now stops at the hood deck (44 m): the gallery lands on it
-GALLERY_V6.update({'B': (0.0, 44.6, -9.6), 'pipe': (1.15, [(0.0, 52.0, -9.6), (0.0, 36.1, 7.6), (0.0, 36.1, 15.2), (0.0, 3.0, 15.2)])})
+GALLERY_V6.update({'B': (0.0, 44.6, -9.6), 'pipe': (1.15, [(0.0, 50.0, -14.6), (0.0, 49.0, -10.6), (0.0, 36.1, 7.6), (0.0, 36.1, 15.2), (0.0, 3.0, 15.2)])})
+# r5: the gas main's top end runs into the furnace's upper stack (r4 left it ending in the air over the gallery)
 
 
 def _gas_main(B, P, A, Bp, n_up, h):
     """The gas main on saddles over a gallery, dropping down the foot tower's far face (v5 open bridge, v6 clad)."""
     pr, path = P['pipe']
     B.tube(path, pr, mat='pipeDark', n=20, fillet=1.6)
-    a_, b_ = V(path[0]), V(path[1])
+    i0 = max(range(min(2, len(path) - 1)), key=lambda i: (V(path[i + 1]) - V(path[i])).length)   # the run over the gallery
+    a_, b_ = V(path[i0]), V(path[i0 + 1])
     for k in range(1, 6):
         q = a_ + (b_ - a_) * (k / 6)
         lo = Bp + (A - Bp) * (k / 6) + n_up * (h + 0.3)

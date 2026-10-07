@@ -140,3 +140,18 @@ salmon (radiance 2.6 tone-maps pale whatever the hue) -> r4 radiance 1.6 #ff6200
 - Kit: default box chamfer up to 6 cm on members >= 0.3 m; I-beam flange chamfer 2.5 cm.
 - steel_mill.py: casthouse 10 -> 7 m without the office window strip; switch room, small sheds and the truck gone
   (plate stacks and coils instead); two low light blocks on the furnace plinth front and a low annex on the -X side.
+Round 4 result (13:41-14:03): 172.7k tris (phone copy now also drops parts_door: ~160k). paint-check light 0.92x,
+all 0.99x, hue 25.4 (c 23.2), light sat 0.21 (c 0.16). Evidence $S/mill/r4-blind.jpg, r4-closesheet.jpg (new close
+cameras: furnace dist 34, pour 32, shed 30, so 5 cm can reach 2 px), r4-thumbs.png.
+Checklist review r4:
+- S1 hero structure: PASS (compact: vertical legs, posts to the hood deck, ring platforms on the upper stack).
+- C2 framing: PASS (whole plant in frame, dist 0.95). C3 silhouette: PASS-ish (bell + stacks + long shed + portal).
+- G1 streaks: PASS (crisp columns only; no smear). G2 roofs: PASS (shallow, light, dark laps, parapet bays).
+- G3 plinth: PASS-ish (stains and spots read near the furnace; the shed apron reads clean under the floods).
+- W1 / W2: PASS (0.92x, hue 25.4; dark mid band neutral, sat 0.11).
+- D1 / D2: PASS (huts and truck gone; plate / coil stacks at the walls; blocks at the furnace foot).
+- L1 glow: FAIL: band still pink (the part still had radiance 2.6) and the 13 m spill reddened the bosh -> r5.
+- L2 lamps: PASS.  T3 material variety: PASS-ish (pipes glossier, frames matte; chips visible on the legs).
+- Gas main: FAIL: ended in the air over the gallery -> r5 runs it into the upper stack.
+- I1 thumbnail: PASS: aspect 1.12, fill 0.71; furnace + glow + stacks read at 40 px, distinct from the siblings.
+- Phone: ~160k (lite) FAIL by ~7 % -> r5 shed ribs 0.9 -> 1.8 m.

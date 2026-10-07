@@ -173,7 +173,7 @@ def main():
     dst = os.path.join(out_dir, f'{bid}.glb')
     shutil.copy(glb, dst)
     run(['node', 'tools/lite-glb.mjs', dst, dst.replace('.glb', '.lite.glb'), '--tex', '512',
-         '--drop', 'parts_yard-worker,parts_vent'])
+         '--drop', 'parts_yard-worker,parts_vent,parts_door'])   # = tools/artifact-tiers.mjs LITE_COLONY
     print('[colony] module', write_module(bid, rec))
     print('[colony] wrote', dst, f'{os.path.getsize(dst) / 1e6:.1f} MB')
     if not keep:
