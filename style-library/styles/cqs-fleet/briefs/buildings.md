@@ -6,7 +6,7 @@ them. The target is the concept. The shipyard and spaceport stay as built (`asse
 
 | id | game building | concept in one line |
 |---|---|---|
-| steel_mill | STEEL_MILL | blast furnace tower with skip hoist, glowing pour bay, three stacks, long shed |
+| steel_mill | STEEL_MILL | blast furnace tower with skip hoist, glowing pour bay, two banded stacks, long shed |
 | refinery | REFINERY | three tall distillation columns in lattice, pipe racks, control block, horizontal tanks |
 | silicon_foundry | SILICON_FOUNDRY | long sawtooth-roof fab hall, glazed bay showing a violet-lit reactor |
 | processing_plant | PROCESSING_PLANT | three tall banded process vessels, a low round tank, pipe manifolds, plant house |
