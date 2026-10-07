@@ -27,7 +27,7 @@ The v1 pilots (kit only, built while fal was blocked) are kept as the compare sh
   detail, lights, wear, depth).
 - `images/buildings/<id>-concept.jpg` (the target) and `<id>-old-render.jpg` (what fell short: flat grey, no plinth
   kerb, no lights, thin detail).
-- STYLE.md: Installations, Thumbnail readability, Reuse first, Phone first, Lights; corrections 22-35; kits.md.
+- STYLE.md sections 1, 4, 5, 7 and 8; corrections 22-44; kits.md.
 - This kit: `README-bkit.md`, the component catalogue below, the pilots `deuterium_depot.py` and `steel_mill.py`.
 
 ## Stages

@@ -18,5 +18,7 @@ export const { meta, asset, studio, load, build } = colonyBuilding({
   // the concept's camera: front-left, ~27 deg down
   // key from the front, a little to +X: the long +X shed face and the pour bay are lit as in the concept
   // v3 paint check: light-paint luminance trimmed to the concept's with the key alone (no paint lift)
-  studio: { az: 52, el: 22, sunaz: 42, sunel: 44, dist: 0.95, key: 0.6 },
+  // v6: the concept's lens and warmth: plinth edge slopes 0.30 / 0.24 on the concept = az 48, el 12 with a long lens
+  // (fov 22); a warm key, a neutral fill lifted for the concept's low-contrast tonality
+  studio: { az: 48, el: 12, fov: 22, sunaz: 42, sunel: 44, dist: 0.97, key: 0.6, keyColor: '#ffd9ac', fill: 1.5, fillColor: '#e8e2da' },
 });

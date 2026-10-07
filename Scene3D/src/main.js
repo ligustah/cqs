@@ -181,7 +181,8 @@ function start() {
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#010205');
-  const camera = new THREE.PerspectiveCamera(parseFloat(params.get('fov') || '38'), w / h, 0.5, 250000);
+  // a building's studio hint may set its lens (the concept's: a long lens, little perspective)
+  const camera = new THREE.PerspectiveCamera(parseFloat(params.get('fov') || String((mode === 'building' && BSTUDIO.fov) || 38)), w / h, 0.5, 250000);
   // Shots are composed for a ~16:10 landscape frame. On a portrait screen (a phone) the same
   // vertical lens would show a thin slice, so the projection widens until the frame covers at
   // least 60 % of the landscape frame's width; the authored fov is left untouched.
@@ -207,6 +208,11 @@ function start() {
     lighting.sun.intensity *= hint('key');
     for (const L of lighting.lights || []) L.intensity *= hint(L.name.replace('studio-', ''));
     scene.environmentIntensity *= hint('env');
+    // per-building light colours (the concept's warmth: a warm key, a neutral fill), ?keycolor= / ?fillcolor= override
+    const kc = params.get('keycolor') ? '#' + params.get('keycolor') : BSTUDIO.keyColor;
+    if (kc) lighting.sun.color.set(kc);
+    const fc = params.get('fillcolor') ? '#' + params.get('fillcolor') : BSTUDIO.fillColor;
+    if (fc) for (const L of lighting.lights || []) if (L.name === 'studio-fill') L.color.set(fc);
   }
   // the studio has no sky (star field, sun glare): its backdrop is part of the lighting rig
   const sky = studio ? { update() {} } : createSky(scene);
