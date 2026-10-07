@@ -24,6 +24,7 @@ shipyards.
   bevelled edges, crisp features) and project or repaint its texture; never ship the raw mesh. fal
   meshes serve only as small parts (about 3 m and under, cleaned and flattened) or as measuring
   blueprints; never scale one up past its source detail (correction 41: the transmitter modules).
+- **Concept vibes** (correction 43): a concept-led asset must have very similar vibes to its concept: the same mood, grit, density, warmth and silhouette at a glance. It does not need to be a pixel match. Keep iterating, without asking, until it does.
 - **Quality bar** (correction 42, "look like from a 20 year old video game"): current-generation real-time
   art. Clean, dense hard-surface geometry whose bevels catch light; texel density that holds at close
   range; layered PBR (detail normals, AO, wear); real shadows. Judge renders at 1:1 against that bar.
