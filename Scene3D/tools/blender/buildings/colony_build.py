@@ -67,6 +67,17 @@ def stage_hull(bid, work, tex, samples, threads):
         lib.unwrap(ob, margin=max(0.0008, 2.0 / tex))
     else:
         import remodel as RM
+        # v6 r22 (judge B, r13 / r21: "the left wall is smeared"; measured from the GLB: the casthouse wall 37 px/m at 2048
+        # while the plinth's underside and its buried slab layers held ~32 % of the hull atlas): delete the faces no
+        # camera sees (down-facing at plinth level, faces buried inside other solids) before the unwrap
+        import bmesh
+        bm = bmesh.new(); bm.from_mesh(ob.data)
+        under = [f for f in bm.faces if f.normal.y < -0.9 and f.calc_center_median().y < 0.6]   # the kit is Y up in Blender too
+        bmesh.ops.delete(bm, geom=under, context='FACES')
+        bm.to_mesh(ob.data); bm.free(); ob.data.update()
+        n0 = len(ob.data.polygons)
+        RM.cull_buried(ob)
+        print(f'[colony] hull: {len(under)} underside faces, {n0 - len(ob.data.polygons)} buried faces culled', flush=True)
         w = dict(RM.UV_WEIGHT, concrete=0.3, concreteD=0.3, concrete2=0.35, kerb=0.45, seam=0.3, hazard=0.5)
         ppm, (a3, a2) = RM.unwrap(ob, margin=max(0.0008, 1.5 / tex), weights=w)
         print('[colony] hull px/m at %d: ' % tex + ', '.join(f'{z} {v * tex:.1f}' for z, v in sorted(ppm.items(), key=lambda kv: -kv[1])), flush=True)
