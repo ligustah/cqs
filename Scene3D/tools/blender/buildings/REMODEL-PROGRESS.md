@@ -289,3 +289,36 @@ PASS-ish (edge line on chamfered members), phone tris FAIL (see STYLE proposals)
 - Density: stepped concrete blocks round the furnace foot, a stair + catwalk + stair toward the tuyere deck, a pipe
   bundle on the furnace plinth, a pipe rack and a switchgear skid across the right yard, catwalks along the shed
   ridges; annex blocks in mid-grey 'panel2'.
+
+### v6 round 15 (18:07-18:50; the remodel died after the furnace on a stale image cache, fixed and resumed at 18:30)
+All five parts re-baked with the photo layer, hull on `remodel.unwrap`, the r14 lights and density. 186.9k tris desktop.
+paint-check: light 0.76x (the photo layer pulls the light paint down), mid hue 232 (bluish; concept 21.5); grit-check:
+shell std 0.73x / hp 1.51x, wall 0.69 / 0.93, roof 0.81 / 0.96, plinth 0.96 / 2.08; shadow 0.95x. Evidence
+$S/mill/r15-blind.jpg, r15-closesheet.jpg, grit-crops-r15.png.
+Close-ups: the photo grime reads on walls, shell and roof (no tile grid); the hull block walls are sharp; but the runner
+and the ladle top are still a pale peach slab (emission clipped above the tone-map knee, crust too sparse) and the
+runner / portal spills wash the whole bay floor orange.
+Checklist review r15: C1-C3 PASS; S1 PASS; D1 PASS (furnace foot blocks, stair / catwalk, right-yard pipe rack and skid,
+roof catwalks; no bare run > 15 m); D2 PASS; G0 FAIL-ish (shell / wall std 0.73 / 0.69x: the concept's crops include
+light falloff the bare crops of the render lack), G1 PASS (photo + drips), G2 PASS, G3 PASS (plinth std 0.96x), G4 PASS;
+W1 FAIL (0.76x), W2 PASS; M1 PASS (0.95x); L1 FAIL at close range (peach runner), L2 PASS; T2 PASS (hull wall sharp);
+T3 PASS; phone tris see the proposals.
+Lighting calibration (main shot only, URL overrides): key 1.5, keyColor #fff3e8, fillColor #f0dcc8 -> light 1.04x,
+mid hue 12 (c 21.5), all 1.09x, shadow 1.04x (adopted); with fill 0.75 / env 0.45 the shadow rose to 1.24x (rejected).
+
+### v6 round 16 (pour bay + build)
+- Molten: crust plates over most of the trough away from the AO ridge (near black-red, crust 0.95), bright cracks,
+  the body held below the tone-map knee (x 0.55-1.0 by core); the stream narrowed to 1.8 m in a dark lined trough,
+  glow core 0.55 m.
+- Spills: runner pools 170 cd / 12 m (260 / 16), portal 110 cd (160).
+- Studio: key 1.5, keyColor #fff3e8, fillColor #f0dcc8.
+Round 16 result (18:57-19:11): light 1.02x, shadow 0.83x; but the runner was unchanged: its emit texture (extracted from
+the GLB) was pale yellow over the whole stream: the AO heat term saturates on a flat open trough.
+### v6 round 17 (19:13-19:28, pour bay + build): heat a minor term where there is a crust (x 0.35), the open metal from
+noise; crust tied to (1 - core). Close-up: dark crust plates with bright cracks, the hot core stream, the ladle top
+crusted. light 1.02x, mid hue 12, all 1.06x; grit shell 0.80 / 1.63, wall 0.76 / 1.02, roof 0.86 / 0.99, plinth
+1.01 / 2.16; shadow 1.15x (GrabCut varies +-0.15 between identical-lighting shots).
+### v6 round 18 (shots only): the shed wall's fine dot grid (judge B's "moire") is key-shadow acne, not texture (GLB
+textures clean; unchanged with ?ao=0 and ?finish=off; gone with the normal bias x 10). Studio hint shadowNB 6
+(src/main.js + env/lighting.js fitShadow; ?snb= calibrates).
+

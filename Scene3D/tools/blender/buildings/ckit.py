@@ -1230,7 +1230,8 @@ POUR_V6 = dict(POUR_V5)
 POUR_V6.update({'xb': -2.6, 'xf': 6.4, 'roof': True, 'tap_dx': 5.8, 'tap_upper': False, 'runner_glow': 1.2,   # r8: 3.2 read pink-white
                 'crane_x': 3.6, 'ladle_x': 4.4, 'rails': (7.2, 0.6, 7.4), 'control': (1.6, 5.8, -6.4, -2.2, 3.8),
                 # r2: the runner on the apron in front of the portal, along the wall (the concept's long glowing trough)
-                'runner': (0.0, 24.0, 0.0, 3.6), 'runner_at': (8.9, -9.0, -90.0), 'runner_core': 0.8,
+                'runner': (0.0, 24.0, 0.0, 3.6), 'runner_at': (8.9, -9.0, -90.0), 'runner_core': 0.55, 'runner_lip': 1.8,   # r16: a 1.8 m stream in a dark lined trough
+               
                 'runner_color': '#ffa03c'})      # r11: the hearth's yellow-orange (#ffb050 at 1.5 read pastel pink on the wide core)
 
 
@@ -1361,7 +1362,7 @@ def pour_bay(B, P=POUR):
             B.box((0.6, 0.5, rw + 0.6), at=(x, 0.41, rz), mat='frame', bevel=0.03)
         B.box((rx1 - rx0, 0.75, rw), at=((rx0 + rx1) / 2, 1.03, rz), mat='frame2', bevel=0.05)
         B.box((rx1 - rx0 + 0.02, 0.2, rw - 0.6), at=((rx0 + rx1) / 2, 1.33, rz), mat='refractory', bevel=0.02)
-        B.box((rx1 - rx0 - 0.1, 0.08, rw - 1.1), at=((rx0 + rx1) / 2, 1.40, rz), mat='hot', bevel=0.0)
+        B.box((rx1 - rx0 - 0.1, 0.08, rw - P.get('runner_lip', 1.1)), at=((rx0 + rx1) / 2, 1.40, rz), mat='hot', bevel=0.0)
         for x in (rx0 + 2.0, rx1 - 2.0):
             for s in (-1, 1):
                 B.box((0.25, 0.9, 0.12), at=(x, 1.0, rz + s * (rw / 2 + 0.06)), mat='frame', bevel=0.0)
@@ -1445,7 +1446,7 @@ def pour_bay(B, P=POUR):
         'rust': {'color': [0.36, 0.27, 0.21], 'rust': 0.0, 'edge': 1.0, 'course': 1.6, 'joint': 1e3, 'blot': 0.28, 'tone': 0.06, 'rough': 0.8,
                  'metal': 0.15, 'vstreak': 1.0, 'vsrc': 4.0, 'photo': ('wxSteel', 2.0, 0.8, 0.0, 0.3, 0.0)},
         'panel': {'vstreak': 0.0, 'mstreak': 0.0, 'blot': 0.12},
-        'hot': {'crust': 0.65},     # r12: a darker cooled skin broken by bright cracks (judge B: flat orange paint)
+        'hot': {'crust': 0.95},     # r16 0.95 (r12 0.65): a darker cooled skin broken by bright cracks (judge B: flat orange paint)
     })
 
 

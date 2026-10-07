@@ -270,7 +270,9 @@ export function createStudioLighting(renderer, scene, { shadowSize = 4096, camAz
     cam.left = -radius; cam.right = radius; cam.top = radius; cam.bottom = -radius;
     cam.near = 1; cam.far = radius * 4 + 100;
     cam.updateProjectionMatrix();
-    key.shadow.normalBias = Math.max(0.02, radius / 2000);
+    // ?snb= scales the normal bias (calibration); a building's studio hint may set shadowNormalBias (x, see main.js)
+    const snb = parseFloat(new URLSearchParams(globalThis.location?.search || '').get('snb') || String(key.userData.nbScale ?? 1));
+    key.shadow.normalBias = Math.max(0.02, radius / 2000) * snb;
     for (const L of extra) { L.target.position.copy(center); L.position.copy(center).addScaledVector(L.userData.dir, radius * 2 + 50); }
   }
 

@@ -377,9 +377,9 @@ def clutter(B):
             f = (y - 3.0) / 23.6
             b = 8.8 + 0.6 * f + (3.6 - 0.8 * f) / 2 + 0.12
             B.R.pin((FX + sx * b, y, FZ + sz * b))
-    B.R.spill((PB_X + 11.0, 4.0, PB_Z - 4.0), color='#ff9a40', intensity=260.0, distance=16.0)   # r14: two pools along the runner
-    B.R.spill((PB_X + 11.0, 4.0, PB_Z + 9.0), color='#ff9a40', intensity=260.0, distance=16.0)
-    B.R.spill((PB_X + 2.0, 6.0, PB_Z + 2.0), color='#ffa850', intensity=160.0, distance=14.0)    # inside the portal
+    B.R.spill((PB_X + 11.0, 4.0, PB_Z - 4.0), color='#ff9a40', intensity=170.0, distance=12.0)   # r14: two pools along the runner
+    B.R.spill((PB_X + 11.0, 4.0, PB_Z + 9.0), color='#ff9a40', intensity=170.0, distance=12.0)
+    B.R.spill((PB_X + 2.0, 6.0, PB_Z + 2.0), color='#ffa850', intensity=110.0, distance=12.0)    # inside the portal
     # --- +X apron along the shed (x 33-40, z -48..0): a pipe cluster on stools at the edge, sheds, pallets, skids
     K.pipe_bundle(B, [(38.6, 0.0, -45.5), (38.6, 0.0, -26.0)], n=3, r=0.22)
     K.pipe_bundle(B, [(39.2, 0.0, -8.0), (39.2, 0.0, -1.0), (35.0, 0.0, -1.0)], n=2, r=0.3)

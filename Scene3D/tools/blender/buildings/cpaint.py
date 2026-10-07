@@ -479,7 +479,14 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
                 # r14 (judge B: "flat orange paint"): white-yellow in the open middle of the stream, deep red at the trough
                 # walls (the baked AO is low there), cracks of bright metal through a darker cooled crust
                 heat = HP.smooth(0.55, 0.97, a)
-                core = np.maximum(HP.smooth(0.5, 0.78, f1), 0.8 * heat)
+                cr = float(c.get('crust', 0.35))
+                if cr > 0:
+                    # r17: on a flat open trough the AO is high everywhere (heat ~1 over the whole stream: a pale slab);
+                    # heat is a minor term where there is a crust, the open metal comes from the noise (+ the glow core)
+                    heat = 0.35 * heat
+                    core = np.maximum(HP.smooth(0.6, 0.82, f1), heat)
+                else:
+                    core = np.maximum(HP.smooth(0.5, 0.78, f1), 0.8 * heat)
                 deep = HP.srgb2lin([0.86, 0.30, 0.04])
                 deep = deep[None] * heat[:, None] + HP.srgb2lin([0.62, 0.10, 0.02])[None] * (1 - heat[:, None])
                 bright = HP.srgb2lin([1.0, 0.78, 0.36])
@@ -488,10 +495,13 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
                 if cr > 0:
                     cells = HP.fbm(p, 2.6, 3, seed=31)
                     crack = HP.smooth(0.03, 0.0, np.abs(cells - 0.5))     # thin bright seams between crust plates
-                    crust = HP.smooth(0.42, 0.62, HP.fbm(p, 0.7, 2, seed=37)) * cr * (1 - crack)
-                    e = e * (1 - 0.85 * crust[:, None]) + bright[None] * 0.6 * crack[:, None] * crust[:, None]
+                    # r16 (r15 close-up: still a pale peach slab): crust plates cover most of the trough away from the
+                    # hot core, near black-red, with thin white-yellow cracks; the open stream only along the AO ridge
+                    crust = HP.smooth(0.30, 0.50, HP.fbm(p, 0.7, 2, seed=37)) * (1 - core) * cr * (1 - crack)
+                    e = e * (1 - 0.96 * crust[:, None]) + bright[None] * 0.9 * crack[:, None] * HP.smooth(0.05, 0.3, crust)[:, None]
                 else:
                     crust = np.zeros(len(mm), np.float32)
+                e = e * (0.55 + 0.45 * core)[:, None]          # r16: the body below the tone-map knee (clipped = peach)
                 emit[mm] = np.clip(e * c['hot'][1], 0, 1)
                 col = np.clip(deep * 0.12 * (1 - crust[:, None]) + HP.srgb2lin([0.10, 0.08, 0.07])[None] * crust[:, None], 0, 1)
                 rg = 0.55 + 0.35 * crust

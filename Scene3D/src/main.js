@@ -213,6 +213,8 @@ function start() {
     if (kc) lighting.sun.color.set(kc);
     const fc = params.get('fillcolor') ? '#' + params.get('fillcolor') : BSTUDIO.fillColor;
     if (fc) for (const L of lighting.lights || []) if (L.name === 'studio-fill') L.color.set(fc);
+    // shadowNB: the key shadow's normal bias x this (a large building's lit walls showed a Vogel-disk acne dot grid)
+    if (BSTUDIO.shadowNB) lighting.sun.userData.nbScale = BSTUDIO.shadowNB;
   }
   // the studio has no sky (star field, sun glare): its backdrop is part of the lighting rig
   const sky = studio ? { update() {} } : createSky(scene);

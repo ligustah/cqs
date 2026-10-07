@@ -592,6 +592,11 @@ def _wx_photo(g, col, obj, setname, tile, k):
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'buildings', 'weather', setname, 'base_clean.jpg')   # joints removed (cpaint._unline)
     if not os.path.exists(path):
         return col
+    if setname in _WXIMG:
+        try:
+            _WXIMG[setname][0].name          # r15: the cache outlives the scene reset between parts (removed StructRNA)
+        except ReferenceError:
+            del _WXIMG[setname]
     if setname not in _WXIMG:
         im = bpy.data.images.load(path, check_existing=True)
         px = list(im.pixels[:])
