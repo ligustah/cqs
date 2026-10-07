@@ -242,24 +242,24 @@ def model(B):
         B.R.pin((x, 14.0, z))
     # gas-cleaning annex on the furnace's -X side, under the downcomer's elbow (v5: narrow and low beside the broader
     # furnace plinth; the concept's light block with the big elbow pipe on its roof), the dust catcher behind
-    K.block(B, (-37.0, 0.0, 24.0), (6.0, 13.0, 15.0),
+    K.block(B, (-37.0, 0.0, 30.0), (6.0, 13.0, 15.0),
             sides={'+z': {'bay': 3.0, 'storey': 6.5, 'windows': [0, 1], 'win': (1.2, 1.2), 'doors': [3.0]},
                    '+x': {'bay': 5.0, 'storey': 6.5, 'windows': [1], 'win': (1.4, 1.2)},
                    '-x': {'bay': 5.0, 'storey': 6.5, 'windows': [1], 'win': (1.4, 1.2), 'doors': [7.5], 'louvres': [(11.0, 7.5, 2.0, 2.0)]},
                    '-z': {'bay': 3.0, 'storey': 6.5}},
             roof={'parapet': 0.6, 'units': [('vent', 1.0, -5.0, {}), ('antenna', -1.5, 6.0, {'h': 5.0})]}, frame='frameL')
-    K.pipe(B, [(FX - 19.0, 14.2, FZ + 1.0), (FX - 19.0, 13.2, FZ + 1.0)], r=1.45, mat='pipeDark', rings=False)
-    K.ladder(B, (-40.4, 0.0, 20.0), (-1, 0, 0), 13.0)
+    K.pipe(B, [(FX - 19.0, 14.2, FZ + 7.0), (FX - 19.0, 13.2, FZ + 7.0)], r=1.45, mat='pipeDark', rings=False)
+    K.ladder(B, (-40.4, 0.0, 26.0), (-1, 0, 0), 13.0)
     K.block(B, (-35.5, 0.0, -2.0), (7.0, 7.0, 8.0),
             sides={'+z': {'bay': 3.5, 'doors': [3.5], 'windows': []}, '+x': {'bay': 4.0, 'windows': [0], 'win': (1.2, 1.0)}},
             roof={'parapet': 0.4, 'units': [('hvac', 0.0, 0.0, {'w': 2.6, 'd': 1.8, 'fans': 1})]}, frame='frameL')
     K.vtank(B, (-34.0, 7.5), 2.6, 9.0, y0=0.0, top='cone', mat='frame2', skirt=5.0, ladder_side=90.0,
             bands=[(1.0, 1.4, 'frame'), (7.4, 7.8, 'frame')], platforms=(9.5,))
-    K.pipe(B, [(-36.6, 12.0, 7.5), (-37.0, 12.0, 16.5)], r=0.6, mat='pipeDark', supports=False)
+    K.pipe(B, [(-36.6, 12.0, 7.5), (-37.0, 12.0, 22.5)], r=0.6, mat='pipe', supports=False)
     # v5: furnace base dressing: cooling-water mains round the plinth on stools, valve skids, a stair to the
     # plinth top, crates (the concept's busy foot)
-    K.pipe(B, [(FX - 17.2, 0.9, FZ + 6.0), (FX - 17.2, 0.9, FZ + 17.0), (FX + 6.0, 0.9, FZ + 17.0)], r=0.45, mat='pipeDark', supports=True, ground=0.0)
-    K.pipe(B, [(FX - 17.2, 2.0, FZ - 8.0), (FX - 17.2, 2.0, FZ + 4.0), (FX - 16.4, 3.4, FZ + 4.0)], r=0.3, mat='pipeDark', supports=True, ground=0.0)
+    K.pipe(B, [(FX - 17.2, 0.9, FZ + 6.0), (FX - 17.2, 0.9, FZ + 17.0), (FX + 6.0, 0.9, FZ + 17.0)], r=0.45, mat='pipe', supports=True, ground=0.0)
+    K.pipe(B, [(FX - 17.2, 2.0, FZ - 8.0), (FX - 17.2, 2.0, FZ + 4.0), (FX - 16.4, 3.4, FZ + 4.0)], r=0.3, mat='pipe', supports=True, ground=0.0)
     K.cable_tray(B, (FX + 16.4, 2.6, FZ - 14.0), (FX + 16.4, 2.6, FZ + 10.0), w=0.5)
     K.stair(B, (FX + 6.0, 0.0, FZ + 17.6), (-1, 0, 0), 3.0, w=1.2)
     for (cx, cz) in ((FX + 9.0, FZ + 17.8), (FX + 10.8, FZ + 18.0)):
@@ -276,7 +276,7 @@ def model(B):
     K.pipe(B, [(-3.6, 7.0, 31.0), (-2.0, 7.0, 31.0), (-2.0, 11.2, 31.0), (8.0, 11.2, 31.0)], r=0.45, mat='pipeDark', supports=False)
     # v5: more of the concept's secondary layer: a pipe run and cable tray along the casthouse front, door canopies,
     # a stair to its roof, crates and a skid on the apron, extra roof units
-    K.pipe(B, [(-2.0, 3.6, 38.9), (18.0, 3.6, 38.9)], r=0.3, mat='pipeDark', supports=False)
+    K.pipe(B, [(-2.0, 3.6, 38.9), (18.0, 3.6, 38.9)], r=0.3, mat='pipe', supports=False)
     K.cable_tray(B, (-2.0, 8.4, 38.8), (18.0, 8.4, 38.8), w=0.45)
     K.stair(B, (19.0, 0.0, 37.5), (0, 0, -1), 5.0, w=1.1)
     for (cx, cz, sz) in ((21.0, 39.5, (1.6, 1.2, 1.6)), (22.6, 39.8, (1.2, 1.0, 1.2)), (21.6, 39.5, (1.0, 0.8, 1.0))):

@@ -143,7 +143,7 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
                     # v5: grime drips under each course seam (the concept's streaked panel joints): dirt held in the
                     # joint runs down the panel below it, broken into streaks
                     below = (ci + 1) * course - t                     # metres below the next seam up
-                    dn = HP.fbm(p * np.array([1.0, 0.05, 1.0], np.float32), 2.2, 3, seed=53 + zi)
+                    dn = HP.fbm(p * np.array([1.0, 0.05, 1.0], np.float32), 4.5, 3, seed=53 + zi)
                     drip = wall * HP.smooth(0.9, 0.0, below) * HP.smooth(0.42, 0.62, dn) * float(c['drip'])
                     col *= (1 - drip)[:, None]
                     rg += 0.1 * drip
@@ -189,7 +189,7 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
             # blotches and run-off streaks
             blot = HP.fbm(p, 0.08, 3, seed=1 + zi)
             col *= (1 + c.get('blot', 0.07) * (blot - 0.5) * 2)[:, None]
-            st = HP.fbm(p * np.array([1.0, 0.06, 1.0], np.float32), 1.4, 3, seed=9)
+            st = HP.fbm(p * np.array([1.0, 0.06, 1.0], np.float32), float(c.get('streak_f', 1.4)), 3, seed=9)
             streak = wall * HP.smooth(0.5, 0.7, st) * float(c.get('streak', 0.16)) * g
             col *= (1 - streak)[:, None]
             # ground dirt: walls darken and warm toward the slab (splash, dust)

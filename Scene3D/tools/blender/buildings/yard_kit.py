@@ -519,6 +519,37 @@ def truck(P, trailer=13.6):
             wheel(P, sx * 1.0, 0.52, z, 0.52)
     for sx in (-1, 1):
         P.box((0.06, 0.2, trailer - 2.0), at=(sx * 1.29, 1.5, -0.4), mat='amber', bevel=0.0)
+    # v5 (steel mill review: "the plain white truck trailer"): an external-post van body: posts every 0.9 m, top and
+    # bottom rails, corner posts, a dark band, side guards, landing gear, marker lamps, rear doors with lock rods
+    zt0, zt1 = -0.4 - trailer / 2, -0.4 + trailer / 2
+    yb, yt = 1.35, 1.35 + 2.75
+    for sx in (-1, 1):
+        x = sx * 1.285
+        for k in range(1, int(trailer / 0.9)):
+            P.box((0.05, 2.5, 0.07), at=(x + sx * 0.02, (yb + yt) / 2 + 0.05, zt0 + 0.9 * k), mat='cladding2', bevel=0.0)
+        P.box((0.08, 0.2, trailer), at=(x + sx * 0.03, yt - 0.1, -0.4), mat='charcoal2', bevel=0.01)
+        P.box((0.09, 0.24, trailer), at=(x + sx * 0.03, yb + 0.12, -0.4), mat='charcoal2', bevel=0.01)
+        P.box((0.07, 0.55, trailer - 0.6), at=(x + sx * 0.04, yt - 0.75, -0.4), mat='cladding2', bevel=0.0)
+        for z in (zt0 + 0.05, zt1 - 0.05):
+            P.box((0.12, yt - yb, 0.14), at=(x + sx * 0.02, (yb + yt) / 2, z), mat='charcoal2', bevel=0.01)
+        # side guard rails between the landing gear and the axles
+        for yy in (0.75, 1.05):
+            P.box((0.05, 0.1, 5.2), at=(sx * 1.15, yy, zt1 - 5.6), mat='galv', bevel=0.0)
+        P.box((0.18, 0.5, 0.18), at=(sx * 0.7, 0.9, zt1 - 2.4), mat='charcoal', bevel=0.02)      # landing gear leg
+        P.box((0.4, 0.06, 0.3), at=(sx * 0.7, 0.62, zt1 - 2.4), mat='charcoal', bevel=0.0)
+        for z in (zt0 + 1.0, zt0 + 4.5, -0.4, zt1 - 1.0):
+            P.box((0.04, 0.08, 0.14), at=(x + sx * 0.06, yb + 0.12, z), mat='amber', bevel=0.0)    # marker lamps
+        P.box((0.5, 0.6, 0.03), at=(sx * 1.0, 0.75, zt0 + 0.25), mat='rubber', bevel=0.0)        # mud flaps
+    # rear doors: the centre seam, hinge strips and four lock rods with keepers
+    P.box((0.06, yt - yb - 0.3, 0.05), at=(0, (yb + yt) / 2, zt0 - 0.01), mat='charcoal2', bevel=0.0)
+    for x in (-0.85, -0.35, 0.35, 0.85):
+        P.cyl(0.025, yt - yb - 0.4, at=(x, (yb + yt) / 2, zt0 - 0.05), rot=(90, 0, 0), n=6, mat='galv', bevel=0.0)
+        for yy in (yb + 0.4, yt - 0.4):
+            P.box((0.08, 0.1, 0.06), at=(x, yy, zt0 - 0.04), mat='charcoal2', bevel=0.0)
+    for sx in (-1, 1):
+        for yy in (yb + 0.5, (yb + yt) / 2, yt - 0.5):
+            P.box((0.22, 0.12, 0.05), at=(sx * 1.17, yy, zt0 - 0.03), mat='charcoal2', bevel=0.0)
+    P.box((2.4, 0.2, 0.25), at=(0, 0.95, zt0 + 0.05), mat='charcoal', bevel=0.02)                 # rear underride bar
     return {**meta, 'about': f'semi: cab-over tractor + {trailer} m box trailer, front +Z, {trailer + 2.9:.1f} m long'}
 
 

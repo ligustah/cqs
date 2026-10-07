@@ -1506,22 +1506,22 @@
    "file": "truck.glb",
    "part": "truck",
    "size": null,
-   "tris": 1740,
+   "tris": 3036,
    "bbox": {
     "min": [
-     -1.32,
+     -1.365,
      0.0,
-     -7.2
+     -7.275
     ],
     "max": [
-     1.32,
+     1.365,
      4.55,
      10.0
     ],
     "size": [
-     2.64,
+     2.73,
      4.55,
-     17.2
+     17.275
     ]
    },
    "mount": {
@@ -1529,9 +1529,9 @@
     "anchor": "footprint centre at y = 0, front +Z"
    },
    "tex": 1024,
-   "kb": 208,
-   "seconds": 90.4,
-   "seconds_bake": 87.2,
+   "kb": 281,
+   "seconds": 14.8,
+   "seconds_bake": 13.2,
    "params": {},
    "anchors": {
     "lampsAmber": [

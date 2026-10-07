@@ -57,13 +57,13 @@ WORKS = {
     # v5 (second review): light paint a step less yellow (v4 hue 35 deg vs the concept's 25-28), seams and run-off
     # stronger (worn, not dirty), and the dark steel a neutral gunmetal: v4's frames rendered at saturation 0.2-0.3
     # (brown) from warm grime, dirt and rusty edges on a neutral base; the concept's are ~0.09
-    'shell': {'color': [0.76, 0.735, 0.705], 'rust': 0.6, 'streak': 0.26, 'dark': 0.5, 'seam_w': 0.045},
-    'clad': {'color': [0.78, 0.755, 0.725], 'rust': 0.5, 'streak': 0.26},
+    'shell': {'color': [0.76, 0.735, 0.705], 'rust': 0.6, 'streak': 0.22, 'streak_f': 3.2, 'dark': 0.5, 'seam_w': 0.045},
+    'clad': {'color': [0.78, 0.755, 0.725], 'rust': 0.5, 'streak': 0.22, 'streak_f': 3.2},
     'clad2': {'color': [0.71, 0.69, 0.66], 'rust': 0.45, 'blot': 0.035, 'patina': 0.03},   # roofs: big planes, blotches read as camouflage
-    'panel': {'color': [0.79, 0.765, 0.735], 'rust': 0.45, 'streak': 0.22},
-    'frame': {'color': [0.29, 0.296, 0.31], 'rust': 0.1, 'edge': 0.9},     # concept gunmetal ~sRGB 70-80, neutral
-    'frame2': {'color': [0.33, 0.336, 0.35], 'rust': 0.12},
-    'pipeDark': {'color': [0.30, 0.305, 0.315], 'rust': 0.12},
+    'panel': {'color': [0.79, 0.765, 0.735], 'rust': 0.45, 'streak': 0.2, 'streak_f': 3.2},
+    'frame': {'color': [0.33, 0.336, 0.35], 'rust': 0.1, 'edge': 0.9},     # concept gunmetal ~sRGB 70-80, neutral
+    'frame2': {'color': [0.37, 0.375, 0.388], 'rust': 0.12},
+    'pipeDark': {'color': [0.42, 0.425, 0.435], 'rust': 0.15, 'metal': 0.3},           # mid-grey mains: dark pipes vanished on the dusk backdrop
 }
 
 
@@ -386,7 +386,7 @@ FURNACE_V5.update({
     'top_deck': None,
     'uptakes': (4, 0.62, [(5.25, 48.4), (6.3, 55.6), (4.6, 59.9), (1.9, 60.9)]),
     'header': (1.75, 59.4, 62.4),
-    'downcomer': (1.45, [(0.0, 61.2, 0.0), (-5.5, 61.2, 0.0), (-15.6, 41.0, 1.0), (-15.6, 25.0, 1.0), (-19.0, 21.6, 1.0), (-19.0, 14.0, 1.0)]),
+    'downcomer': (1.45, [(0.0, 61.2, 0.0), (-5.5, 61.2, 0.0), (-15.6, 41.0, 4.0), (-15.6, 25.0, 7.0), (-19.0, 21.6, 7.0), (-19.0, 14.0, 7.0)]),
     'decks': [(26.6, 11.45, 13.4), (43.1, 8.55, 10.4)],
     'tower': {'style': 'posts', 'legs': ((13.9, 3.0), (12.2, 26.6)), 'leg_section': (4.0, 2.8), 'leg_tie': (15.2, 10.6),
               'post': (0.95, 0.75), 'top': (8.9, 54.0), 'levels': [43.1], 'xbrace': (43.1, 54.0), 'top_deck': (54.0, 5.05, 9.6),
@@ -808,12 +808,12 @@ SHED_V4.update({
 
 SHED_V5 = dict(SHED_V4)
 SHED_V5.update({
-    'canopies': True, 'wall_pipes': [(1, 3.3, 0.32), (-1, 3.3, 0.32), (1, 11.8, 0.22)], 'tray': (1, 9.2),
+    'canopies': True, 'wall_pipes': [(1, 3.3, 0.32), (-1, 3.3, 0.32), (1, 11.8, 0.22)], 'tray': (1, 13.0),
     'roof_units': [(1, -11.0), (1, 9.0), (-1, -4.0), (-1, 13.0)], 'ridge_vents': 3, 'dock': (0, 9.0, 3.2, 1.2),
     'pilaster_lamps': (4.2, 10.4),
     'paint': {
         'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.5, 'tone': 0.13, 'dark': 0.6, 'stagger': False,
-                 'seam_w': 0.05, 'streak': 0.3, 'drip': 0.35},
+                 'seam_w': 0.05, 'streak': 0.2, 'streak_f': 3.2, 'drip': 0.3},
         'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.4, 'tone': 0.07, 'dark': 0.35, 'streak': 0.2},
         'frame2': {'rust': 0.15},
     },
@@ -1208,7 +1208,8 @@ def pour_bay(B, P=POUR):
     B.lathe([(0, 3.62), (1.42, 3.62), (1.42, 3.66), (0, 3.66)], (lx, 0, zr0), mat='hot', n=32, bevel=0.0)
     for s in (-1, 1):
         B.cyl(0.25, 0.5, at=(lx, 2.9, zr0 + s * 1.75), mat='frame', n=12)
-    B.R.glowbox((lx, 3.68, zr0), (1.0, 0.03, 1.0), color='#ffb050', radiance=1.4)
+    if not P.get('runner_at'):     # v5: the pot's hot top is emissive paint; a square glow box read as a sticker
+        B.R.glowbox((lx, 3.68, zr0), (1.0, 0.03, 1.0), color='#ffb050', radiance=1.4)
     K.railing(B, [(lx - 2.2, 1.4, zr0 + 1.25), (lx + 2.2, 1.4, zr0 + 1.25)], post=1.4)
     # v5: the concept's small railed control house inside the portal beside the runner: light concrete block on a dark
     # plinth, a lit window toward the runner, a kit crew door with its lamp, a railed roof with a unit

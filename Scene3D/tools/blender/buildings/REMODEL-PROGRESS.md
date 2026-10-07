@@ -40,3 +40,9 @@ plinth, furnace base; seam / grime contrast; trailer texture), 4 furnace shell t
   lighter neutral gunmetal, less yellow light paint; remodel.py cull_buried (REMODEL_FLAGS="--no-cull" to skip) and
   ckit.SPLIT (blastFurnace shell -> colony_blastFurnace_2, own atlas).
 - Next: S2 review bake (2048) of the 5 parts + building 2048, compare rounds; truck trailer (yard_kit); final 4096.
+- S2 round 1 (2048 review, shots $S/v5/r1-*.png): bell, open portal, crane, control house, bridge all read. Fixes in
+  round 2: thinner streaks (streak_f 3.2), finer drips, lighter neutral frames / mid-grey mains (pipeDark metal 0.3),
+  tray up to 13 m, ladle glow box dropped, annex + downcomer elbow forward (z 30 / part z 7), building pipes 'pipe'.
+- Texel density: remodel.unwrap stacks HOLLOW islands (annuli: area < 12 % of the bbox) and unrolls the split set's
+  revolved faces (CYL: 24 sectors x 6 m bands): furnace shell set fill 0.50 -> 0.79, 66 px/m at 4096 (v4 34).
+- yard_kit truck: van body detail (posts, rails, rear doors, guards); assets/parts-yard/truck.glb rebuilt.

@@ -80,8 +80,45 @@ UV_WEIGHT = {'frame': 0.45, 'grate': 0.35, 'pipeDark': 0.6, 'pipe': 0.5, 'louvre
 STACK_ZONES = {'frame', 'frame2', 'grate', 'pipeDark', 'pipe', 'soot', 'refractory', 'rust', 'interior', 'louvre',
                'amber', 'hazard', 'roof'}
 STACK_AREA = 2.0
+ANGLE = 55              # smart projection angle limit (degrees)
+SHAPE = 'CONCAVE'       # pack_islands shape method
 STACK_NARROW = 0.25     # any zone: islands narrower than this (m; ribs, trims, rungs) are stacked too
 NO_STACK = {'hot', 'lamp', 'glassW'}
+
+
+CYL = set()             # v5: zones of a surface of revolution about the part's Y axis, unrolled (set per part)
+CYL_SECTORS = 24
+CYL_BAND = 6.0          # horizontal cuts (m): smaller near-rectangles pack tighter (fill 0.74 -> 0.79)
+
+
+def _unroll(bm, uvl, names):
+    """v5: unroll the side faces of revolved shells (zones in CYL, axis = the part's Y axis) into 30-degree sectors:
+    u = arc length at the vertex's own radius, v = height. Smart projection cut the furnace's cones into curved,
+    foreshortened bananas that packed at 0.50 fill; the unrolled sectors are near-rectangles at true density."""
+    import math as _m
+    step = 2 * _m.pi / CYL_SECTORS
+    faces = [f for f in bm.faces if names[f.material_index] in CYL and abs(f.normal.y) < 0.7]
+    if not faces:
+        return
+    a3 = sum(f.calc_area() for f in faces)
+    a2 = 0.0
+    for f in faces:
+        q = [l[uvl].uv for l in f.loops]
+        a2 += abs(sum(q[i].x * q[i - 1].y - q[i - 1].x * q[i].y for i in range(len(q)))) / 2
+    k = (a2 / max(a3, 1e-9)) ** 0.5          # keep the smart projection's UV scale (uv units per metre)
+    for f in faces:
+        c = f.calc_center_median()
+        tc = _m.atan2(c.x, c.z)
+        sec = _m.floor((tc + _m.pi) / step)
+        t0 = -_m.pi + (sec + 0.5) * step
+        band = _m.floor(c.y / CYL_BAND)
+        for l in f.loops:
+            v = l.vert.co
+            r = _m.hypot(v.x, v.z)
+            dt = (_m.atan2(v.x, v.z) - t0 + _m.pi) % (2 * _m.pi) - _m.pi
+            # sectors parked apart (the pack moves them); radius bands apart too (flanges, drums at other radii)
+            l[uvl].uv = (k * (dt * r) + 40.0 * sec * k, k * (v.y + 20.0 * band))
+    print(f'[remodel] unrolled {len(faces)} revolved faces of {sorted(CYL)} into {CYL_SECTORS} sectors', flush=True)
 
 
 def unwrap(ob, margin, weights=UV_WEIGHT):
@@ -95,13 +132,15 @@ def unwrap(ob, margin, weights=UV_WEIGHT):
     vl.objects.active = ob
     bpy.ops.object.mode_set(mode='EDIT')
     bpy.ops.mesh.select_all(action='SELECT')
-    bpy.ops.uv.smart_project(angle_limit=55 * lib.DEG, island_margin=margin, area_weight=0.0, correct_aspect=True, scale_to_bounds=False)
+    bpy.ops.uv.smart_project(angle_limit=ANGLE * lib.DEG, island_margin=margin, area_weight=0.0, correct_aspect=True, scale_to_bounds=False)
     bpy.ops.object.mode_set(mode='OBJECT')
     names = [s.material.name for s in ob.material_slots]
     me = ob.data
     bm = bmesh.new(); bm.from_mesh(me)
     uvl = bm.loops.layers.uv.active
     bm.faces.ensure_lookup_table()
+    if CYL:
+        _unroll(bm, uvl, names)
     parent = list(range(len(bm.faces)))
 
     def find(a):
@@ -141,9 +180,14 @@ def unwrap(ob, margin, weights=UV_WEIGHT):
         if z in NO_STACK:
             continue
         uvs = [l[uvl].uv for f in fs for l in f.loops]
-        short = min(max(u.x for u in uvs) - min(u.x for u in uvs), max(u.y for u in uvs) - min(u.y for u in uvs)) / _m.sqrt(kuv)
+        bw = (max(u.x for u in uvs) - min(u.x for u in uvs)) / _m.sqrt(kuv)
+        bh = (max(u.y for u in uvs) - min(u.y for u in uvs)) / _m.sqrt(kuv)
+        short = min(bw, bh)
         a = sum(f.calc_area() for f in fs)
-        if (z in STACK_ZONES and a < STACK_AREA) or short < STACK_NARROW or a < 0.15:
+        # v5: hollow islands (the flat annuli of hoops, lap rings and lips: a 20 m circle of 3 cm ribbon) hold almost no
+        # area in a huge box and wrecked the pack (the furnace shell set filled 0.50): stack them too
+        hollow = a < 12.0 and a < 0.12 * bw * bh
+        if (z in STACK_ZONES and a < STACK_AREA) or short < STACK_NARROW or a < 0.15 or hollow:
             stacks.setdefault(z, []).append(fs)
             del isl[k]
     stacked = {f.index for g in stacks.values() for fs in g for f in fs}
@@ -178,7 +222,7 @@ def unwrap(ob, margin, weights=UV_WEIGHT):
     bm.to_mesh(me); bm.free()
     bpy.ops.object.mode_set(mode='EDIT')
     bpy.ops.mesh.select_all(action='SELECT')
-    bpy.ops.uv.pack_islands(rotate=True, margin=margin, merge_overlap=True)
+    bpy.ops.uv.pack_islands(rotate=True, margin=margin, merge_overlap=True, shape_method=SHAPE)
     print(f'[remodel] stacked {nst} tiny islands of {sorted(stacks)} into {len(stacks)} swatches; {len(isl) - len(stacks)} islands packed', flush=True)
     bpy.ops.object.mode_set(mode='OBJECT')
     uv = np.empty(len(me.loops) * 2); me.uv_layers.active.data.foreach_get('uv', uv); uv = uv.reshape(-1, 2)
@@ -344,8 +388,11 @@ def build(name, tex, samples, work, dry=False, preview=None):
         sets.append((ob2, f'colony_{name}_2', min(tex2, tex), name + '_2'))
     ppm_all, a3, a2, stats_all = {}, 0.0, 0.0, {}
     t2 = t3 = t4 = time.time()
+    global CYL
     for (o, mname, tx, wname) in sets:
+        CYL = set(ckit.SPLIT[name][0]) if mname.endswith('_2') else set()
         ppm, (a3_, a2_) = unwrap(o, margin=max(0.0005, 1.5 / tx))
+        CYL = set()
         ppm = {z: v * tx for z, v in ppm.items()}
         px_per_m = max(ppm.get(z, 0.0) for z in ppm)
         t2 = time.time()
