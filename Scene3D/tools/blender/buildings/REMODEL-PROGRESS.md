@@ -54,3 +54,12 @@ plinth, furnace base; seam / grime contrast; trailer texture), 4 furnace shell t
 
 ## Status
 v5 DONE (2026-10-07).
+
+## v6: vibes iteration (correction 43-44, 2026-10-07; scratch $S/mill, logs there)
+Goal: "very similar vibes" with the concept (grit, warmth, density, composition, glow). Guide: BUILDING-GUIDE.md.
+- r0 (camera + warmth, no rebuild): concept camera from the plinth edge slopes = az 48, el 12, fov 22 (main.js reads
+  studio `fov`, `keyColor`, `fillColor` for buildings). paint-check on v5 at that camera: light band 0.80x (FAIL),
+  a warm key '#ffd9ac' raised light sat to 0.235 (concept 0.164): too warm; tune after the r1 paint.
+
+## STYLE.md proposals (for the coordinator to merge)
+- (none yet)
