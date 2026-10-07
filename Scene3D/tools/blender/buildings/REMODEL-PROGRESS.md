@@ -322,3 +322,20 @@ crusted. light 1.02x, mid hue 12, all 1.06x; grit shell 0.80 / 1.63, wall 0.76 /
 textures clean; unchanged with ?ao=0 and ?finish=off; gone with the normal bias x 10). Studio hint shadowNB 6
 (src/main.js + env/lighting.js fitShadow; ?snb= calibrates).
 
+### v6 rounds 19-20 (correction 45, pipe logic; user: "the large pipe kind of comes out of the housing there for no
+apparent reason")
+Audit (top view `az=0&el=89`, rear views az 250 / 300 / 165): the gallery gas main ran over the foot tower and dropped
+behind it to end at 3 m in the air; the furnace hot-blast drops hooked out and ended above the base; the risers stopped
+beside the shell; the dust-catcher pipe started in the air beside its cone; the shed flue ducts stopped 0.9 m short of
+stack 1; the stack-base pipes, the furnace-foot mains, the pipe bundle on the furnace base, the casthouse wall run, the
+pipe rack and three plinth-edge bundles all had free ends; the roof exhaust ducts ended blind.
+Fixes: gas main = crown drum nozzle (flange) -> saddles over the gallery -> a jog over the foot tower's roof corner on a
+saddle -> a drop on the tower's +X side on brackets with clamp bands every 6 m -> 2.8 m into stack 1's flared base
+(flanged inlet) [r20: r19 dropped behind the tower and still read from the concept camera as diving into its roof];
+drops straight down into the furnace base with flanges; risers leave / re-enter the shell; downcomer nozzle flange and a
+roof curb on the gas-cleaning annex; flue ducts level into both stacks on a support; stack-base pipes from the base block
+past the valve into the shed wall; furnace-foot mains from the annex down into the slab; the base bundle from a stepped
+block into the casthouse block; the casthouse wall run out of and back into the wall on brackets; the rack's pipes out of
+the shed wall; bundles shed wall -> switchgear skid, pump skid -> shed wall, pump skid -> buried main (`drop_end`); roof
+ducts out of a roof curb into capped exhaust stubs. `bkit.pipe` supports now ceil-spaced (never a gap over the pitch).
+r19: 195.0k tris desktop; light 1.07x, shadow 0.98x. Guide: checklist row P1, gotcha.

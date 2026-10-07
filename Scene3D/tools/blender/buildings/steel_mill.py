@@ -233,8 +233,10 @@ def model(B):
     # two banded stacks behind the furnace, the second shorter (v5: moved back for the bridge tower)
     K.component(B, 'bandedStack', (-16.0, 0.0, -14.0), heading=90.0)
     K.component(B, 'bandedStack', (-14.0, 0.0, -34.0), heading=90.0, scale=0.87)
-    for z in (-14.0, -34.0):
-        K.pipe(B, [(-3.0, 12.0, z), (-9.0, 12.0, z), (-11.0, 8.0, z)], r=1.3, mat='pipeDark', rings=False)
+    # r18 (correction 45): the shed's flue ducts run level on a support into each stack (they stopped 0.9 m short of
+    # stack 1's flare); flanged at the shed wall and at the stack inlet
+    for (z, sx_, rs_) in ((-14.0, -16.0, 3.75), (-34.0, -14.0, 3.26)):
+        K.pipe(B, [(-3.0, 12.0, z), (sx_ + rs_ - 0.6, 12.0, z)], r=1.3, mat='pipeDark', rings=False, supports=True, ground=0.0, support_pitch=6.0)
     # the long shed along +X: two fal shed segments end to end, windowed long face to +X
     for zc in SH_SEGMENTS:
         K.component(B, 'shedSegment', (SH_X, 0.0, zc), heading=0.0)
@@ -258,11 +260,12 @@ def model(B):
             roof={'parapet': 0.4, 'units': [('hvac', 0.0, 0.0, {'w': 2.6, 'd': 1.8, 'fans': 1})]}, frame='frameL')
     K.vtank(B, (-34.0, 7.5), 2.6, 9.0, y0=0.0, top='cone', mat='frame2', skirt=5.0, ladder_side=90.0,
             bands=[(1.0, 1.4, 'frame'), (7.4, 7.8, 'frame')], platforms=(9.5,))
-    K.pipe(B, [(-36.6, 12.0, 7.5), (-37.0, 12.0, 22.5)], r=0.6, mat='pipe', supports=False)
+    K.pipe(B, [(-35.5, 7.0, 7.5), (-35.5, 7.0, 22.9)], r=0.6, mat='pipe', supports=True, ground=0.0, support_pitch=6.0)   # r18: dust catcher -> annex (it started in the air beside the cone)
     # v5: furnace base dressing: cooling-water mains round the plinth on stools, valve skids, a stair to the
     # plinth top, crates (the concept's busy foot)
-    K.pipe(B, [(FX - 17.2, 0.9, FZ + 6.0), (FX - 17.2, 0.9, FZ + 17.0), (FX + 6.0, 0.9, FZ + 17.0)], r=0.45, mat='pipe', supports=True, ground=0.0)
-    K.pipe(B, [(FX - 17.2, 2.0, FZ - 8.0), (FX - 17.2, 2.0, FZ + 4.0), (FX - 16.4, 3.4, FZ + 4.0)], r=0.3, mat='pipe', supports=True, ground=0.0)
+    # r18 (correction 45): from the gas-cleaning annex, ending down into the slab (buried services), no free ends
+    K.pipe(B, [(FX - 17.2, 0.9, FZ + 6.0), (FX - 17.2, 0.9, FZ + 17.0), (FX - 3.0, 0.9, FZ + 17.0), (FX - 3.0, -0.4, FZ + 17.0)], r=0.45, mat='pipe', supports=True, ground=0.0, support_pitch=6.0)
+    K.pipe(B, [(FX - 17.2, -0.4, FZ - 8.0), (FX - 17.2, 2.0, FZ - 8.0), (FX - 17.2, 2.0, FZ + 4.0), (FX - 16.4, 3.4, FZ + 4.0)], r=0.3, mat='pipe', supports=True, ground=0.0, support_pitch=6.0)
     K.cable_tray(B, (FX + 16.4, 2.6, FZ - 14.0), (FX + 16.4, 2.6, FZ + 10.0), w=0.5)
     K.stair(B, (FX + 6.0, 0.0, FZ + 17.6), (-1, 0, 0), 3.0, w=1.2)
     for (cx, cz) in ((FX + 9.0, FZ + 17.8), (FX + 10.8, FZ + 18.0)):
@@ -283,7 +286,10 @@ def model(B):
                    '+x': {'bay': 10.0, 'storey': 6.0, 'windows': [1], 'win': (1.2, 0.8), 'doors': [5.0], 'seams': False, 'bands': False},
                    '-x': {'bay': 10.0, 'storey': 12.0, 'seams': False, 'bands': False}, '-z': {'bay': 15.5, 'storey': 12.0, 'seams': False, 'bands': False}},
             roof={'parapet': 0.6, 'units': [('vent', -4.0, 0.0, {})]})
-    K.pipe(B, [(-1.5, 3.6, 38.9), (14.0, 3.6, 38.9)], r=0.3, mat='pipe', supports=False)
+    # r18 (correction 45): a wall run out of the block and back into it, on wall brackets every 5 m
+    K.pipe(B, [(-0.8, 3.6, 38.2), (-0.8, 3.6, 38.9), (13.4, 3.6, 38.9), (13.4, 3.6, 38.2)], r=0.3, mat='pipe', supports=False)
+    for x_ in (1.5, 6.5, 11.5):
+        B.box((0.2, 0.2, 0.6), at=(x_, 3.2, 38.75), mat='frame', bevel=0.0)
     K.cable_tray(B, (-1.5, 9.6, 38.8), (14.0, 9.6, 38.8), w=0.45)
     K.ladder(B, (14.6, 0.0, 36.0), (1, 0, 0), 12.0)
     for (cx, cz, sz) in ((21.0, 39.5, (1.6, 1.2, 1.6)), (22.6, 39.8, (1.2, 1.0, 1.2)), (21.6, 39.5, (1.0, 0.8, 1.0))):
@@ -319,8 +325,10 @@ def model(B):
     K.stair(B, (FX + 13.0, 3.0, FZ + 15.4), (-1, 0, 0), 5.8, w=1.2)
     K.catwalk(B, (FX + 4.5, 8.8, FZ + 15.4), (FX - 1.0, 8.8, FZ + 15.4), w=1.4)
     K.stair(B, (FX - 1.0, 8.8, FZ + 13.2), (-1, 0, 0), 6.0, w=1.1)
-    K.pipe_bundle(B, [(FX + 15.2, 3.0, FZ - 12.0), (FX + 15.2, 3.0, FZ + 10.0)], n=2, r=0.3)
-    K.pipe_rack(B, (27.5, 0.0, -24.0), (39.0, 0.0, -24.0), w=3.0, h=5.5, levels=(5.5,), pitch=6.5,
+    # r18 (correction 45): from the stepped base block along the furnace base into the casthouse block
+    K.pipe_bundle(B, [(FX + 10.0, 3.0, FZ - 12.0), (FX + 15.2, 3.0, FZ - 12.0), (FX + 15.2, 3.0, FZ + 10.0), (FX + 17.0, 3.0, FZ + 10.0)], n=2, r=0.3)
+    # the rack's pipes leave the shed wall (they started in the air at the rack's first bent)
+    K.pipe_rack(B, (24.9, 0.0, -24.0), (39.0, 0.0, -24.0), w=3.0, h=5.5, levels=(5.5,), pitch=4.7,
                 pipes=((0, -0.8, 0.35, 'pipe'), (0, 0.0, 0.5, 'pipeDark'), (0, 0.9, 0.3, 'pipe')))
     K.block(B, (35.0, 0.0, -31.5), (4.5, 2.6, 2.4), frame='frame', corner_lamps=False,
             sides={'+x': {'bay': 2.4, 'storey': 2.6, 'louvres': [(1.2, 1.4, 1.2, 1.0)], 'seams': False, 'bands': False},
@@ -335,11 +343,20 @@ def model(B):
     for (dx, zs_) in ((7.5, (-43.0, -2.0)), (-7.5, (-40.0, 0.0)), (7.5, (2.0, 25.0))):
         x_ = SH_X + dx
         y_ = 14.4 + (17.8 - 14.4) * (1 - abs(dx) / 14.0) + 1.1
-        K.pipe(B, [(x_, y_, zs_[0]), (x_, y_, zs_[1])], r=0.55, mat='pipeDark', flanges=True, rings=False)
+        # r18 (correction 45): out of the roof through a curb, along on saddles, up into a capped exhaust stub
+        yr_ = y_ - 1.1
+        K.pipe(B, [(x_, yr_ - 0.2, zs_[0]), (x_, y_, zs_[0]), (x_, y_, zs_[1]), (x_, y_ + 3.2, zs_[1])], r=0.55, mat='pipeDark', flanges=True, rings=False)
+        B.vcyl(0.85, 0.35, (x_, yr_ - 0.1, zs_[0]), mat='frame', n=14)
+        B.vcyl(1.0, 0.18, (x_, y_ + 3.65, zs_[1]), mat='frame', n=14)
+        for k_ in range(3):
+            a_ = 2 * math.pi * k_ / 3
+            B.box((0.08, 0.5, 0.08), at=(x_ + 0.5 * math.cos(a_), y_ + 3.4, zs_[1] + 0.5 * math.sin(a_)), mat='frame', bevel=0.0)
         for z_ in [zs_[0] + 2 + 5 * k for k in range(int((zs_[1] - zs_[0] - 2) / 5) + 1)]:
             B.box((0.3, 0.7, 0.4), at=(x_, y_ - 0.75, z_), mat='frame', bevel=0.02)
     for (sx_, sz_) in ((-16.0, -14.0), (-14.0, -34.0)):
-        K.pipe(B, [(sx_ + 6.5, 0.9, sz_ - 3.0), (sx_ + 6.5, 0.9, sz_ + 3.0), (sx_ + 10.0, 0.9, sz_ + 3.0)], r=0.3, mat='pipe', supports=True, ground=0.0)
+        # r18 (correction 45): out of the stack's base block, past the valve, into the shed wall (x -4)
+        zo_ = 2.0 if sz_ > -20 else 3.0     # stack 1: clear of the gas main's stool
+        K.pipe(B, [(sx_ + 4.8, 0.9, sz_ - 3.0), (sx_ + 6.5, 0.9, sz_ - 3.0), (sx_ + 6.5, 0.9, sz_ + zo_), (-3.6, 0.9, sz_ + zo_)], r=0.3, mat='pipe', supports=True, ground=0.0, support_pitch=6.0)
         K.valve(B, (sx_ + 6.5, 0.9, sz_), (0, 0, 1), r=0.3)
         K.cabinet(B, (sx_ + 7.2, 0.0, sz_ - 5.0), w=1.0, rot=90)
     # r4 (coordinator / judge A: the concept stacks light boxy blocks round the furnace foot): two low light blocks on the
@@ -381,8 +398,9 @@ def clutter(B):
     B.R.spill((PB_X + 11.0, 4.0, PB_Z + 9.0), color='#ff9a40', intensity=170.0, distance=12.0)
     B.R.spill((PB_X + 2.0, 6.0, PB_Z + 2.0), color='#ffa850', intensity=110.0, distance=12.0)    # inside the portal
     # --- +X apron along the shed (x 33-40, z -48..0): a pipe cluster on stools at the edge, sheds, pallets, skids
-    K.pipe_bundle(B, [(38.6, 0.0, -45.5), (38.6, 0.0, -26.0)], n=3, r=0.22)
-    K.pipe_bundle(B, [(39.2, 0.0, -8.0), (39.2, 0.0, -1.0), (35.0, 0.0, -1.0)], n=2, r=0.3)
+    # r18 (correction 45): shed wall -> switchgear skid; pump skid -> shed wall (both had free ends at the kerb)
+    K.pipe_bundle(B, [(23.6, 0.0, -40.0), (38.6, 0.0, -40.0), (38.6, 0.0, -31.3), (36.5, 0.0, -31.3)], n=3, r=0.22)
+    K.pipe_bundle(B, [(36.0, 0.0, -2.8), (36.0, 0.0, -1.4), (23.6, 0.0, -1.4)], n=2, r=0.3)
     K.valve(B, (38.6, 0.72, -30.0), (0, 0, 1), r=0.22)
     K.valve(B, (38.6, 0.72, -38.0), (0, 0, 1), r=0.22)
     for (x, z, r, ld) in ((26.2, -3.0, 0, 'sacks'), (26.2, -4.4, 0, 'boxes'), (27.6, -3.2, 15, 'plate'), (34.5, -20.0, 0, 'boxes'),
@@ -411,7 +429,7 @@ def clutter(B):
     # --- the front-right corner (x 20-40, z 27-42): a small shed, skids, a pipe cluster to the control house
     for (x, z, ld) in ((30.6, 40.4, 'plate'), (32.0, 40.4, 'plate'), (33.4, 40.4, 'boxes')):
         K.pallet(B, (x, 0.0, z), load=ld)
-    K.pipe_bundle(B, [(38.8, 0.0, 37.0), (38.8, 0.0, 28.0)], n=2, r=0.25)
+    K.pipe_bundle(B, [(36.6, 0.0, 34.2), (38.8, 0.0, 34.2), (38.8, 0.0, 29.0)], n=2, r=0.25, drop_end=True)   # r18: pump skid -> buried main
     K.pump_skid(B, (36.6, 0.0, 33.5), rot=90)
     K.pallet(B, (25.5, 0.0, 40.6), load='boxes')
     K.pallet(B, (26.9, 0.0, 40.6), load='sacks')

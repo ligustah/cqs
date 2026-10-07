@@ -842,7 +842,7 @@ def pipe(B, pts, r=0.4, mat='pipe', flanges=True, rings=True, supports=False, gr
             for q in ends:
                 fl.append((q, d))
         if supports and abs(d.y) < 0.2 and a.y - ground > r * 2:
-            k = max(1, int(L / support_pitch))
+            k = max(1, math.ceil(L / support_pitch))   # r18 (correction 45): never a gap over the pitch
             for i in range(k):
                 q = a + d * (L * (i + 0.5) / k)
                 s = V((0, 1, 0)).cross(d).normalized()
@@ -1234,9 +1234,10 @@ def gas_bottles(B, p, n=5, rot=0.0):
             B.box((0.06, 1.1, 0.06), at=(x, 0.55, 0.2), mat='frame', bevel=0.0)
 
 
-def pipe_bundle(B, pts, n=3, r=0.22, gap=0.25, y=None, mat='pipe', stools=4.0):
+def pipe_bundle(B, pts, n=3, r=0.22, gap=0.25, y=None, mat='pipe', stools=4.0, drop_end=False):
     """v6 clutter: n parallel pipes along a ground polyline on concrete stools (the concept's pipe clusters along
-    the plinth edge), each with flanges and amber rings; stools every `stools` m."""
+    the plinth edge), each with flanges and amber rings; stools every `stools` m. drop_end (r18, correction 45: no
+    free ends): the run dives into the slab at its last point through a concrete curb (a buried service)."""
     P = [vv(q) for q in pts]
     for i in range(n):
         off = (i - (n - 1) / 2) * (2 * r + gap)
@@ -1248,7 +1249,13 @@ def pipe_bundle(B, pts, n=3, r=0.22, gap=0.25, y=None, mat='pipe', stools=4.0):
             d.normalize()
             sd = V((0, 1, 0)).cross(d).normalized()
             q.append(a + sd * off + V((0, (y if y is not None else 0.0) + 0.5 + r, 0)))
+        if drop_end:
+            q.append(V((q[-1].x, (y if y is not None else 0.0) - 0.4, q[-1].z)))
         pipe(B, q, rr, mat=mat if i != 1 else 'pipeDark', rings=(i == 0), supports=False)
+    if drop_end:
+        e = P[-1]
+        w = n * (2 * r + gap) + 0.6
+        B.box((w, 0.25, w), at=(e.x, (y if y is not None else 0.0) + 0.12, e.z), mat='concrete2', bevel=0.03)
     for a, b in zip(P[:-1], P[1:]):
         L = (b - a).length
         d = (b - a).normalized()

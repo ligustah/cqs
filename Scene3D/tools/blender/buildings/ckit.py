@@ -709,6 +709,12 @@ def furnace(B, P=FURNACE):
         a_, b_ = V(dpath[-2]), V(dpath[-1])
         with B.at(M=K.frame_along(a_, b_)):
             B.cyl(rd + 0.22, 0.4, at=(0, 0, (b_ - a_).length - 0.2), mat='frame', n=24, bevel=0.02)
+    if not P.get('header'):    # r18 (correction 45): a flanged nozzle where the downcomer leaves the bosh, a roof curb
+        a_, b_ = V(dpath[0]), V(dpath[1])                                  # where it enters the gas-cleaning annex
+        with B.at(M=K.frame_along(a_, b_)):
+            B.cyl(rd + 0.3, 0.45, at=(0, 0, 1.4), mat='frame', n=24, bevel=0.02)
+        e_ = V(dpath[-1])
+        B.vcyl(rd + 0.35, 0.5, (e_.x, e_.y + 0.4, e_.z), mat='frame', n=24)
     for t in ((0.35, 0.6, 0.85) if not P.get('header') else ()):
         a, b = V(dpath[-2]), V(dpath[-1])
         q = a + (b - a) * t
@@ -726,7 +732,11 @@ def furnace(B, P=FURNACE):
     for (adeg, rr_) in P.get('risers', []):
         a = math.radians(adeg)
         ys = [prof[0][1] + 0.6 + (prof[-1][1] - prof[0][1] - 1.2) * k / 6 for k in range(7)]
-        B.tube([((_shaft_r(prof, y) + 0.7) * math.sin(a), y, (_shaft_r(prof, y) + 0.7) * math.cos(a)) for y in ys], rr_, mat='pipeDark', n=10, fillet=0.0)
+        pts_ = [((_shaft_r(prof, y) + 0.7) * math.sin(a), y, (_shaft_r(prof, y) + 0.7) * math.cos(a)) for y in ys]
+        # r18 (correction 45): each riser leaves the shell through a nozzle and re-enters it at the top
+        r0_, r1_ = _shaft_r(prof, ys[0]) - 0.2, _shaft_r(prof, ys[-1]) - 0.2
+        pts_ = [(r0_ * math.sin(a), ys[0], r0_ * math.cos(a))] + pts_ + [(r1_ * math.sin(a), ys[-1], r1_ * math.cos(a))]
+        B.tube(pts_, rr_, mat='pipeDark', n=10, fillet=0.0)
         for y in ys[1:-1:2]:
             rs_ = _shaft_r(prof, y)
             B.bar((rs_ * math.sin(a), y, rs_ * math.cos(a)), ((rs_ + 0.75) * math.sin(a), y, (rs_ + 0.75) * math.cos(a)), 0.16, 0.3, mat='frame', bevel=0.0)
@@ -734,9 +744,11 @@ def furnace(B, P=FURNACE):
         a = math.radians(adeg)
         rb_, yb_, tb_, _n = P['bustle']
         rd_ = rb_ + tb_ + rr_ + 0.1
+        # r18 (correction 45): straight down into the furnace base with a flange (r10-r17 hooked out and ended in the air)
         path_ = [(rb_ * math.sin(a), yb_ - tb_ * 0.5, rb_ * math.cos(a)), (rd_ * math.sin(a), yb_ - tb_ - 1.0, rd_ * math.cos(a)),
-                 (rd_ * math.sin(a), P['base'][1] + 0.6, rd_ * math.cos(a)), ((rd_ + 1.6) * math.sin(a), P['base'][1] + 0.6, (rd_ + 1.6) * math.cos(a))]
+                 (rd_ * math.sin(a), P['base'][1] - 0.4, rd_ * math.cos(a))]
         B.tube(path_, rr_, mat='pipeDark', n=14)
+        B.vcyl(rr_ + 0.22, 0.3, (rd_ * math.sin(a), P['base'][1], rd_ * math.cos(a)), mat='frame', n=14)
         for y in (6.0, 12.0):
             B.bar((rd_ * math.sin(a), y, rd_ * math.cos(a)), ((P['hearth'][0] + 0.1) * math.sin(a), y, (P['hearth'][0] + 0.1) * math.cos(a)), 0.2, 0.3, mat='frame', bevel=0.0)
     # r4: railed ring platforms round the narrow upper stack (the concept's two upper galleries)
@@ -1480,6 +1492,15 @@ GALLERY_V6 = {
 # r4: the furnace frame now stops at the hood deck (44 m): the gallery lands on it
 GALLERY_V6.update({'B': (0.0, 44.6, -9.6), 'pipe': (1.15, [(0.0, 50.0, -14.6), (0.0, 49.0, -10.6), (0.0, 36.1, 7.6), (0.0, 36.1, 15.2), (0.0, 3.0, 15.2)])})
 # r5: the gas main's top end runs into the furnace's upper stack (r4 left it ending in the air over the gallery)
+# r18 (correction 45, user: "the large pipe comes out of the housing for no apparent reason"): the main ended at 3 m in the
+# air behind the foot tower. Now one legible run: a flanged nozzle on the crown drum, saddles over the gallery, two roof
+# saddles on the foot tower, brackets every <= 6 m down the tower's far face, then 5.8 m on a stool into the flared base
+# of stack 1 (part frame: stack 1 at x 10.05, z 16.9; flare r 4.84 at y 5) with a flanged inlet
+GALLERY_V6['pipe'] = (1.15, [(0.0, 50.0, -14.6), (0.0, 49.0, -10.6), (0.0, 36.1, 7.6), (4.6, 36.1, 6.6), (4.6, 5.0, 6.6), (7.99, 5.0, 13.01)])
+# r20-r21: the drop at the tower's front-left corner, in view from the concept camera (behind the tower, r19, or on its
+# +X side, r20, it read as diving into the tower): a short jog off the gallery's foot clear of its roof, braced to the
+# tower corner every 6 m, then 7.3 m on a stool into stack 1's flare (clear of the ladder at z 8.4-9.2 and the base block)
+GALLERY_V6['pipe_support'] = {'roof': (30.0, []), 'face': ('corner', (3.0, 7.6), (8.0, 14.0, 20.0, 26.0)), 'nozzle': 1.0, 'inlet': 0.6}
 
 
 def _gas_main(B, P, A, Bp, n_up, h):
@@ -1498,6 +1519,37 @@ def _gas_main(B, P, A, Bp, n_up, h):
         with B.at(M=K.frame_along(a_, b_)):
             for t_ in ((0.5,) if L_ < 12 else (0.2, 0.5, 0.8)):
                 B.cyl(pr + 0.14, 0.3, at=(0, 0, L_ * t_), mat='frame', n=20, bevel=0.02)
+    S = P.get('pipe_support')
+    if S:   # r18 (correction 45): every run traced source -> destination, flanged ends, supports <= 6 m
+        p0, p1 = V(path[0]), V(path[1])
+        with B.at(M=K.frame_along(p0, p1)):     # the nozzle flange on the crown drum
+            B.cyl(pr + 0.3, 0.45, at=(0, 0, S['nozzle']), mat='frame', n=20, bevel=0.02)
+        q0, q1 = V(path[-2]), V(path[-1])
+        with B.at(M=K.frame_along(q0, q1)):     # the flanged inlet at the stack base
+            B.cyl(pr + 0.3, 0.45, at=(0, 0, (q1 - q0).length - S['inlet']), mat='frame', n=20, bevel=0.02)
+        yr, pts = S['roof']                      # saddles on the foot tower's roof under the run over it
+        yt = path[2][1] - pr
+        for (x_, z_) in pts:
+            B.box((0.5, yt - yr, 0.5), at=(x_, (yr + yt) / 2, z_), mat='frame', bevel=0.02)
+            B.box((pr * 2.2, 0.3, pr * 2.2), at=(x_, yt - 0.1, z_), mat='frame', bevel=0.02)
+        ax, f0, ys = S['face']                   # brackets from the tower face to the drop, a clamp band each
+        dp = V(path[3])
+        for y_ in ys:
+            if ax == 'corner':
+                cx_, cz_ = f0
+                d_ = (V((dp.x, 0, dp.z)) - V((cx_, 0, cz_)))
+                e_ = V((cx_, y_, cz_)) + d_ * ((d_.length - pr + 0.15) / d_.length)
+                B.bar(V((cx_, y_, cz_)), e_, 0.4, 0.4, mat='frame', bevel=0.02)
+            elif ax == 'x':
+                B.box((dp.x - pr - f0 + 0.2, 0.4, 0.4), at=((f0 + dp.x - pr) / 2, y_, dp.z), mat='frame', bevel=0.02)
+            else:
+                B.box((0.4, 0.4, dp.z - pr - f0 + 0.2), at=(dp.x, y_, (f0 + dp.z - pr) / 2), mat='frame', bevel=0.02)
+            B.vcyl(pr + 0.1, 0.35, (dp.x, y_ - 0.17, dp.z), mat='frame', n=20)
+        m = (q0 + q1) * 0.5                      # a stool under the run into the stack (a run < 4 m hangs on its ends)
+        if (q1 - q0).length >= 4.0:
+          B.box((0.5, m.y - pr, 0.5), at=(m.x, (m.y - pr) / 2, m.z), mat='frame', bevel=0.02)
+          B.box((pr * 2.0, 0.3, 0.7), at=(m.x, m.y - pr - 0.1, m.z), mat='frame', bevel=0.02)
+          B.box((1.0, 0.3, 1.0), at=(m.x, 0.15, m.z), mat='concrete2', bevel=0.02)
 
 
 def _open_bridge(B, P, L):
