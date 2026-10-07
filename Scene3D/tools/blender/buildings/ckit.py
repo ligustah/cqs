@@ -651,7 +651,7 @@ SHED_V4.update({
     'windows': None, 'pilaster': (1.0, 0.75), 'roller': (0, 5.6, 7.0), 'doors': [-7.2, 7.2], 'door': None,
     'wall_joints': [4.4, 7.2, 10.0, 12.8],
     'paint': {
-        'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.45, 'tone': 0.09, 'dark': 0.25},
+        'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.45, 'tone': 0.09, 'dark': 0.3, 'stagger': False},
         'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.35, 'tone': 0.05, 'dark': 0.2},
         'frame2': {'rust': 0.6},
     },

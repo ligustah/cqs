@@ -124,7 +124,7 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
                 ci = np.floor(t / course)
                 dt = np.abs(t - (ci + 0.5) * course)
                 dt = course / 2 - dt
-                stag = np.where(ci % 2 == 0, 0.0, joint / 2).astype(np.float32)
+                stag = np.where(ci % 2 == 0, 0.0, joint / 2 if c.get('stagger', True) else 0.0).astype(np.float32)
                 ji = np.floor((s + stag) / joint)
                 ds = joint / 2 - np.abs((s + stag) - (ji + 0.5) * joint)
                 d = np.minimum(dt, ds)
