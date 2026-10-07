@@ -6,7 +6,7 @@
 > work order of the v14 scale pass: the per-ship actions are done, and their line numbers and the working-tree
 > notes are stale. The drafts and overrides it mentions were scratch files and were not kept. The audit tools
 > are in `Scene3D/tools/lights/` (`audit.mjs` calls this file "STANDARD.md"). Budgets for a new class are set
-> by the rule in `STYLE.md` (Lights).
+> by the rule in `STYLE.md` section 7 ("A new ship class").
 
 Merges `draft-practice.md` (real-craft practice) and `draft-perception.md` (how viewers read size from lights).
 Checked against the five ship surveys, the light harness and the current renders. Read-only pass: no repo file
