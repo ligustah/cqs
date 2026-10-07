@@ -11,8 +11,13 @@ W=/tmp/claude-0/-home-user-cqs/e592383b-a9f6-5dde-82a6-4494b59b11a7/scratchpad/r
 - r3 (2026-10-07): remodel.unwrap stacks tiny / narrow islands into one swatch per zone (merge_overlap pack):
   furnace shell 27.6 -> 38.4 px/m at 4096, shed clad 47 -> 52, pour bay 64 -> 76, stack 42 -> 39 (2048), gallery 45 (2048).
 
+- r3 geometry: ckit.FURNACE_V4 (concept stations: light hearth drum, stepped dark bosh, light cone, dark hood, upper
+  drum, raking plated legs with ties) and SHED_V4 (panel walls, heavy pilasters, roller + crew doors, no windows).
+- r7 bake (r2 kit + r3 unwrap): bandedStack, pourBay, skipGallery installed (furnace/shed from r7 are superseded).
+- Preview a part's geometry fast: $W/../uvx/prev.sh <part> "az:el" -> $W/../uvx/<part>-az_el.png
+
 ## In progress
-- r7: bake all five parts with r2 kit + r3 unwrap ($W/r7.log), then rebuild the building (colony_build.py --tex 2048).
+- r8: bake blastFurnace + shedSegment with the V4 params, then rebuild the building (colony_build.py --tex 2048).
 
 ## Next command
   cd /home/user/cqs/Scene3D && $PY tools/blender/buildings/remodel.py <part> --work $W/work > $W/r6-<part>.log 2>&1

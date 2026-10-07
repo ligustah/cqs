@@ -333,6 +333,33 @@ FURNACE = {   # blastFurnace, measured off its blueprint (cmeasure.py; README-co
 }
 
 
+# v4 r3: the blueprint (FURNACE) refitted to the CONCEPT's stations, read off steel_mill-concept.jpg at 15.5 px/m (ground
+# to the top at 60 m): a light plated hearth drum to 17.4 m between raking dark legs, the glowing tuyere band at
+# 17.6-19.8, a stepped dark bosh to 29 m with the first deck, a light conical shaft to 42 m, a dark stepped hood to 46.5,
+# the narrow upper drum to 55 with the wide top deck at 52.6, the cap to 60. Radii keep the blueprint's 9.5 m footprint
+# scaled to the concept's slimmer ratio (cone foot 8.4 m).
+FURNACE_V4 = dict(FURNACE)
+FURNACE_V4.update({
+    'hearth': (7.6, 3.0, 17.4), 'hearth_mat': 'shell', 'staves': 0, 'hearth_hoops': (4.6, 10.4, 16.6),
+    'tuyere': (7.35, 17.6, 19.8, 30),
+    'collar': (8.1, 19.8, 20.4),
+    'bustle': (9.4, 21.4, 0.5, 14),
+    'bosh': [(20.4, 22.9, 7.9), (22.9, 25.4, 8.15), (25.4, 27.9, 8.4), (27.9, 29.0, 8.55)],
+    'shaft': [(8.4, 29.0), (8.15, 31.0), (7.75, 34.0), (7.3, 37.0), (6.8, 40.0), (6.5, 42.0)],
+    'hoops': [(32.4, 0.7), (38.4, 0.7)],
+    'flange': (6.9, 42.0, 42.7),
+    'cone': [(6.4, 42.7), (5.7, 44.2), (4.4, 46.5)],
+    'throat': (3.9, 46.5, 55.0),
+    'cap': (3.1, 55.0, 60.0),
+    'top_deck': None,
+    'uptakes': (4, 0.6, [(3.9, 48.0), (4.9, 55.2), (3.6, 58.6), (2.2, 59.2)]),
+    'downcomer': (1.05, [(0.0, 57.6, -2.4), (0.0, 57.6, -6.4), (0.0, 55.0, -8.6), (0.0, 31.0, -9.6)]),
+    'tower': {'half': 9.6, 'y0': 29.0, 'y1': 53.2, 'w': 1.3, 'levels': [29.0, 42.4, 52.6], 'ring': 2.0, 'walk': 1.6,
+              'xbrace': [(29.0, 42.4), (42.4, 52.6)], 'ladder': (1, 1), 'ladder_y0': 3.0, 'legs': ((11.4, 3.0), (9.6, 29.0)), 'leg_section': (2.8, 2.0), 'leg_tie': (17.6, 9.4),
+              'ring_in': {52.6: 3.95, 42.4: 6.95}},
+})
+
+
 def _shaft_r(prof, y):
     for (ra, ya), (rb, yb) in zip(prof[:-1], prof[1:]):
         if ya <= y <= yb:
@@ -349,12 +376,14 @@ def furnace(B, P=FURNACE):
     B.prism(lib.chamfer_rect(bw - 0.3, bd - 0.3, 0.4), bh - 0.32, bh, mat='concrete', bevel=0.04)
     # hearth: dark plated drum, vertical staves, two hoops, tap-hole bays with sooted openings
     r, y0, y1 = P['hearth']
-    B.lathe([(0, y0), (r, y0), (r, y1), (0, y1)], (0, 0, 0), mat='frame2', n=n, bevel=0.04)
-    for k in range(24):
-        a = 2 * math.pi * (k + 0.5) / 24
+    B.lathe([(0, y0), (r, y0), (r, y1), (0, y1)], (0, 0, 0), mat=P.get('hearth_mat', 'frame2'), n=n, bevel=0.04)
+    if P.get('hearth_mat', 'frame2') != 'frame2':
+        lap_rings(B, lambda y: r, y0 + 2.4, y1 - 2.0, P.get('course', 2.25), mat=P['hearth_mat'], n=n)
+    for k in range(P.get('staves', 24)):
+        a = 2 * math.pi * (k + 0.5) / P.get('staves', 24)
         B.bar((r * math.sin(a), y0 + 0.2, r * math.cos(a)), (r * math.sin(a), y1 - 0.1, r * math.cos(a)), 0.14, 0.24, mat='frame', bevel=0.02,
               up=(math.sin(a), 0, math.cos(a)))
-    for yy in (y0 + 1.6, y1 - 1.6):
+    for yy in P.get('hearth_hoops', (y0 + 1.6, y1 - 1.6)):
         hoop(B, c, r, yy, 0.45, 0.16, mat='frame', n=n)
     for k in range(4):
         a = math.pi / 4 + k * math.pi / 2
@@ -380,6 +409,12 @@ def furnace(B, P=FURNACE):
     # collar and bosh shoulder
     rc, c0, c1 = P['collar']
     B.lathe([(0, c0), (rc, c0), (rc, c1), (0, c1)], (0, 0, 0), mat='frame', n=n, bevel=0.04)
+    # v4 r3 (the concept): a stepped dark bosh between the tuyere band and the light shaft, each course a plated band
+    # with a proud lip at its top (one crisp shadow line per step) and modelled course seams
+    for (ya, yb_, rr) in P.get('bosh', []):
+        B.lathe([(0, ya), (rr, ya), (rr, yb_), (0, yb_)], (0, 0, 0), mat='frame2', n=n, bevel=0.04)
+        hoop(B, c, rr, yb_ - 0.32, 0.32, 0.26, mat='frame', n=n)
+        lap_rings(B, lambda y, rr=rr: rr, ya + 0.4, yb_ - 0.5, 1.2, mat='frame2', n=n, out=0.03, h=0.1)
     # shaft: one lathe solid, the light plated shell (seams and courses are paint + normal)
     prof = P['shaft']
     B.lathe([(0, prof[0][1])] + prof + [(0, prof[-1][1])], (0, 0, 0), mat='shell', n=n, bevel=0.0, sharp=50)
@@ -409,8 +444,9 @@ def furnace(B, P=FURNACE):
     rcap, k0, k1 = P['cap']
     B.lathe([(0, k0), (rcap + 0.15, k0), (rcap + 0.15, k0 + 0.3), (rcap, k0 + 0.3), (rcap, k1 - 0.3), (rcap + 0.15, k1 - 0.3),
              (rcap + 0.15, k1), (rcap - 0.3, k1), (rcap - 0.3, k1 - 0.6), (0, k1 - 0.6)], (0, 0, 0), mat='shell', n=40, bevel=0.03, sharp=30)
-    ty, tr = P['top_deck']
-    K.platform_ring(B, c, ty, rth + 0.05, tr, n=32, brackets=8)
+    if P.get('top_deck'):
+        ty, tr = P['top_deck']
+        K.platform_ring(B, c, ty, rth + 0.05, tr, n=32, brackets=8)
     # uptakes (inverted goosenecks into the throat) and the downcomer
     nu, ru, path = P['uptakes']
     for k in range(nu):
@@ -432,11 +468,37 @@ def furnace(B, P=FURNACE):
     if T:
         hf = T['half']
         cols = [(-hf, -hf), (hf, -hf), (hf, hf), (-hf, hf)]
+        legs = T.get('legs')
+        if legs:
+            # v4 r3 (the concept): heavy raking legs, plated box sections from the plinth corners to the first deck,
+            # with stiffener bands, a base shoe and a cap where the laced column stands on them
+            (b0, ly0), (b1, ly1) = legs
+            for (sx, sz) in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
+                pa, pb = V((sx * b0, ly0, sz * b0)), V((sx * b1, ly1, sz * b1))
+                s0, s1 = T.get('leg_section', (2.2, 1.6))
+                B.strut(pa, pb, (s0, s0), (s1, s1), 0.22, mat='frame2', bevel=0.04)
+                d = (pb - pa)
+                for t in [0.12 + 0.76 * i / 5 for i in range(6)]:
+                    q = pa + d * t
+                    sz_ = s0 + (s1 - s0) * t
+                    with B.at(M=K.frame_along(pa, pb)):
+                        B.box((sz_ + 0.12, sz_ + 0.12, 0.22), at=(0, 0, d.length * t), mat='frame', bevel=0.02)
+                B.box((s0 + 0.8, 0.5, s0 + 0.8), at=(sx * b0, ly0 + 0.25, sz * b0), mat='frame', bevel=0.04)
+                B.box((s1 + 0.6, 0.4, s1 + 0.6), at=(sx * b1, ly1 - 0.2, sz * b1), mat='frame', bevel=0.03)
+                # a plate-girder tie from the leg to the tuyere platform ring (the legs carry the hearth deck)
+                if T.get('leg_tie'):
+                    yt, rt_ = T['leg_tie']
+                    tt = (yt - ly0) / (ly1 - ly0)
+                    bt = b0 + (b1 - b0) * tt
+                    a_ = math.atan2(sx, sz)
+                    plate_girder(B, (sx * bt, yt - 0.5, sz * bt), (rt_ * math.sin(a_), yt - 0.5, rt_ * math.cos(a_)), h=1.0)
+                for (ex, ez) in ((1, 1), (1, -1), (-1, 1), (-1, -1)):
+                    B.cyl(0.07, 0.16, at=(sx * b0 + ex * (s0 / 2 + 0.2), ly0 + 0.58, sz * b0 + ez * (s0 / 2 + 0.2)), mat='frame', n=6)
         for (x, z) in cols:
             laced_column(B, x, z, T['y0'], T['y1'], w=T['w'])
             lamp(B, (x + (0.75 if x > 0 else -0.75), T['y1'] - 0.6, z + (0.75 if z > 0 else -0.75)), (1 if x > 0 else -1, 0, 1 if z > 0 else -1))
         for ly in T['levels']:
-            r_in = _shaft_r(prof, ly) + 0.35
+            r_in = T.get('ring_in', {}).get(ly, _shaft_r(prof, ly) + 0.35)
             # ring girders between the legs; a round grating ring round the shell and walkways along the frame sides
             # (open corners: the shell reads through, as in the concept), radial joists, toe plates, rails, deck lamps
             for i in range(4):
@@ -492,7 +554,8 @@ def furnace(B, P=FURNACE):
                 for (p, q) in (((a, ya), (b, yb_)), ((b, ya), (a, yb_))):
                     B.bar((p[0][0], p[1] + 0.6, p[0][1]), (q[0][0], q[1] - 1.2, q[0][1]), 0.2, 0.2, mat='frame', bevel=0.0)
         lx, lz = T['ladder']
-        K.ladder(B, (lx * (hf + 0.66), T['y0'], lz * (hf - 1.6)), (lx, 0, 0), T['levels'][-1] - T['y0'])
+        ly0_ = T.get('ladder_y0', T['y0'])
+        K.ladder(B, (lx * (hf + 0.66), ly0_, lz * (hf - 1.6)), (lx, 0, 0), T['levels'][-1] - ly0_)
     return works({
         'shell': {'axis': (0, 0), 'course': 2.25, 'joint': 2.0, 'bolts': 0.32, 'rust': 0.55, 'tone': 0.07},
         'frame2': {'axis': (0, 0), 'course': 1.6, 'joint': 1.6, 'rust': 0.5, 'tone': 0.08},
@@ -566,13 +629,42 @@ SHED = {   # shedSegment, measured: 28 x 36, eaves 14.4, ridge 21.2, monitor 5.6
 }
 
 
+def _spans(a, b, cuts):
+    """[a, b] minus the (unordered) intervals in cuts, as a list of (lo, hi)."""
+    out = [(a, b)]
+    for (c0, c1) in cuts:
+        c0, c1 = min(c0, c1), max(c0, c1)
+        nxt = []
+        for (lo, hi) in out:
+            if c1 <= lo or c0 >= hi:
+                nxt.append((lo, hi)); continue
+            if c0 > lo: nxt.append((lo, c0))
+            if c1 < hi: nxt.append((c1, hi))
+        out = nxt
+    return [(lo, hi) for (lo, hi) in out if hi - lo > 0.05]
+
+
+# v4 r3: the concept's shed wall: flat light panels in a grid (no corrugation, no high windows), heavy dark pilasters,
+# crew doors with lamps at the foot of the bays and a roller door at the back bay
+SHED_V4 = dict(SHED)
+SHED_V4.update({
+    'windows': None, 'pilaster': (1.0, 0.75), 'roller': (0, 5.6, 7.0), 'doors': [-7.2, 7.2], 'door': None,
+    'wall_joints': [4.4, 7.2, 10.0, 12.8],
+    'paint': {
+        'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.45, 'tone': 0.09, 'dark': 0.25},
+        'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.35, 'tone': 0.05, 'dark': 0.2},
+        'frame2': {'rust': 0.6},
+    },
+})
+
+
 def gable_shed(B, P=SHED):
     W, L, E, Rg, ov = P['W'], P['L'], P['eave'], P['ridge'], P['overhang']
     hx, hz = W / 2, L / 2
     nb = P['bays']
     bay = L / nb
     pw, pd = P['pilaster']
-    wy0, wy1, ww = P['windows']
+    wy0, wy1, ww = P['windows'] or (0, 0, 0)
     dado = P['dado']
     # long walls (+X and -X): dado, corrugated sheets with window openings, pilasters, window strips
     for sx in (1, -1):
@@ -581,14 +673,41 @@ def gable_shed(B, P=SHED):
         z0 = hz if sx > 0 else -hz
         o = (x, 0.0, z0)
         holes = []
-        for i in range(nb):
-            zc = -hz + bay * (i + 0.5)
-            fx = (hz - zc) if sx > 0 else (zc + hz)    # face coordinate of the bay centre
-            holes.append((fx - ww / 2, wy0, fx + ww / 2, wy1))
-            window_strip(B, (x, wy0, zc + (ww / 2 if sx > 0 else -ww / 2)), u, ww, wy1 - wy0, panes=4)
-        clad_panel(B, (x, dado, z0), u, L, E - dado, holes=holes)
-        B.box((0.3, dado, L), at=(x - sx * 0.07, dado / 2, 0), mat='frame2', bevel=0.03)
-        B.box((0.34, 0.12, L + 0.1), at=(x + sx * 0.02, dado + 0.02, 0), mat='frame', bevel=0.02)
+        fxo = lambda zc: (hz - zc) if sx > 0 else (zc + hz)    # face coordinate of a z
+        if P.get('windows'):
+            for i in range(nb):
+                zc = -hz + bay * (i + 0.5)
+                fx = fxo(zc)
+                holes.append((fx - ww / 2, wy0, fx + ww / 2, wy1))
+                window_strip(B, (x, wy0, zc + (ww / 2 if sx > 0 else -ww / 2)), u, ww, wy1 - wy0, panes=4)
+        # v4 r3 (the concept): a roller door in one bay of the +X face: an exact opening, a recessed ribbed shutter,
+        # a dark portal frame with a hood, jamb lamps
+        rd = P.get('roller')
+        if rd and sx > 0:
+            ri, rw_, rh_ = rd
+            zc = -hz + bay * (ri + 0.5)
+            fx = fxo(zc)
+            holes.append((fx - rw_ / 2, 0.0, fx + rw_ / 2, rh_))
+            B.box((0.12, rh_, rw_), at=(x - 0.45, rh_ / 2, zc), mat='frame2', bevel=0.0)
+            for k in range(int(rh_ / 0.3)):
+                B.box((0.06, 0.06, rw_ - 0.1), at=(x - 0.36, 0.2 + 0.3 * k, zc), mat='frame2', bevel=0.0)
+            for dz in (-1, 1):
+                B.box((0.7, rh_ + 0.5, 0.45), at=(x + 0.12, (rh_ + 0.5) / 2, zc + dz * (rw_ / 2 + 0.22)), mat='frame', bevel=0.04)
+                lamp(B, (x + 0.6, rh_ + 1.0, zc + dz * (rw_ / 2 - 0.4)), (1, 0, 0), size=0.26)
+            B.box((0.9, 0.55, rw_ + 1.6), at=(x + 0.2, rh_ + 0.3, zc), mat='frame', bevel=0.04)
+            B.box((0.5, 0.9, rw_ + 0.4), at=(x - 0.1, rh_ - 0.4, zc), mat='frame2', bevel=0.02)    # coil box
+        clad_panel(B, (x, dado, z0), u, L, E - dado, holes=[(a, max(b_, dado) - dado, c_, d_ - dado) for (a, b_, c_, d_) in holes])
+        if P.get('wall_joints'):
+            # modelled horizontal panel joints: a thin cover strip every course, a crisp shadow line at any distance
+            for yj in P['wall_joints']:
+                for (za, zb) in _spans(-hz, hz, [((z0 - sx * a) if sx > 0 else (a + z0), (z0 - sx * c_) if sx > 0 else (c_ + z0)) for (a, b_, c_, d_) in holes if b_ <= yj <= d_]):
+                    B.box((0.05, 0.07, zb - za), at=(x + sx * 0.02, yj, (za + zb) / 2), mat='clad', bevel=0.0)
+        for (dz_, ) in [(d,) for d in (P.get('doors', []) if sx > 0 else [])]:
+            B.R.door((x + 0.02, 0.0, dz_), (1, 0, 0))
+        cuts = [((z0 - a) if sx > 0 else (a + z0), (z0 - c_) if sx > 0 else (c_ + z0)) for (a, b_, c_, d_) in holes if b_ < dado]
+        for (za, zb) in _spans(-hz, hz, cuts):
+            B.box((0.3, dado, zb - za), at=(x - sx * 0.07, dado / 2, (za + zb) / 2), mat='frame2', bevel=0.03)
+            B.box((0.34, 0.12, zb - za + 0.1), at=(x + sx * 0.02, dado + 0.02, (za + zb) / 2), mat='frame', bevel=0.02)
         for i in range(nb + 1):
             zc = -hz + bay * i
             zc = max(-hz + pw / 2, min(hz - pw / 2, zc))
@@ -663,8 +782,11 @@ def gable_shed(B, P=SHED):
         ribbed_slope(B, (sx * (mw / 2 + 0.3), ybase + mh), (sx * 0.3, ybase + mh + mr * (1 - 0.3 / (mw / 2 + 0.3))), -ml / 2 - 0.2, ml / 2 + 0.2, pitch=rp, w=0.08, h=0.06)
     B.box((0.5, 0.25, ml + 0.4), at=(0, ybase + mh + mr + 0.06, 0), mat='frame', bevel=0.03)
     # crew door (fleet kit) on the +X face
-    side, dz = P['door']
-    B.R.door((side * (hx + 0.02), 0.0, dz), (side, 0, 0))
+    if P.get('door'):
+        side, dz = P['door']
+        B.R.door((side * (hx + 0.02), 0.0, dz), (side, 0, 0))
+    if P.get('paint'):
+        return works(P['paint'])
     return works({
         'clad': {'course': 4.2, 'joint': 1e3, 'corr': 0.22, 'rust': 0.45, 'tone': 0.05, 'dark': 0.25},
         'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.35, 'tone': 0.05, 'dark': 0.2},
@@ -964,9 +1086,9 @@ def _trestle(B, c, w, d, h):
 # registry: part name -> (builder, params, texture size, about)
 # ------------------------------------------------------------------------------------------------------------------
 REMODELS = {
-    'blastFurnace': (furnace, FURNACE, 4096, '60 m blast furnace remodel: concrete plinth, dark staved hearth, recessed glowing tuyere band with 24 window frames, bustle main and downlegs, light plated shaft with five hoops, flange, cone, throat, uptakes and downcomer; four laced columns, four square grating decks on ring girders, X bracing, caged ladder, lamps'),
+    'blastFurnace': (furnace, FURNACE_V4, 4096, '60 m blast furnace remodel: concrete plinth, dark staved hearth, recessed glowing tuyere band with 24 window frames, bustle main and downlegs, light plated shaft with five hoops, flange, cone, throat, uptakes and downcomer; four laced columns, four square grating decks on ring girders, X bracing, caged ladder, lamps'),
     'bandedStack': (banded_stack, STACK, 2048, '46 m banded stack remodel: base block, gusseted flared foot, light / dark plated bands with hoops, two railed platforms, caged ladders, sooted lip, lamps, obstruction light'),
-    'shedSegment': (gable_shed, SHED, 4096, '28 x 36 m clad shed segment remodel: corrugated walls between I-section pilasters, recessed window strips, dark dado, gables with outward verges, corrugated roof, gutters, ridge, louvred monitor, downpipes, kit crew door'),
+    'shedSegment': (gable_shed, SHED_V4, 4096, '28 x 36 m clad shed segment remodel: corrugated walls between I-section pilasters, recessed window strips, dark dado, gables with outward verges, corrugated roof, gutters, ridge, louvred monitor, downpipes, kit crew door'),
     'pourBay': (pour_bay, POUR, 4096, '19 x 26 m pour bay remodel: built-up columns, lattice side, plate girders and Warren roof trusses, runways and an amber double-girder bridge crane with trolley and hook, plated back wall, glowing runner and tundish, rails and ladle car, two tapping platforms with stairs'),
     'skipGallery': (incline_gallery, GALLERY, 2048, 'inclined skip gallery remodel: clad enclosed gallery with portal ribs and windows on two Warren trusses, lattice trestle, drive house with roller and crew doors, head house'),
 }
