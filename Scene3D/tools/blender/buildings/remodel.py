@@ -241,8 +241,8 @@ def unwrap(ob, margin, weights=UV_WEIGHT):
 def cull_buried(ob):
     """v5: delete faces buried inside other solids (lathe pole caps inside the next station, box ends inside columns,
     hoop inner walls on the shell). They are never seen but took UV space: the v4 furnace atlas spent large discs on
-    hidden caps. A face is buried when every sample point (its centre and its corners pulled 20 % in, lifted 4 mm off
-    the face) sees, along the normal and four directions tilted 35 degrees off it, a BACK face first, i.e. lies inside a
+    hidden caps. A face is buried when every sample point (its centre, corners and edge midpoints pulled 5 % in, the
+    fan-triangle centroids; lifted 4 mm off the face) sees, along the normal and four directions tilted 35 degrees off it, a BACK face first, i.e. lies inside a
     closed solid. Open or one-sided geometry never reads as inside from every ray, so the test errs toward keeping."""
     import bmesh
     from mathutils import Vector
@@ -251,6 +251,26 @@ def cull_buried(ob):
     bm.faces.ensure_lookup_table()
     tree = BVHTree.FromBMesh(bm, epsilon=0.0)
     dead = []
+
+    def winding(q, d, self_idx):
+        """Solids containing q, counted along the ray q + t d: +1 per back face crossed (leaving a solid), -1 per
+        front face (entering one); coincident faces at one hit (stacked solids) are all counted."""
+        w, o, seen = 0, q, set()
+        for _ in range(48):
+            hit, hn, idx, dist = tree.ray_cast(o, d)
+            if hit is None:
+                return w
+            group = {idx} | {j for (_c, _n, j, _d) in tree.find_nearest_range(hit, 0.0006)}
+            for j in group - seen:
+                if j == self_idx:
+                    continue
+                dn = bm.faces[j].normal.dot(d)
+                if abs(dn) > 0.05:
+                    w += 1 if dn > 0 else -1
+            seen |= group
+            o = hit + d * 0.001
+        return w
+
     for f in bm.faces:
         n = f.normal
         if n.length < 0.5:
@@ -259,13 +279,20 @@ def cull_buried(ob):
         t1 = (f.verts[1].co - f.verts[0].co).normalized() if len(f.verts) > 1 else Vector((1, 0, 0))
         t2 = n.cross(t1).normalized()
         dirs = [n] + [(n * 0.82 + d * 0.57).normalized() for d in (t1, -t1, t2, -t2)]
-        pts = [c] + [v.co + (c - v.co) * 0.2 for v in f.verts]
+        vs = [v.co for v in f.verts]
+        # samples: the centre, the corners and edge midpoints pulled 5 % in, and the centroids of the fan triangles
+        # (a big n-gon partly covered, e.g. a plinth top under the leg shoes, must not read as buried)
+        pts = [c] + [v + (c - v) * 0.05 for v in vs] + [(vs[i] + vs[i - 1]) / 2 * 0.95 + c * 0.05 for i in range(len(vs))]
+        pts += [(vs[0] + vs[i] + vs[i + 1]) / 3 for i in range(1, len(vs) - 1)] if len(vs) > 3 else []
+        # faces on the ground facing down (the undersides of plinths, footings, pads) are never seen either
+        if n.y < -0.95 and c.y < 0.02:
+            dead.append(f)
+            continue
         buried = True
         for q in pts:
             q = q + n * 0.004
             for d in dirs:
-                hit, hn, idx, dist = tree.ray_cast(q, d)
-                if hit is None or idx == f.index or hn.dot(d) <= 0.0:
+                if winding(q, d, f.index) <= 0:
                     buried = False
                     break
             if not buried:

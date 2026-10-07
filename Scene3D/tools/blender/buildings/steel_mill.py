@@ -248,7 +248,7 @@ def model(B):
                    '-x': {'bay': 5.0, 'storey': 6.5, 'windows': [1], 'win': (1.4, 1.2), 'doors': [7.5], 'louvres': [(11.0, 7.5, 2.0, 2.0)]},
                    '-z': {'bay': 3.0, 'storey': 6.5}},
             roof={'parapet': 0.6, 'units': [('vent', 1.0, -5.0, {}), ('antenna', -1.5, 6.0, {'h': 5.0})]}, frame='frameL')
-    K.pipe(B, [(FX - 19.0, 14.2, FZ + 7.0), (FX - 19.0, 13.2, FZ + 7.0)], r=1.45, mat='pipeDark', rings=False)
+    K.pipe(B, [(FX - 19.6, 14.2, FZ + 6.3), (FX - 19.6, 13.2, FZ + 6.3)], r=1.45, mat='pipeDark', rings=False)
     K.ladder(B, (-40.4, 0.0, 26.0), (-1, 0, 0), 13.0)
     K.block(B, (-35.5, 0.0, -2.0), (7.0, 7.0, 8.0),
             sides={'+z': {'bay': 3.5, 'doors': [3.5], 'windows': []}, '+x': {'bay': 4.0, 'windows': [0], 'win': (1.2, 1.0)}},

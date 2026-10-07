@@ -372,7 +372,7 @@ FURNACE_V4.update({
 FURNACE_V5 = dict(FURNACE)
 FURNACE_V5.update({
     'base': (32.0, 3.0, 32.0),
-    'hearth': (9.2, 3.0, 15.0), 'hearth_mat': 'shell', 'staves': 0, 'hearth_hoops': (4.4, 9.4, 13.9),
+    'hearth': (9.2, 3.0, 15.2), 'hearth_mat': 'shell', 'staves': 0, 'hearth_hoops': (4.4, 9.4, 13.9),
     'tuyere': (8.95, 15.2, 17.6, 32),
     'collar': (9.85, 17.6, 18.3),
     'bustle': (12.6, 21.2, 0.85, 16),
@@ -386,7 +386,7 @@ FURNACE_V5.update({
     'top_deck': None,
     'uptakes': (4, 0.62, [(5.25, 48.4), (6.3, 55.6), (4.6, 59.9), (1.9, 60.9)]),
     'header': (1.75, 59.4, 62.4),
-    'downcomer': (1.45, [(0.0, 61.2, 0.0), (-5.5, 61.2, 0.0), (-15.6, 41.0, 4.0), (-15.6, 25.0, 7.0), (-19.0, 21.6, 7.0), (-19.0, 14.0, 7.0)]),
+    'downcomer': (1.45, [(0.0, 61.2, 0.0), (-5.5, 61.2, 0.0), (-19.6, 31.0, 6.3), (-19.6, 14.0, 6.3)]),
     'decks': [(26.6, 11.45, 13.4), (43.1, 8.55, 10.4)],
     'tower': {'style': 'posts', 'legs': ((13.9, 3.0), (12.2, 26.6)), 'leg_section': (4.0, 2.8), 'leg_tie': (15.2, 10.6),
               'post': (0.95, 0.75), 'top': (8.9, 54.0), 'levels': [43.1], 'xbrace': (43.1, 54.0), 'top_deck': (54.0, 5.05, 9.6),
@@ -407,10 +407,11 @@ def _raking_legs(B, T):
             sz_ = s0 + (s1 - s0) * t
             with B.at(M=K.frame_along(pa, pb)):
                 B.box((sz_ + 0.12, sz_ + 0.12, 0.22), at=(0, 0, d.length * t), mat='frame', bevel=0.02)
-        # flange plates down the two outer faces (a built-up section: crisp vertical shadow lines)
+        # corner angles down the four edges (a built-up section: crisp shadow lines that follow the taper)
+        L_ = d.length
         with B.at(M=K.frame_along(pa, pb)):
-            for (fx, fy) in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                B.box((0.08 if fx else s1 * 0.9, 0.08 if fy else s1 * 0.9, d.length * 0.9), at=(fx * (s0 + s1) / 4 + fx * 0.05, fy * (s0 + s1) / 4 + fy * 0.05, d.length * 0.5), mat='frame', bevel=0.0)
+            for (cx_, cz_) in ((1, 1), (1, -1), (-1, 1), (-1, -1)):
+                B.bar((cx_ * (s0 / 2 - 0.12), cz_ * (s0 / 2 - 0.12), 0.6), (cx_ * (s1 / 2 - 0.12), cz_ * (s1 / 2 - 0.12), L_ - 0.5), 0.3, 0.3, mat='frame', bevel=0.0)
         B.box((s0 + 0.8, 0.5, s0 + 0.8), at=(sx * b0, ly0 + 0.25, sz * b0), mat='frame', bevel=0.04)
         B.box((s1 + 0.6, 0.4, s1 + 0.6), at=(sx * b1, ly1 - 0.2, sz * b1), mat='frame', bevel=0.03)
         if T.get('leg_tie'):
@@ -584,7 +585,7 @@ def furnace(B, P=FURNACE):
         hoop(B, c, rh, y0h + 0.8, 0.3, 0.12, mat='frame', n=24)
     rd, dpath = P['downcomer']
     B.tube(dpath, rd, mat='pipeDark', n=24 if rd > 1.2 else 18, fillet=min(2.4, 1.6 * rd))
-    if len(dpath) > 4:
+    if P.get('header'):
         # v5: flanged joints along the big downcomer and a flanged end where the building's main continues
         for (pa_, pb_) in zip(dpath[1:-1], dpath[2:]):
             a_, b_ = V(pa_), V(pb_)
@@ -595,7 +596,7 @@ def furnace(B, P=FURNACE):
         a_, b_ = V(dpath[-2]), V(dpath[-1])
         with B.at(M=K.frame_along(a_, b_)):
             B.cyl(rd + 0.22, 0.4, at=(0, 0, (b_ - a_).length - 0.2), mat='frame', n=24, bevel=0.02)
-    for t in ((0.35, 0.6, 0.85) if len(dpath) <= 4 else ()):
+    for t in ((0.35, 0.6, 0.85) if not P.get('header') else ()):
         a, b = V(dpath[-2]), V(dpath[-1])
         q = a + (b - a) * t
         with B.at(M=K.frame_along(a, b)):
@@ -705,7 +706,7 @@ def furnace(B, P=FURNACE):
         ly0_ = T.get('ladder_y0', T['y0'])
         K.ladder(B, (lx * (hf + 0.66), ly0_, lz * (hf - 1.6)), (lx, 0, 0), T['levels'][-1] - ly0_)
     return works({
-        'shell': {'axis': (0, 0), 'course': 2.25, 'joint': 2.0, 'bolts': 0.32, 'rust': 0.5, 'tone': 0.1, 'drip': 0.3},
+        'shell': {'axis': (0, 0), 'course': 2.25, 'joint': 2.0, 'bolts': 0.32, 'rust': 0.35, 'tone': 0.1, 'drip': 0.3, 'blot': 0.035},
         'frame2': {'axis': (0, 0), 'course': 1.6, 'joint': 1.6, 'rust': 0.15, 'tone': 0.08},
         'concrete2': {'course': 1.5, 'joint': 3.0, 'rust': 0.0, 'dark': 0.25},
         'concrete': {'course': 3.0, 'joint': 3.0, 'rust': 0.0, 'dark': 0.3},
