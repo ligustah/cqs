@@ -289,3 +289,8 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
     are mid grey. Mains and big pipes in mid-grey neutral paint (low metal), frames a step darker.
 66. **A glow box takes its own shape.** A 1 m square glow box over a round ladle read as an orange sticker; let the
     emissive paint carry round or small hot surfaces, and keep glow boxes thin, for long runners and openings only.
+67. **Stacked swatches need every tiny island stacked too.** The concave UV packer fills gaps inside a stacked swatch
+    (many overlapping islands normalised to one square leave holes) with small islands. At 4096 it dropped the
+    furnace's lamp lenses into the 'frame' swatch, and every rail and brace sampling that swatch glowed orange in the
+    final build (the 2048 reviews were clean by chance). Lamp lenses are stacked now (one emissive swatch); check the
+    final, not only the review size, for stray emissive texels.

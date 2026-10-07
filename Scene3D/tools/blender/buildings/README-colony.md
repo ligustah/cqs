@@ -334,6 +334,8 @@ final 4096 build. Evidence: `images/buildings/steel_mill-v5.jpg` (concept | v4 |
   (6.5 px/m on the furnace); 1.5 px margins and the per-zone weights gave 46-76 %.
 - `component.py` refuses to re-ingest a remodelled part (`--force-ingest` to replace it with the raw mesh again) and
   `--rebuild` skips them.
+- v5: the concave packer drops tiny islands into gaps inside a stacked swatch; any small emissive island there makes
+  every bar using that swatch glow (the furnace rails at 4096). Lamp lenses are stacked; only `hot` and glass are not.
 - The glow (`hot`) zone is emissive in the texture and gets a runtime glow box too; keep glow boxes thin (< 0.1 m)
   or they read as solid slabs in the dusk studio.
 

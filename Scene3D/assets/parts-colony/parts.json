@@ -360,7 +360,7 @@
     ]
    },
    "tex": 4096,
-   "kb": 5539,
+   "kb": 5516,
    "about": "60 m blast furnace remodel: concrete plinth, dark staved hearth, recessed glowing tuyere band with 24 window frames, bustle main and downlegs, light plated shaft with five hoops, flange, cone, throat, uptakes and downcomer; four laced columns, four square grating decks on ring girders, X bracing, caged ladder, lamps",
    "remodel": {
     "builder": "ckit.furnace",
@@ -373,14 +373,13 @@
      "hot": 16.9,
      "frame2": 28.2,
      "grate": 12.0,
-     "lamp": 16.5,
      "shell (set 2)": 71.9
     },
-    "surfaceM2": 14370,
+    "surfaceM2": 14369,
     "paint": {
      "colony_blastFurnace": {
       "Y_all": 0.0963,
-      "Y_light": 0.1641,
+      "Y_light": 0.1642,
       "light_share": 0.202
      },
      "colony_blastFurnace_2": {
@@ -391,9 +390,9 @@
     },
     "seconds": {
      "model": 383,
-     "unwrap": -228,
+     "unwrap": -233,
      "bake": 129,
-     "paint": 99,
+     "paint": 104,
      "export": 10
     },
     "date": "2026-10-07"

@@ -83,7 +83,9 @@ STACK_AREA = 2.0
 ANGLE = 55              # smart projection angle limit (degrees)
 SHAPE = 'CONCAVE'       # pack_islands shape method
 STACK_NARROW = 0.25     # any zone: islands narrower than this (m; ribs, trims, rungs) are stacked too
-NO_STACK = {'hot', 'lamp', 'glassW'}
+# v5: lamp lenses ARE stacked (one emissive swatch): left as tiny islands, the concave packer dropped them into gaps
+# inside the 'frame' swatch, and every rail and brace that samples that swatch glowed orange at 4096
+NO_STACK = {'hot', 'glassW'}
 
 
 CYL = set()             # v5: zones of a surface of revolution about the part's Y axis, unrolled (set per part)
