@@ -332,19 +332,22 @@ Process: three 2048 review rounds (bake all five parts ~4 min, building ~70 s, f
 final 4096 build. Evidence: `images/buildings/steel_mill-v5.jpg` (concept | v4 | v5 at the concept camera),
 `steel_mill-v5-close.jpg` (the v4 close-up cameras), `steel_mill-v5-thumbs.png` (80 / 40 px).
 
-### v6: "very similar vibes" (2026-10-07, corrections 43-44; the step-by-step is BUILDING-GUIDE.md)
+### v6: "very similar vibes" (2026-10-07, corrections 43-45; the step-by-step is BUILDING-GUIDE.md)
 
-Eleven 2048 review rounds against the concept with two blind judges (vibes; real-time quality at 1:1) from round 2.
+Twenty-one 2048 review rounds against the concept with two blind judges (vibes; real-time quality at 1:1) from round 2.
 What changed in the shared tools (all generic; the other 15 buildings get them by default):
 
 | area | change |
 |---|---|
-| studio | `main.js` reads `fov`, `keyColor`, `fillColor` from a building's studio hint; the mill: az 48, el 12, fov 22, dist 0.95, key 0.95 #fff0e0, fill 1.5 #e8e2da (paint-check light ~0.9x, hue 26 vs 23) |
+| studio | `main.js` reads `fov`, `keyColor`, `fillColor`, `shadowNB` (key shadow normal bias x; the Vogel-disk acne dot grid on large walls) from a building's studio hint, `?snb=` calibrates; the mill: az 48, el 12, fov 22, dist 0.95, key 1.5 #fff3e8, fill 0.6 #f0dcc8, env 0.5, shadowNB 6 (paint-check light ~1.05x, shadow side ~1.0x) |
+| weathering library | four fal PATINA sets (`weather/wxCladding`, `wxSteel`, `wxConcrete`, `wxRoof`; joints removed by `cpaint._unline`): `cpaint.PHOTO` layer per zone (band-limited, per-row offsets) and `lib._wx_photo` box-projected in the hull bake; procedural layers kept for seams, edges, macro tone |
+| molten | `cpaint` hot zone with a crust: dark crust plates and bright cracks, open metal from noise + a narrow glow core, body below the tone-map knee (an AO heat term saturates on a flat trough); runner 1.8 m in a lined trough |
+| pipes (correction 45) | `GALLERY_V6['pipe_support']` (nozzle / inlet flanges, roof saddles, corner or face brackets, stool); `pipe_bundle(drop_end=)` (buried service through a curb); `pipe` supports ceil-spaced (gaps <= pitch); checklist row P1 |
 | paint (`cpaint.py`) | crisp column streaks from seams (`vstreak`, 16 / 40 cm, soft sides, per-course shifted grid, per-panel density); plate edge halo (`halo`); roof soot with lap lines and drips (`soot`, `lap`); the macro layer (`macro`: per bay x storey tone, 3-10 m soft streaks, `soot_top`, base grime); a continuous curvature edge line; per-zone roughness + patch variation; oil-can dents; fixed-radius arc coordinate on cones (`axis_r`); per-part seeds; the fbm `streak` / `drip` smear off |
-| hull bake (`lib._grit`, `lib.BAKE['grit']`) | the same for kit blocks: column streaks, macro panel tone / long streaks / base grime; stained concrete (damp patches, oil spots) |
+| hull bake (`lib._grit`, `lib.BAKE['grit']`) | the same for kit blocks: column streaks, macro panel tone / long streaks / base grime; stained concrete (damp patches, oil spots); the hull unwraps with `remodel.unwrap` (stacking, weights; `COLONY_SIMPLE_UV=1` restores the old path) |
 | UV / sets (`remodel.py`) | `ckit.SPLIT` may list several sets (furnace: shell, frame2); per-part main-set weights `ckit.UV_W`; `STACK_NARROW` 0.12; curvature bake 8 cm; hot zone weight 1.0; `REMODEL_OUT` / `REMODEL_ANGLE` for experiments |
 | kit (`bkit.py`) | clutter: `pallet`, `drums`, `pump_skid`, `gas_bottles`, `pipe_bundle`; `Rec.spill` (process-glow point lights -> `colony.js` interiorLights 'point'); chamfers up to 6 cm on members >= 0.3 m; 8-segment bends on mains; `plinth(kerb_h)` |
-| kit (`ckit.py`) | FURNACE_V6 (legs on the diagonals hugging the drum, slim posts following the bell, ring decks, risers, drops, dark base band, thin slit, elbow downcomer, stepped dark crown, true-torus bustle); SHED_V6 (14 deg roof, gable parapets, half monitors, deeper pilasters, door surrounds, 3 lamp rows); POUR_V6 (portal against the wall, dark back, runner on the apron); GALLERY_V6 (clad box gallery + gas main into the stack); `window_frame` |
+| kit (`ckit.py`) | FURNACE_V6 (legs on the diagonals hugging the drum, slim posts following the bell, ring decks, risers, drops, dark base band, thin slit, elbow downcomer, stepped dark crown, true-torus bustle); SHED_V6 (14 deg roof, gable parapets, half monitors, deeper pilasters, door surrounds, 3 lamp rows); POUR_V6 (portal against the wall, dark back, runner on the apron); GALLERY_V6 (clad box gallery; gas main from a crown nozzle down beside the foot tower into stack 1); `window_frame` |
 | phone | `artifact-tiers.mjs` LITE_COLONY and `colony_build.py` also drop `parts_door` on the phone tier |
 
 Steel mill parameter sets: FURNACE_V6, SHED_V6, POUR_V6, GALLERY_V6, STACK (32 segments, laps every 6.6 m).
