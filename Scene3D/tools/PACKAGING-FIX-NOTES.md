@@ -50,3 +50,6 @@ Scratch: $S = /tmp/claude-0/-home-user-cqs/e592383b-a9f6-5dde-82a6-4494b59b11a7/
 - Brown fighters = carrier's parked fighters, lit by the amber hangar lights, exposed when the hull failed to link.
 - Desktop pkg-diff DONE: 26/26 pass (solid<=2%), zero console errors. Next: phone pkg-diff (/tmp/claude-0/-home-user-cqs/e592383b-a9f6-5dde-82a6-4494b59b11a7/scratchpad/pf/after/phone), phone-check, scale-check.
 - Phone pkg-diff DONE: 26/26 pass, no errors (shipyard/spaceport building diffs = lite tier framing/dressing, checked side by side). Next: phone-check, scale-check.
+- phone-check: all 26 views ok, retained heap + GPU max 264 MB (carrier); transient peak + GPU carrier 350 / lineup 314,
+  same as the published 851093d package (344 / 294), GPU estimate unchanged. scale-check PASSED.
+- Evidence copied to Scene3D/shots/pkg-fix (gitignored). DONE; final commit "Artifact packaging fix: ...".
