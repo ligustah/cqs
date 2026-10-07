@@ -16,8 +16,14 @@ W=/tmp/claude-0/-home-user-cqs/e592383b-a9f6-5dde-82a6-4494b59b11a7/scratchpad/r
 - r7 bake (r2 kit + r3 unwrap): bandedStack, pourBay, skipGallery installed (furnace/shed from r7 are superseded).
 - Preview a part's geometry fast: $W/../uvx/prev.sh <part> "az:el" -> $W/../uvx/<part>-az_el.png
 
-## In progress
-- r8: bake blastFurnace + shedSegment with the V4 params, then rebuild the building (colony_build.py --tex 2048).
+- Fix rounds on the building (2048 review builds r1-r3): dark pour bay deck, lighter gunmetal, low light annex, light
+  casthouse front block (steel_mill.py), slimmer tower walkways. README-colony + lessons 56-59 written; remodel --preview.
+- v3 evidence shots at fixed cameras: scratchpad/ev/v3-{main,furnace,pour,shed}.png (shots.sh swaps the v3 GLB+js in
+  from $W/steel_mill-v3.*, shoots, restores).
 
-## Next command
-  cd /home/user/cqs/Scene3D && $PY tools/blender/buildings/remodel.py <part> --work $W/work > $W/r6-<part>.log 2>&1
+## In progress
+- r10: paint pass (neutral gunmetal, rust 0.2-0.3) -> rebake all five ($W/r10.log) -> final 4096 build ($W/b10.log).
+
+## Next
+- scratchpad/ev/shots.sh v4; sheet-v4.mjs -> images/buildings/steel_mill-v4.jpg (+ close-up sheet), thumbs.mjs 80/40,
+  build-artifact.mjs, phone-check.mjs steel_mill, pkg-diff.mjs --csp 1 --units 16 b_steel_mill; commit all.

@@ -58,9 +58,10 @@ WORKS = {
     'clad': {'color': [0.77, 0.74, 0.69], 'rust': 0.6},
     'clad2': {'color': [0.70, 0.665, 0.61], 'rust': 0.5, 'blot': 0.035, 'patina': 0.03},   # roofs: big planes, blotches read as camouflage
     'panel': {'color': [0.78, 0.75, 0.70], 'rust': 0.5},
-    'frame': {'color': [0.29, 0.29, 0.30], 'rust': 0.4, 'edge': 0.9},     # v4 r3: concept gunmetal ~sRGB 74 (kit 55 read black)
-    'frame2': {'color': [0.30, 0.285, 0.27], 'rust': 0.65},
-    'pipeDark': {'rust': 0.5},
+    # v4 r4: neutral gunmetal with local rust (the concept); rust 0.4-0.65 tinted every dark beam chocolate brown at 1:1
+    'frame': {'color': [0.27, 0.275, 0.285], 'rust': 0.2, 'edge': 0.9},     # concept gunmetal ~sRGB 70 (kit 55 read black)
+    'frame2': {'color': [0.31, 0.31, 0.315], 'rust': 0.25},
+    'pipeDark': {'rust': 0.25},
 }
 
 
@@ -558,7 +559,7 @@ def furnace(B, P=FURNACE):
         K.ladder(B, (lx * (hf + 0.66), ly0_, lz * (hf - 1.6)), (lx, 0, 0), T['levels'][-1] - ly0_)
     return works({
         'shell': {'axis': (0, 0), 'course': 2.25, 'joint': 2.0, 'bolts': 0.32, 'rust': 0.55, 'tone': 0.07},
-        'frame2': {'axis': (0, 0), 'course': 1.6, 'joint': 1.6, 'rust': 0.5, 'tone': 0.08},
+        'frame2': {'axis': (0, 0), 'course': 1.6, 'joint': 1.6, 'rust': 0.3, 'tone': 0.08},
         'concrete2': {'course': 1.5, 'joint': 3.0, 'rust': 0.0, 'dark': 0.25},
         'concrete': {'course': 3.0, 'joint': 3.0, 'rust': 0.0, 'dark': 0.3},
         'hot': {'crust': 0.0},
@@ -616,7 +617,7 @@ def banded_stack(B, P=STACK):
     B.R.obstruction((0.7 * (r + 0.3), T + 0.45, 0.7 * (r + 0.3)))
     return works({
         'shell': {'axis': (0, 0), 'course': 2.2, 'joint': 2.4, 'bolts': 0.3, 'rust': 0.6, 'tone': 0.07},
-        'frame2': {'axis': (0, 0), 'course': 2.2, 'joint': 2.4, 'rust': 0.55, 'tone': 0.09},
+        'frame2': {'axis': (0, 0), 'course': 2.2, 'joint': 2.4, 'rust': 0.3, 'tone': 0.09},
     })
 
 
@@ -653,7 +654,7 @@ SHED_V4.update({
     'paint': {
         'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.45, 'tone': 0.09, 'dark': 0.3, 'stagger': False},
         'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.35, 'tone': 0.05, 'dark': 0.2},
-        'frame2': {'rust': 0.6},
+        'frame2': {'rust': 0.3},
     },
 })
 
@@ -790,7 +791,7 @@ def gable_shed(B, P=SHED):
     return works({
         'clad': {'course': 4.2, 'joint': 1e3, 'corr': 0.22, 'rust': 0.45, 'tone': 0.05, 'dark': 0.25},
         'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.35, 'tone': 0.05, 'dark': 0.2},
-        'frame2': {'rust': 0.6},
+        'frame2': {'rust': 0.3},
     })
 
 
@@ -966,7 +967,7 @@ def pour_bay(B, P=POUR):
     for (x, z) in ((-1.6, -7.7), (-4.5, -9.1)):
         lamp(B, (x, 5.6 if z > -8 else 9.0, z), (1, 0, 0), size=0.26)
     return works({
-        'frame2': {'course': 1.5, 'joint': 1.2, 'rust': 0.6, 'tone': 0.1},
+        'frame2': {'course': 1.5, 'joint': 1.2, 'rust': 0.3, 'tone': 0.1},
         'concrete2': {'course': 3.0, 'joint': 3.0, 'rust': 0.0, 'dark': 0.3},
         'amber': {'color': [0.80, 0.52, 0.16], 'rust': 0.4, 'edge': 0.9, 'tone': 0.08},
         'rust': {'rust': 0.0},
