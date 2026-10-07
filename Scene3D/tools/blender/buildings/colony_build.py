@@ -88,7 +88,7 @@ def write_spec(bid, rec):
         'kits': {'yard': '../../../assets/parts-yard', 'colony': '../../../assets/parts-colony'},
         'partDefaults': {'door': {'sink': 0.0}, 'floodlight': {'sink': 0.0}, 'vent': {'sink': 0.0}, 'pane': {'sink': 0.0},
                          'ladder': {'sink': 0.0}, 'container': {'sink': 0.0}},
-        'fixes': {'container': {'decimate': 0.35}, 'door': {'decimate': 0.3}, 'floodlight': {'decimate': 0.45}, 'vent': {'decimate': 0.5}},
+        'fixes': {'container': {'decimate': 0.35}, 'door': {'decimate': 0.2}, 'floodlight': {'decimate': 0.45}, 'vent': {'decimate': 0.5}},
         'seat': {'check': False},
         'bake': {'ao': False},
         'placements': rec['placements'],

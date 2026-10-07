@@ -404,6 +404,7 @@ FURNACE_V5.update({
 FURNACE_V6 = dict(FURNACE_V5)
 FURNACE_V6.update({
     'tuyere': (8.95, 14.8, 18.0, 12), 'tuyere_glow': 2.6,   # r2: 12 stocks (20 read as a window grid, not a band)
+    'segments': 60,     # r3 (phone budget): 72 -> 60 facets round the shell (0.95 m facets on the 9 m drum)
     'tower': dict(FURNACE_V5['tower'], top=(7.2, 54.0), top_deck=(54.0, 5.05, 7.6)),
 })
 
@@ -739,6 +740,10 @@ STACK = {   # bandedStack, measured: base block 10.2 x 3.1, flare r 5.3 -> 3.78 
 }
 # the image reads, top down: dark top, light band, dark band (lower platform), light band, dark flare. Shell bands:
 STACK['bands'] = [(9.6, 18.6, 'shell'), (18.6, 25.0, 'frame2'), (25.0, 33.8, 'shell'), (33.8, 42.6, 'frame2')]
+# v6 (phone budget, 150k tris a building): 40 segments and a modelled lap ring at every second painted seam (4.4 m):
+# 20.1k -> ~9k tris a stack; the painted seams keep the 2.2 m courses
+STACK['segments'] = 40
+STACK['lap_pitch'] = 4.4
 
 
 def banded_stack(B, P=STACK):
@@ -760,7 +765,7 @@ def banded_stack(B, P=STACK):
     for (y0, y1, m) in P['bands']:
         B.lathe([(r, y0), (r, y1)], (0, 0, 0), mat=m, n=n, bevel=0.0)
         hoop(B, c, r, y0 - 0.18, 0.36, 0.12, mat='frame', n=n)
-        lap_rings(B, lambda y: r, y0, y1, P.get('course', 2.2), mat=m, skip=[py for (py, _) in P['platforms']], n=n, out=0.03, h=0.12)
+        lap_rings(B, lambda y: r, y0, y1, P.get('lap_pitch', P.get('course', 2.2)), mat=m, skip=[py for (py, _) in P['platforms']], n=n, out=0.03, h=0.12)
     top0 = P['bands'][-1][1]
     T = P['top']
     B.lathe([(r, top0), (r, T - 1.4), (r + 0.3, T - 0.6), (r + 0.3, T), (r - 0.3, T), (r - 0.3, T - 3.0), (0, T - 3.0)], (0, 0, 0), mat='frame2', n=n, bevel=0.03, sharp=25)

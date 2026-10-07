@@ -40,7 +40,7 @@
    "decimate": 0.35
   },
   "door": {
-   "decimate": 0.3
+   "decimate": 0.2
   },
   "floodlight": {
    "decimate": 0.45
@@ -371,7 +371,7 @@
   {
    "part": "door",
    "p": [
-    35.925,
+    33.825,
     1.7,
     9.7
    ],
@@ -788,6 +788,164 @@
     "check": false
    },
    "id": "flood"
+  },
+  {
+   "part": "door",
+   "p": [
+    36.905,
+    1.2,
+    -45.1
+   ],
+   "n": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "up": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "id": "crew door"
+  },
+  {
+   "part": "yard:worker",
+   "p": [
+    34.0,
+    0.0,
+    12.0
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "id": "worker"
+  },
+  {
+   "part": "yard:worker",
+   "p": [
+    39.0,
+    0.0,
+    18.5
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    -1.0,
+    0.0,
+    -0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "id": "worker"
+  },
+  {
+   "part": "door",
+   "p": [
+    30.5,
+    1.2,
+    41.505
+   ],
+   "n": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "up": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "id": "crew door"
+  },
+  {
+   "part": "yard:worker",
+   "p": [
+    -2.0,
+    0.0,
+    40.6
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    0.342,
+    0.0,
+    -0.94
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    -0.94,
+    0.0,
+    -0.342
+   ],
+   "id": "worker"
+  },
+  {
+   "part": "yard:worker",
+   "p": [
+    3.5,
+    0.0,
+    40.5
+   ],
+   "n": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "up": [
+    -0.342,
+    0.0,
+    -0.94
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "along": [
+    -0.94,
+    0.0,
+    0.342
+   ],
+   "id": "worker"
   }
  ]
 }
