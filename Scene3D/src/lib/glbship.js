@@ -176,6 +176,27 @@ export function loadGLB(url, tier = 'lite') {
   return cache.get(key);
 }
 
+/**
+ * glTF keeps metalness (B) and roughness (G) in one texture, which three samples through two sampler uniforms
+ * (roughnessMap and metalnessMap). Read metalness from the roughness texel instead: one texture unit less. A material
+ * with the hangar's interior detail set, the worn finish, SAO and shadows otherwise needs 18 of the 16 fragment texture
+ * units ANGLE (D3D11, Metal), iOS and most Android GPUs have, its program fails to link and its meshes vanish.
+ * Chained last (after livery, detail and finish, which replace around '#include <metalnessmap_fragment>').
+ */
+function shareMetalRough(material) {
+  if (!material.metalnessMap || material.metalnessMap !== material.roughnessMap) return;
+  material.metalnessMap = null;
+  const prev = material.onBeforeCompile;
+  material.onBeforeCompile = (shader, renderer) => {
+    prev?.call(material, shader, renderer);
+    shader.fragmentShader = '#define METAL_IN_ROUGHNESSMAP\n' + shader.fragmentShader.replace('#include <metalnessmap_fragment>',
+      'float metalnessFactor = metalness;\n#ifdef USE_ROUGHNESSMAP\n  metalnessFactor *= texelRoughness.b;\n#endif');
+  };
+  const prevKey = material.customProgramCacheKey.bind(material);
+  material.customProgramCacheKey = () => `metal-in-rough|${prevKey()}`;
+  material.needsUpdate = true;
+}
+
 /** A SpotLight whose target is its own child, so clones (buildShip instances) aim correctly. */
 class ShipSpotLight extends THREE.SpotLight {
   copy(source, recursive) {
@@ -473,6 +494,7 @@ export function buildGLBShip(gltf, cfg, { palette, library = {} } = {}) {
         addWornFinish(mm, library, { toShip: o.matrixWorld, strength: role.hull ? 1 : 0.6, tone: cfg.hullNodes ? 1 : 0.6, engines, exclude: exBox ? { box: exBox, feather: 2 } : null,
           preset: cfg.finish || 'ship', groundY: cfg.anchors?.ground?.y ?? env.min.y });
       }
+      shareMetalRough(mm);
       upgraded.set(keyOf(m), mm);
       return mm;
     });

@@ -89,7 +89,7 @@ export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, e
   const F = { ...FINISH_PRESETS[pName] || FINISH_PRESETS.ship, ...pOver };
   const G = F.ground ? { ...FINISH_PRESETS[pName]?.ground, ...pOver.ground } : null;
   // the groundPaint scratches come from the detail layer's height map (addDetailLayer, chained before this)
-  const scratchOn = !!(G && G.scratch > 0 && material.userData.detail?.uDetHeight?.value);
+  const scratchOn = !!(G && G.scratch > 0 && material.userData.detail && material.userData.detailHeight);
   const wearStat = lib.hullWear.meta.stats;
   const grit = lib.hullGrit?.maps?.pack || null;
   const gritStat = lib.hullGrit?.meta.stats;
@@ -211,8 +211,11 @@ export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, e
           vec3 gcol = mix(vec3(1.0), vec3(0.86, 0.8, 0.72), finLZ) * (1.0 - uFinSeam * (0.6 + 0.4 * finLZ));
           diffuseColor.rgb *= mix(vec3(1.0), gcol, grime);
           float edge = 0.0;
-          #ifdef USE_METALNESSMAP
+          #if defined(USE_METALNESSMAP)
             float mt = texture2D(metalnessMap, vMetalnessMapUv).b;
+            edge = smoothstep(0.03, 0.16, mt) * (1.0 - smoothstep(0.3, 0.38, mt));
+          #elif defined(METAL_IN_ROUGHNESSMAP) && defined(USE_ROUGHNESSMAP)
+            float mt = texture2D(roughnessMap, vRoughnessMapUv).b; // glTF metal-roughness map, one sampler (glbship.js)
             edge = smoothstep(0.03, 0.16, mt) * (1.0 - smoothstep(0.3, 0.38, mt));
           #endif
           edge *= finMask * (1.0 - finMark) * (1.0 - livKeep);
@@ -220,7 +223,7 @@ export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, e
         }` : ''}
         ${scratchOn ? `{
           // groundPaint scratches (grooves in its height map, z < -1.2) show lighter: paint scratched to the primer
-          float hz = (detTri(uDetHeight) - 0.6) / 0.09;
+          float hz = (detHeight() - 0.6) / 0.09;
           diffuseColor.rgb *= 1.0 + 1.3 * smoothstep(-1.2, -2.8, hz) * uFinGround2.w * finMask * (1.0 - finMark)${hasLiv ? ' * (1.0 - livKeep)' : ''};
         }` : ''}
         ${G ? `{
@@ -264,7 +267,7 @@ export function addWornFinish(material, lib, { toShip, strength = 1, tone = 1, e
           r += 0.05 * clamp((gr - uFinGritStat.x) / uFinGritStat.y, -2.0, 2.0) + 0.03 * (1.0 - finGritVis);
         }
         r += 0.12 * finSootK;
-        ${scratchOn ? 'r += 0.3 * (detTri(uDetRough) - 0.45);' : ''}
+        ${scratchOn ? 'r += 0.3 * (detRough() - 0.45);' : ''}
         r = clamp(r, uFinRough.y, uFinRough.z);
         // only paint takes it: glass and the deliberately glossy texels keep their own roughness
         float k = finMask * smoothstep(0.35, 0.55, roughnessFactor);

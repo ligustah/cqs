@@ -26,3 +26,14 @@ Scratch: $S = /tmp/claude-0/-home-user-cqs/e592383b-a9f6-5dde-82a6-4494b59b11a7/
   hull's map/normal/rough/metal now load => 18 samplers => link fails on 16-unit GPUs. Embedded (<2048) textures still
   fail via fetch(blob:) => white stacks/shed while the furnace (URI texture) is textured.
 - Dev path on a 16-unit GPU also drops the hull (same 18 samplers): the sampler budget is a latent renderer bug.
+
+## Done
+- pkg-diff.mjs (render diff, --csp, --units). Sampler budget fix (uncommitted->committed in this checkpoint):
+  patina.js packRoughHeight (detail + interior rough/height in one RGBA texture: -2 samplers), finish.js uses
+  detRough()/detHeight() + METAL_IN_ROUGHNESSMAP, glbship.js shareMetalRough (metalness from the roughness texel when
+  glTF shares the texture: -1). Hull 18 -> 15, colony 15 -> 13. Dev carrier still vs 851093d dev: 0.01% px differ.
+- glbship.js EmbeddedImageBitmaps (from WIP 8703e98) kept for embedded textures under CSP: still to verify.
+
+## Next
+3. Decide steel mill GLB (current vs 851093d), rebuild dist, check-package, pkg-diff all views desktop+phone with
+   --csp 1 --units 16, phone-check, scale-check, file diff vs published hashes.

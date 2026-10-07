@@ -62,6 +62,39 @@ export function patinaMaterial(set, { color = '#ffffff', metalness = null, rough
   });
 }
 
+// The detail layer reads one channel (G) of a set's roughness and of its height map. Both go to the shader packed in one
+// texture (R: roughness, G: height), so the layer costs one sampler less per set: a hull material with the hangar's
+// interior set, the worn finish, SAO, shadows and its own glTF maps must stay within 16 fragment texture units (ANGLE on
+// D3D11 and Metal, iOS, most Android GPUs); a program over that limit fails to link and its meshes vanish.
+const packedRH = new Map();
+/** One RGBA texture: R = roughness.g, G = height.g (either may be missing: 0). Sampled like the sources (configure()). */
+export function packRoughHeight(rough, height) {
+  if (!rough?.image && !height?.image) return null;
+  const key = `${rough?.uuid}|${height?.uuid}`;
+  if (packedRH.has(key)) return packedRH.get(key);
+  const ref = (rough || height).image;
+  const w = ref.width, h = ref.height;
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d', { willReadFrequently: true });
+  const read = (img) => { if (!img) return null; g.clearRect(0, 0, w, h); g.drawImage(img, 0, 0, w, h); return g.getImageData(0, 0, w, h).data; };
+  const R = read(rough?.image), H = read(height?.image);
+  // rows bottom-up: the sources are uploaded with flipY (TextureLoader images), a DataTexture is not
+  const out = new Uint8Array(w * h * 4);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0, i = (h - 1 - y) * w * 4, o = y * w * 4; x < w; x++, i += 4, o += 4) {
+      out[o] = R ? R[i + 1] : 0; out[o + 1] = H ? H[i + 1] : 0; out[o + 3] = 255;
+    }
+  }
+  const t = new THREE.DataTexture(out, w, h, THREE.RGBAFormat);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.generateMipmaps = true;
+  t.anisotropy = 8; t.colorSpace = THREE.NoColorSpace;
+  t.name = `${rough?.name || ''}+${height?.name || ''} (R roughness, G height)`;
+  t.needsUpdate = true;
+  packedRH.set(key, t);
+  return t;
+}
+
 /**
  * Tri-planar PATINA detail on top of an existing (e.g. generated, UV-atlased)
  * MeshStandard/Physical material. Works in the mesh's object space.
@@ -83,8 +116,7 @@ export function addDetailLayer(material, set, { unitsPerMetre = 1, tile = 4, nor
   const uniforms = {
     uDetScale: { value: 1 / (tile * unitsPerMetre) },
     uDetNormal: { value: maps.normal || null },
-    uDetRough: { value: maps.roughness || null },
-    uDetHeight: { value: maps.height || null },
+    uDetRH: { value: packRoughHeight(maps.roughness, maps.height) }, // R roughness, G height
     uDetStrength: { value: normalStrength },
     uDetRoughAmt: { value: maps.roughness ? roughAmount : 0 },
     uDetCavity: { value: maps.height ? cavity : 0 },
@@ -92,7 +124,7 @@ export function addDetailLayer(material, set, { unitsPerMetre = 1, tile = 4, nor
   if (inner) {
     Object.assign(uniforms, {
       uInScale: { value: 1 / ((inner.tile ?? tile) * unitsPerMetre) },
-      uInNormal: { value: im.normal }, uInRough: { value: im.roughness || im.height }, uInHeight: { value: im.height },
+      uInNormal: { value: im.normal }, uInRH: { value: packRoughHeight(im.roughness || im.height, im.height) },
       uInBase: { value: im.basecolor || im.height },
       uInStrength: { value: inner.normalStrength ?? 1.6 }, uInRoughAmt: { value: im.roughness ? inner.roughAmount ?? 0.5 : 0 },
       uInCavity: { value: inner.cavity ?? 0.7 }, uInAlbedo: { value: im.basecolor ? inner.albedo ?? 0.5 : 0 },
@@ -103,6 +135,7 @@ export function addDetailLayer(material, set, { unitsPerMetre = 1, tile = 4, nor
     });
   }
   material.userData.detail = uniforms;
+  material.userData.detailHeight = !!maps.height; // the packed map carries a height channel (finish.js scratches)
   const prev = material.onBeforeCompile;
   material.onBeforeCompile = (shader, renderer) => {
     prev?.call(material, shader, renderer);
@@ -113,12 +146,12 @@ export function addDetailLayer(material, set, { unitsPerMetre = 1, tile = 4, nor
     const detailFns = /* glsl */`
       varying vec3 vDetPos; varying vec3 vDetNrm;
       uniform float uDetScale, uDetStrength, uDetRoughAmt, uDetCavity;
-      uniform sampler2D uDetNormal, uDetRough, uDetHeight;
+      uniform sampler2D uDetNormal, uDetRH; // uDetRH: R roughness, G height (packRoughHeight)
       ${inner ? `
       varying vec3 vInPos;
       uniform float uInScale, uInStrength, uInRoughAmt, uInCavity, uInAlbedo, uInFeather, uInSeam, uInGrime;
       uniform vec3 uInMin, uInMax;
-      uniform sampler2D uInNormal, uInRough, uInHeight, uInBase;
+      uniform sampler2D uInNormal, uInRH, uInBase;
       float inMask() { vec3 d = min(vInPos - uInMin, uInMax - vInPos); vec3 m = smoothstep(vec3(0.0), vec3(uInFeather), d); return m.x * m.y * m.z; }
       ` : 'float inMask() { return 0.0; }'}
       vec3 detW() { vec3 w = pow(abs(normalize(vDetNrm)), vec3(6.0)); return w / (w.x + w.y + w.z); }
@@ -127,6 +160,12 @@ export function addDetailLayer(material, set, { unitsPerMetre = 1, tile = 4, nor
         return texture2D(t, p.zy).g * w.x + texture2D(t, p.xz).g * w.y + texture2D(t, p.xy).g * w.z;
       }
       float detTri(sampler2D t) { return detTriS(t, uDetScale); }
+      vec2 detTri2S(sampler2D t, float sc) {
+        vec3 p = vDetPos * sc; vec3 w = detW();
+        return texture2D(t, p.zy).rg * w.x + texture2D(t, p.xz).rg * w.y + texture2D(t, p.xy).rg * w.z;
+      }
+      float detRough() { return detTri2S(uDetRH, uDetScale).x; }
+      float detHeight() { return detTri2S(uDetRH, uDetScale).y; }
       mat3 detTBN(vec3 eye, vec3 n, vec2 uv) {
         vec3 q0 = dFdx(eye), q1 = dFdy(eye); vec2 s0 = dFdx(uv), s1 = dFdy(uv);
         vec3 N = n; vec3 q1p = cross(q1, N), q0p = cross(N, q0);
@@ -149,13 +188,13 @@ export function addDetailLayer(material, set, { unitsPerMetre = 1, tile = 4, nor
         return h;
       }`;
     const rough = inner
-      ? 'if (uDetRoughAmt > 0.0 || uInRoughAmt > 0.0) { float mR = inMask(); float rH = mix(1.0, 0.55 + detTri(uDetRough), uDetRoughAmt); float rI = mix(1.0, 0.55 + detTriS(uInRough, uInScale), uInRoughAmt); roughnessFactor = clamp(roughnessFactor * mix(rH, rI, mR), 0.04, 1.0); }'
-      : 'if (uDetRoughAmt > 0.0) roughnessFactor = clamp(roughnessFactor * mix(1.0, 0.55 + detTri(uDetRough), uDetRoughAmt), 0.04, 1.0);';
+      ? 'if (uDetRoughAmt > 0.0 || uInRoughAmt > 0.0) { float mR = inMask(); float rH = mix(1.0, 0.55 + detRough(), uDetRoughAmt); float rI = mix(1.0, 0.55 + detTri2S(uInRH, uInScale).x, uInRoughAmt); roughnessFactor = clamp(roughnessFactor * mix(rH, rI, mR), 0.04, 1.0); }'
+      : 'if (uDetRoughAmt > 0.0) roughnessFactor = clamp(roughnessFactor * mix(1.0, 0.55 + detRough(), uDetRoughAmt), 0.04, 1.0);';
     // cavity: the seams and recesses of the plating darken diffuse light (all of the ambient,
     // most of the direct). Inside the interior box the deck set's own cavity takes over.
     const cav = inner
-      ? '{ float mC = inMask(); float cH = uDetCavity > 0.0 ? mix(1.0, smoothstep(0.05, 0.45, detTri(uDetHeight)), uDetCavity) : 1.0; float hI = detTriS(uInHeight, uInScale); float cI = mix(1.0, smoothstep(0.3, 0.62, hI), uInCavity); float cav = mix(cH, cI, mC); reflectedLight.indirectDiffuse *= cav; reflectedLight.directDiffuse *= mix(1.0, cav, 0.7); }'
-      : 'if (uDetCavity > 0.0) { float h = detTri(uDetHeight); float cav = mix(1.0, smoothstep(0.05, 0.45, h), uDetCavity); reflectedLight.indirectDiffuse *= cav; reflectedLight.directDiffuse *= mix(1.0, cav, 0.6); }';
+      ? '{ float mC = inMask(); float cH = uDetCavity > 0.0 ? mix(1.0, smoothstep(0.05, 0.45, detHeight()), uDetCavity) : 1.0; float hI = detTri2S(uInRH, uInScale).y; float cI = mix(1.0, smoothstep(0.3, 0.62, hI), uInCavity); float cav = mix(cH, cI, mC); reflectedLight.indirectDiffuse *= cav; reflectedLight.directDiffuse *= mix(1.0, cav, 0.7); }'
+      : 'if (uDetCavity > 0.0) { float h = detHeight(); float cav = mix(1.0, smoothstep(0.05, 0.45, h), uDetCavity); reflectedLight.indirectDiffuse *= cav; reflectedLight.directDiffuse *= mix(1.0, cav, 0.6); }';
     let frag = shader.fragmentShader
       .replace('#include <common>', '#include <common>\n' + detailFns)
       .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n' + rough)
