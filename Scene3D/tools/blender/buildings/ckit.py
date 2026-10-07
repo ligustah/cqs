@@ -1185,7 +1185,7 @@ POUR_V5.update({
 # off the shed face (xb -2.6 with the part at x 28: dark plates in front of the light cladding = a deep dark interior),
 # a full dark roof deck behind the lattice girder, the crane under it; the tapping platforms move forward with the wall
 POUR_V6 = dict(POUR_V5)
-POUR_V6.update({'xb': -2.6, 'xf': 6.4, 'roof': True, 'tap_dx': 5.8, 'tap_upper': False, 'runner_glow': 3.2,
+POUR_V6.update({'xb': -2.6, 'xf': 6.4, 'roof': True, 'tap_dx': 5.8, 'tap_upper': False, 'runner_glow': 1.5,   # r8: 3.2 read pink-white
                 'crane_x': 3.6, 'ladle_x': 4.4, 'rails': (7.2, 0.6, 7.4), 'control': (1.6, 5.8, -6.4, -2.2, 3.8),
                 # r2: the runner on the apron in front of the portal, along the wall (the concept's long glowing trough)
                 'runner': (0.0, 24.0, 0.0, 3.6), 'runner_at': (8.9, -9.0, -90.0), 'runner_core': 0.9})
