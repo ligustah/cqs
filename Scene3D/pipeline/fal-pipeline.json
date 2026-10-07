@@ -3847,5 +3847,36 @@
   "uploads": [],
   "jobs": [],
   "approx_usd": 0.0
+ },
+ "v27_mill_weathering": {
+  "date": "2026-10-07",
+  "asset": "steel mill v6 r14: photographic weathering library for the colony remodel paint (cpaint), reusable by all 16 buildings",
+  "why": "judges r2-r13: the procedural grime read synthetic and tile-like; the concept grime is photographic (coordinator r13: change the method, not the amplitude)",
+  "model": "fal-ai/patina/material",
+  "params": "square_hd (1024), maps basecolor/normal/roughness/height, upscale_factor 2 (2048 maps), tiling_mode both, png, enable_prompt_expansion false, 8 steps",
+  "jobs": {
+   "wxCladding": {
+    "request_id": "01a1177e-f8eb-7061-aa2a-6e92bf7f703e",
+    "seed": 60612,
+    "use": "light cladding / shell / panel zones: albedo and roughness modulation at a ~4 m tile"
+   },
+   "wxSteel": {
+    "request_id": "01a1177e-f902-7c03-a961-bdd791d6e415",
+    "seed": 60613,
+    "use": "dark structural steel zones (frame, frame2, pipeDark): modulation at a ~2 m tile"
+   },
+   "wxConcrete": {
+    "request_id": "01a1177e-f905-78d3-bab3-1df916cc0985",
+    "seed": 60614,
+    "use": "concrete zones and the plinth: modulation at a ~8 m tile"
+   },
+   "wxRoof": {
+    "request_id": "01a1177e-f907-7951-9237-0975cfcc5ac8",
+    "seed": 60615,
+    "use": "roof sheeting (clad2): modulation at a ~6 m tile, ribs across the slope"
+   }
+  },
+  "prompts": "see the recipe in each job (fal request history); summarised in style-library/styles/cqs-fleet/prompts.md (weathering library)",
+  "status": "completed; downloaded to scratch, converted with python3 -I (wxprep.py) to Scene3D/assets/materials/weather/<set>/{base,rough,height,normal}.png (2048)"
  }
 }

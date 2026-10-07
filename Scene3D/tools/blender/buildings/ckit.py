@@ -63,10 +63,12 @@ WORKS = {
     # r4: the soft fbm run-off off (`streak` 0: judge B read it as UV stretch), per-zone roughness (satin everywhere)
     # r12: seams 9 cm and darker, a stronger halo: the concept's plate grid reads at its camera (4.5 cm seams were ~0.2 px)
     # r14 (grit-check r13: shell std 0.69x, wall 0.71x of the concept's): stronger macro panel tone and long streaks
-    'shell': {'color': [0.73, 0.70, 0.665], 'rust': 0.6, 'streak': 0.0, 'dark': 0.7, 'seam_w': 0.09, 'vstreak': 1.0, 'halo': 0.22, 'rough': 0.66, 'mtone': 0.26, 'mstreak': 0.4},
-    'clad': {'color': [0.73, 0.70, 0.66], 'rust': 0.5, 'streak': 0.0, 'vstreak': 1.0, 'halo': 0.22, 'rough': 0.7, 'seam_w': 0.09, 'mtone': 0.26, 'mstreak': 0.4},
+    # r14: the photographic weathering (cpaint.PHOTO) carries the streaks now: the procedural column streaks and the macro
+    # streaks a step down, the macro panel tone kept
+    'shell': {'color': [0.73, 0.70, 0.665], 'rust': 0.6, 'streak': 0.0, 'dark': 0.6, 'seam_w': 0.07, 'vstreak': 0.45, 'halo': 0.16, 'rough': 0.66, 'mtone': 0.2, 'mstreak': 0.15},
+    'clad': {'color': [0.73, 0.70, 0.66], 'rust': 0.5, 'streak': 0.0, 'vstreak': 0.45, 'halo': 0.12, 'rough': 0.7, 'seam_w': 0.06, 'mtone': 0.2, 'mstreak': 0.15},
     'clad2': {'color': [0.64, 0.62, 0.59], 'rust': 0.45, 'blot': 0.035, 'patina': 0.03, 'soot': 0.9, 'lap': 2.9},   # roofs: sooty with dark laps
-    'panel': {'color': [0.75, 0.72, 0.685], 'rust': 0.45, 'streak': 0.0, 'vstreak': 0.95, 'halo': 0.12, 'rough': 0.68},
+    'panel': {'color': [0.75, 0.72, 0.685], 'rust': 0.45, 'streak': 0.0, 'vstreak': 0.45, 'halo': 0.12, 'rough': 0.68, 'mstreak': 0.15},
     # r7 (judge A: "clean, bright, toy-like"): dark steel a step darker with stronger mottling (blot), still neutral
     'frame': {'color': [0.31, 0.315, 0.326], 'rust': 0.1, 'edge': 1.0, 'vstreak': 0.5, 'rough': 0.72, 'blot': 0.14, 'tone': 0.12},     # concept gunmetal ~sRGB 70-80, neutral
     'frame2': {'color': [0.35, 0.352, 0.362], 'rust': 0.12, 'vstreak': 0.5, 'rough': 0.62, 'edge': 1.0, 'blot': 0.14, 'tone': 0.12},
@@ -465,7 +467,7 @@ FURNACE_V6['rings'] = [(49.0, 5.05, 7.0), (54.0, 3.75, 6.0), (59.6, 2.65, 4.4)]
 FURNACE_V6['segments'] = 52      # r8 (phone budget 150k): 60 -> 52
 FURNACE_V6['bustle_torus'] = True
 # r10 (judge A: "pipes running down the tower"): hot-blast drops from the bustle main to the base between the legs
-FURNACE_V6['drops'] = [(20.0, 0.55), (160.0, 0.55), (250.0, 0.55)]
+FURNACE_V6['drops'] = [(20.0, 0.55), (160.0, 0.55), (200.0, 0.55)]   # r14: 250 deg ran into the new base block
 FURNACE_V6['cap_mat'] = 'frame2'   # r8: the concept's crown is stepped DARK drums (a light cap read as a lantern)
 FURNACE_V6['taps_a0'] = 0.0
 FURNACE_V6['downcomer'] = (1.7, [(-8.6, 24.4, 1.6), (-13.5, 24.4, 3.6), (-19.0, 20.0, 6.0), (-19.0, 14.6, 6.0)])
@@ -953,9 +955,10 @@ SHED_V5.update({
     'pilaster_lamps': (4.2, 10.4),
     'paint': {
         # v6: soft fbm run-off down (0.2 -> 0.08), the crisp seam streaks (WORKS vstreak) carry the grit; heavier drips
-        'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.4, 'tone': 0.22, 'dark': 0.72, 'stagger': False,
-                 'seam_w': 0.09, 'streak': 0.0, 'drip': 0.0},     # r4: fbm run-off and smeared drips off (read as stretch); r12 seams 9 cm
-        'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.4, 'tone': 0.07, 'dark': 0.35, 'streak': 0.1},
+        # r14: seams 6 cm / 0.5 (9 cm / 0.72 read as a window grid on the shed walls)
+        'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.4, 'tone': 0.22, 'dark': 0.5, 'stagger': False,
+                 'seam_w': 0.06, 'streak': 0.0, 'drip': 0.0},     # r4: fbm run-off and smeared drips off (read as stretch); r12 seams 9 cm
+        'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.4, 'tone': 0.07, 'dark': 0.2, 'streak': 0.1},
         'frame2': {'rust': 0.15},
     },
 })
@@ -1438,7 +1441,9 @@ def pour_bay(B, P=POUR):
         'amber': {'color': [0.80, 0.52, 0.16], 'rust': 0.4, 'edge': 1.0, 'tone': 0.12, 'course': 1.6, 'joint': 3.2, 'bolts': 0.35, 'blot': 0.14, 'vstreak': 0.6},
         # r10 (judge B: the ladle and booth read as a wooden barrel and hut): no fixed-pitch seams or streak columns on
         # small objects: the ladle gets two welded courses and mottling, the booth's panel no column streaks
-        'rust': {'rust': 0.0, 'edge': 1.0, 'course': 1.6, 'joint': 1e3, 'blot': 0.22, 'tone': 0.06, 'rough': 0.55, 'metal': 0.3},
+        # r14: the ladle a rough, scorched steel shell: dark brown-grey, slag drips from the lip (vstreak), blotchy heat tint
+        'rust': {'color': [0.36, 0.27, 0.21], 'rust': 0.0, 'edge': 1.0, 'course': 1.6, 'joint': 1e3, 'blot': 0.28, 'tone': 0.06, 'rough': 0.8,
+                 'metal': 0.15, 'vstreak': 1.0, 'vsrc': 4.0, 'photo': ('wxSteel', 2.0, 0.8, 0.0, 0.3, 0.0)},
         'panel': {'vstreak': 0.0, 'mstreak': 0.0, 'blot': 0.12},
         'hot': {'crust': 0.65},     # r12: a darker cooled skin broken by bright cracks (judge B: flat orange paint)
     })

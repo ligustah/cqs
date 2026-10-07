@@ -246,7 +246,7 @@ def model(B):
     # furnace plinth; the concept's light block with the big elbow pipe on its roof), the dust catcher behind
     # r7: the concept's tall light annex under the big elbow pipe (15 m)
     # r8 (coordinator: plain tall blocks, dark frames, light panels, one window row at most)
-    K.block(B, (-37.0, 0.0, 30.0), (6.0, 15.0, 15.0),
+    K.block(B, (-37.0, 0.0, 30.0), (6.0, 15.0, 15.0), panel='panel2',
             sides={'+z': {'bay': 6.0, 'storey': 15.0, 'windows': [], 'doors': [3.0], 'seams': False, 'bands': False},
                    '+x': {'bay': 7.5, 'storey': 7.5, 'windows': [1], 'win': (1.2, 0.9), 'seams': False, 'bands': False},
                    '-x': {'bay': 7.5, 'storey': 15.0, 'doors': [7.5], 'louvres': [(11.0, 7.5, 2.0, 2.0)], 'seams': False, 'bands': False},
@@ -277,7 +277,7 @@ def model(B):
     # foot and the shed's front gable (the concept's tall light block between the furnace and the pour bay): dark frame,
     # light panels, doors with lamps, a roller door, louvres, a single small window row; no roof clutter
     # r13: dark posts at the corners only, no bands or seam grid (bays of 5 m drew a bold half-timbered grid)
-    K.block(B, (6.25, 0.0, 33.5), (15.5, 12.0, 10.0),
+    K.block(B, (6.25, 0.0, 33.5), (15.5, 12.0, 10.0), panel='panel2',   # r14: weathered mid-grey panels (judge A: not bright white)
             sides={'+z': {'bay': 15.5, 'storey': 12.0, 'windows': [], 'doors': [2.6, 12.9], 'rollers': [(7.75, 5.0, 5.6)],
                           'louvres': [(5.0, 8.4, 2.0, 1.6), (10.5, 8.4, 2.0, 1.6)], 'seams': False, 'bands': False},
                    '+x': {'bay': 10.0, 'storey': 6.0, 'windows': [1], 'win': (1.2, 0.8), 'doors': [5.0], 'seams': False, 'bands': False},
@@ -309,6 +309,27 @@ def model(B):
     K.flood_on_wall(B, (SH_X + 14.05, 16.0, -12.0), (1, 0, 0), (36.0, 0.0, -14.0))
     K.flood_on_wall(B, (SH_X + 14.05, 16.0, -36.0), (1, 0, 0), (36.0, 0.0, -34.0))
     clutter(B)
+    # r14 (judge A r13 density): the furnace foot wrapped in stepped concrete blocks, a stair tower to the tuyere deck, pipe
+    # runs at its base; a pipe rack and a switchgear skid across the right yard; catwalks with rails along the shed ridges
+    for (dx, dz, w_, d_, h_) in ((-13.5, -6.0, 5.0, 9.0, 4.5), (-13.5, 4.5, 5.0, 7.0, 3.0), (6.5, -13.5, 9.0, 5.0, 4.0)):
+        K.block(B, (FX + dx, 3.0, FZ + dz), (w_, h_, d_), frame='frameL', corner_lamps=True,
+                sides={'+z': {'bay': w_, 'storey': h_, 'seams': False, 'bands': False}, '-x': {'bay': d_, 'storey': h_, 'seams': False, 'bands': False},
+                       '+x': {'bay': d_, 'storey': h_, 'seams': False, 'bands': False}, '-z': {'bay': w_, 'storey': h_, 'seams': False, 'bands': False}},
+                roof={'parapet': 0.3})
+    K.stair(B, (FX + 13.0, 3.0, FZ + 15.4), (-1, 0, 0), 5.8, w=1.2)
+    K.catwalk(B, (FX + 4.5, 8.8, FZ + 15.4), (FX - 1.0, 8.8, FZ + 15.4), w=1.4)
+    K.stair(B, (FX - 1.0, 8.8, FZ + 13.2), (-1, 0, 0), 6.0, w=1.1)
+    K.pipe_bundle(B, [(FX + 15.2, 3.0, FZ - 12.0), (FX + 15.2, 3.0, FZ + 10.0)], n=2, r=0.3)
+    K.pipe_rack(B, (27.5, 0.0, -24.0), (39.0, 0.0, -24.0), w=3.0, h=5.5, levels=(5.5,), pitch=6.5,
+                pipes=((0, -0.8, 0.35, 'pipe'), (0, 0.0, 0.5, 'pipeDark'), (0, 0.9, 0.3, 'pipe')))
+    K.block(B, (35.0, 0.0, -31.5), (4.5, 2.6, 2.4), frame='frame', corner_lamps=False,
+            sides={'+x': {'bay': 2.4, 'storey': 2.6, 'louvres': [(1.2, 1.4, 1.2, 1.0)], 'seams': False, 'bands': False},
+                   '+z': {'bay': 4.5, 'storey': 2.6, 'seams': False, 'bands': False}}, roof={'parapet': 0.0})
+    for (cx, cz) in ((33.0, -36.0), (34.6, -36.0), (33.8, -37.4)):
+        K.pallet(B, (cx, 0.0, cz), load='boxes')
+    for (x_, zs_) in ((SH_X + 1.6, (-43.0, -2.0)), (SH_X + 1.6, (2.0, 25.0))):
+        y_ = 17.8 - 3.4 * (1.6 / 14.0) + 0.1
+        K.catwalk(B, (x_, y_, zs_[0]), (x_, y_, zs_[1]), w=0.9)
     # r10 (judge A: "the shed roof is large plain surfaces"; "base pipework on the stacks"): exhaust ducts on saddles along
     # both roof slopes, small pipe runs with valves round the stack bases
     for (dx, zs_) in ((7.5, (-43.0, -2.0)), (-7.5, (-40.0, 0.0)), (7.5, (2.0, 25.0))):
@@ -327,11 +348,11 @@ def model(B):
     # front between the hugging legs (on the furnace plinth), a 10 m annex block on the -X side, and an annex attached to
     # the shed's front end beside the pour bay (it replaces the free-standing control house)
     # r12: the furnace-front block went (merged into the 12 m block beside the furnace)
-    K.block(B, (-37.0, 0.0, 17.8), (6.0, 11.0, 8.4),
+    K.block(B, (-37.0, 0.0, 17.8), (6.0, 11.0, 8.4), panel='panel2',
             sides={'+z': {'bay': 3.0, 'storey': 5.5, 'doors': [3.0]}, '+x': {'bay': 4.2, 'storey': 5.5},
                    '-x': {'bay': 4.2, 'storey': 5.0, 'louvres': [(4.2, 6.5, 2.0, 1.6)]}},
             roof={'parapet': 0.4, 'units': [('hvac', 0.0, 0.0, {'w': 2.2, 'd': 1.6, 'fans': 1})]})
-    K.block(B, (25.5, 0.0, 30.8), (12.0, 10.0, 6.4),     # r12: plain, 10 m, no windows, no roof clutter
+    K.block(B, (25.5, 0.0, 30.8), (12.0, 10.0, 6.4), panel='panel2',     # r12: plain, 10 m, no windows, no roof clutter
             sides={'+z': {'bay': 12.0, 'storey': 10.0, 'doors': [2.2, 9.8], 'windows': [], 'louvres': [(6.0, 6.0, 2.0, 1.6)], 'seams': False, 'bands': False},
                    '+x': {'bay': 6.4, 'storey': 10.0, 'seams': False, 'bands': False}},
             roof={'parapet': 0.5})
@@ -346,7 +367,9 @@ def clutter(B):
     # --- glow spill: the hearth band lights the furnace foot and casthouse roof; the runner lights the portal floor
     # r2: 900 cd / 34 m washed the whole furnace foot and the shed gable orange: a local spill only
     # r5: lower and weaker: at 13 m it painted the light hearth drum peach; the concept lights the ground and the legs
-    B.R.spill((FX + 11.0, 4.5, FZ + 11.0), color='#ffa048', intensity=220.0, distance=18.0)   # r6/r8: yellow-orange, on the ground
+    # r14 (judge A r13: "the orange stays in thin strips and barely lights anything"): a hot pool on the slab and the
+    # furnace's lower walls, two lights along the runner, one inside the portal
+    B.R.spill((FX + 11.0, 5.5, FZ + 11.0), color='#ff9a40', intensity=380.0, distance=22.0)
     B.R.spill((FX + 9.0, 19.5, FZ + 9.0), color='#ffa048', intensity=90.0, distance=10.0)     # r8: lights the steel under the bustle
     # r8 (judge A: "the concept's many small warm wall lamps are mostly missing"): pins up the furnace legs' outer corners
     for (sx, sz) in ((1, 1), (-1, 1), (1, -1)):
@@ -354,7 +377,9 @@ def clutter(B):
             f = (y - 3.0) / 23.6
             b = 8.8 + 0.6 * f + (3.6 - 0.8 * f) / 2 + 0.12
             B.R.pin((FX + sx * b, y, FZ + sz * b))
-    B.R.spill((PB_X + 11.0, 4.5, PB_Z + 4.0), color='#ffa048', intensity=220.0, distance=18.0)   # r7/r9: the pour lights the apron (2.6 m over the runner burnt its core pink-white)
+    B.R.spill((PB_X + 11.0, 4.0, PB_Z - 4.0), color='#ff9a40', intensity=260.0, distance=16.0)   # r14: two pools along the runner
+    B.R.spill((PB_X + 11.0, 4.0, PB_Z + 9.0), color='#ff9a40', intensity=260.0, distance=16.0)
+    B.R.spill((PB_X + 2.0, 6.0, PB_Z + 2.0), color='#ffa850', intensity=160.0, distance=14.0)    # inside the portal
     # --- +X apron along the shed (x 33-40, z -48..0): a pipe cluster on stools at the edge, sheds, pallets, skids
     K.pipe_bundle(B, [(38.6, 0.0, -45.5), (38.6, 0.0, -26.0)], n=3, r=0.22)
     K.pipe_bundle(B, [(39.2, 0.0, -8.0), (39.2, 0.0, -1.0), (35.0, 0.0, -1.0)], n=2, r=0.3)

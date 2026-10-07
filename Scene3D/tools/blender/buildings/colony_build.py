@@ -60,7 +60,16 @@ def stage_hull(bid, work, tex, samples, threads):
     tris = lib.tris_of(ob)
     t1 = time.time()
     print(f'[colony] {bid}: model {t1 - t0:.0f}s, {tris} tris, batches {len(P.items)}', flush=True)
-    lib.unwrap(ob, margin=max(0.0008, 2.0 / tex))
+    # v6 r14 (judge B: "the annex wall is a smeared photo"): the remodel unwrap (stacked tiny islands, per-zone weights)
+    # instead of one smart projection at one scale: the 80 x 92 m plinth top took most of the hull atlas and the blocks
+    # got a few px/m. Concrete is weighted down, light walls keep full weight. COLONY_SIMPLE_UV=1 restores the old path.
+    if os.environ.get('COLONY_SIMPLE_UV'):
+        lib.unwrap(ob, margin=max(0.0008, 2.0 / tex))
+    else:
+        import remodel as RM
+        w = dict(RM.UV_WEIGHT, concrete=0.3, concreteD=0.3, concrete2=0.35, kerb=0.45, seam=0.3, hazard=0.5)
+        ppm, (a3, a2) = RM.unwrap(ob, margin=max(0.0008, 1.5 / tex), weights=w)
+        print('[colony] hull px/m at %d: ' % tex + ', '.join(f'{z} {v * tex:.1f}' for z, v in sorted(ppm.items(), key=lambda kv: -kv[1])), flush=True)
     t2 = time.time()
     print(f'[colony] unwrap {t2 - t1:.0f}s', flush=True)
     tb = lib.bake(ob, tex, samples)

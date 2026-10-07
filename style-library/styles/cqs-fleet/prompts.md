@@ -83,6 +83,22 @@ Tripo H3.1 image-to-3D with texture and PBR on, detailed quality, `face_limit` 2
   blue heat discolouration, seamless.
 - Others (`orange`, `ceramic`, `foil`, `hullWear`, `hullGrit`, `sootStreak`): see the pipeline record.
 
+## Weathering library (v27, the colony buildings' photographic grime; PATINA, square_hd, upscale 2, tiling both)
+
+All four use "Top-down orthographic photograph of ..., flat and evenly lit with no shadows and no lighting gradient,
+seamless tileable texture ... Realistic photographic heavy industrial weathering. No text, no markings." with:
+- `wxCladding` (seed 60612): off-white to warm light-grey painted steel cladding panels about 1 x 2-3 m, thin dark
+  joints, long vertical grime and soot streaks down from every horizontal joint, thin orange-brown rust drips under bolts
+  and seams, darker grime at panel edges, uneven panel tone, chalky matte paint, a few dents. Good: streaks and drips.
+  Its panel joints must be removed before use (`cpaint._unline`).
+- `wxSteel` (60613): grimy dark grey painted structural steel, neutral gunmetal, mottled soot, scratches, chipped
+  flakes of bare steel, faint rust spots, weld beads, bolts; "neutral grey colour, not brown". Came back nearly uniform:
+  a subtle layer only.
+- `wxConcrete` (60614): stained industrial concrete slab, mid grey, large dark damp patches and oil stains several
+  metres across, black oil spots, tyre scuffs, fine cracks, dust. Good.
+- `wxRoof` (60615): sooty light-grey trapezoidal roof sheeting, ribs one way, dark laps, soot streaks down the ribs.
+  Came back diagonal and bluish: luminance only, low strength.
+
 ## Ground units and installations (v16 concept spreads)
 
 Every prompt and job id is in `Scene3D/pipeline/fal-pipeline.json` (`v16_concepts_vehicle_shipyard_spaceport`).

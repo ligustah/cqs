@@ -273,3 +273,19 @@ Checklist review r13: S1 PASS (compact tower, stepped dark crown), C2 / C3 PASS,
 cabins), W1 PASS (1.00x), M1 PASS (shadow 1.00x), G0 FAIL on shell / wall std (0.69 / 0.71x) -> mtone 0.26, mstreak 0.4
 for the next bake, G1 PASS (tapered drips), G2 PASS, G3 PASS-ish, L1 / L2 PASS, T2 PASS at 4096 (seams 2-4 px), T3
 PASS-ish (edge line on chamfered members), phone tris FAIL (see STYLE proposals). Judges requested.
+- r13 judges: both NOT YET. A: silhouette, mood MATCH; grit NO (clean even tiles, spotless base, white annexes),
+  density NO (furnace base, right yard, shed roof), warmth NO (regressed with the fill cut; orange only in strips).
+  B: chamfers now MINOR; MAJOR: blurry stretched block wall (hull UV), blocky shell smudges, moire dots; MAJOR: molten
+  metal and ladle read as flat paint. Coordinator: change the method: a photographic fal weathering library.
+
+### v6 round 14 (aborted in its shots stage: superseded) and round 15 (started 18:16)
+- fal: four PATINA weathering sets (`v27_mill_weathering`: wxCladding, wxSteel, wxConcrete, wxRoof; ~$0.5), downloaded
+  to scratch, converted with `python3 -I` (`weather/wxprep.py`) to `tools/blender/buildings/weather/<set>/`.
+- `cpaint.PHOTO` photo layer (band-limited, per-row offsets, joints removed), `lib._wx_photo` for the hull.
+- Hull UV: `colony_build.py` uses `remodel.unwrap` (stacking, concrete weighted 0.3).
+- Seams softened (6-7 cm, 0.5-0.6) after a test bake showed a window-grid look; procedural streaks a step down.
+- Molten: AO-driven heat gradient + crust; ladle scorched steel with slag drips.
+- Lights: hearth pool 380 cd, two runner pools 260 cd, a portal light 160 cd.
+- Density: stepped concrete blocks round the furnace foot, a stair + catwalk + stair toward the tuyere deck, a pipe
+  bundle on the furnace plinth, a pipe rack and a switchgear skid across the right yard, catwalks along the shed
+  ridges; annex blocks in mid-grey 'panel2'.

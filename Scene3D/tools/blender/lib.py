@@ -581,6 +581,33 @@ def material(name):
     return mt
 
 
+_WXIMG = {}
+
+
+def _wx_photo(g, col, obj, setname, tile, k):
+    """v6 r14: the photographic weathering library (tools/blender/buildings/weather/<set>/base.jpg, fal PATINA) in the
+    hull bake: box-projected at `tile` m in object space, modulating the colour by the photo's colour relative to its
+    mean (strength k), so the kit colour stays the average and the grime is the photo's."""
+    import os
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'buildings', 'weather', setname, 'base_clean.jpg')   # joints removed (cpaint._unline)
+    if not os.path.exists(path):
+        return col
+    if setname not in _WXIMG:
+        im = bpy.data.images.load(path, check_existing=True)
+        px = list(im.pixels[:])
+        n = len(px) // 4
+        mean = [sum(px[c::4]) / n for c in range(3)]
+        _WXIMG[setname] = (im, mean)
+    im, mean = _WXIMG[setname]
+    tx = g.node('ShaderNodeTexImage', projection='BOX', interpolation='Cubic')
+    tx.image = im
+    tx.projection_blend = 0.25
+    g.put(tx.inputs['Vector'], g.vm('MULTIPLY', obj, (1 / tile, 1 / tile, 1 / tile)))
+    ratio = g.vm('DIVIDE', tx.outputs['Color'], tuple(max(m, 1e-3) for m in mean))
+    fac = g.lerp((1.0, 1.0, 1.0), ratio, k)
+    return g.vm('MULTIPLY', col, fac)
+
+
 def _grit(g, name, base, col, obj, ao):
     """v6 (colony buildings, lib.BAKE['grit']): the concepts' grit in the hull bake.
     Light paint walls: crisp vertical grime / rust streaks, columns 12 cm wide (white noise per column and storey:
@@ -604,9 +631,11 @@ def _grit(g, name, base, col, obj, ao):
         k = g.math('ADD', g.math('ADD', g.math('MULTIPLY', stain, 0.7), g.math('MULTIPLY', stain2, 0.45)), g.math('MULTIPLY', spot, 0.7))   # r10: several-metre patches, stronger
         k = g.math('ADD', k, 0.08)      # an overall dusty grey (r4: 0.2 took the light band to 0.76x) on the light concrete (the concept's slab is mid grey)
         k = g.math('MULTIPLY', k, g.math('ADD', 0.35, g.math('MULTIPLY', top, 0.65)), clamp=True)
-        return g.lerp(col, g.vm('MULTIPLY', col, (0.42, 0.40, 0.37)), k)
+        out_ = g.lerp(col, g.vm('MULTIPLY', col, (0.42, 0.40, 0.37)), k)
+        return _wx_photo(g, out_, obj, 'wxConcrete', 9.2, 0.8)     # r14: the photographic slab under the stains
     if base[0] < 0.25:
-        return col
+        return _wx_photo(g, col, obj, 'wxSteel', 2.5, 0.9) if base[0] < 0.12 else col
+    col = _wx_photo(g, col, obj, 'wxCladding', 4.8, 0.85)          # r14: light walls: the photographic cladding grime
     wall = g.mr(ny, 0.5, 0.25)
     pos = g.node('ShaderNodeSeparateXYZ')
     g.put(pos.inputs[0], obj)

@@ -47,6 +47,91 @@ STREAK_C = HP.srgb2lin([0.30, 0.285, 0.265])      # v6: grime streak on light pa
 SOOT_C = HP.srgb2lin([0.20, 0.19, 0.18])        # v6: roof soot (warm-neutral, the concept's dark roof laps)
 
 
+# ------------------------------------------------------------------------------------------------------------------
+# v6 r14: the photographic weathering library (fal PATINA sets, fal-pipeline.json v27_mill_weathering; prepared with
+# python3 -I into weather/<set>/{base.jpg, rough.png, height.png}, 1024 px, seamless). Each zone samples its set at true
+# scale in the face coordinates (s along the face, t up the wall; decks x / z), BAND-LIMITED to the zone's texel density
+# (the set is box-filtered to ~1 texel per texel before sampling: no moire), and modulates the calibrated zone colour by
+# the photo's relative luminance (and a little of its chroma), the roughness and the height. The kit colour stays the
+# mean, so paint-check holds; the photo brings the irregular, organic grime the procedural layers never had.
+WX_DIR = os.path.join(HERE, 'weather')
+_WX = {}
+# zone -> (set, tile m, k value, k chroma, k roughness, height m)
+PHOTO = {
+    'shell': ('wxCladding', 4.8, 0.9, 0.3, 0.25, 0.002), 'clad': ('wxCladding', 4.8, 0.9, 0.3, 0.25, 0.002),
+    'panel': ('wxCladding', 4.8, 0.85, 0.3, 0.25, 0.002), 'panel2': ('wxCladding', 4.8, 0.8, 0.3, 0.25, 0.002),
+    'frameL': ('wxCladding', 4.8, 0.7, 0.2, 0.2, 0.0015),
+    'clad2': ('wxRoof', 6.0, 0.4, 0.0, 0.2, 0.0), 'roof': ('wxRoof', 6.0, 0.4, 0.0, 0.2, 0.0),
+    'frame': ('wxSteel', 2.5, 1.0, 0.0, 0.3, 0.001), 'frame2': ('wxSteel', 2.5, 1.0, 0.0, 0.3, 0.001),
+    'pipeDark': ('wxSteel', 2.0, 0.8, 0.0, 0.25, 0.0), 'amber': ('wxSteel', 2.5, 0.6, 0.0, 0.25, 0.0),
+    'concrete': ('wxConcrete', 9.2, 0.9, 0.2, 0.2, 0.0015), 'concrete2': ('wxConcrete', 9.2, 0.8, 0.2, 0.2, 0.0015),
+    'concreteD': ('wxConcrete', 9.2, 0.9, 0.2, 0.2, 0.0015), 'kerb': ('wxConcrete', 9.2, 0.7, 0.2, 0.2, 0.001),
+}
+
+
+def _unline(img):
+    """r14: remove the photo's own panel joints (full-width / full-height dark lines: the kit models and paints its own
+    seams, so the photo's would double them into a tile grid): rows / columns whose mean luminance dips well below
+    their neighbourhood are replaced by the average of the rows / columns either side of the dip."""
+    out = img.copy()
+    for axis in (0, 1):
+        lum = out @ LUMA
+        prof = lum.mean(axis=1 - axis)
+        k = 9
+        pad = np.pad(prof, k, mode='wrap')
+        loc = np.array([np.median(pad[i:i + 2 * k + 1]) for i in range(len(prof))])
+        bad = np.abs(prof - loc) > 0.02          # dark joints and their light lips
+        bad = bad | np.roll(bad, 1) | np.roll(bad, -1) | np.roll(bad, 2) | np.roll(bad, -2)
+        idx = np.where(bad)[0]
+        n = len(prof)
+        for i in idx:
+            a_, b_ = i - 1, i + 1
+            while bad[a_ % n]:
+                a_ -= 1
+            while bad[b_ % n]:
+                b_ += 1
+            if axis == 0:
+                out[i] = 0.5 * (out[a_ % n] + out[b_ % n])
+            else:
+                out[:, i] = 0.5 * (out[:, a_ % n] + out[:, b_ % n])
+    return out
+
+
+def wx_set(name, n):
+    """The set box-filtered to n x n (cached): linear base, relative luminance (mean 1), chroma ratio, roughness and
+    height (mean 0)."""
+    key = (name, n)
+    if key not in _WX:
+        d = os.path.join(WX_DIR, name)
+        base = np.asarray(Image.open(os.path.join(d, 'base.jpg')).convert('RGB'), np.float32) / 255
+        base = _unline(base)
+        base = np.asarray(Image.fromarray((base * 255).astype(np.uint8)).resize((n, n), Image.BOX), np.float32) / 255
+        lin = HP.srgb2lin(base)
+        lum = lin @ LUMA
+        lum_r = lum / max(float(lum.mean()), 1e-4)
+        chroma = lin / np.maximum(lum[..., None], 1e-4)
+        chroma = chroma / np.maximum(chroma.reshape(-1, 3).mean(0), 1e-4)
+        rough = np.asarray(Image.open(os.path.join(d, 'rough.png')).convert('L').resize((n, n), Image.BOX), np.float32) / 255
+        hgt = np.asarray(Image.open(os.path.join(d, 'height.png')).convert('L').resize((n, n), Image.BOX), np.float32) / 255
+        _WX[key] = (lum_r.astype(np.float32), chroma.astype(np.float32), (rough - rough.mean()).astype(np.float32), (hgt - hgt.mean()).astype(np.float32))
+    return _WX[key]
+
+
+def wx_sample(img, u, v):
+    """Bilinear, wrapping sample of img (n, n[, c]) at u, v in tiles (v up)."""
+    n = img.shape[0]
+    x = (u % 1.0) * n - 0.5
+    y = ((-v) % 1.0) * n - 0.5
+    x0 = np.floor(x).astype(np.int64); y0 = np.floor(y).astype(np.int64)
+    fx = (x - x0).astype(np.float32); fy = (y - y0).astype(np.float32)
+    x0 %= n; y0 %= n; x1 = (x0 + 1) % n; y1 = (y0 + 1) % n
+    if img.ndim == 3:
+        fx = fx[:, None]; fy = fy[:, None]
+    a = img[y0, x0] * (1 - fx) + img[y0, x1] * fx
+    b = img[y1, x0] * (1 - fx) + img[y1, x1] * fx
+    return a * (1 - fy) + b * fy
+
+
 def vstreaks(s, t, src, seed):
     """v6: crisp vertical run-off streaks (the concept's rust and grime lines down the light plating): narrow columns
     along the face (two widths, 9 and 22 cm) with hard sides, each starting at a course seam (every `src` m in y) and
@@ -334,6 +419,22 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
                 mk = macro(p, s, t, wall, pseed + 101 + zi, c)
                 col *= (1 - mk)[:, None]
                 rg += 0.1 * np.clip(mk, 0, 1)
+            ph = c.get('photo', PHOTO.get(zone_names[zi]))
+            if ph and os.path.isdir(os.path.join(WX_DIR, ph[0])):
+                setn, T, kc, kch, kr, kh = ph
+                n_ = int(2 ** np.clip(np.ceil(np.log2(max(ppm_z * T, 32.0))), 5, 10))     # band-limit to the texel density
+                lum_r, chr_, rgh_, hgt_ = wx_set(setn, n_)
+                off = (pseed % 17) * 0.137 + zi * 0.291
+                # each tile row gets its own horizontal offset (breaks the photo's repeat into per-course variety)
+                vr = np.floor(t / T + off * 0.61)
+                u_, v_ = s / T + off + HP.hash3(vr.astype(np.int64), 3, zi, pseed + 77) * 7.31, t / T + off * 0.61
+                lr = wx_sample(lum_r, u_, v_)
+                col *= np.clip(1 + kc * (lr - 1), 0.15, 2.0)[:, None]
+                if kch:
+                    col *= (1 + kch * (wx_sample(chr_, u_, v_) - 1))
+                rg += kr * wx_sample(rgh_, u_, v_)
+                if kh:
+                    h += kh * wx_sample(hgt_, u_, v_)
             # rust: streaks down the walls (stronger under seams and in shadowed corners), seams bleeding, chips
             if c['rust'] > 0:
                 rs = HP.fbm(p * np.array([1.0, 0.09, 1.0], np.float32), 0.9, 3, seed=17 + zi)
@@ -374,11 +475,15 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
                 # molten metal / furnace glow (v4 r2): a deep orange body under the tone curve's knee with hotter yellow
                 # cores and a dark cooling crust broken by glowing cracks (one flat bright orange tone-mapped to a flat
                 # salmon slab at the building camera). Hue goes yellow with heat, never toward pink.
-                f1 = HP.fbm(p, 0.9, 3, seed=3)
-                core = HP.smooth(0.5, 0.78, f1)
+                f1 = HP.fbm(p, 0.9, 3, seed=pseed + 3)
+                # r14 (judge B: "flat orange paint"): white-yellow in the open middle of the stream, deep red at the trough
+                # walls (the baked AO is low there), cracks of bright metal through a darker cooled crust
+                heat = HP.smooth(0.55, 0.97, a)
+                core = np.maximum(HP.smooth(0.5, 0.78, f1), 0.8 * heat)
                 deep = HP.srgb2lin([0.86, 0.30, 0.04])
+                deep = deep[None] * heat[:, None] + HP.srgb2lin([0.62, 0.10, 0.02])[None] * (1 - heat[:, None])
                 bright = HP.srgb2lin([1.0, 0.78, 0.36])
-                e = deep[None] * (1 - core[:, None]) + bright[None] * core[:, None]
+                e = deep * (1 - core[:, None]) + bright[None] * core[:, None]
                 cr = float(c.get('crust', 0.35))
                 if cr > 0:
                     cells = HP.fbm(p, 2.6, 3, seed=31)
@@ -388,7 +493,7 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
                 else:
                     crust = np.zeros(len(mm), np.float32)
                 emit[mm] = np.clip(e * c['hot'][1], 0, 1)
-                col = np.clip(deep[None] * 0.12 * (1 - crust[:, None]) + HP.srgb2lin([0.10, 0.08, 0.07])[None] * crust[:, None], 0, 1)
+                col = np.clip(deep * 0.12 * (1 - crust[:, None]) + HP.srgb2lin([0.10, 0.08, 0.07])[None] * crust[:, None], 0, 1)
                 rg = 0.55 + 0.35 * crust
             elif c['hot'] is not None:
                 hc, k = c['hot']

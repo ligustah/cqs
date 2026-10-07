@@ -74,6 +74,22 @@ Fit the **concept's** stations and light / dark rhythm; the blueprint gives only
   streak columns from 3 m course lines on light walls, and stained concrete (broad damp stains, oil spots, an
   overall dusty grey) on the plinth. Plinth slab joints every 4.6 m (`plinth(slab=4.6)`), as in the concept.
 
+**The photographic weathering library** `[mill v6 r14]` (the method that replaced 13 rounds of procedural grime):
+- Four fal PATINA sets, generated once for all buildings (`fal-pipeline.json` `v27_mill_weathering`, prompts in
+  `prompts.md` "Weathering library"): `wxCladding` (streaked off-white cladding with rust drips), `wxSteel` (grimy
+  gunmetal plate), `wxConcrete` (stained slab, oil spots), `wxRoof` (sooty roof sheeting). square_hd, upscale 2,
+  tiling both, maps basecolor / normal / roughness / height. Downloads go to their own scratch folder and are converted
+  with `python3 -I` (`wxprep.py`) into `tools/blender/buildings/weather/<set>/{base.jpg, rough.png, height.png}` at 1024
+  (build-time only, never shipped).
+- `cpaint.PHOTO` maps each zone to (set, tile m, k value, k chroma, k roughness, height m): cladding 4.8 m, steel 2-2.5 m,
+  concrete 9.2 m, roofs 6 m. The set is box-filtered to the zone's texel density before sampling (no moire) and
+  modulates the calibrated zone colour by its relative luminance (mean 1), so paint-check holds. Each tile row gets its
+  own horizontal offset (no visible repeat). The photo's own panel joints are removed (`_unline`), or they double the
+  kit's seams into a tile grid.
+- The hull shader (`lib._wx_photo`) box-projects the joint-free variants (`base_clean.jpg`) the same way on kit blocks
+  and the plinth.
+- A spec can override per zone: `'photo': (set, tile, kc, kch, kr, kh)` or `None`.
+
 **What reads as quality at 1:1** (r2 judge B) `[mill v6 r4]`:
 - No soft fbm run-off or smeared drips: they read as UV stretch. Only crisp column streaks (`vstreak`).
 - Roughness must vary: per-zone base (`rough`: clad 0.7, shell 0.66, frames 0.62-0.72, pipes 0.42 metal 0.45, amber
@@ -241,6 +257,10 @@ lessons, REMODEL-PROGRESS.
 | "Evenly lit, a toy / diorama" (judge A) | a strong fill (1.5) lifted the shadow side 1.2x over the concept's | lower fill / env, raise key to keep the light band; measure with grit-check `shadow` | mill v6 r12 |
 | Moire grain on a wall at review size | 8 cm bolt heads on a 25 px/m texture (2 px): aliasing | band-limit fine features by texel density (`cpaint` bolts fade below ~3 texels a head) | mill v6 r12 |
 | Streaks read as soft rectangular stamps | constant-width columns | taper the width down the run and wobble the centre line (`vstreaks` r12) | mill v6 r12 |
+| Procedural grime reads "synthetic, tile-like", whatever the amplitude (judges r2-r13) | noise and hash fields have no photographic structure | the photographic weathering library (above); keep procedural layers for seams, edges and macro tone | mill v6 r14 |
+| Walls read as a window / tile grid | 9 cm dark seams + halo, plus the photo's own joints | seams 6-7 cm at 0.5-0.6, halo 0.12-0.16; remove the photo's joints | mill v6 r14 |
+| A kit block's wall is "a smeared photo" at 1:1 | the hull's single smart projection gave the 80 x 92 m plinth most of the atlas | the hull uses `remodel.unwrap` (stacking, concrete weighted 0.3) | mill v6 r14 |
+| Molten metal reads as flat orange paint | one emissive tone | AO-driven heat (yellow-white in the open stream, deep red at the trough walls), crust with bright cracks | mill v6 r14 |
 | Rails / braces glow orange at 4096 only | a tiny emissive island packed inside a stacked swatch | stack lamp lenses too; check the final size | mill v5 |
 | Glow box reads as a solid orange slab or sticker | glow box thicker than 0.1 m, or square over a round surface | thin glow boxes for runners and openings only; emissive paint for round hot surfaces | mill v4-v5 |
 | Black scaffold round a thin cylinder | a lattice tower around the hero shape | broad light hero shape in front, slim posts, lattice only at the top | mill v5 |
