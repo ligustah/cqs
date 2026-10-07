@@ -61,12 +61,13 @@ WORKS = {
     # dark lap lines (`soot`, `lap`); the soft fbm run-off (`streak`) kept low under them
     # light paint a step greyer and darker, frames a step lighter (the concept's lower contrast; the studio lifts the whole)
     # r4: the soft fbm run-off off (`streak` 0: judge B read it as UV stretch), per-zone roughness (satin everywhere)
-    'shell': {'color': [0.73, 0.70, 0.665], 'rust': 0.6, 'streak': 0.0, 'dark': 0.55, 'seam_w': 0.045, 'vstreak': 1.0, 'halo': 0.14, 'rough': 0.66},
-    'clad': {'color': [0.73, 0.70, 0.66], 'rust': 0.5, 'streak': 0.0, 'vstreak': 1.0, 'halo': 0.14, 'rough': 0.7},
+    'shell': {'color': [0.73, 0.70, 0.665], 'rust': 0.6, 'streak': 0.0, 'dark': 0.55, 'seam_w': 0.045, 'vstreak': 1.0, 'halo': 0.16, 'rough': 0.66},
+    'clad': {'color': [0.73, 0.70, 0.66], 'rust': 0.5, 'streak': 0.0, 'vstreak': 1.0, 'halo': 0.16, 'rough': 0.7},
     'clad2': {'color': [0.64, 0.62, 0.59], 'rust': 0.45, 'blot': 0.035, 'patina': 0.03, 'soot': 0.9, 'lap': 2.9},   # roofs: sooty with dark laps
     'panel': {'color': [0.75, 0.72, 0.685], 'rust': 0.45, 'streak': 0.0, 'vstreak': 0.95, 'halo': 0.12, 'rough': 0.68},
-    'frame': {'color': [0.36, 0.365, 0.378], 'rust': 0.1, 'edge': 1.0, 'vstreak': 0.5, 'rough': 0.72},     # concept gunmetal ~sRGB 70-80, neutral
-    'frame2': {'color': [0.40, 0.402, 0.412], 'rust': 0.12, 'vstreak': 0.5, 'rough': 0.62, 'edge': 1.0},
+    # r7 (judge A: "clean, bright, toy-like"): dark steel a step darker with stronger mottling (blot), still neutral
+    'frame': {'color': [0.31, 0.315, 0.326], 'rust': 0.1, 'edge': 1.0, 'vstreak': 0.5, 'rough': 0.72, 'blot': 0.14, 'tone': 0.12},     # concept gunmetal ~sRGB 70-80, neutral
+    'frame2': {'color': [0.35, 0.352, 0.362], 'rust': 0.12, 'vstreak': 0.5, 'rough': 0.62, 'edge': 1.0, 'blot': 0.14, 'tone': 0.12},
     'pipeDark': {'color': [0.42, 0.425, 0.435], 'rust': 0.15, 'metal': 0.45, 'rough': 0.42},           # mid-grey mains: dark pipes vanished on the dusk backdrop
     'amber': {'rough': 0.45},
     'roof': {'soot': 0.3, 'lap': 2.9},
@@ -199,6 +200,23 @@ def lamp(B, p, n, size=0.32, light=True):
         B.box((size * 0.7, size * 0.5, 0.06), at=(0, 0, 0.2), mat='lamp', bevel=0.01)
     if light:
         B.R.pin(tuple(p + n * 0.3))
+
+
+def window_frame(B, o, n, w, h, t=0.12, proud=0.1, mat='frame'):
+    """r7 (judge B: "flat emissive cards, no reveal, no frame"): a chamfered window frame round an opening centred on
+    o in a wall facing n (axis-aligned): head, sill (deeper) and jambs standing `proud` m out, so the glass and its lit
+    card read recessed."""
+    nx, nz = n[0], n[2]
+    x, y, z = o
+    along = (lambda d: (x + d, z)) if abs(nz) > 0.5 else (lambda d: (x, z + d))
+    def bx(du, dy, sw, sh, sd):
+        px, pz = along(du)
+        size = (sw, sh, sd) if abs(nz) > 0.5 else (sd, sh, sw)
+        B.box(size, at=(px + nx * sd / 2, y + dy, pz + nz * sd / 2), mat=mat, bevel=0.02)
+    bx(0.0, h / 2 + t / 2, w + 2 * t, t, proud)              # head
+    bx(0.0, -h / 2 - t / 2, w + 2 * t + 0.1, t, proud + 0.08)  # sill
+    for sgn in (-1, 1):
+        bx(sgn * (w / 2 + t / 2), 0.0, t, h, proud)          # jambs
 
 
 def louvre_bank(B, o, u, w, h, pitch=0.32, depth=0.25, frame=0.12):
@@ -420,6 +438,22 @@ FURNACE_V6['tower'] = dict(FURNACE_V5['tower'], legs=((12.8, 3.0), (12.5, 26.6))
 FURNACE_V6['decks'] = [(26.6, 11.45, 13.4)]
 FURNACE_V6['rings'] = [(49.0, 5.05, 7.0), (54.0, 3.75, 6.0)]
 FURNACE_V6['bustle_seg'] = (72, 18)
+# r7 (judges on r5 + coordinator: "a light cone inside an open square derrick"; the concept's furnace is a mostly
+# enclosed mass: heavy dark plated legs hug the shell, the shell shows between them): the legs stand on the DIAGONALS
+# close to the drum (8.6 -> 9.3, i.e. 12.2 -> 13.2 m from the axis) as 2.8 -> 2.4 m plated boxes up to the cone-foot
+# deck; slim plated posts carry on tight to the bell (half 9.3 -> 6.6) to the hood deck, braced to the shell, no square
+# ring beams, no X frame, no square top deck; the hood deck is a ring; a dark plated hearth base under the light drum;
+# a thinner glow slit; the downcomer is the concept's big elbow off the bosh into the tall annex; four risers up the cone
+FURNACE_V6['tower'] = dict(FURNACE_V5['tower'], legs=((8.8, 3.0), (9.4, 26.6)), leg_section=(3.6, 2.8), leg_tie=None,
+                           leg_trim='frame2', post=(1.5, 1.1), post_mat='frame2', top=(6.6, 44.0), levels=[35.0],
+                           ring_beams=False, xbrace=None, top_deck=None)
+FURNACE_V6['decks'] = [(26.6, 11.45, 13.6), (43.1, 8.45, 10.6)]
+FURNACE_V6['tuyere'] = (8.95, 15.0, 17.2, 12)
+FURNACE_V6['hearth_base'] = (3.0, 6.2, 9.45)
+FURNACE_V6['downcomer'] = (1.7, [(-8.6, 23.4, 1.6), (-13.5, 23.4, 3.6), (-19.0, 19.5, 6.0), (-19.0, 14.6, 6.0)])
+FURNACE_V6['risers'] = [(30.0, 0.35), (75.0, 0.28), (210.0, 0.35), (300.0, 0.28)]
+FURNACE_V6['taps_a0'] = 0.0
+FURNACE_V6['downcomer'] = (1.7, [(-8.6, 24.4, 1.6), (-13.5, 24.4, 3.6), (-19.0, 20.0, 6.0), (-19.0, 14.6, 6.0)])
 # r4 (phone budget): a modelled lap ring at every second painted course (4.5 m; the paint keeps 2.25), bosh laps 2.4
 FURNACE_V6['lap_pitch'] = 4.5
 FURNACE_V6['bosh_lap'] = 2.4
@@ -437,12 +471,12 @@ def _raking_legs(B, T):
         for t in [0.12 + 0.76 * i / 5 for i in range(6)]:
             sz_ = s0 + (s1 - s0) * t
             with B.at(M=K.frame_along(pa, pb)):
-                B.box((sz_ + 0.12, sz_ + 0.12, 0.22), at=(0, 0, d.length * t), mat='frame', bevel=0.02)
+                B.box((sz_ + 0.12, sz_ + 0.12, 0.22), at=(0, 0, d.length * t), mat=T.get('leg_trim', 'frame'), bevel=0.02)
         # corner angles down the four edges (a built-up section: crisp shadow lines that follow the taper)
         L_ = d.length
         with B.at(M=K.frame_along(pa, pb)):
             for (cx_, cz_) in ((1, 1), (1, -1), (-1, 1), (-1, -1)):
-                B.bar((cx_ * (s0 / 2 - 0.12), cz_ * (s0 / 2 - 0.12), 0.6), (cx_ * (s1 / 2 - 0.12), cz_ * (s1 / 2 - 0.12), L_ - 0.5), 0.3, 0.3, mat='frame', bevel=0.0)
+                B.bar((cx_ * (s0 / 2 - 0.12), cz_ * (s0 / 2 - 0.12), 0.6), (cx_ * (s1 / 2 - 0.12), cz_ * (s1 / 2 - 0.12), L_ - 0.5), 0.3, 0.3, mat=T.get('leg_trim', 'frame'), bevel=0.03)
         B.box((s0 + 0.8, 0.5, s0 + 0.8), at=(sx * b0, ly0 + 0.25, sz * b0), mat='frame', bevel=0.04)
         B.box((s1 + 0.6, 0.4, s1 + 0.6), at=(sx * b1, ly1 - 0.2, sz * b1), mat='frame', bevel=0.03)
         if T.get('leg_tie'):
@@ -468,8 +502,19 @@ def _posts_tower(B, P, T, prof, c):
         return b1 + (ht - b1) * (y - ly1) / (yt - ly1)
     corners = ((-1, -1), (1, -1), (1, 1), (-1, 1))
     for (sx, sz) in corners:
-        B.strut((sx * b1, ly1, sz * b1), (sx * ht, yt, sz * ht), (pw, pw), (pd, pd), 0.08, mat='frame', bevel=0.02)
-    for ly in T['levels'] + [yt - 0.5]:
+        B.strut((sx * b1, ly1, sz * b1), (sx * ht, yt, sz * ht), (pw, pw), (pd, pd), 0.08, mat=T.get('post_mat', 'frame'), bevel=0.04)
+    if T.get('ring_beams', True) is False:
+        # r7 (judges: "an open square derrick"): posts tight to the bell carry no square ring beams or bracing (they would
+        # cut the shell); short brackets tie each post to the shell at each level, and the decks are rings
+        for ly in T['levels'] + [yt - 0.5]:
+            h_ = half_at(ly)
+            r_ = _shaft_r(prof, ly) if ly < prof[-1][1] else P['throat'][0]
+            for (sx, sz) in corners:
+                d_ = math.hypot(h_, h_)
+                f_ = (r_ - 0.1) / d_
+                B.bar((sx * h_, ly - 0.45, sz * h_), (sx * h_ * f_, ly - 0.45, sz * h_ * f_), 0.4, 0.6, mat='frame2', bevel=0.02)
+        T = dict(T, xbrace=None, knee=False, levels=[])
+    for ly in T['levels'] + ([yt - 0.5] if T.get('ring_beams', True) is not False and T['levels'] is not None and T.get('xbrace') is not None else []):
         h_ = half_at(ly)
         for i in range(4):
             a, b = corners[i], corners[(i + 1) % 4]
@@ -478,17 +523,20 @@ def _posts_tower(B, P, T, prof, c):
         for (sx, sz) in corners:
             r_ = _shaft_r(prof, ly) if ly < prof[-1][1] else P['throat'][0]
             B.bar((sx * h_ * 0.98, ly - 0.45, sz * h_ * 0.98), (sx * r_ * 0.75, ly - 0.45, sz * r_ * 0.75), 0.22, 0.45, mat='frame', bevel=0.0)
-    ya, yb = T['xbrace']
-    for i in range(4):
+    ya, yb = T['xbrace'] if T.get('xbrace') else (None, None)
+    for i in range(4 if ya is not None else 0):
         a, b = corners[i], corners[(i + 1) % 4]
         ha, hb = half_at(ya + 0.6), half_at(yb - 1.0)
         B.bar((a[0] * ha, ya + 0.6, a[1] * ha), (b[0] * hb, yb - 1.0, b[1] * hb), 0.2, 0.2, mat='frame', bevel=0.0)
         B.bar((b[0] * ha, ya + 0.6, b[1] * ha), (a[0] * hb, yb - 1.0, a[1] * hb), 0.2, 0.2, mat='frame', bevel=0.0)
     # knee braces from the leg tops to the cone-foot ring beam level (the concept's portal look between the legs)
-    for i in range(4):
+    for i in range(4 if T.get('knee', True) else 0):
         a, b = corners[i], corners[(i + 1) % 4]
         for (p, q) in ((a, b), (b, a)):
             B.bar((p[0] * b1, ly1 - 0.5, p[1] * b1), (p[0] * b1 * 0.55 + q[0] * b1 * 0.45, ly1 - 0.5, p[1] * b1 * 0.55 + q[1] * b1 * 0.45), 0.5, 0.9, mat='frame2', bevel=0.02)
+    if not T.get('top_deck'):
+        K.platform_ring(B, c, P['tuyere'][1], P['hearth'][0] + 0.05, P['hearth'][0] + 1.9, n=48, brackets=12)
+        return
     # the wide top deck: a square grating deck round the upper drum with toe plates, rails, lamps
     ty, rin, hw = T['top_deck']
     pts = [(-hw, -hw), (hw, -hw), (hw, hw), (-hw, hw)]
@@ -540,8 +588,13 @@ def furnace(B, P=FURNACE):
               up=(math.sin(a), 0, math.cos(a)))
     for yy in P.get('hearth_hoops', (y0 + 1.6, y1 - 1.6)):
         hoop(B, c, r, yy, 0.45, 0.16, mat='frame', n=n)
+    if P.get('hearth_base'):
+        # r7: a dark plated base band under the light hearth drum (the concept's dark foot)
+        hb0, hb1, hbr = P['hearth_base']
+        B.lathe([(0, hb0), (hbr, hb0), (hbr, hb1), (0, hb1)], (0, 0, 0), mat='frame2', n=n, bevel=0.04)
+        hoop(B, c, hbr, hb1 - 0.4, 0.4, 0.18, mat='frame', n=n)
     for k in range(4):
-        a = math.pi / 4 + k * math.pi / 2
+        a = P.get('taps_a0', math.pi / 4) + k * math.pi / 2     # r7: off the diagonals, where the hugging legs stand
         u = V((math.cos(a), 0, -math.sin(a)))
         o = V((r * math.sin(a), y0, r * math.cos(a)))
         nrm = V((math.sin(a), 0, math.cos(a)))
@@ -641,6 +694,14 @@ def furnace(B, P=FURNACE):
             a = 2 * math.pi * (k + 0.5) / 12
             if k % 3 == 0:
                 lamp(B, ((rb + 0.1) * math.sin(a), ya + 1.3, (rb + 0.1) * math.cos(a)), (math.sin(a), 0, math.cos(a)), size=0.26)
+    # r7: risers: pipes climbing the cone close to the shell (the concept's pipe runs hugging the bell)
+    for (adeg, rr_) in P.get('risers', []):
+        a = math.radians(adeg)
+        ys = [prof[0][1] + 0.6 + (prof[-1][1] - prof[0][1] - 1.2) * k / 6 for k in range(7)]
+        B.tube([((_shaft_r(prof, y) + 0.7) * math.sin(a), y, (_shaft_r(prof, y) + 0.7) * math.cos(a)) for y in ys], rr_, mat='pipeDark', n=10, fillet=0.0)
+        for y in ys[1:-1:2]:
+            rs_ = _shaft_r(prof, y)
+            B.bar((rs_ * math.sin(a), y, rs_ * math.cos(a)), ((rs_ + 0.75) * math.sin(a), y, (rs_ + 0.75) * math.cos(a)), 0.16, 0.3, mat='frame', bevel=0.0)
     # r4: railed ring platforms round the narrow upper stack (the concept's two upper galleries)
     for (ya, ra, rb_) in P.get('rings', []):
         K.platform_ring(B, c, ya, ra, rb_, n=40, brackets=10)
@@ -743,7 +804,7 @@ def furnace(B, P=FURNACE):
         ly0_ = T.get('ladder_y0', T['y0'])
         K.ladder(B, (lx * (hf + 0.66), ly0_, lz * (hf - 1.6)), (lx, 0, 0), T['levels'][-1] - ly0_)
     return works({
-        'shell': {'axis': (0, 0), 'course': 2.25, 'joint': 2.0, 'bolts': 0.32, 'rust': 0.45, 'tone': 0.16, 'drip': 0.0, 'blot': 0.05},
+        'shell': {'axis': (0, 0), 'course': 2.25, 'joint': 2.0, 'bolts': 0.32, 'rust': 0.45, 'tone': 0.22, 'drip': 0.0, 'blot': 0.06},
         'frame2': {'axis': (0, 0), 'course': 1.6, 'joint': 1.6, 'rust': 0.15, 'tone': 0.08},
         'concrete2': {'course': 1.5, 'joint': 3.0, 'rust': 0.0, 'dark': 0.25},
         'concrete': {'course': 3.0, 'joint': 3.0, 'rust': 0.0, 'dark': 0.3},
@@ -855,7 +916,7 @@ SHED_V5.update({
     'pilaster_lamps': (4.2, 10.4),
     'paint': {
         # v6: soft fbm run-off down (0.2 -> 0.08), the crisp seam streaks (WORKS vstreak) carry the grit; heavier drips
-        'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.4, 'tone': 0.16, 'dark': 0.6, 'stagger': False,
+        'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.4, 'tone': 0.22, 'dark': 0.6, 'stagger': False,
                  'seam_w': 0.05, 'streak': 0.0, 'drip': 0.0},     # r4: fbm run-off and smeared drips off (read as stretch)
         'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.4, 'tone': 0.07, 'dark': 0.35, 'streak': 0.1},
         'frame2': {'rust': 0.15},
@@ -867,10 +928,11 @@ SHED_V5.update({
 # 21.2 -> 17.8 (26 -> 14 degrees), dark firewall parapets on the gable rakes, lighter roof sheeting with less soot, more
 # roof machinery
 SHED_V6 = dict(SHED_V5)
-SHED_V6.update({'ridge': 17.8, 'parapet': True, 'rib': 1.8,      # standing seams every 1.8 m (the concept's wide sheets; -3k tris) 'monitor': (5.6, 27.0, 2.4, 0.5),
+SHED_V6.update({'pilaster': (1.0, 0.95), 'door_frames': True,      # r7: deeper pilasters, dark door surrounds
+                'ridge': 17.8, 'parapet': True, 'rib': 1.8,      # standing seams every 1.8 m (the concept's wide sheets; -3k tris) 'monitor': (5.6, 27.0, 2.4, 0.5),
                 'roof_units': [(1, -13.0), (1, -4.0), (1, 9.0), (-1, -8.0), (-1, 4.0), (-1, 13.0)], 'ridge_vents': 4})
 SHED_V6['paint'] = dict(SHED_V5['paint'])
-SHED_V6['paint']['clad2'] = dict(SHED_V5['paint']['clad2'], color=[0.70, 0.68, 0.65], soot=0.6)
+SHED_V6['paint']['clad2'] = dict(SHED_V5['paint']['clad2'], color=[0.64, 0.62, 0.59], soot=0.7, tone=0.12)   # r7: a step down
 
 
 def _shed_dressing(B, P, hx, hz, E, Rg, ov, bay, nb, pd):
@@ -994,6 +1056,12 @@ def gable_shed(B, P=SHED):
                     B.box((0.05, 0.07, zb - za), at=(x + sx * 0.02, yj, (za + zb) / 2), mat='clad', bevel=0.0)
         for (dz_, ) in [(d,) for d in (P.get('doors', []) if sx > 0 else [])]:
             B.R.door((x + 0.02, 0.0, dz_), (1, 0, 0))
+            if P.get('door_frames'):
+                # r7 (coordinator: dark recessed door frames, the concept's doors read as dark openings): jambs and a head
+                # 0.35 m proud round the kit door
+                for sgn in (-1, 1):
+                    B.box((0.35, 2.9, 0.3), at=(x + 0.17, 1.45, dz_ + sgn * 1.1), mat='frame', bevel=0.03)
+                B.box((0.45, 0.35, 2.5), at=(x + 0.22, 3.05, dz_), mat='frame', bevel=0.03)
         cuts = [((z0 - a) if sx > 0 else (a + z0), (z0 - c_) if sx > 0 else (c_ + z0)) for (a, b_, c_, d_) in holes if b_ < dado]
         for (za, zb) in _spans(-hz, hz, cuts):
             B.box((0.3, dado, zb - za), at=(x - sx * 0.07, dado / 2, (za + zb) / 2), mat='frame2', bevel=0.03)
@@ -1120,7 +1188,7 @@ POUR_V6 = dict(POUR_V5)
 POUR_V6.update({'xb': -2.6, 'xf': 6.4, 'roof': True, 'tap_dx': 5.8, 'tap_upper': False, 'runner_glow': 3.2,
                 'crane_x': 3.6, 'ladle_x': 4.4, 'rails': (7.2, 0.6, 7.4), 'control': (1.6, 5.8, -6.4, -2.2, 3.8),
                 # r2: the runner on the apron in front of the portal, along the wall (the concept's long glowing trough)
-                'runner': (0.0, 24.0, 0.0, 2.8), 'runner_at': (8.6, -9.0, -90.0)})
+                'runner': (0.0, 24.0, 0.0, 3.6), 'runner_at': (8.9, -9.0, -90.0), 'runner_core': 0.9})
 
 
 def pour_bay(B, P=POUR):
@@ -1236,8 +1304,9 @@ def pour_bay(B, P=POUR):
     B.tube([(cx, hy, tz), (cx, hy - 0.6, tz), (cx + 0.25, hy - 1.05, tz), (cx + 0.55, hy - 0.8, tz)], 0.11, mat='frame', n=8, fillet=0.25)
     # crane cab under the bridge end
     B.box((1.8, 2.0, 1.8), at=(cx + 1.6, ry + 0.2, zr - 2.4), mat='frame2', bevel=0.05)
-    B.box((1.82, 0.9, 1.5), at=(cx + 1.6, ry + 0.4, zr - 2.4), mat='glassW', bevel=0.0)
-    B.R.window((cx + 2.52, ry + 0.4, zr - 2.4), (1, 0, 0), 1.4, 0.8, lit=True)
+    B.box((1.62, 0.9, 1.5), at=(cx + 1.6, ry + 0.4, zr - 2.4), mat='glassW', bevel=0.0)       # r7: inset 10 cm
+    window_frame(B, (cx + 2.52, ry + 0.4, zr - 2.4), (1, 0, 0), 1.4, 0.9)
+    B.R.window((cx + 2.44, ry + 0.4, zr - 2.4), (1, 0, 0), 1.3, 0.8, lit=True)
     # the runner: trough on stools, refractory lining, molten metal; the tundish at its back end
     # v5: the runner may run in its own frame (P['runner_at'] = (x, z, rotY)): along +Z out of the bay toward the
     # casthouse, as in the concept, longer and brighter (core glow radiance P['runner_glow'])
@@ -1253,7 +1322,7 @@ def pour_bay(B, P=POUR):
         for x in (rx0 + 2.0, rx1 - 2.0):
             for s in (-1, 1):
                 B.box((0.25, 0.9, 0.12), at=(x, 1.0, rz + s * (rw / 2 + 0.06)), mat='frame', bevel=0.0)
-        B.R.glowbox(B.world(((rx0 + rx1) / 2, 1.45, rz)), (rx1 - rx0 - 1.2, 0.03, 0.32), color='#ffb050', radiance=rgl, roty=math.radians(rar))   # the hot core of the stream only: the crust shows round it
+        B.R.glowbox(B.world(((rx0 + rx1) / 2, 1.45, rz)), (rx1 - rx0 - 1.2, 0.03, P.get('runner_core', 0.32)), color='#ffb050', radiance=rgl, roty=math.radians(rar))   # the hot core of the stream only: the crust shows round it
         B.box((3.0, 1.9, 3.2), at=(rx0 - 1.2, 1.12, rz), mat='frame2', bevel=0.06)
         B.box((2.6, 0.12, 2.8), at=(rx0 - 1.2, 2.1, rz), mat='hot', bevel=0.0)
         B.box((3.2, 0.3, 3.4), at=(rx0 - 1.2, 2.2, rz), mat='frame', bevel=0.03)
@@ -1292,9 +1361,9 @@ def pour_bay(B, P=POUR):
         # window strip on the +Z face (toward the runner) and on the +X face (toward the apron)
         for (o, n_, w_) in (((ccx, 2.4, cz1 - 0.08), (0, 0, 1), cx1 - cx0 - 1.6), ((cx1 - 0.08, 2.4, ccz - 0.6), (1, 0, 0), 1.6)):
             sz_ = (w_, 1.1, 0.12) if n_[2] else (0.12, 1.1, w_)
-            B.box(sz_, at=o, mat='glassW', bevel=0.0)
-            B.box((sz_[0] + 0.2, 0.14, sz_[2] + 0.2), at=(o[0], 1.78, o[2]), mat='frame', bevel=0.0)
-            B.R.window((o[0] + n_[0] * 0.07, o[1], o[2] + n_[2] * 0.07), n_, w_, 1.0, lit=True)
+            B.box(sz_, at=(o[0] - n_[0] * 0.1, o[1], o[2] - n_[2] * 0.1), mat='glassW', bevel=0.0)    # r7: glass set 10 cm in
+            window_frame(B, o, n_, w_, 1.1)
+            B.R.window((o[0] - n_[0] * 0.02, o[1], o[2] - n_[2] * 0.02), n_, w_ - 0.1, 1.0, lit=True)
         B.R.door((cx1 + 0.02, 0.5, cz1 - 1.1), (1, 0, 0))
         K.railing(B, [(cx0 + 0.1, ch + 0.25, cz0 + 0.1), (cx1 - 0.1, ch + 0.25, cz0 + 0.1), (cx1 - 0.1, ch + 0.25, cz1 - 0.1), (cx0 + 0.1, ch + 0.25, cz1 - 0.1)], post=1.4, closed=True)
         B.box((1.6, 0.9, 1.2), at=(ccx - 0.5, ch + 0.7, ccz), mat='frame2', bevel=0.04)

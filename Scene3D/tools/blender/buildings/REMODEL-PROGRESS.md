@@ -164,3 +164,23 @@ Checklist review r5: S1 / C2 / G1 / G2 / D1 / D2 / W1 / W2 / L2 / I1 PASS as r4;
 L1 FAIL: band and lower drum still pink-red (the red channel clips first at radiance 1.6; a red spill on light paint
 reads pink) -> r6 #ffa03c at 1.2, spill #ffa048 110 cd at 4.5 m; phone tris FAIL (158.7k vs 150k).
 Judges for r5 requested from the coordinator.
+- r5 judges: BOTH "NOT YET". A: silhouette match; mood NO (clean, bright, toy-like diorama; the lattice's cast shadow
+  reads as a decal), grit NO (flat surfaces), density NO (separate little boxes, airy core), warmth NO (pink-salmon
+  band, thin pour, weak interior glow). B: shadows pass; geometry (flat emissive window cards, no lit chamfer on the
+  gantry columns), texture (blocky stretched mosaic on the left lattice column, 1 px soft seams), materials (repeating
+  drip strip, uniform matte dark steel, no edge wear, weak AO) fail. Coordinator: the furnace as a solid clad mass with
+  the light / dark band stack; tonality heavier; merge cabins; Judge B's pipeline fixes.
+
+### v6 round 6 (14:39-14:55): glow #ffa03c at 1.2 + yellow spill at 4.5 m: band reads saturated orange (PASS L1
+colour); light 0.94x, hue 27.3. Evidence $S/mill/r6-hearth.png.
+
+### v6 round 7 (started 14:55): the r5 judges' fixes
+- FURNACE_V6: legs on the diagonals hugging the drum (3.6 -> 2.8 m plated boxes, trims frame2), slim frame2 posts
+  following the bell, no square ring beams / X frame / top deck, ring decks at 26.6 and 43.1, dark plated hearth base,
+  thinner glow slit (15-17.2 m), the elbow downcomer off the bosh into the 15 m annex, four risers, taps on the axes.
+- Paint: per-panel streak density + random start, dark steel darker with mottling, brighter bare-steel wear, deeper
+  AO; shed clad tone 0.22, roofs a step darker; deeper shed pilasters (0.95 m) and dark door surrounds.
+- Kit: `ckit.window_frame` (control house, crane cab), `plinth(kerb_h)` (mill h 2.0, kerb 1.1 m).
+- steel_mill.py: the control house and the furnace-plinth mini blocks replaced by one 12 m casthouse block across
+  the furnace front, a 10 m annex on the -X side (the 15 m annex under the elbow), an annex on the shed's front end;
+  the runner 3.6 m wide with a 0.9 m core, runner spill 260 cd.

@@ -531,7 +531,7 @@ def notch_rect(w, d, c, notch=None):
 
 
 def plinth(B, w, d, h=1.4, chamfer=2.0, kerb=0.5, slab=8.0, lamp_pitch=18.0, centre=(0, 0), markings=None,
-           grates=(), lamps=True, steps=(), notch=None):
+           grates=(), lamps=True, steps=(), notch=None, kerb_h=0.34):
     """Slab w (x) by d (z) with chamfered plan corners, top at y = 0, `h` deep: a light kerb band round the top edge,
     a darker skirt, slab joints every `slab` m, amber edge lamps (corners + every lamp_pitch m along the front and
     left edges, R.pin), optional markings [(polyline [(x, z)...], width, mat)] and drain grates [(x, z, w, d)].
@@ -540,8 +540,8 @@ def plinth(B, w, d, h=1.4, chamfer=2.0, kerb=0.5, slab=8.0, lamp_pitch=18.0, cen
     R = lambda ww, dd, cc: notch_rect(ww, dd, cc, notch)   # the plan outline (a notched cross with `notch`)
     out = [(cx + x, cz + z) for x, z in R(w, d, chamfer)]
     # body (side faces) and a 0.3 m lighter kerb cap round the top edge, top surface
-    B.prism(out, -h, -0.32, mat='concrete2', bevel=0.06)
-    B.prism(out, -0.36, -0.02, mat='kerb', bevel=0.05)
+    B.prism(out, -h, -0.02 - kerb_h, mat='concrete2', bevel=0.06)
+    B.prism(out, -0.02 - kerb_h, -0.02, mat='kerb', bevel=0.05)     # v6: kerb_h (the mill's thick light slab edge)
     inner = [(cx + x, cz + z) for x, z in R(w - 2 * kerb, d - 2 * kerb, max(0.2, chamfer - kerb * 0.6))]
     B.prism(inner, -0.06, 0.0, mat='concrete', bevel=0.0)
     # skirt shadow line half-way down and a dark toe

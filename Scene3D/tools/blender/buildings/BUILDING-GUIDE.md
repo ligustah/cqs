@@ -85,6 +85,17 @@ Fit the **concept's** stations and light / dark rhythm; the blueprint gives only
 - Camera check: at fov 38 the close view's pixel is ~2.3 cm at 34 m, 3.2 cm at 46 m: a 5 cm feature reaches 2 px only
   at <= 34 m. Set the close-up distances so the 2 px test can pass at all.
 
+- `[mill v6 r7]` (r5 judge B): streak density varies per 2.4 m panel and course (0.25-1.75x) with a random start
+  under the seam, or the same streak pattern reads as a repeating strip; dark steel needs mottling (`blot` 0.14,
+  `tone` 0.12) and a bright bare-steel edge colour (EDGE_DARK sRGB 0.58) or the wear is invisible; AO grime 0.45 and
+  ORM occlusion `0.1 + 0.9 * ao^1.3` for contact shadow at bases and brackets.
+- Window reveals: `ckit.window_frame` (head, deeper sill, jambs 10 cm proud) with the glass 10 cm in; a lit card
+  flush with the wall reads as a flat cream sticker.
+- Big frame members belong in a crisp set: the furnace's leg trims and posts were 'frame' in the 13 px/m main atlas
+  and read as "a blocky stretched texel mosaic" (r5 judge B); `leg_trim` / `post_mat` 'frame2' put them in set 3.
+- Two instances of one part show identical paint (the two shed segments): acceptable at the hero view, but keep the
+  instance's distinct faces (doors, dock) on the visible side.
+
 **Texture sets** `[mill v6 r1]`: `ckit.SPLIT[name]` may list several sets, `[({'shell'}, 4096), ({'frame2'}, 4096)]`
 -> materials `colony_<name>_2`, `_3`. The furnace's dark legs and bosh (frame2) went 28 -> ~59 px/m at 4096 in
 their own set. Each set is one material with 4 maps (sampler limit 16 holds); the phone copy caps all at 512.
@@ -113,6 +124,15 @@ giving the zone's extent (x / z range), so collisions can be checked by reading.
   ~ shell radius + 1 m), railed decks at 2-3 levels, the frame stops at the hood deck; the narrow upper stack carries
   its own railed ring platforms. Raking legs that spread out and posts that converge to a high top read as a
   "spidery derrick / open A-frame" (r2 judges), the biggest silhouette miss of the mill.
+- **"Mostly enclosed", not "a cone in a derrick"** `[mill v6 r7]`: legs on the DIAGONALS close to the drum (centre
+  ~ drum radius + 3 m, 3.6 -> 2.8 m plated boxes, trims in the crisp frame2 set), slim plated posts following the bell
+  (no square ring beams, no X frame, no square top deck: they cut the shell or read as a derrick), ring decks, risers
+  up the cone, a dark plated base band under the light drum. Tap-hole bays must move off the diagonals with the legs
+  (`taps_a0`). The concept's stacked bands (dark top / light cone / dark bosh / thin glow slit / light drum / dark base)
+  are the furnace's read; check them on the preview.
+- **Attached annexes, not cabins** `[mill v6 r7]`: 2-3 larger light blocks (8-15 m) against the hero and the sheds
+  (a 15 m annex under the hero's elbow pipe, a 10 m one beside it, one on the shed's end by the process bay), never a
+  free-standing control house on the apron.
 - **Detail sits on the main masses, not scattered.** Free-standing huts, a parked trailer and an office-like block
   in front of the hero read as scattered props (judge A). Prefer: low light blocks against the hero's foot, stacks of
   plate / coils / pallets by the walls and the runner, roof machinery on the sheds.
@@ -124,6 +144,7 @@ giving the zone's extent (x / z range), so collisions can be checked by reading.
 - Hot surfaces: zone `hot` (emissive paint) + thin glow boxes (`K.glow_ring`, `B.R.glowbox`, < 0.1 m thick).
 - A band reads as a band only with few, thin posts in front of it: 12 tuyere stocks round a 9 m hearth, not 20-32
   (those read as a lit window grid).
+- Pour strip: wide enough to light the ground (runner 3.6 m with a 0.9 m hot core, its spill 260 cd / 18 m at 2.6 m).
 - Glow colour: high radiance on an orange tone-maps to salmon / peach (#ff8a28 / #ff6c08 at 2.6: judge A "a wide
   pale-peach section"), and a deep red-orange (#ff6200 at 1.6) still reads pink-red because red clips first. What
   reads molten: a yellow-orange (#ffa03c) at ~1.2 on the glow boxes, the emissive paint carrying the deep orange.
@@ -187,6 +208,9 @@ lessons, REMODEL-PROGRESS.
 | Everything has the same satin look | one roughness per zone, no variation | per-zone `rough` + patch / mottle variation + wider edge wear | mill v6 r4 |
 | Light band falls 0.76x after a plinth pass | a big plinth darkened by a uniform dust term | keep the plinth's mean near the kit value; stains carry the grit | mill v6 r3 |
 | Furnace top cut by the frame | `dist` < 1 at the 16:10 review frame | dist 0.95-1.0 (frameView fits with margins) | mill v6 r2 |
+| Big structural members look like a blocky mosaic up close | they share the main atlas with the lattice (13 px/m) | put them in the crisp set (frame2 / its own SPLIT set) | mill v6 r5 |
+| Window looks like a flat cream card | lit card flush with the wall, no frame | `window_frame` + glass 10 cm in | mill v6 r5 |
+| A slab edge reads thin | dark 1.6 m body under a 0.34 m light kerb | `plinth(h=2.0, kerb_h=1.1)` | mill v6 r7 |
 | Rails / braces glow orange at 4096 only | a tiny emissive island packed inside a stacked swatch | stack lamp lenses too; check the final size | mill v5 |
 | Glow box reads as a solid orange slab or sticker | glow box thicker than 0.1 m, or square over a round surface | thin glow boxes for runners and openings only; emissive paint for round hot surfaces | mill v4-v5 |
 | Black scaffold round a thin cylinder | a lattice tower around the hero shape | broad light hero shape in front, slim posts, lattice only at the top | mill v5 |
