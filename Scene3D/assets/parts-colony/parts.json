@@ -359,46 +359,46 @@
      32.0
     ]
    },
-   "tex": 2048,
-   "kb": 3980,
+   "tex": 4096,
+   "kb": 7168,
    "about": "60 m blast furnace remodel: concrete plinth, dark staved hearth, recessed glowing tuyere band with 24 window frames, bustle main and downlegs, light plated shaft with five hoops, flange, cone, throat, uptakes and downcomer; four laced columns, four square grating decks on ring girders, X bracing, caged ladder, lamps",
    "remodel": {
     "builder": "ckit.furnace",
     "script": "tools/blender/buildings/remodel.py",
     "pxPerM": {
-     "concrete2": 6.3,
-     "concrete": 7.3,
-     "frame": 12.3,
-     "hot": 13.0,
-     "grate": 6.6,
-     "shell (set 2)": 33.2,
-     "frame2 (set 3)": 27.0,
-     "pipeDark (set 3)": 17.4
+     "concrete2": 13.5,
+     "concrete": 15.5,
+     "frame": 26.4,
+     "hot": 27.9,
+     "grate": 14.2,
+     "shell (set 2)": 67.6,
+     "frame2 (set 3)": 55.0,
+     "pipeDark (set 3)": 35.4
     },
     "surfaceM2": 12535,
     "paint": {
      "colony_blastFurnace": {
-      "Y_all": 0.0606,
-      "Y_light": 0.213,
-      "light_share": 0.099
+      "Y_all": 0.0628,
+      "Y_light": 0.2102,
+      "light_share": 0.112
      },
      "colony_blastFurnace_2": {
-      "Y_all": 0.2955,
-      "Y_light": 0.2955,
+      "Y_all": 0.2957,
+      "Y_light": 0.2957,
       "light_share": 1.0
      },
      "colony_blastFurnace_3": {
-      "Y_all": 0.0737,
+      "Y_all": 0.0745,
       "Y_light": null,
       "light_share": 0.0
      }
     },
     "seconds": {
-     "model": 271,
-     "unwrap": -97,
-     "bake": 39,
-     "paint": 58,
-     "export": 5
+     "model": 1179,
+     "unwrap": -472,
+     "bake": 189,
+     "paint": 283,
+     "export": 19
     },
     "date": "2026-10-07"
    },
@@ -799,10 +799,10 @@
      "light_share": 0.358
     },
     "seconds": {
-     "model": 135,
-     "unwrap": -124,
-     "bake": 45,
-     "paint": 79,
+     "model": 94,
+     "unwrap": -88,
+     "bake": 34,
+     "paint": 54,
      "export": 2
     },
     "date": "2026-10-07"
@@ -960,39 +960,39 @@
      28.21
     ]
    },
-   "tex": 2048,
-   "kb": 1447,
+   "tex": 4096,
+   "kb": 2502,
    "about": "19 x 26 m pour bay remodel: built-up columns, lattice side, plate girders and Warren roof trusses, runways and an amber double-girder bridge crane with trolley and hook, plated back wall, glowing runner and tundish, rails and ladle car, two tapping platforms with stairs",
    "remodel": {
     "builder": "ckit.pour_bay",
     "script": "tools/blender/buildings/remodel.py",
     "pxPerM": {
-     "concrete2": 30.0,
-     "concrete": 30.1,
-     "frame": 19.7,
-     "frame2": 37.1,
-     "interior": 11.7,
-     "pipe": 20.0,
-     "amber": 35.6,
-     "grate": 14.1,
-     "glassW": 18.8,
-     "refractory": 24.4,
-     "hot": 40.6,
-     "rust": 33.7,
-     "panel": 45.0
+     "concrete2": 60.9,
+     "concrete": 60.9,
+     "frame": 40.0,
+     "frame2": 75.2,
+     "interior": 23.8,
+     "pipe": 40.6,
+     "amber": 72.2,
+     "grate": 28.7,
+     "glassW": 38.1,
+     "refractory": 49.6,
+     "hot": 82.2,
+     "rust": 68.4,
+     "panel": 91.2
     },
     "surfaceM2": 3918,
     "paint": {
-     "Y_all": 0.0907,
-     "Y_light": 0.2008,
-     "light_share": 0.102
+     "Y_all": 0.0922,
+     "Y_light": 0.202,
+     "light_share": 0.104
     },
     "seconds": {
-     "model": 138,
-     "unwrap": -122,
-     "bake": 54,
-     "paint": 69,
-     "export": 2
+     "model": 504,
+     "unwrap": -490,
+     "bake": 186,
+     "paint": 305,
+     "export": 8
     },
     "date": "2026-10-07"
    },
@@ -1295,10 +1295,10 @@
      "light_share": 0.701
     },
     "seconds": {
-     "model": 129,
-     "unwrap": -118,
-     "bake": 53,
-     "paint": 65,
+     "model": 116,
+     "unwrap": -104,
+     "bake": 50,
+     "paint": 54,
      "export": 2
     },
     "date": "2026-10-07"
@@ -1474,37 +1474,37 @@
      37.295
     ]
    },
-   "tex": 2048,
-   "kb": 1413,
+   "tex": 4096,
+   "kb": 2481,
    "about": "28 x 36 m clad shed segment remodel: corrugated walls between I-section pilasters, recessed window strips, dark dado, gables with outward verges, corrugated roof, gutters, ridge, louvred monitor, downpipes, kit crew door",
    "remodel": {
     "builder": "ckit.gable_shed",
     "script": "tools/blender/buildings/remodel.py",
     "pxPerM": {
-     "frame2": 21.9,
-     "frame": 11.5,
-     "clad": 25.9,
-     "clad2": 25.6,
-     "interior": 6.5,
-     "louvre": 9.4,
-     "concrete": 18.0,
-     "pipeDark": 14.6,
-     "panel": 25.7,
-     "concrete2": 19.4,
-     "hazard": 25.9
+     "frame2": 44.4,
+     "frame": 23.4,
+     "clad": 52.5,
+     "clad2": 51.8,
+     "interior": 13.1,
+     "louvre": 19.0,
+     "concrete": 36.5,
+     "pipeDark": 29.5,
+     "panel": 52.0,
+     "concrete2": 39.3,
+     "hazard": 52.5
     },
     "surfaceM2": 7188,
     "paint": {
-     "Y_all": 0.1923,
-     "Y_light": 0.235,
-     "light_share": 0.748
+     "Y_all": 0.1973,
+     "Y_light": 0.2372,
+     "light_share": 0.768
     },
     "seconds": {
-     "model": 105,
-     "unwrap": -95,
-     "bake": 39,
-     "paint": 56,
-     "export": 2
+     "model": 472,
+     "unwrap": -461,
+     "bake": 171,
+     "paint": 290,
+     "export": 8
     },
     "date": "2026-10-07"
    },
