@@ -72,6 +72,17 @@ Fit the **concept's** stations and light / dark rhythm; the blueprint gives only
   streak columns from 3 m course lines on light walls, and stained concrete (broad damp stains, oil spots, an
   overall dusty grey) on the plinth. Plinth slab joints every 4.6 m (`plinth(slab=4.6)`), as in the concept.
 
+**What reads as quality at 1:1** (r2 judge B) `[mill v6 r4]`:
+- No soft fbm run-off or smeared drips: they read as UV stretch. Only crisp column streaks (`vstreak`).
+- Roughness must vary: per-zone base (`rough`: clad 0.7, shell 0.66, frames 0.62-0.72, pipes 0.42 metal 0.45, amber
+  0.45) plus patches and mottling (`cpaint` r4); edge wear wide enough to see (curvature 0.04-0.22, chips 0.26-0.5).
+- A faint oil-can dent in the normal map of light plates (2.5 mm).
+- Bolt heads 8 cm (5 cm ones were < 2 px at the close views).
+- Chamfers: bkit boxes >= 0.3 m get up to 6 cm, I-beam flanges 2.5 cm; tori and round mains at >= 72 x 18 segments
+  (40 x 14 showed stepped specular).
+- Camera check: at fov 38 the close view's pixel is ~2.3 cm at 34 m, 3.2 cm at 46 m: a 5 cm feature reaches 2 px only
+  at <= 34 m. Set the close-up distances so the 2 px test can pass at all.
+
 **Texture sets** `[mill v6 r1]`: `ckit.SPLIT[name]` may list several sets, `[({'shell'}, 4096), ({'frame2'}, 4096)]`
 -> materials `colony_<name>_2`, `_3`. The furnace's dark legs and bosh (frame2) went 28 -> ~59 px/m at 4096 in
 their own set. Each set is one material with 4 maps (sampler limit 16 holds); the phone copy caps all at 512.
@@ -95,10 +106,25 @@ giving the zone's extent (x / z range), so collisions can be checked by reading.
 - Lights in the same pass: plinth edge pins every 9 m (`plinth(lamp_pitch=9)`), lamp posts every ~20 m on the
   visible edges, and the process glow's spill (`B.R.spill`, section 5b).
 
-### 5b. Process glow `[mill v6 r1-r2]`
+### 5a2. Massing and composition rules `[mill v6 r4]`
+- **The hero tower is compact.** Heavy legs and posts stand near-vertical and tight to the shell (frame half-width
+  ~ shell radius + 1 m), railed decks at 2-3 levels, the frame stops at the hood deck; the narrow upper stack carries
+  its own railed ring platforms. Raking legs that spread out and posts that converge to a high top read as a
+  "spidery derrick / open A-frame" (r2 judges), the biggest silhouette miss of the mill.
+- **Detail sits on the main masses, not scattered.** Free-standing huts, a parked trailer and an office-like block
+  in front of the hero read as scattered props (judge A). Prefer: low light blocks against the hero's foot, stacks of
+  plate / coils / pallets by the walls and the runner, roof machinery on the sheds.
+- **Roofs:** shallow (~14 deg), light grey with dark laps, broken into bays by dark gable parapets
+  (`gable_shed` `parapet`); a steep 26 deg roof showed a big gable face and read dark.
+- **Low blocks between the hero and the process bay** (7 m, doors / louvres, no office window strip).
+
+### 5b. Process glow `[mill v6 r1-r4]`
 - Hot surfaces: zone `hot` (emissive paint) + thin glow boxes (`K.glow_ring`, `B.R.glowbox`, < 0.1 m thick).
 - A band reads as a band only with few, thin posts in front of it: 12 tuyere stocks round a 9 m hearth, not 20-32
-  (those read as a lit window grid). Glow ring radiance 2.2-2.6.
+  (those read as a lit window grid).
+- Glow colour stays saturated only at moderate radiance: #ff8a28 / #ff6c08 at 2.6 tone-mapped to a pale salmon or
+  peach (judge A: "a wide pale-peach section"); use a deep orange (#ff6200) at ~1.6. Spill light colour likewise
+  deep (#ff7418): a pale spill turns light paint peach.
 - Spill on the ground and structure: `B.R.spill(p, color, intensity, distance)` -> a runtime point light
   (`colony.js` `spills` -> `interiorLights` kind 'point'). Defaults that worked: hearth 300 cd / 20 m placed 1.5 m
   outside the band toward the camera; runner 180 cd / 16 m, 3 m over it. 900 cd / 34 m washed the whole furnace
@@ -120,7 +146,14 @@ ffeedd&fillcolor=`) and `paint-check` each; then write the winner into the studi
 (#ffd9ac) pushed light sat to 0.24-0.32 (concept 0.16) and browned the frames.
 
 Each round: the concept | previous | current sheet, the three close-ups, the checklist review (section 9), two
-judges (vibes; real-time quality at 1:1), fix the largest gap first. Stop when two rounds in a row bring only
+judges (vibes; real-time quality at 1:1), fix the largest gap first.
+
+**Judges** `[mill v6 r2]`: fresh subagents with no build context. Judge A (vibes, blind) sees only a
+concept | render sheet and answers match / no match for silhouette, mood, grit, density, warmth, plus the top 3
+gaps. Judge B (quality) sees the close-up sheet and the raw 1600 x 1000 close renders against STYLE section 2.
+If the session cannot spawn subagents, ask the coordinator to run them (SendMessage to main) and keep building.
+The judges found what self-review missed in r1-r2: the derrick silhouette, the scattered props, the salmon glow,
+smeared streaks, uniform roughness. Run them from round 2 at the latest. Stop when two rounds in a row bring only
 marginal gains and both judges say "close enough".
 
 ## 7. Stage F: release checks
@@ -145,6 +178,11 @@ lessons, REMODEL-PROGRESS.
 | A wait loop never ends | `pgrep -f <script>` matches the waiting shell's own command line | wait on a pid (`wait`, or `kill -0 $pid`) or a log line, never `pgrep -f` with the script name | mill v6 r1 |
 | Clutter lands on top of earlier dressing | positions placed without reading the earlier rounds' items | group clutter by apron zone with extents in comments; read the zone before adding | mill v6 r1 |
 | The whole furnace foot glows orange | spill light too strong / far reaching (900 cd, 34 m) | 300 cd, 20 m, just outside the band | mill v6 r1 |
+| Hero glow reads pale salmon / peach | high radiance on a light orange saturates in the tone curve | deep orange (#ff6200) at ~1.6 | mill v6 r3 |
+| Streaks read as "UV stretch" | soft fbm streaks / drips stretched 20:1 vertically | crisp column streaks only (`vstreak`); `streak` 0, `drip` 0 | mill v6 r4 |
+| Everything has the same satin look | one roughness per zone, no variation | per-zone `rough` + patch / mottle variation + wider edge wear | mill v6 r4 |
+| Light band falls 0.76x after a plinth pass | a big plinth darkened by a uniform dust term | keep the plinth's mean near the kit value; stains carry the grit | mill v6 r3 |
+| Furnace top cut by the frame | `dist` < 1 at the 16:10 review frame | dist 0.95-1.0 (frameView fits with margins) | mill v6 r2 |
 | Rails / braces glow orange at 4096 only | a tiny emissive island packed inside a stacked swatch | stack lamp lenses too; check the final size | mill v5 |
 | Glow box reads as a solid orange slab or sticker | glow box thicker than 0.1 m, or square over a round surface | thin glow boxes for runners and openings only; emissive paint for round hot surfaces | mill v4-v5 |
 | Black scaffold round a thin cylinder | a lattice tower around the hero shape | broad light hero shape in front, slim posts, lattice only at the top | mill v5 |
@@ -159,8 +197,8 @@ lights, package, pkg-diff, phone). The colony-building rows on top of them:
 
 | # | Property | How to measure | Pass |
 |---|---|---|---|
-| C1 | Camera | plinth edge slopes on the render vs the concept | each within 0.05 |
-| C2 | Framing | plinth width / frame width at the concept camera | 0.85-1.0 (concept 0.97) |
+| C1 | Camera | plinth edge slopes on the render vs the concept, and by eye (roof tops visible as much as on the concept) | slopes within 0.15 (AI concepts are not consistent projections: by eye wins) `[r1]` |
+| C2 | Framing | whole plant inside the 1600 x 1000 frame incl. the hero's top; plinth width / frame width | nothing cut; 0.8-0.95 `[r2]` |
 | C3 | Silhouette | side by side at 1600 x 1000 | same signature shapes in the same places (hero forward-left etc.) |
 | G1 | Streak crispness | close-up wall crop | vertical streaks with hard sides (<= 3 px edge at 1:1), sourced at seams / edges |
 | G2 | Roof soot | concept-camera crop of the roofs | roofs read mid-grey-warm, not white; dark lap lines visible |
@@ -169,8 +207,11 @@ lights, package, pkg-diff, phone). The colony-building rows on top of them:
 | W1 | Warmth / tonality | `paint-check` | light band 0.9-1.1x concept, hue within 10 deg, sat within 0.05 |
 | W2 | Dark steel | `paint-check` mid band / crop | sat <= 0.1 (neutral, never brown) |
 | D1 | Density | count kit items per 100 m2 of visible apron at the concept camera | >= 1 per 100 m2; no bare run > 15 m |
-| L1 | Process glow | concept camera | the hero glow is the brightest area; spill visible on adjacent ground / structure |
+| D2 | Detail placement | concept camera | detail gathered on / against the main masses and the process; no free-standing huts or parked vehicles as filler `[r4]` |
+| S1 | Hero structure | concept camera | compact: frame tight to the shell, near-vertical, decks at 2-3 levels, no wide splayed legs `[r4]` |
+| L1 | Process glow | concept camera + crop | the hero glow is the brightest, a saturated orange (not salmon / peach); spill visible on adjacent ground `[r3]` |
 | L2 | Lamps | concept camera | warm lamps along plinth edges, block corners, pilasters |
 | T1 | Texel density | `remodel.py` px/m report | light >= 50, hero >= 70, dark structure >= 25 |
-| T2 | Close crispness | close-up crops at 1:1 | a 5 cm seam >= 2 px; no blur on dark legs |
+| T2 | Close crispness | close-up crops at 1:1 | a 5 cm seam >= 2 px (needs close views <= 34 m at fov 38); no blur on dark legs; no smeared streaks |
+| T3 | Material variety | close-ups | roughness visibly varies (pipes glossier, frames matte, grime matte); chips on edges; lit chamfer lines `[r4]` |
 | I1 | Thumbnail | `thumbs.mjs` | aspect <= 1.5, fill >= 0.6, signature shapes readable at 40 px |

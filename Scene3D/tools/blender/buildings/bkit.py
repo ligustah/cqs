@@ -272,7 +272,8 @@ class Build:
     # primitives -----------------------------------------------------------------------------------------------
     def box(self, size, at=(0, 0, 0), rot=(0, 0, 0), mat='panel', bevel=None, **kw):
         if bevel is None:
-            bevel = min(0.04, min(size) * 0.2)
+            # r4: up to 6 cm on big members (a 4 cm chamfer was under 2 px at the close views: no lit edge line)
+            bevel = min(0.06, min(size) * 0.2) if min(size) >= 0.3 else min(0.04, min(size) * 0.2)
         self.add(lib.bm_box(*size), at, rot, mat, bevel, **kw)
 
     def boxp(self, p0, p1, mat='panel', bevel=None, **kw):

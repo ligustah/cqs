@@ -114,3 +114,29 @@ Checklist review:
 - Phone tris: 192k: FAIL -> r3 stacks 56 -> 40 segments with laps every 4.4 m, furnace 72 -> 60, door decimate
   0.3 -> 0.2.
 - Judges: requested from the coordinator for r2 (no Agent tool in this session).
+- r2 judges (blind, run by the coordinator): BOTH "NOT YET".
+  - A (vibes): silhouette NO (open A-frame lattice + bare cone, top cut by the frame), mood match, grit NO (clean,
+    evenly toned), density NO (props scattered on the slab, main masses sparse), warmth barely (pale-peach band).
+    Gaps: tighten the tower round the shell with ring platforms; grime / rust pass on roofs and cone; cut huts,
+    trailer and the office block, gather detail at the runner and on the main masses.
+  - B (1:1 quality): only shadows pass. Faceted bustle torus; no lit chamfer line on most edges (pilasters, parapet,
+    girder ends); streaks read smeared / vertically stretched; roof seams soft; no 5 cm bolt row at 2 px; uniform
+    satin roughness / metal; weak edge wear and contact AO.
+  - Coordinator: framing (furnace top cut), compact heavy tower, shallow light roofs in bays with dark parapets,
+    light boxy blocks round the furnace foot, thick plinth edge.
+
+### v6 round 3 (13:24-13:40): stacks 40 seg / laps 4.4, furnace 60 seg, doors decimate 0.2, stronger plinth stains,
+tuyere #ff6c08, dist 0.95. 177k tris. paint-check light 0.76x (FAIL: the +0.2 plinth dust), hue 25.9.
+Review: G3 plinth staining PASS (stains and oil spots read at the concept camera); W1 FAIL (dark); L1 band still
+salmon (radiance 2.6 tone-maps pale whatever the hue) -> r4 radiance 1.6 #ff6200; phone tris 177k FAIL.
+
+### v6 round 4 (started 13:58): the judges' fixes
+- FURNACE_V6 tower: near-vertical legs (12.8 -> 12.5) and posts (12.5 -> 10.2) to a railed deck at the hood (44 m),
+  no frame above; railed rings at 49 / 54 on the upper stack; bustle torus 72 x 18; lap rings every 4.5 m (bosh 2.4).
+- SHED_V6: ridge 21.2 -> 17.8 (14 deg), dark gable parapets, lighter roof (soot 0.6), 6 roof units, 4 ridge vents.
+- GALLERY_V6 lands on the hood deck (B y 44.6).
+- Paint: fbm `streak` and `drip` off (read as UV stretch), vstreak denser and darker, tone 0.16, bolts 8 cm, roughness
+  patches + per-zone roughness, oil-can dents in the normal map, wider edge wear.
+- Kit: default box chamfer up to 6 cm on members >= 0.3 m; I-beam flange chamfer 2.5 cm.
+- steel_mill.py: casthouse 10 -> 7 m without the office window strip; switch room, small sheds and the truck gone
+  (plate stacks and coils instead); two low light blocks on the furnace plinth front and a low annex on the -X side.

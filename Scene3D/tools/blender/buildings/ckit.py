@@ -60,13 +60,15 @@ WORKS = {
     # v6 (vibes): crisp vertical streak columns from the seams (`vstreak`), darkened plate edges (`halo`), roof soot with
     # dark lap lines (`soot`, `lap`); the soft fbm run-off (`streak`) kept low under them
     # light paint a step greyer and darker, frames a step lighter (the concept's lower contrast; the studio lifts the whole)
-    'shell': {'color': [0.73, 0.70, 0.665], 'rust': 0.6, 'streak': 0.1, 'streak_f': 3.2, 'dark': 0.55, 'seam_w': 0.045, 'vstreak': 1.0, 'halo': 0.14},
-    'clad': {'color': [0.73, 0.70, 0.66], 'rust': 0.5, 'streak': 0.1, 'streak_f': 3.2, 'vstreak': 1.0, 'halo': 0.14},
+    # r4: the soft fbm run-off off (`streak` 0: judge B read it as UV stretch), per-zone roughness (satin everywhere)
+    'shell': {'color': [0.73, 0.70, 0.665], 'rust': 0.6, 'streak': 0.0, 'dark': 0.55, 'seam_w': 0.045, 'vstreak': 1.0, 'halo': 0.14, 'rough': 0.66},
+    'clad': {'color': [0.73, 0.70, 0.66], 'rust': 0.5, 'streak': 0.0, 'vstreak': 1.0, 'halo': 0.14, 'rough': 0.7},
     'clad2': {'color': [0.64, 0.62, 0.59], 'rust': 0.45, 'blot': 0.035, 'patina': 0.03, 'soot': 0.9, 'lap': 2.9},   # roofs: sooty with dark laps
-    'panel': {'color': [0.75, 0.72, 0.685], 'rust': 0.45, 'streak': 0.1, 'streak_f': 3.2, 'vstreak': 0.95, 'halo': 0.12},
-    'frame': {'color': [0.36, 0.365, 0.378], 'rust': 0.1, 'edge': 0.9, 'vstreak': 0.5},     # concept gunmetal ~sRGB 70-80, neutral
-    'frame2': {'color': [0.40, 0.402, 0.412], 'rust': 0.12, 'vstreak': 0.5},
-    'pipeDark': {'color': [0.42, 0.425, 0.435], 'rust': 0.15, 'metal': 0.3},           # mid-grey mains: dark pipes vanished on the dusk backdrop
+    'panel': {'color': [0.75, 0.72, 0.685], 'rust': 0.45, 'streak': 0.0, 'vstreak': 0.95, 'halo': 0.12, 'rough': 0.68},
+    'frame': {'color': [0.36, 0.365, 0.378], 'rust': 0.1, 'edge': 1.0, 'vstreak': 0.5, 'rough': 0.72},     # concept gunmetal ~sRGB 70-80, neutral
+    'frame2': {'color': [0.40, 0.402, 0.412], 'rust': 0.12, 'vstreak': 0.5, 'rough': 0.62, 'edge': 1.0},
+    'pipeDark': {'color': [0.42, 0.425, 0.435], 'rust': 0.15, 'metal': 0.45, 'rough': 0.42},           # mid-grey mains: dark pipes vanished on the dusk backdrop
+    'amber': {'rough': 0.45},
     'roof': {'soot': 0.3, 'lap': 2.9},
     'concrete': {'vstreak': 0.6, 'soot': 0.25, 'lap': 6.0},
 }
@@ -93,8 +95,9 @@ def ibeam(B, p0, p1, h=0.6, b=0.3, tw=0.03, tf=0.04, mat='frame', up=(0, 1, 0)):
     if abs(d.dot(u.normalized())) > 0.99:
         u = V((1, 0, 0)) if abs(d.x) < 0.9 else V((0, 0, 1))
     with B.at(M=K.frame_along(p0, p1, u)):
-        B.box((b, tf, L), at=(0, h / 2 - tf / 2, L / 2), mat=mat, bevel=0.012)
-        B.box((b, tf, L), at=(0, -h / 2 + tf / 2, L / 2), mat=mat, bevel=0.012)
+        bv = min(0.025, tf * 0.4)       # r4: flange edges catch a lit line (0.012 vanished at the close views)
+        B.box((b, tf, L), at=(0, h / 2 - tf / 2, L / 2), mat=mat, bevel=bv)
+        B.box((b, tf, L), at=(0, -h / 2 + tf / 2, L / 2), mat=mat, bevel=bv)
         B.box((tw, h - 2 * tf, L), at=(0, 0, L / 2), mat=mat, bevel=0.0)
 
 
@@ -403,11 +406,23 @@ FURNACE_V5.update({
 # the furnace); a taller, brighter hearth band (the concept's bright molten band: wide openings, fewer stocks)
 FURNACE_V6 = dict(FURNACE_V5)
 FURNACE_V6.update({
-    'tuyere': (8.95, 14.8, 18.0, 12), 'tuyere_glow': 2.6,   # r2: 12 stocks (20 read as a window grid, not a band)
-    'tuyere_color': '#ff6c08',   # r3: #ff8a28 at radiance 2.6 tone-mapped to a pale salmon; a deeper orange stays molten
+    'tuyere': (8.95, 14.8, 18.0, 12), 'tuyere_glow': 1.6,   # r2: 12 stocks (20 read as a window grid, not a band)
+    'tuyere_color': '#ff6200',   # r4: and radiance 1.6 (2.6 still tone-mapped pale salmon)   # r3: #ff8a28 at radiance 2.6 tone-mapped to a pale salmon; a deeper orange stays molten
     'segments': 60,     # r3 (phone budget): 72 -> 60 facets round the shell (0.95 m facets on the 9 m drum)
     'tower': dict(FURNACE_V5['tower'], top=(7.2, 54.0), top_deck=(54.0, 5.05, 7.6)),
 })
+# r4 (judges + coordinator on r2: "four long raking legs reaching far up and out read as a spidery derrick"; the concept's
+# bell sits in a COMPACT heavy dark tower): near-vertical heavy legs tight to the drum, near-vertical posts close to the
+# bell up to a railed square deck at the hood (44 m), no frame above it; the narrow upper stack carries its own railed
+# ring platforms; a smoother bustle main
+FURNACE_V6['tower'] = dict(FURNACE_V5['tower'], legs=((12.8, 3.0), (12.5, 26.6)), leg_section=(3.4, 2.8),
+                           top=(10.2, 44.0), levels=[35.5], xbrace=(35.5, 44.0), top_deck=(44.0, 7.9, 10.6))
+FURNACE_V6['decks'] = [(26.6, 11.45, 13.4)]
+FURNACE_V6['rings'] = [(49.0, 5.05, 7.0), (54.0, 3.75, 6.0)]
+FURNACE_V6['bustle_seg'] = (72, 18)
+# r4 (phone budget): a modelled lap ring at every second painted course (4.5 m; the paint keeps 2.25), bosh laps 2.4
+FURNACE_V6['lap_pitch'] = 4.5
+FURNACE_V6['bosh_lap'] = 2.4
 
 
 def _raking_legs(B, T):
@@ -554,18 +569,19 @@ def furnace(B, P=FURNACE):
     for (ya, yb_, rr) in P.get('bosh', []):
         B.lathe([(0, ya), (rr, ya), (rr, yb_), (0, yb_)], (0, 0, 0), mat='frame2', n=n, bevel=0.04)
         hoop(B, c, rr, yb_ - 0.32, 0.32, 0.26, mat='frame', n=n)
-        lap_rings(B, lambda y, rr=rr: rr, ya + 0.4, yb_ - 0.5, 1.2, mat='frame2', n=n, out=0.03, h=0.1)
+        lap_rings(B, lambda y, rr=rr: rr, ya + 0.4, yb_ - 0.5, P.get('bosh_lap', 1.2), mat='frame2', n=n, out=0.03, h=0.1)
     # shaft: one lathe solid, the light plated shell (seams and courses are paint + normal)
     prof = P['shaft']
     B.lathe([(0, prof[0][1])] + prof + [(0, prof[-1][1])], (0, 0, 0), mat='shell', n=n, bevel=0.0, sharp=50)
     for (yy, hh) in P['hoops']:
         hoop(B, c, _shaft_r(prof, yy + hh / 2), yy, hh, 0.22, mat='frame', n=n)
-    lap_rings(B, lambda y: _shaft_r(prof, y), prof[0][1], prof[-1][1], P.get('course', 2.25), mat='shell',
+    lap_rings(B, lambda y: _shaft_r(prof, y), prof[0][1], prof[-1][1], P.get('lap_pitch', P.get('course', 2.25)), mat='shell',
               skip=[yy + hh / 2 for (yy, hh) in P['hoops']], n=n)
     # bustle main (a torus) and the tuyere downlegs with their goosenecks
     rb, yb, tb, nl = P['bustle']
-    pts = [(rb * math.sin(2 * math.pi * k / 40), yb, rb * math.cos(2 * math.pi * k / 40)) for k in range(41)]
-    B.tube(pts, tb, mat='pipeDark', n=14, fillet=0.0)
+    bs_, bn_ = P.get('bustle_seg', (40, 14))       # r4: 72 x 18 (40 x 14 read faceted with stepped specular at 1:1)
+    pts = [(rb * math.sin(2 * math.pi * k / bs_), yb, rb * math.cos(2 * math.pi * k / bs_)) for k in range(bs_ + 1)]
+    B.tube(pts, tb, mat='pipeDark', n=bn_, fillet=0.0)
     for k in range(nl):
         a = 2 * math.pi * (k + 0.5) / nl
         s, cc = math.sin(a), math.cos(a)
@@ -625,6 +641,11 @@ def furnace(B, P=FURNACE):
             a = 2 * math.pi * (k + 0.5) / 12
             if k % 3 == 0:
                 lamp(B, ((rb + 0.1) * math.sin(a), ya + 1.3, (rb + 0.1) * math.cos(a)), (math.sin(a), 0, math.cos(a)), size=0.26)
+    # r4: railed ring platforms round the narrow upper stack (the concept's two upper galleries)
+    for (ya, ra, rb_) in P.get('rings', []):
+        K.platform_ring(B, c, ya, ra, rb_, n=40, brackets=10)
+        lamp(B, (0.0, ya + 1.3, rb_ + 0.1), (0, 0, 1), size=0.24)
+        lamp(B, (rb_ + 0.1, ya + 1.3, 0.0), (1, 0, 0), size=0.24)
     # the tower
     T = P.get('tower')
     if T and T.get('style') == 'posts':
@@ -722,7 +743,7 @@ def furnace(B, P=FURNACE):
         ly0_ = T.get('ladder_y0', T['y0'])
         K.ladder(B, (lx * (hf + 0.66), ly0_, lz * (hf - 1.6)), (lx, 0, 0), T['levels'][-1] - ly0_)
     return works({
-        'shell': {'axis': (0, 0), 'course': 2.25, 'joint': 2.0, 'bolts': 0.32, 'rust': 0.35, 'tone': 0.1, 'drip': 0.3, 'blot': 0.035},
+        'shell': {'axis': (0, 0), 'course': 2.25, 'joint': 2.0, 'bolts': 0.32, 'rust': 0.45, 'tone': 0.16, 'drip': 0.0, 'blot': 0.05},
         'frame2': {'axis': (0, 0), 'course': 1.6, 'joint': 1.6, 'rust': 0.15, 'tone': 0.08},
         'concrete2': {'course': 1.5, 'joint': 3.0, 'rust': 0.0, 'dark': 0.25},
         'concrete': {'course': 3.0, 'joint': 3.0, 'rust': 0.0, 'dark': 0.3},
@@ -744,7 +765,7 @@ STACK['bands'] = [(9.6, 18.6, 'shell'), (18.6, 25.0, 'frame2'), (25.0, 33.8, 'sh
 # v6 (phone budget, 150k tris a building): 40 segments and a modelled lap ring at every second painted seam (4.4 m):
 # 20.1k -> ~9k tris a stack; the painted seams keep the 2.2 m courses
 STACK['segments'] = 40
-STACK['lap_pitch'] = 4.4
+STACK['lap_pitch'] = 6.6
 
 
 def banded_stack(B, P=STACK):
@@ -834,12 +855,22 @@ SHED_V5.update({
     'pilaster_lamps': (4.2, 10.4),
     'paint': {
         # v6: soft fbm run-off down (0.2 -> 0.08), the crisp seam streaks (WORKS vstreak) carry the grit; heavier drips
-        'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.4, 'tone': 0.13, 'dark': 0.6, 'stagger': False,
-                 'seam_w': 0.05, 'streak': 0.08, 'streak_f': 3.2, 'drip': 0.4},
+        'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.4, 'tone': 0.16, 'dark': 0.6, 'stagger': False,
+                 'seam_w': 0.05, 'streak': 0.0, 'drip': 0.0},     # r4: fbm run-off and smeared drips off (read as stretch)
         'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.4, 'tone': 0.07, 'dark': 0.35, 'streak': 0.1},
         'frame2': {'rust': 0.15},
     },
 })
+
+
+# r4 (judges + coordinator on r2): the concept's shed roofs are light grey and SHALLOW, in bays with dark parapets: ridge
+# 21.2 -> 17.8 (26 -> 14 degrees), dark firewall parapets on the gable rakes, lighter roof sheeting with less soot, more
+# roof machinery
+SHED_V6 = dict(SHED_V5)
+SHED_V6.update({'ridge': 17.8, 'parapet': True, 'monitor': (5.6, 27.0, 2.4, 0.5),
+                'roof_units': [(1, -13.0), (1, -4.0), (1, 9.0), (-1, -8.0), (-1, 4.0), (-1, 13.0)], 'ridge_vents': 4})
+SHED_V6['paint'] = dict(SHED_V5['paint'])
+SHED_V6['paint']['clad2'] = dict(SHED_V5['paint']['clad2'], color=[0.70, 0.68, 0.65], soot=0.6)
 
 
 def _shed_dressing(B, P, hx, hz, E, Rg, ov, bay, nb, pd):
@@ -997,6 +1028,11 @@ def gable_shed(B, P=SHED):
             a = V((sx * (hx + ov), E - 0.05, z + sz * 0.15))
             b = V((0.0, Rg + 0.05, z + sz * 0.15))
             B.bar(a, b, 0.3, 0.5, mat='frame', up=(0, 1, 0), bevel=0.03)
+            if P.get('parapet'):
+                # r4: a dark firewall parapet along each gable rake, 1 m over the roof (the concept's roofs read as
+                # segmented bays with dark separating edges)
+                pa_, pb_ = V((sx * (hx + ov), E + 0.35, z - sz * 0.2)), V((0.0, Rg + 0.35, z - sz * 0.2))
+                B.bar(pa_, pb_, 0.45, 1.1, mat='frame', up=(0, 1, 0), bevel=0.04)
         for gy in (5.6, 10.0):
             B.box((W - 0.4, 0.1, 0.06), at=(0, gy, z + sz * 0.03), mat='frame2', bevel=0.0)
     # roof sheets (corrugation in the paint), ridge cap
@@ -1320,6 +1356,8 @@ GALLERY_V6 = {
     'foot': (6.0, 30.0, (7.6, 13.6)), 'head': None, 'trestle': None,
     'pipe': (1.15, [(0.0, 54.6, -9.6), (0.0, 36.1, 7.6), (0.0, 36.1, 15.2), (0.0, 3.0, 15.2)]),
 }
+# r4: the furnace frame now stops at the hood deck (44 m): the gallery lands on it
+GALLERY_V6.update({'B': (0.0, 44.6, -9.6), 'pipe': (1.15, [(0.0, 52.0, -9.6), (0.0, 36.1, 7.6), (0.0, 36.1, 15.2), (0.0, 3.0, 15.2)])})
 
 
 def _gas_main(B, P, A, Bp, n_up, h):
@@ -1496,7 +1534,7 @@ SPLIT = {'blastFurnace': [({'shell'}, 4096), ({'frame2'}, 4096)]}
 REMODELS = {
     'blastFurnace': (furnace, FURNACE_V6, 4096, '60 m blast furnace remodel: concrete plinth, dark staved hearth, recessed glowing tuyere band with 24 window frames, bustle main and downlegs, light plated shaft with five hoops, flange, cone, throat, uptakes and downcomer; four laced columns, four square grating decks on ring girders, X bracing, caged ladder, lamps'),
     'bandedStack': (banded_stack, STACK, 2048, '46 m banded stack remodel: base block, gusseted flared foot, light / dark plated bands with hoops, two railed platforms, caged ladders, sooted lip, lamps, obstruction light'),
-    'shedSegment': (gable_shed, SHED_V5, 4096, '28 x 36 m clad shed segment remodel: corrugated walls between I-section pilasters, recessed window strips, dark dado, gables with outward verges, corrugated roof, gutters, ridge, louvred monitor, downpipes, kit crew door'),
+    'shedSegment': (gable_shed, SHED_V6, 4096, '28 x 36 m clad shed segment remodel: corrugated walls between I-section pilasters, recessed window strips, dark dado, gables with outward verges, corrugated roof, gutters, ridge, louvred monitor, downpipes, kit crew door'),
     'pourBay': (pour_bay, POUR_V6, 4096, '19 x 26 m pour bay remodel: built-up columns, lattice side, plate girders and Warren roof trusses, runways and an amber double-girder bridge crane with trolley and hook, plated back wall, glowing runner and tundish, rails and ladle car, two tapping platforms with stairs'),
     'skipGallery': (incline_gallery, GALLERY_V6, 2048, 'inclined skip gallery remodel: clad enclosed gallery with portal ribs and windows on two Warren trusses, lattice trestle, drive house with roller and crew doors, head house'),
 }

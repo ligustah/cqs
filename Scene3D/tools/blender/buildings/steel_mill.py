@@ -268,24 +268,29 @@ def model(B):
     # v4 r3: the casthouse front block between the furnace and the pour bay (the concept's foreground: light panels in
     # dark frames, crew doors with lamps, a roller door, roof units), so the shed's front gable stands behind layered
     # volumes instead of over an empty apron
-    K.block(B, (8.0, 0.0, 34.0), (21.0, 10.0, 9.0), frame='frameL',
-            sides={'+z': {'bay': 5.25, 'storey': 5.0, 'windows': [1], 'win': (1.6, 1.2), 'win_per_bay': 2, 'doors': [2.6, 18.4], 'rollers': [(10.5, 5.0, 5.6)]},
-                   '+x': {'bay': 4.5, 'storey': 5.0, 'windows': [1], 'win': (1.4, 1.2), 'doors': [4.5]},
-                   '-x': {'bay': 4.5, 'storey': 5.0}, '-z': {'bay': 5.25, 'storey': 5.0}},
+    # r4 (judges: "the boxy office in front of the furnace"): a LOW casthouse block (7 m, the concept's low light block
+    # between the furnace and the pour bay): doors, a roller door and louvres, two small windows, no office strip
+    K.block(B, (8.0, 0.0, 34.0), (21.0, 7.0, 9.0), frame='frameL',
+            sides={'+z': {'bay': 5.25, 'storey': 7.0, 'windows': [], 'doors': [2.6, 18.4], 'rollers': [(10.5, 5.0, 5.6)],
+                          'louvres': [(6.0, 4.4, 2.0, 1.4), (15.0, 4.4, 2.0, 1.4)]},
+                   '+x': {'bay': 4.5, 'storey': 7.0, 'windows': [0], 'win': (1.2, 1.0), 'doors': [4.5]},
+                   '-x': {'bay': 4.5, 'storey': 7.0}, '-z': {'bay': 5.25, 'storey': 7.0}},
             roof={'parapet': 0.5, 'units': [('hvac', -6.0, -1.0, {'w': 3.0, 'd': 2.0}), ('vent', 0.5, 1.5, {}), ('hvac', 6.0, -1.2, {'w': 2.4, 'd': 1.8, 'fans': 1})]})
-    K.pipe(B, [(-3.6, 7.0, 31.0), (-2.0, 7.0, 31.0), (-2.0, 11.2, 31.0), (8.0, 11.2, 31.0)], r=0.45, mat='pipeDark', supports=False)
+    K.pipe(B, [(-3.6, 7.0, 31.0), (-2.0, 7.0, 31.0), (-2.0, 8.4, 31.0), (8.0, 8.4, 31.0)], r=0.45, mat='pipeDark', supports=False)
     # v5: more of the concept's secondary layer: a pipe run and cable tray along the casthouse front, door canopies,
     # a stair to its roof, crates and a skid on the apron, extra roof units
     K.pipe(B, [(-2.0, 3.6, 38.9), (18.0, 3.6, 38.9)], r=0.3, mat='pipe', supports=False)
-    K.cable_tray(B, (-2.0, 8.4, 38.8), (18.0, 8.4, 38.8), w=0.45)
-    K.stair(B, (19.0, 0.0, 37.5), (0, 0, -1), 5.0, w=1.1)
+    K.cable_tray(B, (-2.0, 5.9, 38.8), (18.0, 5.9, 38.8), w=0.45)
+    K.ladder(B, (18.6, 0.0, 36.0), (1, 0, 0), 7.0)
     for (cx, cz, sz) in ((21.0, 39.5, (1.6, 1.2, 1.6)), (22.6, 39.8, (1.2, 1.0, 1.2)), (21.6, 39.5, (1.0, 0.8, 1.0))):
         K.crate(B, (cx, 0.0 if sz[1] > 0.9 else 1.2, cz), sz)
-    K.hvac(B, (12.0, 10.0, 32.0), w=2.6, d=1.8, fans=2)
+    K.hvac(B, (12.0, 7.0, 32.0), w=2.6, d=1.8, fans=2)
     # switch room, control box, stairs, crates on the +X apron
-    K.block(B, (33.5, 0.0, -10.0), (6.0, 4.5, 7.0), frame='frameL',
-            sides={'+x': {'bay': 3.5, 'doors': [2.0], 'windows': [0], 'win': (1.2, 1.0)}, '+z': {'bay': 3.0, 'windows': [0], 'win': (1.2, 1.0)}},
-            roof={'parapet': 0.4, 'units': [('hvac', 0.0, 0.0, {'w': 2.4, 'd': 1.6, 'fans': 1})]})
+    # r4: the switch-room hut went (judges: scattered huts); stacked plate and coils by the shed wall instead
+    for (x, z) in ((33.0, -8.0), (34.4, -8.0), (33.0, -9.4), (34.4, -9.4), (33.7, -11.2)):
+        K.pallet(B, (x, 0.0, z), load='plate')
+    for (x, z) in ((32.6, -13.5), (34.6, -13.5)):
+        B.cyl(0.8, 1.2, at=(x, 0.8, z), rot=(0, 90, 0), mat='pipe', n=16)        # steel coils on the ground
     # the pour bay's control house (the concept: a light concrete block with a railed roof beside the runner)
     K.block(B, (33.0, 0.0, 32.0), (6.0, 5.0, 6.0), frame='frameL',
             sides={'+x': {'bay': 3.0, 'doors': [3.0]}, '+z': {'bay': 3.0, 'windows': [0], 'win': (1.4, 1.0)}},
@@ -298,13 +303,24 @@ def model(B):
         K.lamp_post(B, (x, 0.0, z), h=8.0, arm=1.2, rot=rot)
     for (x, z, r) in ((-39.0, 10.0, 90.0), (-39.0, 12.0, 90.0), (38.5, -24.0, -90.0)):
         K.cabinet(B, (x, 0.0, z), rot=r)
-    K.truck(B, (31.5, 0.0, -32.0), heading=180)
+    # r4: the truck went (judges: the trailer read as scattered clutter, not the concept's plant)
     K.forklift(B, (37.0, 0.0, -16.0), heading=200)
     for (x, z, hd) in ((36.5, 22.0, 90), (37.0, 6.0, 260), (10.0, 40.5, 10), (24.0, 34.0, 200)):
         K.worker(B, (x, 0.0, z), heading=hd)
     K.flood_on_wall(B, (SH_X + 14.05, 16.0, -12.0), (1, 0, 0), (36.0, 0.0, -14.0))
     K.flood_on_wall(B, (SH_X + 14.05, 16.0, -36.0), (1, 0, 0), (36.0, 0.0, -34.0))
     clutter(B)
+    # r4 (coordinator / judge A: the concept stacks light boxy blocks round the furnace foot): two low light blocks on the
+    # furnace plinth between the front legs (y 3, in front of the hearth drum) and a lower annex on the -X side
+    for (x, w_) in ((FX - 6.0, 6.0), (FX + 6.5, 5.0)):
+        K.block(B, (x, 3.0, FZ + 13.2), (w_, 4.0, 4.4), frame='frameL', y0=3.0,
+                sides={'+z': {'bay': w_ / 2, 'storey': 4.0, 'doors': [w_ * 0.3], 'windows': []}, '+x': {'bay': 2.2, 'storey': 4.0},
+                       '-x': {'bay': 2.2, 'storey': 4.0}},
+                roof={'parapet': 0.3, 'units': [('vent', 0.0, 0.0, {})]})
+    K.block(B, (-37.0, 0.0, 19.0), (6.0, 7.0, 6.0), frame='frameL',
+            sides={'+z': {'bay': 3.0, 'storey': 3.5, 'doors': [3.0]}, '+x': {'bay': 3.0, 'storey': 3.5, 'windows': [1], 'win': (1.2, 1.0)},
+                   '-x': {'bay': 3.0, 'storey': 3.5}},
+            roof={'parapet': 0.4, 'units': [('hvac', 0.0, 0.0, {'w': 2.2, 'd': 1.6, 'fans': 1})]})
 
 
 
@@ -315,16 +331,13 @@ def clutter(B):
     plus the process-glow spill lights (hearth band, runner)."""
     # --- glow spill: the hearth band lights the furnace foot and casthouse roof; the runner lights the portal floor
     # r2: 900 cd / 34 m washed the whole furnace foot and the shed gable orange: a local spill only
-    B.R.spill((FX + 8.5, 13.0, FZ + 8.5), color='#ff8030', intensity=300.0, distance=20.0)
+    B.R.spill((FX + 8.5, 13.0, FZ + 8.5), color='#ff7418', intensity=300.0, distance=20.0)
     B.R.spill((PB_X + 8.6, 3.2, PB_Z + 4.0), color='#ffa04a', intensity=180.0, distance=16.0)
     # --- +X apron along the shed (x 33-40, z -48..0): a pipe cluster on stools at the edge, sheds, pallets, skids
     K.pipe_bundle(B, [(38.6, 0.0, -45.5), (38.6, 0.0, -26.0)], n=3, r=0.22)
     K.pipe_bundle(B, [(39.2, 0.0, -8.0), (39.2, 0.0, -1.0), (35.0, 0.0, -1.0)], n=2, r=0.3)
     K.valve(B, (38.6, 0.72, -30.0), (0, 0, 1), r=0.22)
     K.valve(B, (38.6, 0.72, -38.0), (0, 0, 1), r=0.22)
-    K.block(B, (35.0, 0.0, -45.0), (4.0, 3.2, 4.4), frame='frameL',
-            sides={'+x': {'bay': 2.2, 'doors': [2.2]}, '+z': {'bay': 2.0, 'windows': [0], 'win': (1.0, 0.8)}},
-            roof={'parapet': 0.25, 'units': [('vent', 0.0, 0.0, {})]})
     for (x, z, r, ld) in ((26.2, -3.0, 0, 'sacks'), (26.2, -4.4, 0, 'boxes'), (27.6, -3.2, 15, 'plate'), (34.5, -20.0, 0, 'boxes'),
                           (34.5, -21.3, 0, 'sacks'), (35.9, -20.2, 0, None), (26.0, -24.0, 90, 'plate'), (26.0, -25.4, 90, 'plate')):
         K.pallet(B, (x, 0.0, z), rot=r, load=ld)
@@ -349,9 +362,8 @@ def clutter(B):
     for (x, z, hd) in ((34.0, 12.0, 90), (39.0, 18.5, 270)):
         K.worker(B, (x, 0.0, z), heading=hd)
     # --- the front-right corner (x 20-40, z 27-42): a small shed, skids, a pipe cluster to the control house
-    K.block(B, (31.5, 0.0, 39.8), (5.0, 3.6, 3.6), frame='frameL',
-            sides={'+z': {'bay': 2.5, 'doors': [1.4], 'windows': [1], 'win': (1.0, 0.8)}, '+x': {'bay': 3.6, 'windows': [0], 'win': (1.0, 0.8)}},
-            roof={'parapet': 0.25, 'units': [('hvac', 0.0, 0.0, {'w': 1.8, 'd': 1.2, 'fans': 1})]})
+    for (x, z, ld) in ((30.6, 40.4, 'plate'), (32.0, 40.4, 'plate'), (33.4, 40.4, 'boxes')):
+        K.pallet(B, (x, 0.0, z), load=ld)
     K.pipe_bundle(B, [(38.8, 0.0, 37.0), (38.8, 0.0, 28.0)], n=2, r=0.25)
     K.pump_skid(B, (36.6, 0.0, 33.5), rot=90)
     K.pallet(B, (25.5, 0.0, 40.6), load='boxes')

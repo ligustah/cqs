@@ -602,7 +602,7 @@ def _grit(g, name, base, col, obj, ao):
         spot = g.math('MULTIPLY', g.mr(vor.outputs['Distance'], 0.5, 0.12), g.math('GREATER_THAN', cellc, 0.72))
         spot = g.math('MULTIPLY', spot, g.mr(g.noise(obj, 1.6, 3, 0.7), 0.3, 0.6, 0.4, 1.0))   # ragged oil-spot edges
         k = g.math('ADD', g.math('ADD', g.math('MULTIPLY', stain, 0.55), g.math('MULTIPLY', stain2, 0.3)), g.math('MULTIPLY', spot, 0.7))
-        k = g.math('ADD', k, 0.2)       # an overall dusty grey on the light concrete (the concept's slab is mid grey)
+        k = g.math('ADD', k, 0.08)      # an overall dusty grey (r4: 0.2 took the light band to 0.76x) on the light concrete (the concept's slab is mid grey)
         k = g.math('MULTIPLY', k, g.math('ADD', 0.35, g.math('MULTIPLY', top, 0.65)), clamp=True)
         return g.lerp(col, g.vm('MULTIPLY', col, (0.42, 0.40, 0.37)), k)
     if base[0] < 0.25:
