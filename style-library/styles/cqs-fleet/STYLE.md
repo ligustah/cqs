@@ -70,7 +70,8 @@ mood, grit, density and warmth. It need not match pixel for pixel. Pass means:
   context, shown only the concept and the render side by side, and answers match / no match per quality with one
   line of reason.
 
-Keep iterating without asking the user until it passes.
+Keep iterating without asking the user until it passes, for at most 25 review rounds per asset. Round 25 at the latest
+is the final build with its checks and evidence; anything still open goes to the user in the report.
 
 ## 3. Identity (All)
 
