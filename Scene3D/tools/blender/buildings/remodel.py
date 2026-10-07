@@ -70,7 +70,7 @@ def has(flag):
 # grating, lacing, rails), glass and interiors get less (they carry little texture detail and are most of the surface of
 # a lattice-heavy part: the furnace's frame and decks were 70 % of its 16,000 m2)
 UV_WEIGHT = {'frame': 0.45, 'grate': 0.35, 'pipeDark': 0.6, 'pipe': 0.5, 'louvre': 0.4, 'interior': 0.25, 'soot': 0.4,
-             'glassW': 0.4, 'lamp': 0.5, 'refractory': 0.6, 'hot': 0.5, 'concrete2': 0.75, 'amber': 0.8, 'frame2': 0.85,
+             'glassW': 0.4, 'lamp': 0.5, 'refractory': 0.6, 'hot': 1.0, 'concrete2': 0.75, 'amber': 0.8, 'frame2': 0.85,
              'roof': 0.6, 'rust': 0.8, 'concrete': 0.7}
 # v4 r3: thin structure (rails, lacing, rods, rungs, small brackets) is thousands of islands a few texels wide, and each
 # paid a 1.5 px margin round it: 86 % of the furnace's 10,900 islands held 9 % of its surface but cost most of the atlas
@@ -82,7 +82,7 @@ STACK_ZONES = {'frame', 'frame2', 'grate', 'pipeDark', 'pipe', 'soot', 'refracto
 STACK_AREA = 2.0
 ANGLE = float(os.environ.get('REMODEL_ANGLE', 55))   # smart projection angle limit (degrees)
 SHAPE = 'CONCAVE'       # pack_islands shape method
-STACK_NARROW = 0.25     # any zone: islands narrower than this (m; ribs, trims, rungs) are stacked too
+STACK_NARROW = 0.12     # any zone: islands narrower than this (m; ribs, trims, rungs) are stacked too
 # v5: lamp lenses ARE stacked (one emissive swatch): left as tiny islands, the concave packer dropped them into gaps
 # inside the 'frame' swatch, and every rail and brace that samples that swatch glowed orange at 4096
 NO_STACK = {'hot', 'glassW'}
@@ -436,7 +436,7 @@ def build(name, tex, samples, work, dry=False, preview=None):
         t2 = time.time()
         print(f'[remodel] {mname}: unwrap {t2 - t1:.0f}s, surface {a3_:.0f} m2, uv fill {a2_:.2f}, px/m at {tx}: '
               + ', '.join(f'{z} {v:.1f}' for z, v in sorted(ppm.items(), key=lambda kv: -kv[1])), flush=True)
-        maps = HC.bake_maps(o, size=tx, ao_size=tx // 2, ao_samples=samples, ao_dist=1.2, curv_r=0.05, threads=4)
+        maps = HC.bake_maps(o, size=tx, ao_size=tx // 2, ao_samples=samples, ao_dist=1.2, curv_r=0.08, threads=4)
         # hulls/common converts Blender -> ship frame (x, z, -y); the kit authors the part frame directly in Blender (Y up)
         for k in ('pos', 'nrm'):
             a = maps[k]

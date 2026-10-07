@@ -96,6 +96,10 @@ Fit the **concept's** stations and light / dark rhythm; the blueprint gives only
 - Two instances of one part show identical paint (the two shed segments): acceptable at the hero view, but keep the
   instance's distinct faces (doors, dock) on the visible side.
 
+- Per-part main-set UV weights (`ckit.UV_W[name]`) `[mill v6 r10]`: once a hero's light shell and big members have
+  their own sets, its main atlas holds only dark structure, plinth and pipes; weighting frame 0.95 / pipeDark 0.9 /
+  concrete 0.55 there lifted the furnace frame 6.4 -> 12.0 px/m at 2048 (~24 at 4096).
+
 **Texture sets** `[mill v6 r1]`: `ckit.SPLIT[name]` may list several sets, `[({'shell'}, 4096), ({'frame2'}, 4096)]`
 -> materials `colony_<name>_2`, `_3`. The furnace's dark legs and bosh (frame2) went 28 -> ~59 px/m at 4096 in
 their own set. Each set is one material with 4 maps (sampler limit 16 holds); the phone copy caps all at 512.
@@ -220,6 +224,12 @@ lessons, REMODEL-PROGRESS.
 | A big pipe bend kinks at 1:1 | 4 fillet segments per bend; a closed ring capped at its joint | 8 segments for r > 0.5 m (bkit `tube`); closed rings `caps=False` | mill v6 r8 |
 | A shed roof shows dark stripes along the ridges | full-length louvred monitors | half-length, lower monitors (`monitor` (5.6, 14, 1.6, 0.5)) | mill v6 r8 |
 | A parameter silently not applied | an edit appended a key inside a trailing comment (`# ... 'monitor': ...`) | after editing a parameter dict, print the effective value (`python -c 'import ckit; print(ckit.SHED_V6[...])'` in the venv) | mill v6 r8 |
+| "Grit" fails at the concept camera round after round | every weathering layer was sub-metre (seams, 9-22 cm streaks, chips): at the concept camera a panel is ~6 px, so it averages to a clean tone | `cpaint.macro`: per bay x storey panel value +-12-15 % (`mpanel`, `mtone`), soft streaks 0.8-1.6 m wide and 3-10 m long from storey lines (`mstorey`, `mstreak`), a top-down soot gradient on tall elements (`soot_top`), base grime to ~2 m (`mbase`); the hull shader (`lib._grit`) carries the same; CHECK on the concept-camera render (paint-check + a crop next to the concept), never on the close-ups | mill v6 r10 |
+| Streaks show as blocky bars with hard texel steps | 9 cm columns with hard sides = 2-4 texels; one column grid on every course | columns 16 / 40 cm, sides softened over a quarter width, grid shifted per course | mill v6 r10 |
+| The same grime pattern repeats on every part | every part painted with the same seeds | per-part seed from the work folder name (`pseed`) | mill v6 r10 |
+| Small curved props read as wood (a barrel, a hut) | fixed-pitch plate seams and streak columns on objects under ~3 m | no seams / column streaks on small props: 1-2 welded courses, mottling, metal roughness | mill v6 r10 |
+| Edge line only on some parts | narrow flange / trim islands (< 0.25 m) stacked into a shared swatch (random geometry per texel); 5 cm curvature radius too tight | `STACK_NARROW` 0.12, curvature bake radius 8 cm, edge line from curvature 0.03-0.12 | mill v6 r10 |
+| A ring main shows a kink and open ends | a closed tube path has a joint | revolve a circle profile (`bustle_torus`): a true torus, no joint | mill v6 r10 |
 | Rails / braces glow orange at 4096 only | a tiny emissive island packed inside a stacked swatch | stack lamp lenses too; check the final size | mill v5 |
 | Glow box reads as a solid orange slab or sticker | glow box thicker than 0.1 m, or square over a round surface | thin glow boxes for runners and openings only; emissive paint for round hot surfaces | mill v4-v5 |
 | Black scaffold round a thin cylinder | a lattice tower around the hero shape | broad light hero shape in front, slim posts, lattice only at the top | mill v5 |

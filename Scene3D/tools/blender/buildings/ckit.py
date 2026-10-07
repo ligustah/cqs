@@ -456,6 +456,9 @@ FURNACE_V6['risers'] = [(20.0, 0.35), (32.0, 0.25), (75.0, 0.28), (150.0, 0.3), 
 # and turn in to join the header; slimmer
 FURNACE_V6['uptakes'] = (4, 0.45, [(5.4, 48.4), (5.4, 57.0), (4.3, 59.2), (1.9, 60.6)])
 FURNACE_V6['segments'] = 52      # r8 (phone budget 150k): 60 -> 52
+FURNACE_V6['bustle_torus'] = True
+# r10 (judge A: "pipes running down the tower"): hot-blast drops from the bustle main to the base between the legs
+FURNACE_V6['drops'] = [(20.0, 0.55), (160.0, 0.55), (250.0, 0.55)]
 FURNACE_V6['cap_mat'] = 'frame2'   # r8: the concept's crown is stepped DARK drums (a light cap read as a lantern)
 FURNACE_V6['taps_a0'] = 0.0
 FURNACE_V6['downcomer'] = (1.7, [(-8.6, 24.4, 1.6), (-13.5, 24.4, 3.6), (-19.0, 20.0, 6.0), (-19.0, 14.6, 6.0)])
@@ -638,8 +641,13 @@ def furnace(B, P=FURNACE):
     # bustle main (a torus) and the tuyere downlegs with their goosenecks
     rb, yb, tb, nl = P['bustle']
     bs_, bn_ = P.get('bustle_seg', (40, 14))       # r4: 72 x 18 (40 x 14 read faceted with stepped specular at 1:1)
-    pts = [(rb * math.sin(2 * math.pi * k / bs_), yb, rb * math.cos(2 * math.pi * k / bs_)) for k in range(bs_ + 1)]
-    B.tube(pts, tb, mat='pipeDark', n=bn_, fillet=0.0, caps=False)    # r8: a closed ring: no end caps at the joint (a seam)
+    if P.get('bustle_torus'):
+        # r10 (judge B: "ring-pipe kinks, its ends cut open"): a true torus, a circle profile revolved (no joint at all)
+        prof_ = [(rb + tb * math.cos(2 * math.pi * k / bn_), yb + tb * math.sin(2 * math.pi * k / bn_)) for k in range(bn_)]
+        B.lathe(prof_, (0, 0, 0), mat='pipeDark', n=bs_, closed=True, bevel=0.0, sharp=80)
+    else:
+        pts = [(rb * math.sin(2 * math.pi * k / bs_), yb, rb * math.cos(2 * math.pi * k / bs_)) for k in range(bs_ + 1)]
+        B.tube(pts, tb, mat='pipeDark', n=bn_, fillet=0.0, caps=False)
     for k in range(nl):
         a = 2 * math.pi * (k + 0.5) / nl
         s, cc = math.sin(a), math.cos(a)
@@ -707,6 +715,15 @@ def furnace(B, P=FURNACE):
         for y in ys[1:-1:2]:
             rs_ = _shaft_r(prof, y)
             B.bar((rs_ * math.sin(a), y, rs_ * math.cos(a)), ((rs_ + 0.75) * math.sin(a), y, (rs_ + 0.75) * math.cos(a)), 0.16, 0.3, mat='frame', bevel=0.0)
+    for (adeg, rr_) in P.get('drops', []):
+        a = math.radians(adeg)
+        rb_, yb_, tb_, _n = P['bustle']
+        rd_ = rb_ + tb_ + rr_ + 0.1
+        path_ = [(rb_ * math.sin(a), yb_ - tb_ * 0.5, rb_ * math.cos(a)), (rd_ * math.sin(a), yb_ - tb_ - 1.0, rd_ * math.cos(a)),
+                 (rd_ * math.sin(a), P['base'][1] + 0.6, rd_ * math.cos(a)), ((rd_ + 1.6) * math.sin(a), P['base'][1] + 0.6, (rd_ + 1.6) * math.cos(a))]
+        B.tube(path_, rr_, mat='pipeDark', n=14)
+        for y in (6.0, 12.0):
+            B.bar((rd_ * math.sin(a), y, rd_ * math.cos(a)), ((P['hearth'][0] + 0.1) * math.sin(a), y, (P['hearth'][0] + 0.1) * math.cos(a)), 0.2, 0.3, mat='frame', bevel=0.0)
     # r4: railed ring platforms round the narrow upper stack (the concept's two upper galleries)
     for (ya, ra, rb_) in P.get('rings', []):
         K.platform_ring(B, c, ya, ra, rb_, n=40, brackets=10)
@@ -809,8 +826,9 @@ def furnace(B, P=FURNACE):
         ly0_ = T.get('ladder_y0', T['y0'])
         K.ladder(B, (lx * (hf + 0.66), ly0_, lz * (hf - 1.6)), (lx, 0, 0), T['levels'][-1] - ly0_)
     return works({
-        'shell': {'axis': (0, 0), 'axis_r': 10.0, 'course': 2.25, 'joint': 2.0, 'bolts': 0.32, 'rust': 0.45, 'tone': 0.22, 'drip': 0.0, 'blot': 0.06},
-        'frame2': {'axis': (0, 0), 'axis_r': 10.0, 'course': 1.6, 'joint': 1.6, 'rust': 0.15, 'tone': 0.12},
+        'shell': {'axis': (0, 0), 'axis_r': 10.0, 'course': 2.25, 'joint': 2.0, 'bolts': 0.32, 'rust': 0.45, 'tone': 0.22, 'drip': 0.0, 'blot': 0.06,
+                  'soot_top': (32.0, 46.0, 0.3), 'mpanel': (6.0, 4.5)},
+        'frame2': {'axis': (0, 0), 'axis_r': 10.0, 'course': 1.6, 'joint': 1.6, 'rust': 0.15, 'tone': 0.12, 'soot_top': (40.0, 62.0, 0.3)},
         'concrete2': {'course': 1.5, 'joint': 3.0, 'rust': 0.0, 'dark': 0.25},
         'concrete': {'course': 3.0, 'joint': 3.0, 'rust': 0.0, 'dark': 0.3},
         'hot': {'crust': 0.0},
@@ -871,8 +889,9 @@ def banded_stack(B, P=STACK):
     K.ladder(B, V((0, p0, 0)) + nn * (r + 0.05), nn, p1 - p0)
     B.R.obstruction((0.7 * (r + 0.3), T + 0.45, 0.7 * (r + 0.3)))
     return works({
-        'shell': {'axis': (0, 0), 'course': 2.2, 'joint': 2.4, 'bolts': 0.3, 'rust': 0.6, 'tone': 0.07},
-        'frame2': {'axis': (0, 0), 'course': 2.2, 'joint': 2.4, 'rust': 0.15, 'tone': 0.09},
+        # r10: macro soot down from the top third (the concept's stacks darken toward the lip), plate tone
+        'shell': {'axis': (0, 0), 'axis_r': 3.75, 'course': 2.2, 'joint': 2.4, 'bolts': 0.3, 'rust': 0.6, 'tone': 0.14, 'soot_top': (24.0, 46.0, 0.45), 'mpanel': (3.0, 4.4)},
+        'frame2': {'axis': (0, 0), 'axis_r': 3.75, 'course': 2.2, 'joint': 2.4, 'rust': 0.15, 'tone': 0.12, 'soot_top': (24.0, 46.0, 0.35)},
     })
 
 
@@ -936,9 +955,10 @@ SHED_V6 = dict(SHED_V5)
 SHED_V6.update({'pilaster': (1.0, 0.95), 'door_frames': True,      # r7: deeper pilasters, dark door surrounds
                 'ridge': 17.8, 'parapet': True, 'rib': 1.8,      # standing seams every 1.8 m (the concept's wide sheets; -3k tris)
                 'monitor': (5.6, 14.0, 1.6, 0.5),      # r8: half length, lower (the louvre bands read as dark stripes)
+                'pilaster_lamps': (4.2, 7.3, 10.4),    # r10: a third row of small warm wall lamps
                 'roof_units': [(1, -13.0), (1, -4.0), (1, 9.0), (-1, -8.0), (-1, 4.0), (-1, 13.0)], 'ridge_vents': 4})
 SHED_V6['paint'] = dict(SHED_V5['paint'])
-SHED_V6['paint']['clad2'] = dict(SHED_V5['paint']['clad2'], color=[0.60, 0.585, 0.56], soot=0.7, tone=0.2)   # r7/r8: a step down, per-sheet tone
+SHED_V6['paint']['clad2'] = dict(SHED_V5['paint']['clad2'], color=[0.56, 0.545, 0.52], soot=0.75, tone=0.2, mpanel=(7.2, 6.0), mtone=0.15)   # r7-r10: darker, per-sheet + per-bay tone
 
 
 def _shed_dressing(B, P, hx, hz, E, Rg, ov, bay, nb, pd):
@@ -1194,7 +1214,7 @@ POUR_V6 = dict(POUR_V5)
 POUR_V6.update({'xb': -2.6, 'xf': 6.4, 'roof': True, 'tap_dx': 5.8, 'tap_upper': False, 'runner_glow': 1.5,   # r8: 3.2 read pink-white
                 'crane_x': 3.6, 'ladle_x': 4.4, 'rails': (7.2, 0.6, 7.4), 'control': (1.6, 5.8, -6.4, -2.2, 3.8),
                 # r2: the runner on the apron in front of the portal, along the wall (the concept's long glowing trough)
-                'runner': (0.0, 24.0, 0.0, 3.6), 'runner_at': (8.9, -9.0, -90.0), 'runner_core': 0.9})
+                'runner': (0.0, 24.0, 0.0, 3.6), 'runner_at': (8.9, -9.0, -90.0), 'runner_core': 1.4})
 
 
 def pour_bay(B, P=POUR):
@@ -1402,7 +1422,10 @@ def pour_bay(B, P=POUR):
         # r8 (judge B: "crane girder and ladle flat base colour, uniform roughness, no wear, no normal detail"): plated
         # girder with bolt rows, chipped paint on the edges, mottling; the ladle's plates, blotches and worn edges
         'amber': {'color': [0.80, 0.52, 0.16], 'rust': 0.4, 'edge': 1.0, 'tone': 0.12, 'course': 1.6, 'joint': 3.2, 'bolts': 0.35, 'blot': 0.14, 'vstreak': 0.6},
-        'rust': {'rust': 0.0, 'edge': 1.0, 'course': 0.9, 'joint': 1.4, 'blot': 0.2, 'tone': 0.15},
+        # r10 (judge B: the ladle and booth read as a wooden barrel and hut): no fixed-pitch seams or streak columns on
+        # small objects: the ladle gets two welded courses and mottling, the booth's panel no column streaks
+        'rust': {'rust': 0.0, 'edge': 1.0, 'course': 1.6, 'joint': 1e3, 'blot': 0.22, 'tone': 0.06, 'rough': 0.55, 'metal': 0.3},
+        'panel': {'vstreak': 0.0, 'mstreak': 0.0, 'blot': 0.12},
         'hot': {'crust': 0.45},
     })
 

@@ -601,7 +601,7 @@ def _grit(g, name, base, col, obj, ao):
         cellc = g.white(vor.outputs['Position'])
         spot = g.math('MULTIPLY', g.mr(vor.outputs['Distance'], 0.5, 0.12), g.math('GREATER_THAN', cellc, 0.72))
         spot = g.math('MULTIPLY', spot, g.mr(g.noise(obj, 1.6, 3, 0.7), 0.3, 0.6, 0.4, 1.0))   # ragged oil-spot edges
-        k = g.math('ADD', g.math('ADD', g.math('MULTIPLY', stain, 0.55), g.math('MULTIPLY', stain2, 0.3)), g.math('MULTIPLY', spot, 0.7))
+        k = g.math('ADD', g.math('ADD', g.math('MULTIPLY', stain, 0.7), g.math('MULTIPLY', stain2, 0.45)), g.math('MULTIPLY', spot, 0.7))   # r10: several-metre patches, stronger
         k = g.math('ADD', k, 0.08)      # an overall dusty grey (r4: 0.2 took the light band to 0.76x) on the light concrete (the concept's slab is mid grey)
         k = g.math('MULTIPLY', k, g.math('ADD', 0.35, g.math('MULTIPLY', top, 0.65)), clamp=True)
         return g.lerp(col, g.vm('MULTIPLY', col, (0.42, 0.40, 0.37)), k)
@@ -627,6 +627,19 @@ def _grit(g, name, base, col, obj, ao):
         rusty = g.math('GREATER_THAN', w3, 0.75)
         tint = g.lerp(g.vm('MULTIPLY', col, (0.45, 0.43, 0.40)), (0.16, 0.08, 0.035), rusty)
         out = g.lerp(out, tint, m)
+    # r10 (judges: grit too fine to read at the concept camera): macro weathering on light walls: per bay x storey panel
+    # value +-12 %, long soft grime streaks (0.8 m wide, 3-8 m) from 6 m storey lines, base grime to ~1.8 m
+    pcell = g.vm('FLOOR', g.vm('MULTIPLY', obj, (1 / 6.0, 1 / 5.0, 1 / 6.0)))
+    out = g.vm('SCALE', out, s=g.mr(g.white(g.vm('ADD', pcell, (3.0, 1.0, 7.0))), 0.0, 1.0, 0.88, 1.12, False))
+    below6 = g.math('MULTIPLY', g.math('FRACT', g.math('MULTIPLY', pos.outputs['Y'], -1.0 / 6.0)), 6.0)
+    mcell = g.vm('FLOOR', g.vm('MULTIPLY', obj, (1 / 0.8, 1 / 6.0, 1 / 0.8)))
+    mp = g.math('GREATER_THAN', g.white(g.vm('ADD', mcell, (11.0, 0.0, 5.0))), 0.8)
+    mL = g.math('ADD', 3.0, g.math('MULTIPLY', g.white(g.vm('ADD', mcell, (2.0, 9.0, 4.0))), 5.0))
+    mf = g.math('SUBTRACT', 1.0, g.math('DIVIDE', below6, mL), clamp=True)
+    mm = g.math('MULTIPLY', g.math('MULTIPLY', mp, mf), g.math('MULTIPLY', wall, 0.3))
+    out = g.lerp(out, g.vm('MULTIPLY', out, (0.5, 0.48, 0.45)), mm)
+    base_ = g.math('MULTIPLY', g.mr(pos.outputs['Y'], 1.8, 0.0, 0.0, 0.35), wall)
+    out = g.lerp(out, g.vm('MULTIPLY', out, (0.55, 0.52, 0.48)), base_)
     return out
 
 

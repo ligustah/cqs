@@ -209,3 +209,23 @@ lighter roof louvre bands; root-cause the chamfer and cone-skew issues.
 - Not changed: the +X apron width (the portal and its runner reach x 38.4 of the 40 m edge; a narrower plinth would cut
   them) -> left as is, noted under "still different".
 - Stacks 32 segments (phone budget).
+
+### v6 round 9 (16:00, build only): plain light-framed casthouse / shed annex (the dark frames read as a half-timber
+grid), the furnace-front block 3.6 m (5.5 hid the light drum). 175.7k tris; paint-check light 0.92x, all 0.97x, hue
+26.4. Evidence $S/mill/r9-blind.jpg, r9-closesheet.jpg.
+r9 judges: both NOT YET, closer. A: silhouette, mood, warmth MATCH; grit NO ("clean even off-white tiles, flat dark
+trim, a new toy"), density NO (bare tower cage, plain shed surfaces). B: seam width OK (2-4 px at 4096); edge line only
+on the pour column and gantry (not pilasters, parapets, cap plates); ring-pipe kinks and open ends; blocky streak bars;
+blurry molten channel; repeating grime; ladle and booth read as wood. Coordinator root causes: macro grit, streak
+sampling, edge-pass coverage, small-prop seams.
+Checklist review r9: S1 / C2 / C3 / W1 / W2 / L1 / L2 / I1 PASS; G1 FAIL (bars), G2 / G3 FAIL at the concept camera
+(too fine), D1 PASS, D2 PASS-ish, T2 PASS (seams 2-4 px at 4096), T3 FAIL (edge line partial), phone tris 162k FAIL.
+
+### v6 round 10 (started 16:08): root causes
+- `cpaint.macro` (per-bay panel tone, 3-10 m soft streaks, soot_top on furnace / stacks, base grime) and the same in
+  the hull shader; streak columns 16 / 40 cm, soft sides, per-course shifted grid; per-part seeds.
+- Edge coverage: STACK_NARROW 0.25 -> 0.12, curvature bake 5 -> 8 cm, edge line from curvature 0.03.
+- Small props: ladle 1 welded course + mottling, booth no column streaks. Molten channel UV weight 0.5 -> 1.0.
+- Bustle a true torus; three hot-blast drops; shed pilaster lamps in three rows; roofs darker with per-bay tone;
+  roof exhaust ducts on saddles; stack base pipework, valves, cabinets; runner core 1.4 m; plinth stains stronger;
+  furnace main-set UV weights (frame 6.4 -> 12.0 px/m at 2048).

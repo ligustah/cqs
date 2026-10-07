@@ -307,6 +307,18 @@ def model(B):
     K.flood_on_wall(B, (SH_X + 14.05, 16.0, -12.0), (1, 0, 0), (36.0, 0.0, -14.0))
     K.flood_on_wall(B, (SH_X + 14.05, 16.0, -36.0), (1, 0, 0), (36.0, 0.0, -34.0))
     clutter(B)
+    # r10 (judge A: "the shed roof is large plain surfaces"; "base pipework on the stacks"): exhaust ducts on saddles along
+    # both roof slopes, small pipe runs with valves round the stack bases
+    for (dx, zs_) in ((7.5, (-43.0, -2.0)), (-7.5, (-40.0, 0.0)), (7.5, (2.0, 25.0))):
+        x_ = SH_X + dx
+        y_ = 14.4 + (17.8 - 14.4) * (1 - abs(dx) / 14.0) + 1.1
+        K.pipe(B, [(x_, y_, zs_[0]), (x_, y_, zs_[1])], r=0.55, mat='pipeDark', flanges=True, rings=False)
+        for z_ in [zs_[0] + 2 + 5 * k for k in range(int((zs_[1] - zs_[0] - 2) / 5) + 1)]:
+            B.box((0.3, 0.7, 0.4), at=(x_, y_ - 0.75, z_), mat='frame', bevel=0.02)
+    for (sx_, sz_) in ((-16.0, -14.0), (-14.0, -34.0)):
+        K.pipe(B, [(sx_ + 6.5, 0.9, sz_ - 3.0), (sx_ + 6.5, 0.9, sz_ + 3.0), (sx_ + 10.0, 0.9, sz_ + 3.0)], r=0.3, mat='pipe', supports=True, ground=0.0)
+        K.valve(B, (sx_ + 6.5, 0.9, sz_), (0, 0, 1), r=0.3)
+        K.cabinet(B, (sx_ + 7.2, 0.0, sz_ - 5.0), w=1.0, rot=90)
     # r4 (coordinator / judge A: the concept stacks light boxy blocks round the furnace foot): two low light blocks on the
     # furnace plinth between the front legs (y 3, in front of the hearth drum) and a lower annex on the -X side
     # r7 (judges: merge the small cabins into fewer, larger attached blocks): one light casthouse block across the furnace
