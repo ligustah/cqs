@@ -548,6 +548,8 @@ def material(name):
             col = g.lerp(col, (0.92, 0.92, 0.90) if base[0] > 0.3 else (0.40, 0.40, 0.395), wear)
             rgh = g.math('ADD', rough, g.math('SUBTRACT', g.math('MULTIPLY', grime, 0.2), g.math('MULTIPLY', wear, 0.2)))
             met = g.math('MULTIPLY', wear, 0.3)
+            if BAKE.get('grit'):
+                col = _grit(g, name, base, col, obj, ao)
         elif kind in ('metal', 'nozzle'):
             gcol = g.vm('MULTIPLY', col, (0.55, 0.53, 0.50))
             col = g.lerp(col, gcol, g.math('MULTIPLY', grime, 0.6))
@@ -577,6 +579,53 @@ def material(name):
     mt['_r'] = (rs.node.name, rs.identifier)
     mt['_m'] = (ms.node.name, ms.identifier)
     return mt
+
+
+def _grit(g, name, base, col, obj, ao):
+    """v6 (colony buildings, lib.BAKE['grit']): the concepts' grit in the hull bake.
+    Light paint walls: crisp vertical grime / rust streaks, columns 12 cm wide (white noise per column and storey:
+    hard sides), each from a 3 m course line fading downward over 0.5-3 m, broken along its run.
+    Concrete (plinth top, footings): broad damp / oil stains, small dark oil spots, darker toward the ground's low AO."""
+    geo = g.node('ShaderNodeNewGeometry')
+    sep = g.node('ShaderNodeSeparateXYZ')
+    g.put(sep.inputs[0], geo.outputs['Normal'])
+    ny = g.math('ABSOLUTE', sep.outputs['Y'])
+    if name in ('concrete', 'concrete2', 'kerb'):
+        top = g.mr(ny, 0.6, 0.9)
+        stain = g.mr(g.noise(obj, 0.045, 4, 0.6), 0.42, 0.64, 0.0, 1.0)
+        stain2 = g.mr(g.noise(obj, 0.22, 3, 0.55), 0.5, 0.68, 0.0, 1.0)
+        vor = g.node('ShaderNodeTexVoronoi')
+        g.put(vor.inputs['Vector'], obj)
+        vor.inputs['Scale'].default_value = 0.6
+        cellc = g.white(vor.outputs['Position'])
+        spot = g.math('MULTIPLY', g.mr(vor.outputs['Distance'], 0.55, 0.2), g.math('GREATER_THAN', cellc, 0.82))
+        k = g.math('ADD', g.math('ADD', g.math('MULTIPLY', stain, 0.45), g.math('MULTIPLY', stain2, 0.25)), g.math('MULTIPLY', spot, 0.6))
+        k = g.math('ADD', k, 0.12)      # an overall dusty grey on the light concrete (the concept's slab is mid grey)
+        k = g.math('MULTIPLY', k, g.math('ADD', 0.35, g.math('MULTIPLY', top, 0.65)), clamp=True)
+        return g.lerp(col, g.vm('MULTIPLY', col, (0.42, 0.40, 0.37)), k)
+    if base[0] < 0.25:
+        return col
+    wall = g.mr(ny, 0.5, 0.25)
+    pos = g.node('ShaderNodeSeparateXYZ')
+    g.put(pos.inputs[0], obj)
+    H = 3.0
+    below = g.math('MULTIPLY', g.math('FRACT', g.math('MULTIPLY', pos.outputs['Y'], -1.0 / H)), H)
+    out = col
+    for (w, dens, seed) in ((0.12, 0.74, 0.0), (0.28, 0.86, 7.0)):
+        cell = g.vm('FLOOR', g.vm('MULTIPLY', obj, (1.0 / w, 1.0 / H, 1.0 / w)))
+        w1 = g.white(g.vm('ADD', cell, (seed, 0.0, 0.0)))
+        w2 = g.white(g.vm('ADD', cell, (seed + 31.0, 5.0, 3.0)))
+        w3 = g.white(g.vm('ADD', cell, (seed + 57.0, 11.0, 2.0)))
+        present = g.math('GREATER_THAN', w1, dens)
+        L = g.math('ADD', 0.5, g.math('MULTIPLY', w2, 2.5))
+        fade = g.math('SUBTRACT', 1.0, g.math('DIVIDE', below, L), clamp=True)
+        brk = g.mr(g.noise(g.vm('MULTIPLY', obj, (6.0, 1.2, 6.0)), 1.0, 2), 0.35, 0.55, 0.45, 1.0)
+        m = g.math('MULTIPLY', g.math('MULTIPLY', present, fade), g.math('MULTIPLY', brk, wall))
+        m = g.math('MULTIPLY', m, g.mr(w3, 0.0, 1.0, 0.35, 0.7))
+        rusty = g.math('GREATER_THAN', w3, 0.75)
+        tint = g.lerp(g.vm('MULTIPLY', col, (0.45, 0.43, 0.40)), (0.16, 0.08, 0.035), rusty)
+        out = g.lerp(out, tint, m)
+    return out
 
 
 def _relink(mt, which):

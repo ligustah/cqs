@@ -309,12 +309,12 @@ def cull_buried(ob):
     return len(dead)
 
 
-def split_off(ob, zones):
+def split_off(ob, zones, suffix='_2'):
     """v5: a second object with the faces of `zones` (their own texture set), removed from ob."""
     import bmesh
     names = [s.material.name for s in ob.material_slots]
     keep = {i for i, nm in enumerate(names) if nm in zones}
-    ob2 = ob.copy(); ob2.data = ob.data.copy(); ob2.name = ob.name + '_2'
+    ob2 = ob.copy(); ob2.data = ob.data.copy(); ob2.name = ob.name + suffix
     bpy.context.collection.objects.link(ob2)
     for o, drop_in in ((ob, True), (ob2, False)):
         bm = bmesh.new(); bm.from_mesh(o.data)
@@ -411,15 +411,21 @@ def build(name, tex, samples, work, dry=False, preview=None):
     # hero's light shell gets a full atlas of its own (the furnace shell 34 -> ~75 px/m at 4096); each material keeps
     # the colony sampler count (base, ORM, normal, emissive)
     sets = [(ob, f'colony_{name}', tex, name)]
+    # v6: SPLIT may list several sets ([(zones, tex), ...] -> colony_<name>_2, _3, ...): the furnace's dark legs and
+    # bosh (frame2) got a third set so they hold at the close-up (28 -> ~60 px/m at 4096)
+    cylz = {}
     if name in getattr(ckit, 'SPLIT', {}) and not has_flag('--no-split'):
-        zs, tex2 = ckit.SPLIT[name]
-        ob2 = split_off(ob, zs)
-        sets.append((ob2, f'colony_{name}_2', min(tex2, tex), name + '_2'))
+        spl = ckit.SPLIT[name]
+        for k, (zs, tex2) in enumerate(spl if isinstance(spl, list) else [spl]):
+            sfx = f'_{k + 2}'
+            ob2 = split_off(ob, zs, sfx)
+            sets.append((ob2, f'colony_{name}{sfx}', min(tex2, tex), name + sfx))
+            cylz[f'colony_{name}{sfx}'] = set(zs)
     ppm_all, a3, a2, stats_all = {}, 0.0, 0.0, {}
     t2 = t3 = t4 = time.time()
     global CYL
     for (o, mname, tx, wname) in sets:
-        CYL = set(ckit.SPLIT[name][0]) if mname.endswith('_2') else set()
+        CYL = cylz.get(mname, set())
         ppm, (a3_, a2_) = unwrap(o, margin=max(0.0005, 1.5 / tx))
         CYL = set()
         ppm = {z: v * tx for z, v in ppm.items()}
@@ -441,7 +447,7 @@ def build(name, tex, samples, work, dry=False, preview=None):
         final_material(o, mname, res)
         for z, v in ppm.items():
             if v > 0:
-                ppm_all[z if mname == f'colony_{name}' else f'{z} (set 2)'] = v
+                ppm_all[z if mname == f'colony_{name}' else f'{z} (set {mname.rsplit("_", 1)[1]})'] = v
         a3 += a3_; a2 += a2_
         stats_all[mname] = res['stats']
         t1 = t4

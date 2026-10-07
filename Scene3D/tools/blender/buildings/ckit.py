@@ -57,13 +57,18 @@ WORKS = {
     # v5 (second review): light paint a step less yellow (v4 hue 35 deg vs the concept's 25-28), seams and run-off
     # stronger (worn, not dirty), and the dark steel a neutral gunmetal: v4's frames rendered at saturation 0.2-0.3
     # (brown) from warm grime, dirt and rusty edges on a neutral base; the concept's are ~0.09
-    'shell': {'color': [0.76, 0.735, 0.705], 'rust': 0.6, 'streak': 0.22, 'streak_f': 3.2, 'dark': 0.5, 'seam_w': 0.045},
-    'clad': {'color': [0.78, 0.755, 0.725], 'rust': 0.5, 'streak': 0.22, 'streak_f': 3.2},
-    'clad2': {'color': [0.71, 0.69, 0.66], 'rust': 0.45, 'blot': 0.035, 'patina': 0.03},   # roofs: big planes, blotches read as camouflage
-    'panel': {'color': [0.79, 0.765, 0.735], 'rust': 0.45, 'streak': 0.2, 'streak_f': 3.2},
-    'frame': {'color': [0.33, 0.336, 0.35], 'rust': 0.1, 'edge': 0.9},     # concept gunmetal ~sRGB 70-80, neutral
-    'frame2': {'color': [0.37, 0.375, 0.388], 'rust': 0.12},
+    # v6 (vibes): crisp vertical streak columns from the seams (`vstreak`), darkened plate edges (`halo`), roof soot with
+    # dark lap lines (`soot`, `lap`); the soft fbm run-off (`streak`) kept low under them
+    # light paint a step greyer and darker, frames a step lighter (the concept's lower contrast; the studio lifts the whole)
+    'shell': {'color': [0.73, 0.70, 0.665], 'rust': 0.6, 'streak': 0.1, 'streak_f': 3.2, 'dark': 0.55, 'seam_w': 0.045, 'vstreak': 1.0, 'halo': 0.14},
+    'clad': {'color': [0.73, 0.70, 0.66], 'rust': 0.5, 'streak': 0.1, 'streak_f': 3.2, 'vstreak': 1.0, 'halo': 0.14},
+    'clad2': {'color': [0.64, 0.62, 0.59], 'rust': 0.45, 'blot': 0.035, 'patina': 0.03, 'soot': 0.9, 'lap': 2.9},   # roofs: sooty with dark laps
+    'panel': {'color': [0.75, 0.72, 0.685], 'rust': 0.45, 'streak': 0.1, 'streak_f': 3.2, 'vstreak': 0.95, 'halo': 0.12},
+    'frame': {'color': [0.36, 0.365, 0.378], 'rust': 0.1, 'edge': 0.9, 'vstreak': 0.5},     # concept gunmetal ~sRGB 70-80, neutral
+    'frame2': {'color': [0.40, 0.402, 0.412], 'rust': 0.12, 'vstreak': 0.5},
     'pipeDark': {'color': [0.42, 0.425, 0.435], 'rust': 0.15, 'metal': 0.3},           # mid-grey mains: dark pipes vanished on the dusk backdrop
+    'roof': {'soot': 0.3, 'lap': 2.9},
+    'concrete': {'vstreak': 0.6, 'soot': 0.25, 'lap': 6.0},
 }
 
 
@@ -394,6 +399,15 @@ FURNACE_V5.update({
 })
 
 
+# v6 (vibes): the concept's frame hugs the bell (v5's posts splayed to a wide square top deck read as a black table over
+# the furnace); a taller, brighter hearth band (the concept's bright molten band: wide openings, fewer stocks)
+FURNACE_V6 = dict(FURNACE_V5)
+FURNACE_V6.update({
+    'tuyere': (8.95, 14.8, 18.0, 12), 'tuyere_glow': 2.6,   # r2: 12 stocks (20 read as a window grid, not a band)
+    'tower': dict(FURNACE_V5['tower'], top=(7.2, 54.0), top_deck=(54.0, 5.05, 7.6)),
+})
+
+
 def _raking_legs(B, T):
     """Heavy raking legs: plated tapered box sections from the plinth corners to the first deck, stiffener bands, a
     base shoe, a cap, anchor nuts, a plate-girder tie to the tuyere platform ring."""
@@ -529,7 +543,7 @@ def furnace(B, P=FURNACE):
         with B.at(at=(rt * math.sin(a), (t0 + t1) / 2, rt * math.cos(a)), rot=(0, math.degrees(a), 0)):
             B.box((0.42, t1 - t0 - 0.6, 0.55), at=(0, 0, 0), mat='frame', bevel=0.03)
             B.cyl(0.14, 0.9, at=(0, -0.15, 0.55), mat='pipeDark', n=10)        # tuyere stock nose
-    K.glow_ring(B, c, rt - 0.2, (t0 + t1) / 2, h=(t1 - t0) - 0.7, n=nw, color='#ff8a28', radiance=0.7)
+    K.glow_ring(B, c, rt - 0.2, (t0 + t1) / 2, h=(t1 - t0) - 0.7, n=nw, color='#ff8a28', radiance=P.get('tuyere_glow', 0.7))
     # collar and bosh shoulder
     rc, c0, c1 = P['collar']
     B.lathe([(0, c0), (rc, c0), (rc, c1), (0, c1)], (0, 0, 0), mat='frame', n=n, bevel=0.04)
@@ -813,9 +827,10 @@ SHED_V5.update({
     'roof_units': [(1, -11.0), (1, 9.0), (-1, -4.0), (-1, 13.0)], 'ridge_vents': 3, 'dock': (0, 9.0, 3.2, 1.2),
     'pilaster_lamps': (4.2, 10.4),
     'paint': {
-        'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.5, 'tone': 0.13, 'dark': 0.6, 'stagger': False,
-                 'seam_w': 0.05, 'streak': 0.2, 'streak_f': 3.2, 'drip': 0.3},
-        'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.4, 'tone': 0.07, 'dark': 0.35, 'streak': 0.2},
+        # v6: soft fbm run-off down (0.2 -> 0.08), the crisp seam streaks (WORKS vstreak) carry the grit; heavier drips
+        'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.4, 'tone': 0.13, 'dark': 0.6, 'stagger': False,
+                 'seam_w': 0.05, 'streak': 0.08, 'streak_f': 3.2, 'drip': 0.4},
+        'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.4, 'tone': 0.07, 'dark': 0.35, 'streak': 0.1},
         'frame2': {'rust': 0.15},
     },
 })
@@ -1056,6 +1071,16 @@ POUR_V5.update({
 })
 
 
+# v6 (vibes): the concept's pour bay is a heavy dark PORTAL set into the shed's long wall: the back wall stands just
+# off the shed face (xb -2.6 with the part at x 28: dark plates in front of the light cladding = a deep dark interior),
+# a full dark roof deck behind the lattice girder, the crane under it; the tapping platforms move forward with the wall
+POUR_V6 = dict(POUR_V5)
+POUR_V6.update({'xb': -2.6, 'xf': 6.4, 'roof': True, 'tap_dx': 5.8, 'tap_upper': False, 'runner_glow': 3.2,
+                'crane_x': 3.6, 'ladle_x': 4.4, 'rails': (7.2, 0.6, 7.4), 'control': (1.6, 5.8, -6.4, -2.2, 3.8),
+                # r2: the runner on the apron in front of the portal, along the wall (the concept's long glowing trough)
+                'runner': (0.0, 24.0, 0.0, 2.8), 'runner_at': (8.6, -9.0, -90.0)})
+
+
 def pour_bay(B, P=POUR):
     xf, xb, zs, H, E = P['xf'], P['xb'], P['zs'], P['H'], P['eave']
     # floor pad and the casting pit outline
@@ -1240,15 +1265,19 @@ def pour_bay(B, P=POUR):
         ibeam(B, (x0_, y - 0.4, z1_), (x1_, y - 0.4, z1_), h=0.5, b=0.2)
         for (xx, zz) in ((x0_ + 0.2, z0_ + 0.2), (x1_ - 0.2, z0_ + 0.2), (x0_ + 0.2, z1_ - 0.2), (x1_ - 0.2, z1_ - 0.2)):
             B.box((0.25, y - 0.6, 0.25), at=(xx, (y - 0.6) / 2 + 0.16, zz), mat='frame', bevel=0.02)
-    deck(-7.4, -1.4, -11.2, -7.6, 4.2)
-    K.railing(B, [(-1.4, 4.2, -11.2), (-1.4, 4.2, -10.0)], post=1.6)
-    K.railing(B, [(-1.4, 4.2, -7.6), (-7.4, 4.2, -7.6)], post=1.6)
-    K.stair(B, (-1.4 + 0.28 * round(4.04 / 0.18), 0.16, -8.8), (-1, 0, 0), 4.04, w=1.1)
-    deck(-7.4, -4.4, -11.2, -9.0, 7.6)
-    K.railing(B, [(-4.4, 7.6, -11.2), (-4.4, 7.6, -9.0), (-7.4, 7.6, -9.0)], post=1.6)
-    K.ladder(B, (-4.2, 4.2, -10.1), (1, 0, 0), 3.4)
-    for (x, z) in ((-1.6, -7.7), (-4.5, -9.1)):
-        lamp(B, (x, 5.6 if z > -8 else 9.0, z), (1, 0, 0), size=0.26)
+    # v6: `tap_dx` shifts the platforms with a shallower bay (xb), `tap_upper` False drops the upper deck
+    tdx = P.get('tap_dx', 0.0)
+    with B.at(at=(tdx, 0.0, 0.0)):
+        deck(-7.4, -1.4, -11.2, -7.6, 4.2)
+        K.railing(B, [(-1.4, 4.2, -11.2), (-1.4, 4.2, -10.0)], post=1.6)
+        K.railing(B, [(-1.4, 4.2, -7.6), (-7.4, 4.2, -7.6)], post=1.6)
+        K.stair(B, (-1.4 + 0.28 * round(4.04 / 0.18), 0.16, -8.8), (-1, 0, 0), 4.04, w=1.1)
+        if P.get('tap_upper', True):
+            deck(-7.4, -4.4, -11.2, -9.0, 7.6)
+            K.railing(B, [(-4.4, 7.6, -11.2), (-4.4, 7.6, -9.0), (-7.4, 7.6, -9.0)], post=1.6)
+            K.ladder(B, (-4.2, 4.2, -10.1), (1, 0, 0), 3.4)
+    for (x, z) in ((-1.6, -7.7),) + (((-4.5, -9.1),) if P.get('tap_upper', True) else ()):
+        lamp(B, (x + tdx, 5.6 if z > -8 else 9.0, z), (1, 0, 0), size=0.26)
     return works({
         'frame2': {'course': 1.5, 'joint': 1.2, 'rust': 0.15, 'tone': 0.1},
         'concrete2': {'course': 3.0, 'joint': 3.0, 'rust': 0.0, 'dark': 0.3},
@@ -1276,6 +1305,32 @@ GALLERY_V5 = {
     'foot': (6.0, 30.0, (7.6, 13.6)), 'head': None, 'trestle': None,
     'pipe': (1.15, [(0.0, 52.6, -9.6), (0.0, 34.1, 7.6), (0.0, 34.1, 15.2), (0.0, 3.0, 15.2)]),
 }
+
+
+# v6 (vibes): the concept's skip bridge is a BOXY CLAD gallery (light grey cladding on portal ribs) climbing from the
+# tower to the furnace top, the gas main riding over it; no head house (it lands on the furnace's top deck)
+GALLERY_V6 = {
+    'A': (0.0, 28.5, 7.6), 'B': (0.0, 47.0, -9.6), 'w': 5.2, 'h': 4.4, 'truss': 1.6,
+    'foot': (6.0, 30.0, (7.6, 13.6)), 'head': None, 'trestle': None,
+    'pipe': (1.15, [(0.0, 54.6, -9.6), (0.0, 36.1, 7.6), (0.0, 36.1, 15.2), (0.0, 3.0, 15.2)]),
+}
+
+
+def _gas_main(B, P, A, Bp, n_up, h):
+    """The gas main on saddles over a gallery, dropping down the foot tower's far face (v5 open bridge, v6 clad)."""
+    pr, path = P['pipe']
+    B.tube(path, pr, mat='pipeDark', n=20, fillet=1.6)
+    a_, b_ = V(path[0]), V(path[1])
+    for k in range(1, 6):
+        q = a_ + (b_ - a_) * (k / 6)
+        lo = Bp + (A - Bp) * (k / 6) + n_up * (h + 0.3)
+        B.bar(lo, q - V((0, pr * 0.8, 0)), 0.35, 0.6, mat='frame', bevel=0.02)
+    for (pa_, pb_) in zip(path[:-1], path[1:]):
+        a_, b_ = V(pa_), V(pb_)
+        L_ = (b_ - a_).length
+        with B.at(M=K.frame_along(a_, b_)):
+            for t_ in ((0.5,) if L_ < 12 else (0.2, 0.5, 0.8)):
+                B.cyl(pr + 0.14, 0.3, at=(0, 0, L_ * t_), mat='frame', n=20, bevel=0.02)
 
 
 def _open_bridge(B, P, L):
@@ -1317,19 +1372,7 @@ def incline_gallery(B, P=GALLERY):
         with B.at(M=K.frame_along(A, Bp, n_up)):
             _open_bridge(B, P, L)
         # saddles and the gas main over the bridge, dropping down the tower's far face
-        pr, path = P['pipe']
-        B.tube(path, pr, mat='pipeDark', n=20, fillet=1.6)
-        a_, b_ = V(path[0]), V(path[1])
-        for k in range(1, 6):
-            q = a_ + (b_ - a_) * (k / 6)
-            lo = Bp + (A - Bp) * (k / 6) + n_up * (h + 0.3)
-            B.bar(lo, q - V((0, pr * 0.8, 0)), 0.35, 0.6, mat='frame', bevel=0.02)
-        for (pa_, pb_) in zip(path[:-1], path[1:]):
-            a_, b_ = V(pa_), V(pb_)
-            L_ = (b_ - a_).length
-            with B.at(M=K.frame_along(a_, b_)):
-                for t_ in ((0.5,) if L_ < 12 else (0.2, 0.5, 0.8)):
-                    B.cyl(pr + 0.14, 0.3, at=(0, 0, L_ * t_), mat='frame', n=20, bevel=0.02)
+        _gas_main(B, P, A, Bp, n_up, h)
         fw, fh, (fz0, fz1) = P['foot']
         _house(B, (0.0, 0.0, (fz0 + fz1) / 2), (fw, fh, fz1 - fz0), door=True)
         # a stair tower's worth of landings on the tower's open side: a caged ladder to the top
@@ -1368,14 +1411,20 @@ def incline_gallery(B, P=GALLERY):
     # drive house at the foot (+Z), head house at the top (-Z): clad boxes with dark posts, louvres, doors
     fw, fh, (fz0, fz1) = P['foot']
     _house(B, (0.0, 0.0, (fz0 + fz1) / 2), (fw, fh, fz1 - fz0), door=True)
-    hw, (hy0, hy1), (hz0, hz1) = P['head']
-    _house(B, (0.0, hy0, (hz0 + hz1) / 2), (hw, hy1 - hy0, hz1 - hz0), door=False)
-    # trestle under the gallery
-    tz, tw, tdp = P['trestle']
-    lo = A - n_up * td                                # the trusses' bottom chord line
-    lam = (lo.z - tz) / max(-t.z, 1e-6)
-    yb = lo.y + t.y * lam - 0.45
-    _trestle(B, (0.0, 0.0, tz), tw, tdp, yb)
+    if P.get('head'):
+        hw, (hy0, hy1), (hz0, hz1) = P['head']
+        _house(B, (0.0, hy0, (hz0 + hz1) / 2), (hw, hy1 - hy0, hz1 - hz0), door=False)
+    if P.get('trestle'):    # trestle under the gallery
+        tz, tw, tdp = P['trestle']
+        lo = A - n_up * td                                # the trusses' bottom chord line
+        lam = (lo.z - tz) / max(-t.z, 1e-6)
+        yb = lo.y + t.y * lam - 0.45
+        _trestle(B, (0.0, 0.0, tz), tw, tdp, yb)
+    if P.get('pipe'):       # v6: the gas main over the clad gallery
+        _gas_main(B, P, A, Bp, n_up, h + 0.75)
+        K.ladder(B, (fw / 2 + 0.6, 0.0, fz0 + 1.2), (1, 0, 0), fh)
+        for yy in (10.0, 20.0):
+            lamp(B, (fw / 2 + 0.05, yy, (fz0 + fz1) / 2), (1, 0, 0), size=0.28)
     return works({
         'clad': {'course': 1e3, 'joint': 2.4, 'rust': 0.35, 'tone': 0.06, 'corr': 0.22},
         'clad2': {'course': 1e3, 'joint': 2.4, 'rust': 0.3, 'corr': 0.3},
@@ -1435,12 +1484,13 @@ def _trestle(B, c, w, d, h):
 # registry: part name -> (builder, params, texture size, about)
 # ------------------------------------------------------------------------------------------------------------------
 # v5: parts whose light shell gets its own texture set (remodel.py: zones -> a second atlas and material colony_<name>_2)
-SPLIT = {'blastFurnace': ({'shell'}, 4096)}
+# v6: a third set for the furnace's dark legs and bosh (frame2: 28 px/m in the main atlas, soft at the close-up)
+SPLIT = {'blastFurnace': [({'shell'}, 4096), ({'frame2'}, 4096)]}
 
 REMODELS = {
-    'blastFurnace': (furnace, FURNACE_V5, 4096, '60 m blast furnace remodel: concrete plinth, dark staved hearth, recessed glowing tuyere band with 24 window frames, bustle main and downlegs, light plated shaft with five hoops, flange, cone, throat, uptakes and downcomer; four laced columns, four square grating decks on ring girders, X bracing, caged ladder, lamps'),
+    'blastFurnace': (furnace, FURNACE_V6, 4096, '60 m blast furnace remodel: concrete plinth, dark staved hearth, recessed glowing tuyere band with 24 window frames, bustle main and downlegs, light plated shaft with five hoops, flange, cone, throat, uptakes and downcomer; four laced columns, four square grating decks on ring girders, X bracing, caged ladder, lamps'),
     'bandedStack': (banded_stack, STACK, 2048, '46 m banded stack remodel: base block, gusseted flared foot, light / dark plated bands with hoops, two railed platforms, caged ladders, sooted lip, lamps, obstruction light'),
     'shedSegment': (gable_shed, SHED_V5, 4096, '28 x 36 m clad shed segment remodel: corrugated walls between I-section pilasters, recessed window strips, dark dado, gables with outward verges, corrugated roof, gutters, ridge, louvred monitor, downpipes, kit crew door'),
-    'pourBay': (pour_bay, POUR_V5, 4096, '19 x 26 m pour bay remodel: built-up columns, lattice side, plate girders and Warren roof trusses, runways and an amber double-girder bridge crane with trolley and hook, plated back wall, glowing runner and tundish, rails and ladle car, two tapping platforms with stairs'),
-    'skipGallery': (incline_gallery, GALLERY_V5, 2048, 'inclined skip gallery remodel: clad enclosed gallery with portal ribs and windows on two Warren trusses, lattice trestle, drive house with roller and crew doors, head house'),
+    'pourBay': (pour_bay, POUR_V6, 4096, '19 x 26 m pour bay remodel: built-up columns, lattice side, plate girders and Warren roof trusses, runways and an amber double-girder bridge crane with trolley and hook, plated back wall, glowing runner and tundish, rails and ladle car, two tapping platforms with stairs'),
+    'skipGallery': (incline_gallery, GALLERY_V6, 2048, 'inclined skip gallery remodel: clad enclosed gallery with portal ribs and windows on two Warren trusses, lattice trestle, drive house with roller and crew doors, head house'),
 }

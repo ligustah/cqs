@@ -63,3 +63,36 @@ Goal: "very similar vibes" with the concept (grit, warmth, density, composition,
 
 ## STYLE.md proposals (for the coordinator to merge)
 - (none yet)
+
+### v6 round 1 (2026-10-07 12:16-13:10; scratch $S/mill: round.sh, shots.sh, sheet.py, pc.sh, shoot-v5.sh)
+Changes: cpaint `vstreak` / `halo` / `soot`+`lap` (WORKS on by default), greyer light paint, lighter frames; hull bake
+grit (`lib._grit`: streak columns, stained concrete); FURNACE_V6 (frame hugs the bell: top 7.2, deck 7.6; band 14.8-18
+m), GALLERY_V6 (clad box gallery + gas main), POUR_V6 (portal against the shed wall, dark back, full dark roof,
+shallower), SPLIT third set (frame2 legs/bosh 29.7 px/m at 2048 -> ~59 at 4096); bkit clutter kit (pallet, drums,
+pump_skid, gas_bottles, pipe_bundle) + `Rec.spill` point lights (colony.js); steel_mill.py `clutter()` (~80 items);
+studio fov / keyColor / fillColor. Build 199k tris (hull 27k -> 46k), 8.0 MB.
+Evidence: $S/mill/r1-sheet.jpg (concept | v5 | r1), r1-closesheet.jpg, crops-r1.jpg.
+Checklist review (BUILDING-GUIDE section 9 + STYLE 8):
+- C1 camera: FAIL-ish. Plinth slopes r1 0.44 / 0.36 vs concept 0.30 / 0.24 (the concept's perspective is not
+  consistent: its roofs read from higher than its plinth edges); kept el 12 by eye. Guide row loosened to "by eye
+  + slopes within 0.15".
+- C2 framing: FAIL (plinth ~0.80 of the frame width vs concept 0.97) -> r2 dist 0.97 -> 0.88.
+- C3 silhouette: PASS-ish: furnace forward-left, bell + hugging frame, clad gallery, stacks, long shed, portal.
+- G1 streaks: PASS (close-ups: crisp vertical columns on the shed wall and the furnace shell).
+- G2 roof soot: PASS (roofs mid grey with dark laps; slightly heavier than the concept's).
+- G3 plinth staining: FAIL (crop: plinth top reads light and clean) -> r2 stronger stains, 4.6 m slab joints.
+- G4 panel edges: PASS (halo + seams).
+- W1 warmth: r1 as built FAIL (light 0.67x, sat 0.32: warm key + 900 cd spill); with r2 studio (key 0.85 #fff0e0)
+  PASS: light 0.90x, all 0.99x, hue 27.5 (c 23.2), sat 0.19 (c 0.16).
+- W2 dark steel: PASS with the r2 studio (mid band sat 0.146, frames read grey); r1 studio FAIL (brown legs).
+- D1 density: PASS on the +X apron and casthouse front; the pour bay apron needed the runner (r2).
+- L1 process glow: FAIL: hearth band reads as lit windows, not a bright band -> r2 12 stocks, radiance 2.6; runner
+  inside the portal invisible -> r2 runner on the apron in front of the portal.
+- L2 lamps: PASS (plinth pins every 9 m, lamp posts, pilaster lamps).
+- T1 texel density: light shell 34.8 px/m at 2048 (~70 at 4096), frame2 29.7 (~59), shed clad 25.5 (~51): PASS at
+  the 4096 final; review builds are 2048.
+- T2 close crispness: PASS-ish at 2048 (legs now in their own set).
+- I1 thumbnail: not run this round.
+- Phone: tris 199k > 150k (STYLE 4 phone row): FAIL, to fix before the final (doors 14k, stacks 40k, workers).
+Judges: no Agent tool in this session; the two lenses applied by me this round (vibes: "not yet": glow, framing,
+plinth; quality: "not yet": phone tris, plinth texture). Asked the coordinator for blind judges from r2.

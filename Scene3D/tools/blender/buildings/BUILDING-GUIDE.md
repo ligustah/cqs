@@ -59,15 +59,50 @@ Defaults that worked: the builder's parameter dict in `ckit.REMODELS`; 72 segmen
 texel weights in `remodel.UV_WEIGHT`; the hero's light shell in its own texture set (`ckit.SPLIT`).
 Fit the **concept's** stations and light / dark rhythm; the blueprint gives only the envelope and anchor.
 
+**Grit paint (`cpaint.py` layers, on by default through `ckit.WORKS`)** `[mill v6 r1]`:
+- `vstreak` (0.5-1.0): crisp vertical streak columns (9 and 22 cm wide, hard sides), each from a course seam
+  (`course`, else `vsrc`, else 2.4 m) fading down over 0.4-3.4 m; ~25 % are rust, the rest grey-brown grime
+  (`STREAK_C`). This replaced the soft fbm `streak` (keep it <= 0.1): fbm streaks read blotchy, not streaked.
+- `halo` (0.1-0.15): plates darken toward their seams (the concept's darkened panel edges).
+- `soot` (0.9 roofs, 0.3 dark membranes) with `lap` (2.9 m): soot patches, dark lap lines across the slope, a drip
+  band under each lap and short soot streaks down the slope; only on up-facing faces (n.y > 0.3).
+- Light paint a step greyer and darker (WORKS shell / clad / panel sRGB ~0.73 / 0.70 / 0.66), frames a step lighter
+  (~0.36-0.40): the concept's lower contrast; the studio key then lifts the whole (section 6, studio).
+- The hull bake (`lib.material`, `lib.BAKE['grit']`, set by bkit) carries the same idea for kit blocks: 12 / 28 cm
+  streak columns from 3 m course lines on light walls, and stained concrete (broad damp stains, oil spots, an
+  overall dusty grey) on the plinth. Plinth slab joints every 4.6 m (`plinth(slab=4.6)`), as in the concept.
+
+**Texture sets** `[mill v6 r1]`: `ckit.SPLIT[name]` may list several sets, `[({'shell'}, 4096), ({'frame2'}, 4096)]`
+-> materials `colony_<name>_2`, `_3`. The furnace's dark legs and bosh (frame2) went 28 -> ~59 px/m at 4096 in
+their own set. Each set is one material with 4 maps (sampler limit 16 holds); the phone copy caps all at 512.
+
 ## 5. Stage D: the building script (30-40 min)
 
 `README-colony.md` D, `README-bkit.md`. Signature shapes first, then the secondary layer, then the clutter pass
 (section 5a), then the lights.
 
 ### 5a. Clutter pass (the concept's density) `[mill v6 r1]`
-See section 9 "Density". Work round the plinth in 15 m steps at the concept camera; every step that shows bare slab
-gets kit parts at true scale: pipe runs on stools with valves, crates and pallets, skids, cabinets, ladders, stairs,
-railings, small sheds, lamp posts, figures, a vehicle.
+Work round the plinth in 15 m steps at the concept camera; every step that shows bare slab gets kit parts at true
+scale. Kit (`bkit.py`, all boxy and cheap): `pallet(B, p, rot, load='sacks'|'boxes'|'plate'|None)`, `drums(B, p, n)`,
+`pump_skid(B, p, rot, scale)`, `gas_bottles(B, p, n, rot)`, `pipe_bundle(B, ground_pts, n=3, r=0.22)` (parallel pipes
+on concrete stools with flanges and amber rings), plus `crate`, `cabinet`, `valve`, `stair`, `ladder`, `railing`,
+`lamp_post`, small `block` sheds (4-5 x 3.2-3.6 x 3.6-4.4 m, `frame='frameL'`), `worker`, `forklift`, `truck`.
+Write them in one `clutter(B)` function at the end of the building script, grouped by apron zone with a comment
+giving the zone's extent (x / z range), so collisions can be checked by reading.
+- Before placing, list what is already there (pipes on stools, stairs, crates of earlier rounds): the mill's first
+  clutter pass put pallets on top of the cooling main along the furnace front. `[mill v6 r1]`
+- Cost: ~80 items added ~19k triangles to the hull (27k -> 46k). Watch the phone budget (150k). `[mill v6 r1]`
+- Lights in the same pass: plinth edge pins every 9 m (`plinth(lamp_pitch=9)`), lamp posts every ~20 m on the
+  visible edges, and the process glow's spill (`B.R.spill`, section 5b).
+
+### 5b. Process glow `[mill v6 r1-r2]`
+- Hot surfaces: zone `hot` (emissive paint) + thin glow boxes (`K.glow_ring`, `B.R.glowbox`, < 0.1 m thick).
+- A band reads as a band only with few, thin posts in front of it: 12 tuyere stocks round a 9 m hearth, not 20-32
+  (those read as a lit window grid). Glow ring radiance 2.2-2.6.
+- Spill on the ground and structure: `B.R.spill(p, color, intensity, distance)` -> a runtime point light
+  (`colony.js` `spills` -> `interiorLights` kind 'point'). Defaults that worked: hearth 300 cd / 20 m placed 1.5 m
+  outside the band toward the camera; runner 180 cd / 16 m, 3 m over it. 900 cd / 34 m washed the whole furnace
+  foot and the shed gable orange (r1). 1-3 per building.
 
 ## 6. Stage E: build, compare, iterate
 
@@ -79,6 +114,11 @@ python3 tools/buildings/paint-check.py ../style-library/styles/cqs-fleet/images/
   shots/buildings/<id>-rN.png
 $PY tools/blender/buildings/colony_build.py <id> $W/b --tex 4096 --samples 10     # final (~10 min)
 ```
+**Studio calibration** `[mill v6 r1]`: test lighting on the installed GLB with URL overrides (`&key=&fill=&keycolor=
+ffeedd&fillcolor=`) and `paint-check` each; then write the winner into the studio hint. Mill: key 0.85, keyColor
+#fff0e0, fill 1.5, fillColor #e8e2da -> light band 0.90x, all 0.99x, hue 27.5 (concept 23). A saturated key
+(#ffd9ac) pushed light sat to 0.24-0.32 (concept 0.16) and browned the frames.
+
 Each round: the concept | previous | current sheet, the three close-ups, the checklist review (section 9), two
 judges (vibes; real-time quality at 1:1), fix the largest gap first. Stop when two rounds in a row bring only
 marginal gains and both judges say "close enough".
@@ -102,6 +142,9 @@ lessons, REMODEL-PROGRESS.
 | A warm key turns the dark steel brown | `keyColor` saturation also tints the gunmetal | keep `keyColor` mild (sRGB sat <= 0.15); measure dark steel sat <= 0.1 | mill v6 r0 |
 | Light band 0.8x the concept in `paint-check` | dusk key trimmed (`key` 0.6) for v3's light roofs; the v5 paint is darker | raise key / fill in the hint, not a paint lift | mill v6 r0 |
 | Furnace shell blotchy, not streaked | streaks were stretched fbm noise (soft, patchy) | crisp per-column vertical streaks from seams (`cpaint` `vstreak`) | mill v6 r1 |
+| A wait loop never ends | `pgrep -f <script>` matches the waiting shell's own command line | wait on a pid (`wait`, or `kill -0 $pid`) or a log line, never `pgrep -f` with the script name | mill v6 r1 |
+| Clutter lands on top of earlier dressing | positions placed without reading the earlier rounds' items | group clutter by apron zone with extents in comments; read the zone before adding | mill v6 r1 |
+| The whole furnace foot glows orange | spill light too strong / far reaching (900 cd, 34 m) | 300 cd, 20 m, just outside the band | mill v6 r1 |
 | Rails / braces glow orange at 4096 only | a tiny emissive island packed inside a stacked swatch | stack lamp lenses too; check the final size | mill v5 |
 | Glow box reads as a solid orange slab or sticker | glow box thicker than 0.1 m, or square over a round surface | thin glow boxes for runners and openings only; emissive paint for round hot surfaces | mill v4-v5 |
 | Black scaffold round a thin cylinder | a lattice tower around the hero shape | broad light hero shape in front, slim posts, lattice only at the top | mill v5 |

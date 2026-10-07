@@ -93,7 +93,8 @@ lib.MATS.update(BKIT_MATS)
 # ledges and into corners; panel tone cells 3 x 1.8 x 3 m (one cladding panel); curvature over 4 cm
 # grime: full only in real corners (AO < 0.45), gone by AO 0.88, at 0.6 strength: proud frames round a panel must not
 # grey the whole wall (r1 of the depot read black)
-lib.BAKE.update({'ao': 1.2, 'curv': 0.04, 'panel': (3.0, 1.8, 3.0), 'grime': (0.45, 0.88, 0.6)})
+# v6: 'grit' adds the concepts' crisp vertical streaks on light walls and stained concrete (lib._grit)
+lib.BAKE.update({'ao': 1.2, 'curv': 0.04, 'panel': (3.0, 1.8, 3.0), 'grime': (0.45, 0.88, 0.6), 'grit': True})
 
 AMBER = 'amber'
 
@@ -129,6 +130,7 @@ class Rec:
     def __init__(self):
         self.pins, self.beacons, self.nav, self.slits = [], [], [], []
         self.windows, self.glow, self.floods, self.lenses, self.rings = [], [], [], [], []
+        self.spills = []
         self.placements = []
         self.seed = 7
         self.notes = []
@@ -180,6 +182,12 @@ class Rec:
             self.place('floodlight', p, n=nn, up=(0, 0, 1) if abs(nn.y) > 0.9 else (0, 1, 0), rot=yaw if abs(nn.y) > 0.9 else 0,
                        id='flood')
 
+    def spill(self, p, color='#ff9a40', intensity=120.0, distance=26.0):
+        """v6: process-glow spill (molten metal, a furnace hearth): a warm point light at p (candela, inverse-square,
+        windowed to `distance` m) so the glow lights the ground and structure round it (STYLE section 7, process glow).
+        Keep 1-3 per building: every point light costs every lit pixel."""
+        self.spills.append({'p': lst(p), 'color': color, 'intensity': intensity, 'distance': distance})
+
     # kit placements ---------------------------------------------------------------------------------------------
     def place(self, part, p, n=(0, 1, 0), up=(0, 0, 1), along=None, rot=0.0, scale=None, id=None, **kw):
         q = {'part': part, 'p': lst(p), 'n': lst(n), 'up': lst(up), 'snap': False, 'seat': {'check': False}}
@@ -205,7 +213,7 @@ class Rec:
 
     def light_data(self):
         return {'pins': self.pins, 'beacons': self.beacons, 'nav': self.nav, 'slits': self.slits, 'windows': self.windows,
-                'glow': self.glow, 'floods': self.floods, 'lenses': self.lenses}
+                'glow': self.glow, 'floods': self.floods, 'lenses': self.lenses, **({'spills': self.spills} if self.spills else {})}
 
 
 # ------------------------------------------------------------------------------------------------------------------
@@ -1169,6 +1177,86 @@ def crate(B, p, size=(1.2, 1.0, 1.2), mat='frame2', rot=0.0):
         B.box((size[0] + 0.04, 0.1, size[2] + 0.04), at=(0, size[1] * 0.15, 0), mat='frame', bevel=0.0)
 
 
+def pallet(B, p, rot=0.0, load='sacks', h=None):
+    """v6 clutter: a 1.2 x 1.0 m pallet (deck boards on three runners) with a load: 'sacks' (light), 'boxes'
+    (dark crates), 'plate' (a stack of steel plate), None (empty). True size; boxy, cheap in triangles."""
+    with B.at(at=p, rot=(0, rot, 0)):
+        for dz in (-0.42, 0.0, 0.42):
+            B.box((1.2, 0.1, 0.12), at=(0, 0.05, dz), mat='frame2', bevel=0.0)
+        B.box((1.2, 0.04, 1.0), at=(0, 0.12, 0), mat='frame2', bevel=0.0)
+        if load == 'sacks':
+            hh = h or 0.8
+            B.box((1.1, hh, 0.92), at=(0, 0.14 + hh / 2, 0), mat='panel2', bevel=0.06)
+        elif load == 'boxes':
+            hh = h or 0.9
+            for (dx, dz) in ((-0.28, -0.24), (0.28, -0.24), (-0.28, 0.24), (0.28, 0.24)):
+                B.box((0.52, hh, 0.44), at=(dx, 0.14 + hh / 2, dz), mat='frame2', bevel=0.02)
+        elif load == 'plate':
+            for k in range(4):
+                B.box((1.15, 0.08, 0.95), at=(0, 0.18 + 0.09 * k, 0), mat='pipe', bevel=0.0)
+
+
+def drums(B, p, n=4, rot=0.0, mat='pipeDark'):
+    """v6 clutter: a cluster of 0.6 m oil drums (0.9 m tall) on a 2 x 2 grid, the last one maybe tipped."""
+    with B.at(at=p, rot=(0, rot, 0)):
+        for k in range(n):
+            dx, dz = (k % 2) * 0.66 - 0.33, (k // 2) * 0.66 - 0.33
+            B.vcyl(0.29, 0.88, (dx, 0.0, dz), mat=mat if k % 3 else AMBER, n=10)
+            B.cyl(0.3, 0.04, at=(dx, 0.3, dz), rot=(-90, 0, 0), mat='frame', n=10, caps=False)
+
+
+def pump_skid(B, p, rot=0.0, scale=1.0):
+    """v6 clutter: a pump skid (2.6 x 1.2 m base frame, motor, pump casing, suction / discharge stubs with
+    flanges and a small valve), true size."""
+    k = scale
+    with B.at(at=p, rot=(0, rot, 0)):
+        B.box((2.6 * k, 0.22 * k, 1.2 * k), at=(0, 0.11 * k, 0), mat='frame', bevel=0.02)
+        B.cyl(0.38 * k, 1.1 * k, at=(-0.6 * k, 0.62 * k, 0), rot=(0, 90, 0), mat='frame2', n=12)
+        B.box((0.5 * k, 0.6 * k, 0.6 * k), at=(0.25 * k, 0.55 * k, 0), mat='pipeDark', bevel=0.03)
+        B.cyl(0.42 * k, 0.4 * k, at=(0.75 * k, 0.62 * k, 0), rot=(0, 90, 0), mat=AMBER, n=12)
+        B.vcyl(0.14 * k, 0.9 * k, (0.75 * k, 0.9 * k, 0), mat='pipe', n=8)
+        B.cyl(0.24 * k, 0.06 * k, at=(0.75 * k, 1.8 * k, 0), rot=(-90, 0, 0), mat='pipeDark', n=10)
+        B.box((0.9 * k, 0.5 * k, 0.12 * k), at=(-0.6 * k, 1.12 * k, 0.0), mat='frame', bevel=0.0)
+
+
+def gas_bottles(B, p, n=5, rot=0.0):
+    """v6 clutter: a rack of n 0.23 m gas bottles (1.5 m) behind a rail."""
+    with B.at(at=p, rot=(0, rot, 0)):
+        for i in range(n):
+            x = (i - (n - 1) / 2) * 0.3
+            B.vcyl(0.115, 1.4, (x, 0.0, 0.0), mat='cobalt' if i % 2 else 'frame2', n=8)
+            B.vcyl(0.05, 0.12, (x, 1.4, 0.0), mat='pipe', n=6)
+        B.box((0.3 * n + 0.2, 0.06, 0.06), at=(0, 1.0, 0.2), mat='frame', bevel=0.0)
+        for x in (-(0.3 * n) / 2 - 0.05, (0.3 * n) / 2 + 0.05):
+            B.box((0.06, 1.1, 0.06), at=(x, 0.55, 0.2), mat='frame', bevel=0.0)
+
+
+def pipe_bundle(B, pts, n=3, r=0.22, gap=0.25, y=None, mat='pipe', stools=4.0):
+    """v6 clutter: n parallel pipes along a ground polyline on concrete stools (the concept's pipe clusters along
+    the plinth edge), each with flanges and amber rings; stools every `stools` m."""
+    P = [vv(q) for q in pts]
+    for i in range(n):
+        off = (i - (n - 1) / 2) * (2 * r + gap)
+        rr = r * (1.0 if i % 2 == 0 else 0.7)
+        q = []
+        for j, a in enumerate(P):
+            d = (P[min(j + 1, len(P) - 1)] - P[max(j - 1, 0)])
+            d.y = 0
+            d.normalize()
+            sd = V((0, 1, 0)).cross(d).normalized()
+            q.append(a + sd * off + V((0, (y if y is not None else 0.0) + 0.5 + r, 0)))
+        pipe(B, q, rr, mat=mat if i != 1 else 'pipeDark', rings=(i == 0), supports=False)
+    for a, b in zip(P[:-1], P[1:]):
+        L = (b - a).length
+        d = (b - a).normalized()
+        sd = V((0, 1, 0)).cross(d).normalized()
+        for t in [x * stools for x in range(int(L / stools) + 1)]:
+            c = a + d * t
+            w = n * (2 * r + gap) + 0.3
+            with B.at(M=frame_along(c - sd * w / 2, c + sd * w / 2)):
+                B.box((0.3, 0.5, w), at=(0, 0.25, w / 2), mat='concrete2', bevel=0.02)
+
+
 def cabinet(B, p, w=1.2, h=1.8, d=0.6, rot=0.0, mat='panel2'):
     """Electrical cabinet / junction box on a plinth."""
     with B.at(at=p, rot=(0, rot, 0)):
@@ -1267,6 +1355,8 @@ def component(B, name, p, heading=0.0, scale=None, tag=None, lights=True):
         B.R.floods.append({'p': lst(P(q['p'])), 'target': lst(P(q['target']))})
     for q in L.get('lenses', []):
         B.R.lenses.append(lst(P(q)))
+    for q in L.get('spills', []):
+        B.R.spills.append({**q, 'p': lst(P(q['p']))})
     for q in rec.get('placements') or []:
         pl = {**q, 'p': lst(P(q['p'])), 'n': lst(D(q['n'])), 'up': lst(D(q['up']))}
         if 'along' in q:

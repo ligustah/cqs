@@ -216,7 +216,7 @@ def model(B):
     """v2: composed from fal components (assets/parts-colony: blastFurnace, skipGallery, bandedStack x2, shedSegment x2,
     pourBay; README-colony.md catalogue) on the shared kit's plinth, with parametric annexes, pipes, dressing, lights."""
     W, D = SPEC['footprint']
-    K.plinth(B, W, D, h=1.6, chamfer=2.4, slab=8.0, lamp_pitch=18.0, centre=(0.0, -4.0),
+    K.plinth(B, W, D, h=1.6, chamfer=2.4, slab=4.6, lamp_pitch=9.0, centre=(0.0, -4.0),   # v6: lamps every 9 m (concept)
              markings=[([(37.5, 40.0), (37.5, -48.0)], 0.2, 'frame2'), ([(-38.0, 39.5), (38.0, 39.5)], 0.2, 'frame2'),
                        ([(30.0, 30.0), (39.0, 30.0)], 0.35, 'hazard'), ([(30.0, -2.0), (39.0, -2.0)], 0.35, 'hazard')],
              grates=[(37.0, -16.0, 0.8, 3.0), (37.0, 32.0, 0.8, 3.0), (-2.0, 34.0, 3.0, 0.8)],
@@ -238,7 +238,7 @@ def model(B):
         K.component(B, 'shedSegment', (SH_X, 0.0, zc), heading=0.0)
     # the open pour bay against the shed's +X face, its glowing runner out onto the apron
     K.component(B, 'pourBay', (PB_X, 0.0, PB_Z), heading=0.0)
-    for (x, z) in ((PB_X + 9.5, PB_Z - 13.0), (PB_X + 9.5, PB_Z + 13.0)):
+    for (x, z) in ((PB_X + 7.3, PB_Z - 13.0), (PB_X + 7.3, PB_Z + 13.0)):   # v6: the shallower portal's front columns
         B.R.pin((x, 14.0, z))
     # gas-cleaning annex on the furnace's -X side, under the downcomer's elbow (v5: narrow and low beside the broader
     # furnace plinth; the concept's light block with the big elbow pipe on its roof), the dust catcher behind
@@ -304,3 +304,71 @@ def model(B):
         K.worker(B, (x, 0.0, z), heading=hd)
     K.flood_on_wall(B, (SH_X + 14.05, 16.0, -12.0), (1, 0, 0), (36.0, 0.0, -14.0))
     K.flood_on_wall(B, (SH_X + 14.05, 16.0, -36.0), (1, 0, 0), (36.0, 0.0, -34.0))
+    clutter(B)
+
+
+
+def clutter(B):
+    """v6 (vibes, correction 43): the concept's density: small machinery, pallets, drums, crates, pipe clusters on
+    stools, valves, gas bottles, small sheds, lamp posts and figures packed round the furnace foot, along the plinth
+    edges and in front of the pour bay (BUILDING-GUIDE.md 5a: no bare run of apron over 15 m at the concept camera),
+    plus the process-glow spill lights (hearth band, runner)."""
+    # --- glow spill: the hearth band lights the furnace foot and casthouse roof; the runner lights the portal floor
+    # r2: 900 cd / 34 m washed the whole furnace foot and the shed gable orange: a local spill only
+    B.R.spill((FX + 8.5, 13.0, FZ + 8.5), color='#ff9a48', intensity=300.0, distance=20.0)
+    B.R.spill((PB_X + 8.6, 3.2, PB_Z + 4.0), color='#ffa04a', intensity=180.0, distance=16.0)
+    # --- +X apron along the shed (x 33-40, z -48..0): a pipe cluster on stools at the edge, sheds, pallets, skids
+    K.pipe_bundle(B, [(38.6, 0.0, -45.5), (38.6, 0.0, -26.0)], n=3, r=0.22)
+    K.pipe_bundle(B, [(39.2, 0.0, -8.0), (39.2, 0.0, -1.0), (35.0, 0.0, -1.0)], n=2, r=0.3)
+    K.valve(B, (38.6, 0.72, -30.0), (0, 0, 1), r=0.22)
+    K.valve(B, (38.6, 0.72, -38.0), (0, 0, 1), r=0.22)
+    K.block(B, (35.0, 0.0, -45.0), (4.0, 3.2, 4.4), frame='frameL',
+            sides={'+x': {'bay': 2.2, 'doors': [2.2]}, '+z': {'bay': 2.0, 'windows': [0], 'win': (1.0, 0.8)}},
+            roof={'parapet': 0.25, 'units': [('vent', 0.0, 0.0, {})]})
+    for (x, z, r, ld) in ((26.2, -3.0, 0, 'sacks'), (26.2, -4.4, 0, 'boxes'), (27.6, -3.2, 15, 'plate'), (34.5, -20.0, 0, 'boxes'),
+                          (34.5, -21.3, 0, 'sacks'), (35.9, -20.2, 0, None), (26.0, -24.0, 90, 'plate'), (26.0, -25.4, 90, 'plate')):
+        K.pallet(B, (x, 0.0, z), rot=r, load=ld)
+    K.drums(B, (36.5, 0.0, -26.5), n=4)
+    K.drums(B, (26.4, 0.0, -42.5), n=3, rot=20)
+    K.pump_skid(B, (36.0, 0.0, -3.6), rot=90)
+    K.gas_bottles(B, (25.4, 0.0, -14.0), n=6, rot=90)
+    K.cabinet(B, (25.2, 0.0, -18.0), rot=90)
+    K.cabinet(B, (25.2, 0.0, -19.6), w=0.9, rot=90)
+    K.lamp_post(B, (38.5, 0.0, -12.0), h=8.0, arm=1.2, rot=-90)
+    K.lamp_post(B, (38.5, 0.0, -36.0), h=8.0, arm=1.2, rot=-90)
+    K.bollards(B, [(33.0, -1.0), (33.0, -6.0)])
+    # --- the pour bay apron (x 31-40, z 0-28): the runner's foot, a pump skid, plate pallets, a ladle stand, drums
+    # (r2: the runner now runs on the apron in front of the portal, world x 35-38, z 4-28: clutter beside it)
+    for (x, z, r, ld) in ((36.2, 1.6, 0, 'plate'), (37.6, 1.6, 0, 'plate'), (39.0, 1.6, 0, 'boxes'), (39.2, 21.0, 90, 'sacks'),
+                          (39.2, 22.4, 90, 'boxes')):
+        K.pallet(B, (x, 0.0, z), rot=r, load=ld)
+    K.drums(B, (39.2, 0.0, 15.5), n=2)
+    K.gas_bottles(B, (39.3, 0.0, 9.5), n=5, rot=-90)
+    K.lamp_post(B, (39.3, 0.0, 6.5), h=7.0, arm=1.0, rot=-90)
+    K.lamp_post(B, (39.3, 0.0, 25.5), h=7.0, arm=1.0, rot=-90)
+    for (x, z, hd) in ((34.0, 12.0, 90), (39.0, 18.5, 270)):
+        K.worker(B, (x, 0.0, z), heading=hd)
+    # --- the front-right corner (x 20-40, z 27-42): a small shed, skids, a pipe cluster to the control house
+    K.block(B, (31.5, 0.0, 39.8), (5.0, 3.6, 3.6), frame='frameL',
+            sides={'+z': {'bay': 2.5, 'doors': [1.4], 'windows': [1], 'win': (1.0, 0.8)}, '+x': {'bay': 3.6, 'windows': [0], 'win': (1.0, 0.8)}},
+            roof={'parapet': 0.25, 'units': [('hvac', 0.0, 0.0, {'w': 1.8, 'd': 1.2, 'fans': 1})]})
+    K.pipe_bundle(B, [(38.8, 0.0, 37.0), (38.8, 0.0, 28.0)], n=2, r=0.25)
+    K.pump_skid(B, (36.6, 0.0, 33.5), rot=90)
+    K.pallet(B, (25.5, 0.0, 40.6), load='boxes')
+    K.pallet(B, (26.9, 0.0, 40.6), load='sacks')
+    K.drums(B, (29.0, 0.0, 28.4), n=4, rot=10)
+    K.gas_bottles(B, (31.0, 0.0, 27.6), n=4)
+    # --- along the casthouse front (z 39-42): pallets, drums, a skid, bottles
+    for (x, ld) in ((1.0, 'sacks'), (2.4, 'boxes'), (13.6, 'plate'), (15.0, 'boxes')):
+        K.pallet(B, (x, 0.0, 40.6), load=ld)
+    K.drums(B, (6.6, 0.0, 40.8), n=3)
+    K.pump_skid(B, (9.6, 0.0, 40.6), rot=0, scale=0.9)
+    K.cabinet(B, (18.0, 0.0, 41.0), w=1.0)
+    # --- the furnace foot (front z 40-42, the -X side x -40..-34): drums, crates, bottles, a skid, a pipe cluster
+    # (the v5 cooling main already runs along z 41 from x -35 to -12)
+    K.drums(B, (-5.0, 0.0, 41.0), n=4)
+    K.drums(B, (-38.6, 0.0, 40.6), n=2)
+    K.lamp_post(B, (-36.5, 0.0, 41.5), h=7.0, arm=1.0, rot=0)
+    K.lamp_post(B, (-3.0, 0.0, 41.6), h=7.0, arm=1.0, rot=0)
+    for (x, z, hd) in ((-2.0, 40.6, 160), (3.5, 40.5, 200)):
+        K.worker(B, (x, 0.0, z), heading=hd)

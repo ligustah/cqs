@@ -62,7 +62,9 @@ export function lightCfg(L = {}, seed = 71) {
     ...(L.lenses || []).map((p) => ({ p, size: C.lens.size, color: C.lens.color, radiance: C.lens.radiance })),
   ];
   const interiorLights = (L.floods || []).map((f) => ({ kind: 'spot', p: f.p, target: f.target, color: C.flood.color, intensity: C.flood.intensity,
-    distance: C.flood.distance, angle: C.flood.angle, penumbra: C.flood.penumbra, decay: 2 }));
+    distance: C.flood.distance, angle: C.flood.angle, penumbra: C.flood.penumbra, decay: 2 }))
+    // v6: process-glow spill (a furnace hearth, molten runner): warm point lights that light the ground round the glow
+    .concat((L.spills || []).map((q) => ({ kind: 'point', p: q.p, color: q.color, intensity: q.intensity, distance: q.distance, decay: 2 })));
   const lights = (L.nav || []).map((p) => ({ p, color: 'red', size: C.obstruction }));
   return { lightscape: { seed, patterns }, fixtures, interiorLights, lights };
 }

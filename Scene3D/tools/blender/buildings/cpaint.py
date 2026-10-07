@@ -43,6 +43,63 @@ GRIME_L = HP.srgb2lin([0.40, 0.37, 0.33])         # crease grime on light paint 
 GRIME_D = HP.srgb2lin([0.36, 0.355, 0.35])        # v5: on dark steel a neutral soot (the warm grime browned the gunmetal)
 DIRT_L = HP.srgb2lin([0.33, 0.29, 0.24])
 DIRT_D = HP.srgb2lin([0.30, 0.295, 0.29])
+STREAK_C = HP.srgb2lin([0.30, 0.285, 0.265])      # v6: grime streak on light paint (grey-brown, the concept's)
+SOOT_C = HP.srgb2lin([0.20, 0.19, 0.18])        # v6: roof soot (warm-neutral, the concept's dark roof laps)
+
+
+def vstreaks(s, t, src, seed):
+    """v6: crisp vertical run-off streaks (the concept's rust and grime lines down the light plating): narrow columns
+    along the face (two widths, 9 and 22 cm) with hard sides, each starting at a course seam (every `src` m in y) and
+    fading downward over its own length (0.4-3.4 m), broken along its run. Returns (grime, rust) masks 0..1."""
+    g = np.zeros(len(s), np.float32)
+    r = np.zeros(len(s), np.float32)
+    lev = np.floor(t / src)
+    below = (lev + 1) * src - t
+    li = lev.astype(np.int64)
+    for k, (cw, dens) in enumerate(((0.09, 0.26), (0.22, 0.14))):
+        ci = np.floor(s / cw).astype(np.int64)
+        fr = (s / cw - ci).astype(np.float32)
+        h1 = HP.hash3(ci, li, k, seed)
+        h2 = HP.hash3(ci, li, k, seed + 1)
+        h3 = HP.hash3(ci, li, k, seed + 2)
+        h4 = HP.hash3(ci, ci // 5, k, seed + 3)
+        L = 0.4 + 3.0 * h2 ** 1.6
+        fade = np.clip(1 - below / L, 0, 1) ** 0.7
+        side = HP.smooth(0.0, 0.16, fr) * HP.smooth(1.0, 0.84, fr)
+        q = np.stack([ci.astype(np.float32) * 0.913, t * 1.0, np.full_like(t, 3.1 * k)], 1)
+        brk = HP.smooth(0.3, 0.5, HP.fbm(q, 2.2, 2, seed=seed + 5))
+        m = (h1 < dens) * side * fade * (0.35 + 0.65 * brk) * (0.5 + 0.5 * h3)
+        rust = h4 < 0.25
+        r = np.maximum(r, m * rust)
+        g = np.maximum(g, m * (~rust))
+    return g.astype(np.float32), r.astype(np.float32)
+
+
+def roof_soot(p, nn, lap, seed):
+    """v6: soot on up-facing roof planes (the concept's sooty roofs): broad soot patches, dark lap lines across the
+    slope every `lap` m with a drip band under each, and soot streaks running down the slope from each lap.
+    Returns a darkening mask 0..1 (0 off roofs)."""
+    up = (nn[:, 1] > 0.3).astype(np.float32)
+    hx, hz = nn[:, 0], nn[:, 2]
+    hl = np.hypot(hx, hz)
+    flat = hl < 0.05
+    dx = np.where(flat, 0.0, hx / np.maximum(hl, 1e-6))
+    dz = np.where(flat, 1.0, hz / np.maximum(hl, 1e-6))
+    b = p[:, 0] * dx + p[:, 2] * dz          # down the slope
+    a = -p[:, 0] * dz + p[:, 2] * dx         # across the slope
+    li = np.floor(b / lap)
+    db = b - li * lap
+    line = 1 - HP.smooth(0.025, 0.07, np.minimum(db, lap - db))
+    drip = HP.smooth(0.9, 0.0, db)
+    ci = np.floor(a / 0.16).astype(np.int64)
+    fr = (a / 0.16 - ci).astype(np.float32)
+    lii = li.astype(np.int64)
+    hc = HP.hash3(ci, lii, 5, seed)
+    hl2 = HP.hash3(ci, lii, 6, seed + 1)
+    stk = (hc < 0.3) * HP.smooth(0.0, 0.15, fr) * HP.smooth(1.0, 0.85, fr) * np.clip(1 - db / (0.5 + 2.2 * hl2), 0, 1)
+    patch = HP.smooth(0.35, 0.72, HP.fbm(p, 0.06, 3, seed=seed + 2))
+    m = 0.32 + 0.38 * patch + 0.45 * stk + 0.25 * drip * (0.5 + 0.5 * patch) + 0.75 * line
+    return (up * np.clip(m, 0, 1)).astype(np.float32)
 
 
 def zone_cfg(name, spec, mats):
@@ -138,6 +195,9 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
                 col *= (1 + c['tone'] * (HP.hash3(pid, pid // 7, pid // 13, 11) * 2 - 1))[:, None]
                 col *= (1 - c['dark'] * seam)[:, None]
                 rg += 0.06 * seam
+                if c.get('halo'):
+                    # v6: darkened panel edges (the concept's plates darken toward their joints, not only the seam line)
+                    col *= (1 - float(c['halo']) * (1 - HP.smooth(0.0, 0.22, d)))[:, None]
                 h -= 0.006 * (1 - HP.smooth(0.0, w, d))
                 if c.get('drip'):
                     # v5: grime drips under each course seam (the concept's streaked panel joints): dirt held in the
@@ -192,6 +252,22 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
             st = HP.fbm(p * np.array([1.0, 0.06, 1.0], np.float32), float(c.get('streak_f', 1.4)), 3, seed=9)
             streak = wall * HP.smooth(0.5, 0.7, st) * float(c.get('streak', 0.16)) * g
             col *= (1 - streak)[:, None]
+            vs = float(c.get('vstreak', 0.0))
+            if vs > 0:
+                src = float(c.get('vsrc') or (c['course'] if c['course'] and c['course'] < 50 else 2.4))
+                sg, sr = vstreaks(s, t, src, 61 + zi)
+                sg = sg * wall * vs * g
+                sr = sr * wall * vs * min(1.0, 1.6 * c['rust'])
+                gc = STREAK_C[None] if c['light'] else GRIME_D[None] * 0.8
+                col = col * (1 - 0.7 * sg[:, None]) + gc * 0.7 * sg[:, None]
+                rc_ = (RUST_C if c['light'] else RUST_D)[None]
+                col = col * (1 - 0.65 * sr[:, None]) + rc_ * 0.65 * sr[:, None]
+                rg += 0.08 * sg + 0.1 * sr
+            if c.get('soot'):
+                sm = roof_soot(p, nn, float(c.get('lap', 3.0)), 71 + zi) * float(c['soot'])
+                sc = SOOT_C[None]
+                col = col * (1 - sm[:, None]) + sc * sm[:, None]
+                rg += 0.1 * sm
             # ground dirt: walls darken and warm toward the slab (splash, dust)
             gd = wall * HP.smooth(2.2, 0.0, p[:, 1]) * (0.55 if c['light'] else 0.3) * g
             col = col * (1 - 0.45 * gd[:, None]) + (DIRT_L if c['light'] else DIRT_D)[None] * 0.45 * gd[:, None]
