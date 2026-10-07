@@ -49,3 +49,4 @@ Scratch: $S = /tmp/claude-0/-home-user-cqs/e592383b-a9f6-5dde-82a6-4494b59b11a7/
 - dist vs published: $S/filediff1.txt (7 changed: 4 src + 3 steel_mill tier files; 20 tex added, 8 removed, all steel mill).
 - Brown fighters = carrier's parked fighters, lit by the amber hangar lights, exposed when the hull failed to link.
 - Desktop pkg-diff DONE: 26/26 pass (solid<=2%), zero console errors. Next: phone pkg-diff (/tmp/claude-0/-home-user-cqs/e592383b-a9f6-5dde-82a6-4494b59b11a7/scratchpad/pf/after/phone), phone-check, scale-check.
+- Phone pkg-diff DONE: 26/26 pass, no errors (shipyard/spaceport building diffs = lite tier framing/dressing, checked side by side). Next: phone-check, scale-check.
