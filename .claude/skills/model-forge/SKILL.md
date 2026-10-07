@@ -189,4 +189,4 @@ Before generating anything for a style, re-read `corrections.md` so the next res
 - Keep what the user praised; it is a constraint for the next pass.
 - For long autonomous runs, notify when done. State plainly what passed review, what did not, and what
   you chose not to do.
-- Track spend against the style's budget and record every generation job (model, id, prompt, params).
+- Follow the style's budget rule, and record every generation job (model, id, prompt, params).

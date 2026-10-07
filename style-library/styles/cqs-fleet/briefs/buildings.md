@@ -33,7 +33,7 @@ them. The target is the concept. The shipyard and spaceport stay as built (`asse
 - **wear**: panel-to-panel tone, grime under edges, streaks; worn, not dirty;
 - **depth**: recesses, layered volumes, shadowed bays.
 
-**Rules that apply:** STYLE.md Installations (light paint, lights and small detail, depth), Thumbnail
+**Rules that apply:** STYLE.md section 4 (buildings: light paint, detail, grit, depth), section 7 (building lights), Thumbnail
 readability (each building identifiable at 80 / 40 px and distinct from the others), Reuse first
 (shared components, kit parts, PATINA), Phone first (per-view loading, phone budget per building).
 Sizes are real-world and plausible for the function; record each footprint and height in the module.

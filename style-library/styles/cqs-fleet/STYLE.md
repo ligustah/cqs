@@ -1,295 +1,267 @@
 # Style: cqs-fleet
 
-The ships, ground units and buildings of the Conquer-Space reboot. Every asset must look like it came from
-the same civilisation and the same shipyards, and hold up at the quality bar below.
+The ships, ground units and buildings of the Conquer-Space reboot: one civilisation, one shipyard
+tradition, one quality bar. This file is the specification that work and review follow. Every rule says
+which asset types it applies to: **All**, **Ships**, **Ground** (ground units) or **Buildings**
+(planetside and orbital).
 
-This file says what an asset needs to get right. How each rule came about (the user's own words) is in
-`corrections.md`. The step-by-step recipes live in each family's guide: buildings in
-`Scene3D/tools/blender/buildings/BUILDING-GUIDE.md`, ships in `Scene3D/tools/blender/hulls/README.md`.
+**Sources of truth** (where this file and a source disagree, fix whichever is wrong; never leave the two
+apart):
 
-## Hard rules
+| What | Where |
+|---|---|
+| History: why each rule exists, in the user's words | `corrections.md` |
+| Ship lights in full | `lighting-standard.md` (F1-F17, R1-R13, sections 4 and 8) |
+| Ship sizes | `Scene3D/src/lib/scale.js` |
+| Per-asset targets | `briefs/<asset>.md` and the approved concept images |
+| Recipes (how) | the family guide; see **Where to start** |
+| Process | the model-forge skill |
 
-- **Original IP only.** Never open, read or reference the legacy art: `Artwork/**`,
-  `Html/Design/pack/units/*`, or the old game's `*.blend` files. Only the class roster and gameplay stats
-  come from the old code.
-- **No imitation of franchise designs** (Star Wars, Star Trek, The Expanse, Halo, BSG, Homeworld, EVE).
-  Never name them in prompts. A judge checks every concept for look-alikes.
-- **Budget:** no cap on fal. Aim for the best result, and don't plan around or report the remaining
-  credit. If the account runs dry, say so. Record every job in `Scene3D/pipeline/fal-pipeline.json`.
+## 1. Hard rules (All)
 
-## The quality bar
+1. **Original IP.** Never open or reference `Artwork/**`, `Html/Design/pack/units/*`, or the old game's `*.blend`
+   files. Only the class roster and gameplay stats come from the old code.
+2. **No franchise imitation:** Star Wars, Star Trek, The Expanse, Halo, BSG, Homeworld, EVE. Never name them
+   in a prompt. Every concept is judged for look-alikes.
+3. **fal budget:** no cap. Don't plan around or report the remaining credit. Record every job (model, request
+   id, inputs, use) in `Scene3D/pipeline/fal-pipeline.json`.
+4. **Concepts before modelling.** All concepts of a batch are approved by the user before any turnaround, mesh or
+   remodel. The 16 colony building concepts are already approved (`images/buildings/<id>-concept.jpg`).
+5. **fal gives blueprints and small parts; Blender builds the asset.**
+   - Anything whose longest side is over 3.0 m, and every signature shape, is rebuilt as parametric
+     hard-surface geometry. An image-to-3D mesh of it serves only for measuring.
+   - Raw fal meshes may remain only as kit parts of 3.0 m or less, cleaned to flat facets.
+   - Nothing is scaled up past its source detail.
+   - No image-to-3D texture stays on a rebuilt part.
+6. **Compose from components and reuse.**
+   - Complex assets are composed from reusable components.
+   - Repeated parts, and ships or vehicles shown in a scene, are the existing models (instanced GLBs, kit
+     parts in `kits.md`).
+   - A new part goes into the kit.
+7. **Base chassis only.** No module variants (weapon pods, add-on armour, speed packs) yet.
+8. **Check what the user sees.** Review the published package on the desktop and phone tiers (section 8)
+   before reporting. Show the user HD images, never file paths.
+9. **Living guide.**
+   - Every step, setting and gotcha goes into the family guide in the iteration it is learned.
+   - Every iteration ends with a review against section 8 and the guide's checklist, item by item, pass or fail
+     with evidence.
 
-**Current-generation real-time game art, judged at 1:1.**
-- Clean, dense hard-surface geometry: flat facets, straight edges, bevels that catch the light, real
-  recesses and layered volumes.
-- Texel density that holds at close range, with seams, bolts and grime crisp in a close-up.
-- Layered PBR: base colour, ORM, detail normals, AO and wear.
-- Real shadows.
+## 2. Quality bar (All)
 
-A concept-led asset must **match its concept's vibes**: the same mood, grit, density, warmth and
-silhouette at a glance. It does not have to match pixel for pixel. Keep iterating without asking until it
-does.
+Current-generation real-time game art. Pass means all of these hold:
+- **Geometry:**
+  - flat facets, with no wobble over 1 cm;
+  - straight edges;
+  - every exposed edge chamfered (hulls 4-10 cm, buildings and ground units 2-6 cm), showing as a lit 1-2 px
+    line in the close view;
+  - openings cut exactly, with real depth.
+- **Texture:** at the close view (section 8, 1600 x 1000, cropped without scaling), a 5 cm seam or bolt row
+  is at least 2 px wide, with no visible texel blur or stretch.
+- **Materials:** layered PBR, meaning base colour plus ORM (occlusion, roughness and metalness in R, G, B),
+  a normal map, AO and wear.
+- **Shadows:** real shadows on the desktop tier. The phone tier has no screen-space AO, and that is not a fail.
 
-## How assets are made
+**Concept fidelity: "very similar vibes".** A concept-led asset matches its concept at a glance in silhouette,
+mood, grit, density and warmth. It need not match pixel for pixel. Pass means:
+- `paint-check` within band (section 8);
+- the icon reads the same as the concept's icon;
+- a blind judge, given concept and render side by side, says "match" for each of the five qualities.
 
-- **Concepts first.** When several assets are designed together, settle every concept with the user before
-  any turnaround, mesh or remodel.
-- **Full pipeline:** concept, turnaround, blueprint mesh, parts, remodel, assemble, look, review, release.
-- **fal makes blueprints and small parts, Blender makes the asset.**
-  - An image-to-3D mesh is a measuring blueprint.
-  - Every component over about 3 m, and every signature shape, is rebuilt as clean parametric
-    hard-surface geometry and painted in texture space.
-  - Raw fal meshes survive only as small kit parts (about 3 m and under), cleaned and flattened.
-  - A mesh is never scaled up past its source detail, and no Tripo texture stays on a remodelled part.
-- **Compose from components.** Break a complex asset into reusable components and compose it from them.
-  Never reconstruct a whole building as one mesh.
-- **Reuse first.** Repeated parts, docked or part-built ships and vehicles are the existing models
-  (instanced GLBs, kit parts, PATINA sets). A new part goes into the kit for the next asset.
-- **Living guide.**
-  - Each asset family keeps one guide. Every step, setting and gotcha goes into it in the iteration it is
-    learned.
-  - After each iteration, review the work against the guide's checklist, item by item, with evidence.
-  - Fix the guide wherever the review shows a gap.
-- **Check what the user sees.** Review the published preview through the real package, on desktop and
-  phone tiers, before reporting a result.
-- **Phone first.**
-  - The user views the preview on a phone. Every asset has a phone budget (300 MB heap plus GPU per view).
-  - The scene loads only what the current view needs.
-  - The phone tier is tested before every publish.
-  - A material uses at most 16 fragment samplers.
-- **Scope.** Unit module variants (weapon pods, add-on armour, speed packs) come later. Build the base
-  chassis.
+Keep iterating without asking the user until it passes.
 
-## Identity
+## 3. Identity (All)
 
-Credible near-future "naval-industrial" hardware, photographed like studio models.
-- Faceted hard-surface forms with chamfered edges and layered armour plates. No aerodynamic wings.
-- Real engineering logic: radiators, shielding between drive and crew, RCS quads, hatches and rails at human
-  scale.
-- **Drives** are fusion bells with magnetic-nozzle coils.
-- **Ship types:**
-  - Warships are blunt and armoured.
+- **Naval-industrial,** near-future and credible: faceted hard-surface forms with chamfered, layered plates.
+- **Engineering logic you can read:** radiators, shielding between drive and crew, RCS quads, hatches and rails
+  at human scale.
+- **No aerodynamic wings, and no launch hardware.** Ships land and take off under their own power, so
+  installations have no launch rails, cradles, towers or blast pits.
+- **Ships:**
+  - Warships are blunt and armoured, with the superstructure low and tiered and the armament readable in
+    silhouette.
   - Civil ships are lean spines carrying modules.
-- **Weapons** are railguns (spinal on the destroyer), turrets, PDC and missile cells.
-- Ground units and buildings share the same construction, markings and rulers.
-- Ships land and take off under their own power on any planet. Installations need no launch rails,
-  cradles, towers or blast pits.
+  - Drives are fusion bells with magnetic-nozzle coils.
+  - Weapons: railguns (spinal on the destroyer), turrets, PDC and missile cells.
+- **Docks and yards** show the fleet's own spacecraft, never sea ships. A ship under construction is the real
+  fleet model cut back to its build state. Scaffolding and gantries look clearly different from finished hulls.
+- **Symmetry:** everything is symmetric unless the design says otherwise.
 
-## Thumbnail readability
+## 4. Per-type specification
 
-The game shows every unit and building as a **square icon**, on the dark UI panel (#222d35):
-- 80 px for the current job and on hover;
-- 40 px in queues and job lists;
-- 20 px in compact lists.
+| | Ships | Ground units | Planetside buildings | Orbital buildings |
+|---|---|---|---|---|
+| Size from | hangar slots (`scale.js`, section 6) | the brief, true size (V-31: 6.5 x 2.6 x 2.5 m) | the brief and concept, real-world plausible; recorded as `SPEC` footprint and height in the module | ≤ 1.3x the length of its largest product |
+| Paint | dark operational livery: low-visibility marks; civil ships keep weathered cargo colours | dark operational livery, with marks legible (amber, cobalt, unit number) | **light paint**: off-white panels and shells framed by dark neutral gunmetal | light station paint with dark structure |
+| Finish level | worn, not dirty | matte and visibly used, not a wreck | worn, not dirty | worn, not dirty |
+| Finish preset | `ship` | `ground` | `building` | `building` (the shipyard and spaceport use `ship`; to align when they are next rebuilt) |
+| Texel density | hull ≥ 20 px/m | body: 2048 px over the vehicle | light surfaces ≥ 50 px/m, hero surfaces ≥ 70; dark structure ≥ 25 | as planetside |
+| Lights | `lighting-standard.md` in full | authored only (section 7) | section 7 | section 7 |
+| Studio | ship studio (`env/lighting.js` STUDIO) | ship studio | dusk studio (`colony.js` DUSK) at the concept camera | dusk rig with the space backdrop |
+| Ground / base | — | contact with the ground: dust and mud | chamfered concrete plinth slab (kerbs, markings, edge lamps, staining) | none |
+| Phone (per view) | heap + GPU < 300 MB | < 300 MB | < 300 MB, ≤ 150k tris, ≤ 7 MB fetched | < 300 MB |
 
-Rich detail is for large shots. The icon needs the following:
-- **Identifiable at 80 px**, and distinct from every sibling at 40 px.
-- **Compact massing:** from the icon camera (three-quarter, about 30° up) the silhouette fills a square
-  frame, with a bounding aspect of 1.5:1 at most. Show one dominant structure with the rest tight round it.
-- **One or two signature shapes** carry the identity at icon size (a cab profile, a ring, an arch, a tower,
-  a dish). Markings and small parts are the second layer.
-- **Value contrast that survives downscaling:** a light / dark split, or one bright signature element.
-- **Test (a review gate, and also for concepts):** render the icon view and downscale it to 80 and 40 px
-  beside its siblings with `Scene3D/tools/thumbs/`. A judge must name each one.
+**Buildings** (both kinds):
+- **Function:**
+  - Busy, not bulky: every large element has a job.
+  - No closed shell wider than about 30 % of the silhouette. Enclosures stay thin and broken up.
+  - Each main bay holds at least one live element: a docked ship, a crane, a vehicle, a tug or cargo.
+- **Read:** a strong light / dark material split, with deep shadowed recesses and layered volumes.
+- **Secondary detail at true scale:**
+  - pipe runs with flanges and amber rings, cable trays, catwalks, railings, ladders and stairs;
+  - roof units and vents, door canopies, small machinery, valves, crates and pallets;
+  - lamp posts, vehicles and 1.8 m figures.
+  - Pass: no bare run of plinth or apron over 15 m at the concept camera.
+- **Grit:**
+  - panel-to-panel tone;
+  - dark seams;
+  - crisp **vertical** rust and grime streaks under seams and edges;
+  - soot on roofs, with dark lap lines;
+  - a stained plinth.
 
-## Buildings and installations
+  Tonality is warm, with lifted shadows; the material split stays strong.
+- **Colour:**
+  - light paint hue 25-35°;
+  - dark steel saturation ≤ 0.1 (neutral grey, never brown).
 
-**Form**
-- **Sized by function:** real-world, plausible footprints and heights, measured against the rulers.
-- **An orbital or ship-building installation** is only modestly larger than the biggest ship it builds.
-- **Busy, not bulky:** life comes from activity and parts (cranes, docked ships at true scale, tugs,
-  cargo, vehicles, figures), never from a massive continuous shell.
-- **Show the actual unit:** a yard shows the real fleet ship part-built (DD-12 in the shipyard, CV-50 in
-  the spaceport), instanced from its GLB.
-- **A chamfered concrete plinth slab** carries every colony building, with kerbs, markings, edge lamps and
-  staining.
+**Ground units:**
+- Roughness 0.84-1.0. Glass is hazy, never a mirror.
+- Dust is full up to 0.4 m and gone by 1.55 m. Dried mud below 0.75 m and in the wheel arches.
+- Chips on every exposed edge, grime in recesses, run-off streaks under edges and panes.
+- The silhouette and lamps stay clean.
 
-**Light paint with dark structure**
-- Off-white to warm light-grey panels and shells, framed by dark neutral gunmetal posts, beams, bands and
-  plinth edges.
-- Dark steel is neutral grey, not brown.
-- The light / dark contrast is the building's read.
+**Ships:**
+- **Drives:** a white-hot throat, a dark bell wall with a graded glow, and a short soft plume. Never a lit disc
+  or a beam.
+- **Wear:** drive soot and plate-tone wear.
+- **Orbital scene:** one hard sun 50-62° off the lens axis, black space, and a true-scale planet 400 km below.
+  Bloom only on the sun, drives and lights.
 
-**Depth**
-- Deep, shadowed recesses and layered volumes.
-- The overall value is lower than a daylight render.
+## 5. Thumbnail readability (All)
 
-**Dense secondary detail at true scale**
-- Pipe runs with flanges and amber rings, cable trays, catwalks, railings, ladders and stairs.
-- Roof units and vents, door canopies, small machinery, valves, crates and pallets, lamp posts, vehicles.
-- The apron round the main volumes is packed, never bare.
+The game shows each asset as a square icon on #222d35: 80 px for the current job and on hover, 40 px in queues.
 
-**Grit: worn, not dirty**
-- Panel-to-panel tone, dark panel seams, and crisp vertical rust and grime streaks under seams and edges.
-- Soot on roofs, with dark lap lines.
-- A stained plinth.
-- Warm, lower-contrast tonality.
+| Check | Pass |
+|---|---|
+| Icon camera | three-quarter view, az 35, el 30, square crop |
+| Silhouette | bounding aspect ≤ 1.5 and fill ≥ 0.6 (`thumbs.mjs` prints both) |
+| Signature shapes | 1-2 shapes carry the identity (a cab profile, a ring, an arch, a furnace, a dish); markings and small parts are a second layer |
+| Value | a light / dark split, or one bright signature element |
+| Recognition | a blind judge names the asset at 80 px and tells it apart from every sibling at 40 px |
 
-**Light**
-- Warm lit windows and amber lamps on corners, pilasters, doors and the plinth edge.
-- A few work floods.
-- Process glow (molten metal, a reactor, an energy field) bright enough to spill onto nearby ground.
-- The dusk-blue studio.
+## 6. Shared rules (All)
 
-**Texel density** (light surfaces): about 50 px/m or more, and about 70 px/m on hero surfaces. Dark
-structure must also stay crisp at the closest review crop.
+**Rulers.** True-size hardware, never scaled with the asset. A smaller asset gets **fewer** fixtures and
+windows, never smaller ones.
 
-## Ground units
+| Item | Ships and buildings | Ground units |
+|---|---|---|
+| Crew door | 1.0 x 2.0 m leaf in a 1.4 x 2.4 m frame | 0.9 x 1.3-1.4 m door; 0.7-0.8 m hatch |
+| Window | 1.0 m port in a 1.4 m frame (civil portlite 0.86 m); bridge pane 1.0 x 1.2 m at 1.12 m pitch | armoured pane 0.6-0.9 m |
+| Shared by all | rail 1.1 m; deck pitch 3.0 m; port pitch 2.5 m; ISO 20-ft container; figure 1.8 m; the lamp sizes in section 7 | |
 
-- **Finish:** matte paint and visibly used, never glossy.
-  - Dust and dried mud on the lower body, wheels and arches.
-  - Chipped edges and grime in recesses.
-- **Worn and dirty, not a wreck:** the marks (amber, cobalt, unit number), the lamps and the silhouette
-  stay clean and legible. The dark livery is the default.
-- **Surface detail is tiled at the asset's scale:** plate texture, scratches and grit show at close range.
-  The recipe is the ground finish under Materials.
-
-## Palette and livery
-
-- **Generation paint:** off-white thermal paint with weathering, signal-orange hazard and ID markings, small
-  cobalt bands, gunmetal frames, gold / silver MLI foil on sensor boxes, dark ceramic belly tiles.
-  Generate in light paint, because it reconstructs better.
-- **Ships and ground units: the operational livery is dark matte grey** (dark ships are harder to spot).
-  - `livery.js` `dark`: base 0.016, gain 0.065, tint #e3e7eb, marks faint (mark 0.11, markSat 0.05).
-    Warships may keep a little more (destroyer mark 0.18, markSat 0.3).
-  - The two-tone schemes `tone` (warm mid grey) and `bone` (off-white next to charcoal) are opt-in only.
-- **Buildings keep the light paint** (see Buildings).
-- **Hazard paint:** amber (0.93, 0.58, 0.12), not orange.
-- **Hull numbers:** the fleet stencil font. White numbers sit on a dark ID field. The numbers in use are
-  F-402, K-214, CT-4 / CT-7, DD-12 and CV-50.
-
-## Materials
-
-- **Hulls:**
-  - **PATINA tri-planar detail** at one absolute tile (6 m): set `hull`, normalStrength about 0.6 and cavity
-    about 0.2 on remodelled hulls, which carry their own seams.
-  - **Worn finish** (`finish.js`, on by default): `hullWear` (two-scale plate tone), `hullGrit`,
-    `sootStreak` (drive soot), plus GTAO.
-- **Hangar:** set `deck`, plus the same set at 7.3x scale for panel tone that reads from a kilometre.
-- **Scene-built parts:** the full sets `armor`, `orange`, `ceramic`, `foil` and `radiator`.
-- **Ground finish** (`finish.js` `FINISH_PRESETS.ground`; a module sets `finish: 'ground'`):
-  - **Detail layer:** set `groundPaint` at a 1.5 m tile, normalStrength 1.4, roughAmount 0.8, cavity 0,
-    `skipGlass: true`.
-  - **Roughness and glass:** roughness 0.84-1.0 (mean 0.92). Livery `matte: 0.75`, `glassRough: 0.8`.
-  - **Wear and grit:** wear tone at 2.5 / 9 m and grit at 0.35 m. Scratches show lighter.
-  - **Ground layer:** in true albedo, graded from `anchors.ground`.
-    - Dust: full up to 0.4 m and gone by 1.55 m.
-    - Dried mud below 0.75 m.
-    - A thin dust film on up-facing surfaces.
-  - **Baked in the asset's paint script** (template: `vehicle_paint.py` `weather()`):
-    - edge chips with red-oxide primer;
-    - stone chips;
-    - wheelhouse mud;
-    - recess grime and run-off streaks;
-    - a sun-faded roof;
-    - scuffed markings.
-
-    True-colour texels are written with base-colour alpha < 1, so the livery leaves them as they are.
-- **Buildings:** the `building` finish preset. Colour comes from the kit's calibrated paint zones and
-  texture-space layers (see the buildings guide).
-- The prompts are in `prompts.md`; the files are in `Scene3D/assets/materials/` (`manifest.json`).
-
-## Scale model and rulers
-
-**Source of truth:** `Scene3D/src/lib/scale.js`, checked by `tools/scale-check.mjs`, which must pass.
-
-**Size comes from the game,** via hangar slots. One slot is 70,000 m³ of envelope, and each class is
-scaled so its bounding-box volume equals its slots times 70,000.
+**Ship sizes** (one slot is 70,000 m³ of bounding box; `node tools/scale-check.mjs` must print SCALE CHECK PASSED):
 
 | Class | Slots | Length | Crew |
 |---|---|---|---|
 | Fighter | 1 | 71.7 m | about 40 |
 | Corvette | 5 | 108 m | about 350 |
-| Civil ship (cargo) | 4 | 134 m | about 80 |
-| Civil ship (troops) | 4 | 129 m | 750 troops |
+| Civil ship (cargo / troops) | 4 | 134 / 129 m | about 80 / 750 troops |
 | Destroyer | 12 | 203 m | about 2,000 |
-| Carrier | 50 slots of hangar | 900 m | about 20,000 |
+| Carrier | 50 slots of hangar (670 x 155.8 x 84.4 m, 2 m clearance) | 900 m | about 20,000 |
 
-The carrier's hangar (670 x 155.8 x 84.4 m) parks every legal full load with 2 m clearance.
+A class not in the game's roster (`UnitEnum`) needs the user's decision first.
 
-**Adding a class.** "N slots" means the slots the ship occupies when parked. A class that is not in the
-game's roster (`UnitEnum`) is a design decision for the user. To add one:
-- a `CLASSES` entry in `scale.js` (size, label, gameId, role);
-- a module in `src/ships/<id>.js`, registered in `src/ships/index.js`;
-- the hangar check (`carrierLoads`) if carriers can park it;
-- its rows in `audit.mjs` and in the lighting standard.
+**Palette** (linear RGB unless marked):
 
-**Human-scale rulers**, identical on every asset and never scaled:
-- crew door: a 1.0 x 2.0 m leaf in a 1.4 x 2.4 m frame;
-- port: 1.0 m glass in a 1.4 m frame (0.86 m portlites on civil ships);
-- bridge pane: 1.0 x 1.2 m at 1.12 m pitch;
-- deck pitch 3.0 m and port pitch 2.5 m;
-- rail 1.1 m;
-- ISO 20-ft container;
-- crew figure 1.8 m.
-
-A small craft gets fewer windows, never smaller ones.
-
-## Lights
-
-This is a summary; `lighting-standard.md` (F1-F17, R1-R12) is authoritative.
-
-**The signature look is alive, not neon:** short, hard-edged, saturated amber slits at block corners and in
-real recesses, with a faint warm spill.
-- A modest peak, colour pre-saturated about 1.3x, a halo about 0.1 of the core, no white core, and about
-  3 px wide at the hero view.
-- Never on grilles, louvres or radiators, never within 1.5 m of glass, and never grazing a face.
-
-| Fixture | Size | Colour | Use |
-|---|---|---|---|
-| Corner / recess slit | 0.6-1.8 m x 0.14-0.2 m (0.26-0.30 m on ships of 200 m and more) | amber | block corners, joints, real recesses |
-| Pin lamp | 0.2-0.3 m | amber (up to 15 % white) | block corners and deck edges, never a lone dot on open plating |
-| Door lamp | 0.6 x 0.14 m bar | amber | one per crew door: the human ruler |
-| Beacon | 0.26-0.30 m, slow pulse of 3-4 s | amber | 2-4 per ship under 250 m, clear of antennas |
-| Nav lights | 0.4 m | red port, green starboard, white stern and strobes | nothing else goes in `lights[]` |
-| Drive status | 0.2 m pins or a short bar | cool blue-white | beside the white stern light, never through it |
-| Window glow | real kit glass only, 0.86-1.0 m | warm, per compartment | crew spaces only |
-| Bridge / cockpit glass | fleet panes | uniform, about 0.6-0.7x the lit cabins | bridges run dark |
-
-**Fixture sizes:** each fixture has one physical size on every asset, never scaled with the hull.
-
-**Budgets grow with class.** These are the audited ranges:
-
-| Class | Lights |
+| Role | Value |
 |---|---|
-| Fighter | 26-34 |
-| Corvette | 115-145 |
-| Civil ship | 160-195 |
-| Destroyer | about 200-250 |
-| Carrier exterior | 550-800, plus the hangar |
+| Light panel (buildings) | 0.60 / 0.60 / 0.585; second tone 0.47 |
+| Dark frame (gunmetal) | 0.040 / 0.042 / 0.046 |
+| Concrete | 0.30 |
+| Cobalt band | 0.045 / 0.15 / 0.40 |
+| Hazard amber (sRGB) | 0.93 / 0.58 / 0.12 (hue about 35°); prompt it as "amber", never "orange" |
+| Window glow | 0.52 / 0.42 / 0.28 |
 
-A new class interpolates its budget by visible hull area and is checked in `audit.mjs`. Small craft (under
-about 100 m) are lit only by authored fixtures.
+Other notes:
+- Generation paint for image models is off-white thermal paint with amber and cobalt marks, gunmetal frames,
+  gold / silver foil on sensor boxes and dark ceramic belly tiles. Generate light, because light paint
+  reconstructs better.
+- Livery schemes (`livery.js`): `dark` is the default for ships and ground units; `civil` is for cargo ships;
+  `tone` and `bone` are opt-in only.
 
-**Windows**
-- Real kit glass in crew spaces only.
-- Lit share: warships about 0.45, civil ships about 0.55.
-- No compartment edge splits a port.
-- Bridges and fighter-class ports run dark.
+**ID codes.**
+- Fleet stencil font. White numbers sit on a dark ID field, and never read as windows at oblique angles.
+- Every asset has a code (class letters and number, e.g. DD-12, V-31, SM-1), listed in `assets.md`.
 
-**At range:** lights thin by rank and fade by true area.
+## 7. Lights
 
-**Order:** the marks rise fighter < corvette < civil < destroyer < carrier, at hero, at range and in the
-lineup.
+**All:**
+- The signature is short, hard-edged, saturated amber slits at block corners and in real recesses: alive, not
+  neon.
+- No white core at the hero view, and radiance 0.9-2.0.
+- Never on grilles, louvres or radiators, never within 1.5 m of glass, never grazing a face.
+- Each fixture has one physical size everywhere.
+- Warm, lit windows only on real glass in crew spaces.
 
-**Tools:** `Scene3D/tools/lights/`.
+**Ships:** `lighting-standard.md` applies in full. Pass:
+- `node tools/lights/audit.mjs <ship>` reports PASS;
+- `cellcut.mjs` finds 0 split ports;
+- `marks.py` steps are ≥ 1.8x / 1.2x / 1.1x / 1.5x up the class order, and the fighter shows ≤ 35 marks at
+  hero and ≤ 18 at dist 5.
 
-## Look-dev lighting
+**Ground units:**
+- Authored lamps only (about 7): covered slits of 0.16 x 0.05 m at the kit lenses.
+- No round headlamps, no light bars, and no lit glass.
+- Red tail lamps and the convoy lamp are allowed.
 
-- **Studio** (single-asset default): key 2.6, fill 0.8, env 0.55, rim 3.0, exposure 1.4, Neutral tone map,
-  lightscape gain 1.15. Buildings use the dusk-blue studio at the concept's camera.
-- **Orbital** (fleet): one hard sun 50-62° off the lens axis, raking. Black space, and a true-scale planet
-  400 km below. Bloom only on the sun, drives and lights.
-- **Drives:** a white-hot throat, a dark bell wall with a graded glow, and a short soft plume. Never a lit
-  disc or beam.
+**Buildings** (generated by `colony.js` from the building's DATA):
 
-## Geometry language
+| Fixture | Spec |
+|---|---|
+| Corner / recess slit | 0.18 m wide x 0.6-1.8 m, amber, radiance about 1.6 |
+| Door lamp | 0.6 x 0.14 m over every crew door |
+| Pin lamp | 0.3 m amber, at block corners, plinth corners and edges |
+| Beacon | 2-3, 0.3 m, pulsing every 3.6 s |
+| Obstruction | red 0.4 m on stacks and masts over 5 m; these are the only `lights[]` entries |
+| Windows | about 55 % lit, warm |
+| Floods | 2-4, aimed away from the camera |
+| Process glow | molten metal, a reactor or an energy field: bright enough to spill onto nearby ground |
 
-- **Hull:** a loft of stations with planar facets, 4-10 cm bevels and exact boolean recesses (glazing
-  bands, door bays, vents, radiator bays, hangars).
-- **Superstructure:** tiered and readable in silhouette from the side.
-- **Parts:** drive bells (S/M/L/XL) and turrets (S/M/L) from the procedural kit, at kit size times one scale
-  per class.
-- **Buildings:** parametric volumes on the shared building kit (`bkit.py`, `ckit.py`), with 2-6 cm chamfers,
-  weighted normals, and every opening cut exactly.
-- Everything is symmetric unless the design says otherwise.
+## 8. Review protocol (All)
+
+**Views** (`node tools/shoot.mjs "<query>" out.png --w 1600 --h 1000`; compare before and after at the same
+resolution):
+
+| Type | Views |
+|---|---|
+| Ships | icon; hero (az 35, el 18); close (az 50, el 14, dist 0.72); range (dist 2.5 and 5); stern quarter; broadside; lineup (`mode=lineup`); scene (`mode=fleet&shot=hero`) |
+| Ground units | icon; hero; close; lineup |
+| Buildings | icon; the concept camera (`compare.mjs`); 3 close-ups (`close=…&dist=`) of the hero element, the main process element and a wall; orbital ones also in the scene (`mode=fleet&shot=spaceport`) |
+
+**Checklist.** Each item is pass or fail, with the evidence logged per iteration.
+
+| Check | Tool | Pass |
+|---|---|---|
+| Quality bar | the close views, at 1:1 | every section 2 item holds |
+| Concept fidelity (concept-led assets) | `tools/buildings/compare.mjs` + blind judge | "match" on all five qualities (section 2) |
+| Paint | `python3 tools/buildings/paint-check.py <concept> <render>` | light luminance 0.9-1.1x the concept's; hue within 10° |
+| Type spec | section 4 table and notes | every row holds |
+| Thumbnail | `node tools/thumbs/thumbs.mjs` | section 5 |
+| Texel density | `remodel.py` px/m report | section 4 |
+| Geometry vs blueprint | `cmeasure.py --compare` (buildings), `hulls/compare.py` (ships) | silhouette within 0.3 m |
+| Scale | `node tools/scale-check.mjs` | passes |
+| Lights | section 7 (ships: the audit tools) | passes |
+| Package | `node tools/build-artifact.mjs` (runs `check-package.mjs`) | all tiers OK |
+| Package as served | `node tools/pkg-diff.mjs --csp 1 --units 16 <view>` | desktop ≤ 2 %, phone ≤ 6 %, ≤ 16 samplers per material |
+| Phone | `node tools/phone-check.mjs <view>` | section 4 phone row |
+| Published | open the published preview and look at every changed asset | matches the local renders |
+
+## Where to start
+
+| Asset type | Guide | Also read |
+|---|---|---|
+| Ship | `Scene3D/tools/blender/hulls/README.md` + `README-<ship>.md` | `lighting-standard.md` |
+| Ground unit | `Scene3D/tools/blender/hulls/README-vehicle.md` | `briefs/vehicle.md` |
+| Colony building | `Scene3D/tools/blender/buildings/BUILDING-GUIDE.md` (with `README-colony.md` and `README-bkit.md`) | `briefs/buildings.md` |
+| Shipyard / spaceport | `README-shipyard.md` / `README-spaceport.md` in the same folder | `briefs/shipyard.md`, `briefs/spaceport.md` |
+| Any | `kits.md` (parts), `prompts.md` (prompts that worked), `lessons.md` (gotchas), `assets.md` (codes and status) | |

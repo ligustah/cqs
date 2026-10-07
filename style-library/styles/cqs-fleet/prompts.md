@@ -9,7 +9,7 @@ into every concept prompt.
 > Photorealistic spacecraft in a credible near-future 'naval-industrial' design language, as in a
 > high-end aerospace concept photograph: faceted hard-surface hull with chamfered edges and layered
 > armour plates, off-white thermal-control paint with realistic weathering, scuffs and panel-to-panel
-> colour variation, signal-orange hazard and identification markings and stencilled hull numbers like on
+> colour variation, amber hazard and identification markings and stencilled hull numbers like on
 > real naval ships, small painted cobalt-blue identification bands, bare brushed-metal and gunmetal
 > structural frames, gold and silver multi-layer insulation blankets on sensor and electronics boxes,
 > dark ceramic heat tiles on the belly, radiator panels, RCS thruster quads, antennas and hand rails at
