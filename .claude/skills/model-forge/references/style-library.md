@@ -47,9 +47,12 @@ Record a correction in the same turn the user makes it.
    - what was wrong;
    - the fix;
    - the rule, and where it went.
-2. **Promote the rule** into `STYLE.md`, if it applies beyond this one asset. Write it as a rule with
-   its reason, e.g. "A small asset gets fewer windows, never smaller ones: half-size ports made the
-   fighter read 1.5x too big." If it changes a number in a detailed standard, update that file too.
+2. **Promote the rule** into `STYLE.md`, if it applies beyond this one asset. `STYLE.md` describes what
+   it takes to get an asset right, as positive, measurable rules in the right section. It holds no history:
+   no correction numbers, no list of past mistakes, no "the old version did X". Example: "A small asset
+   gets fewer windows, never smaller ones." The history stays in `corrections.md`. Rewrite or merge the
+   existing rules so the section stays a clean specification, and update any detailed standard that a
+   changed number affects.
 3. **Record praise as a constraint** ("keep X"), so later passes do not strip what the user liked.
 4. **Ask when a correction conflicts with an existing rule.** Do not silently override it. When the user
    decides, mark the old rule superseded, with the date.

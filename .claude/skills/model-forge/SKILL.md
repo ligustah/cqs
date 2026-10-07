@@ -158,8 +158,9 @@ parameter defaults that worked, timings, gotchas (symptom, cause, fix) and a mea
 Whenever the user corrects, rejects, prefers or praises something, record it **in the same turn**:
 1. **Log it** in `style-library/styles/<id>/corrections.md`: date, asset, the user's words (verbatim,
    short), what was wrong, the fix, and the rule it implies.
-2. **Promote it** to `STYLE.md` as a constraint with its reason, if it applies beyond this one asset.
-   This covers:
+2. **Promote it** to `STYLE.md` as a positive rule (what an asset needs to be right, not what went wrong),
+   if it applies beyond this one asset. Keep `STYLE.md` a clean specification: merge or rewrite rules
+   rather than appending, and leave the history in `corrections.md`. This covers:
    - a preference ("keep the dark livery as the default");
    - a dislike ("not neon");
    - a scale rule ("a small asset gets fewer windows, never smaller ones");
