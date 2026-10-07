@@ -323,7 +323,8 @@ class Build:
             self.add(lib.bm_loft([(chamfer_rect(s0[0], s0[1], ch), 0.0), (chamfer_rect(s1[0], s1[1], ch), L)], closed=False), mat=mat, bevel=bevel)
 
     def tube(self, path, r, mat='pipe', n=12, fillet=None, caps=True, bevel=0.0):
-        p = lib.fillet_path([vv(q) for q in path], r * 2.2 if fillet is None else fillet, 4) if len(path) > 2 else [vv(q) for q in path]
+        # v6 r8: 8 segments per bend on mains over 0.5 m (4 kinked visibly at the 1:1 close-up: judge B)
+        p = lib.fillet_path([vv(q) for q in path], r * 2.2 if fillet is None else fillet, 8 if r > 0.5 else 4) if len(path) > 2 else [vv(q) for q in path]
         self.add(lib.bm_tube(p, r, n, caps), mat=mat, bevel=bevel, sharp=60)
 
     def lathe(self, prof, base=(0, 0, 0), mat='panel', n=32, closed=False, bevel=0.0, a0=0.0, a1=None, sharp=40):

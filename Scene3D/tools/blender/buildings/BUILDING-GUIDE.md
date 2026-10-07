@@ -130,6 +130,10 @@ giving the zone's extent (x / z range), so collisions can be checked by reading.
   up the cone, a dark plated base band under the light drum. Tap-hole bays must move off the diagonals with the legs
   (`taps_a0`). The concept's stacked bands (dark top / light cone / dark bosh / thin glow slit / light drum / dark base)
   are the furnace's read; check them on the preview.
+- **The crown is stepped dark drums** `[mill v6 r8]`: drum, ring deck, narrower drum, dark cap, uptakes rising
+  straight beside the drum and turning in to a header. A light cap inside looping uptakes read as "a lantern".
+- **Lamps everywhere small** `[mill v6 r8]`: plinth pins every ~4.6 m, pins up the hero's legs every 6 m, lamps on
+  every ring deck; a few big floods are not the concept's "many small warm lamps".
 - **Attached annexes, not cabins** `[mill v6 r7]`: 2-3 larger light blocks (8-15 m) against the hero and the sheds
   (a 15 m annex under the hero's elbow pipe, a 10 m one beside it, one on the shed's end by the process bay), never a
   free-standing control house on the apron.
@@ -211,6 +215,11 @@ lessons, REMODEL-PROGRESS.
 | Big structural members look like a blocky mosaic up close | they share the main atlas with the lattice (13 px/m) | put them in the crisp set (frame2 / its own SPLIT set) | mill v6 r5 |
 | Window looks like a flat cream card | lit card flush with the wall, no frame | `window_frame` + glass 10 cm in | mill v6 r5 |
 | A slab edge reads thin | dark 1.6 m body under a 0.34 m light kerb | `plinth(h=2.0, kerb_h=1.1)` | mill v6 r7 |
+| "No lit chamfer line on structural steel" (r2, r5, r7 judges) although chamfers were added | the chamfers exist (flat-shaded debug shot shows them) but dark matte albedo + one roughness hides the highlight; chipped wear only marks a few edges | `cpaint` continuous edge line: convex curvature (0.05-0.18) lightens dark steel 55 % toward bare steel, roughness -0.25, metal +0.5; CHECK: render the part flat (`remodel.py --preview`) and textured (`render-glb.mjs --w 2400`) side by side and crop an edge | mill v6 r8 |
+| Streaks and joints "run diagonally" on a cone (r7 judge B) | the paint's arc coordinate was angle x the texel's own radius, which drifts in angle as the cone narrows | `axis_r`: angle x a fixed radius (generators stay straight up the slant); CHECK: the painted joints run parallel to the cone's silhouette in the close view | mill v6 r8 |
+| A big pipe bend kinks at 1:1 | 4 fillet segments per bend; a closed ring capped at its joint | 8 segments for r > 0.5 m (bkit `tube`); closed rings `caps=False` | mill v6 r8 |
+| A shed roof shows dark stripes along the ridges | full-length louvred monitors | half-length, lower monitors (`monitor` (5.6, 14, 1.6, 0.5)) | mill v6 r8 |
+| A parameter silently not applied | an edit appended a key inside a trailing comment (`# ... 'monitor': ...`) | after editing a parameter dict, print the effective value (`python -c 'import ckit; print(ckit.SHED_V6[...])'` in the venv) | mill v6 r8 |
 | Rails / braces glow orange at 4096 only | a tiny emissive island packed inside a stacked swatch | stack lamp lenses too; check the final size | mill v5 |
 | Glow box reads as a solid orange slab or sticker | glow box thicker than 0.1 m, or square over a round surface | thin glow boxes for runners and openings only; emissive paint for round hot surfaces | mill v4-v5 |
 | Black scaffold round a thin cylinder | a lattice tower around the hero shape | broad light hero shape in front, slim posts, lattice only at the top | mill v5 |

@@ -30,7 +30,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 BLENDER = os.path.dirname(HERE)
 SCENE3D = os.path.abspath(os.path.join(BLENDER, '..', '..'))
 REPO = os.path.abspath(os.path.join(SCENE3D, '..'))
-OUT = os.path.join(SCENE3D, 'assets', 'parts-colony')
+OUT = os.environ.get('REMODEL_OUT') or os.path.join(SCENE3D, 'assets', 'parts-colony')   # v6: REMODEL_OUT for experiments
 sys.path.insert(0, BLENDER)
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(BLENDER, 'hulls'))
@@ -80,7 +80,7 @@ UV_WEIGHT = {'frame': 0.45, 'grate': 0.35, 'pipeDark': 0.6, 'pipe': 0.5, 'louvre
 STACK_ZONES = {'frame', 'frame2', 'grate', 'pipeDark', 'pipe', 'soot', 'refractory', 'rust', 'interior', 'louvre',
                'amber', 'hazard', 'roof'}
 STACK_AREA = 2.0
-ANGLE = 55              # smart projection angle limit (degrees)
+ANGLE = float(os.environ.get('REMODEL_ANGLE', 55))   # smart projection angle limit (degrees)
 SHAPE = 'CONCAVE'       # pack_islands shape method
 STACK_NARROW = 0.25     # any zone: islands narrower than this (m; ribs, trims, rungs) are stacked too
 # v5: lamp lenses ARE stacked (one emissive swatch): left as tiny islands, the concave packer dropped them into gaps

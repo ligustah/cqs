@@ -216,7 +216,7 @@ def model(B):
     """v2: composed from fal components (assets/parts-colony: blastFurnace, skipGallery, bandedStack x2, shedSegment x2,
     pourBay; README-colony.md catalogue) on the shared kit's plinth, with parametric annexes, pipes, dressing, lights."""
     W, D = SPEC['footprint']
-    K.plinth(B, W, D, h=2.0, kerb_h=1.1, chamfer=2.4, slab=4.6, lamp_pitch=9.0,   # r7: a thick light slab edge centre=(0.0, -4.0),   # v6: lamps every 9 m (concept)
+    K.plinth(B, W, D, h=2.0, kerb_h=1.1, chamfer=2.4, slab=4.6, lamp_pitch=4.6,   # r8: the concept's dense lamp line   # r7: a thick light slab edge centre=(0.0, -4.0),   # v6: lamps every 9 m (concept)
              markings=[([(37.5, 40.0), (37.5, -48.0)], 0.2, 'frame2'), ([(-38.0, 39.5), (38.0, 39.5)], 0.2, 'frame2'),
                        ([(30.0, 30.0), (39.0, 30.0)], 0.35, 'hazard'), ([(30.0, -2.0), (39.0, -2.0)], 0.35, 'hazard')],
              grates=[(37.0, -16.0, 0.8, 3.0), (37.0, 32.0, 0.8, 3.0), (-2.0, 34.0, 3.0, 0.8)],
@@ -243,12 +243,13 @@ def model(B):
     # gas-cleaning annex on the furnace's -X side, under the downcomer's elbow (v5: narrow and low beside the broader
     # furnace plinth; the concept's light block with the big elbow pipe on its roof), the dust catcher behind
     # r7: the concept's tall light annex under the big elbow pipe (15 m)
+    # r8 (coordinator: plain tall blocks, dark frames, light panels, one window row at most)
     K.block(B, (-37.0, 0.0, 30.0), (6.0, 15.0, 15.0),
-            sides={'+z': {'bay': 3.0, 'storey': 6.5, 'windows': [0, 1], 'win': (1.2, 1.2), 'doors': [3.0]},
-                   '+x': {'bay': 5.0, 'storey': 6.5, 'windows': [1], 'win': (1.4, 1.2)},
-                   '-x': {'bay': 5.0, 'storey': 6.5, 'windows': [1], 'win': (1.4, 1.2), 'doors': [7.5], 'louvres': [(11.0, 7.5, 2.0, 2.0)]},
-                   '-z': {'bay': 3.0, 'storey': 6.5}},
-            roof={'parapet': 0.6, 'units': [('vent', 1.0, -5.0, {}), ('antenna', -1.5, 6.0, {'h': 5.0})]}, frame='frameL')
+            sides={'+z': {'bay': 3.0, 'storey': 7.5, 'windows': [], 'doors': [3.0]},
+                   '+x': {'bay': 5.0, 'storey': 7.5, 'windows': [1], 'win': (1.2, 0.9)},
+                   '-x': {'bay': 5.0, 'storey': 7.5, 'doors': [7.5], 'louvres': [(11.0, 7.5, 2.0, 2.0)]},
+                   '-z': {'bay': 3.0, 'storey': 7.5}},
+            roof={'parapet': 0.6, 'units': [('vent', 1.0, -5.0, {}), ('antenna', -1.5, 6.0, {'h': 5.0})]})
     K.ladder(B, (-40.4, 0.0, 26.0), (-1, 0, 0), 15.0)
     K.block(B, (-35.5, 0.0, -2.0), (7.0, 7.0, 8.0),
             sides={'+z': {'bay': 3.5, 'doors': [3.5], 'windows': []}, '+x': {'bay': 4.0, 'windows': [0], 'win': (1.2, 1.0)}},
@@ -270,7 +271,7 @@ def model(B):
     # volumes instead of over an empty apron
     # r4 (judges: "the boxy office in front of the furnace"): a LOW casthouse block (7 m, the concept's low light block
     # between the furnace and the pour bay): doors, a roller door and louvres, two small windows, no office strip
-    K.block(B, (8.0, 0.0, 34.0), (21.0, 7.0, 9.0), frame='frameL',
+    K.block(B, (8.0, 0.0, 34.0), (21.0, 7.0, 9.0),
             sides={'+z': {'bay': 5.25, 'storey': 7.0, 'windows': [], 'doors': [2.6, 18.4], 'rollers': [(10.5, 5.0, 5.6)],
                           'louvres': [(6.0, 4.4, 2.0, 1.4), (15.0, 4.4, 2.0, 1.4)]},
                    '+x': {'bay': 4.5, 'storey': 7.0, 'windows': [0], 'win': (1.2, 1.0), 'doors': [4.5]},
@@ -311,15 +312,15 @@ def model(B):
     # r7 (judges: merge the small cabins into fewer, larger attached blocks): one light casthouse block across the furnace
     # front between the hugging legs (on the furnace plinth), a 10 m annex block on the -X side, and an annex attached to
     # the shed's front end beside the pour bay (it replaces the free-standing control house)
-    K.block(B, (FX, 3.0, FZ + 13.3), (12.0, 5.5, 4.6), frame='frameL',
+    K.block(B, (FX, 3.0, FZ + 13.3), (12.0, 5.5, 4.6),
             sides={'+z': {'bay': 4.0, 'storey': 5.5, 'doors': [2.0, 10.0], 'rollers': [(6.0, 3.2, 3.6)], 'windows': []},
                    '+x': {'bay': 2.3, 'storey': 5.5}, '-x': {'bay': 2.3, 'storey': 5.5}},
             roof={'parapet': 0.4, 'units': [('vent', -3.0, 0.0, {}), ('hvac', 2.5, 0.0, {'w': 2.4, 'd': 1.6, 'fans': 1})]})
-    K.block(B, (-37.0, 0.0, 17.8), (6.0, 10.0, 8.4), frame='frameL',
-            sides={'+z': {'bay': 3.0, 'storey': 5.0, 'doors': [3.0]}, '+x': {'bay': 4.2, 'storey': 5.0, 'windows': [1], 'win': (1.2, 1.0)},
+    K.block(B, (-37.0, 0.0, 17.8), (6.0, 11.0, 8.4),
+            sides={'+z': {'bay': 3.0, 'storey': 5.5, 'doors': [3.0]}, '+x': {'bay': 4.2, 'storey': 5.5},
                    '-x': {'bay': 4.2, 'storey': 5.0, 'louvres': [(4.2, 6.5, 2.0, 1.6)]}},
             roof={'parapet': 0.4, 'units': [('hvac', 0.0, 0.0, {'w': 2.2, 'd': 1.6, 'fans': 1})]})
-    K.block(B, (26.0, 0.0, 30.8), (13.0, 8.0, 6.4), frame='frameL',
+    K.block(B, (26.0, 0.0, 30.8), (13.0, 8.0, 6.4),
             sides={'+z': {'bay': 4.33, 'storey': 4.0, 'doors': [2.2, 10.8], 'windows': [1], 'win': (1.6, 1.0), 'louvres': [(6.5, 1.6, 2.0, 1.4)]},
                    '+x': {'bay': 3.2, 'storey': 4.0, 'windows': [1], 'win': (1.4, 1.0)}},
             roof={'parapet': 0.4, 'units': [('hvac', -3.0, 0.0, {'w': 2.6, 'd': 1.8}), ('vent', 3.0, 0.0, {})]})
@@ -334,7 +335,14 @@ def clutter(B):
     # --- glow spill: the hearth band lights the furnace foot and casthouse roof; the runner lights the portal floor
     # r2: 900 cd / 34 m washed the whole furnace foot and the shed gable orange: a local spill only
     # r5: lower and weaker: at 13 m it painted the light hearth drum peach; the concept lights the ground and the legs
-    B.R.spill((FX + 11.0, 4.5, FZ + 11.0), color='#ffa048', intensity=110.0, distance=14.0)   # r6: yellow-orange, on the ground
+    B.R.spill((FX + 11.0, 4.5, FZ + 11.0), color='#ffa048', intensity=220.0, distance=18.0)   # r6/r8: yellow-orange, on the ground
+    B.R.spill((FX + 9.0, 19.5, FZ + 9.0), color='#ffa048', intensity=90.0, distance=10.0)     # r8: lights the steel under the bustle
+    # r8 (judge A: "the concept's many small warm wall lamps are mostly missing"): pins up the furnace legs' outer corners
+    for (sx, sz) in ((1, 1), (-1, 1), (1, -1)):
+        for y in (8.0, 14.0, 20.0):
+            f = (y - 3.0) / 23.6
+            b = 8.8 + 0.6 * f + (3.6 - 0.8 * f) / 2 + 0.12
+            B.R.pin((FX + sx * b, y, FZ + sz * b))
     B.R.spill((PB_X + 8.6, 2.6, PB_Z + 4.0), color='#ffa048', intensity=260.0, distance=18.0)   # r7: the pour lights the apron
     # --- +X apron along the shed (x 33-40, z -48..0): a pipe cluster on stools at the edge, sheds, pallets, skids
     K.pipe_bundle(B, [(38.6, 0.0, -45.5), (38.6, 0.0, -26.0)], n=3, r=0.22)

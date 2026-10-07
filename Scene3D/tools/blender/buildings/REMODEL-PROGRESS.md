@@ -184,3 +184,28 @@ colour); light 0.94x, hue 27.3. Evidence $S/mill/r6-hearth.png.
 - steel_mill.py: the control house and the furnace-plinth mini blocks replaced by one 12 m casthouse block across
   the furnace front, a 10 m annex on the -X side (the 15 m annex under the elbow), an annex on the shed's front end;
   the runner 3.6 m wide with a 0.9 m core, runner spill 260 cd.
+Round 7 result (14:54-15:15): 176.4k tris; paint-check light 0.94x, all 0.99x, hue 27.1. Phone (build-artifact +
+phone-check on r7): `steel_mill ok ready 6.1s fetched 6.1 MB tris 163k tex 49 MB heap+gpu 134 MB`; package check 57
+tiers OK. Evidence $S/mill/r7-blind.jpg, r7-closesheet.jpg.
+Checklist review r7: S1 PASS (bands, slit, ring decks, elbow, annex); W1 / W2 PASS; L1 PASS (saturated slit, runner
+lights the apron); G1 PASS; G2 FAIL-ish (roofs clean light grey, judge A "plastic"); D2 PASS-ish (annexes, but the
+front-left reads as separate boxes); T3 FAIL (no lit chamfer line: the 3rd time); phone tris 163k FAIL; heap / fetched
+PASS.
+r7 judges: both NOT YET. A: silhouette MATCH, mood MATCH; grit NO (clean plastic roofs, white annexes), density NO
+(bare tower legs; crown an open cage), warmth NO (little spill, few small wall lamps). B: shadows and openings pass;
+bustle bend kinks; no lit chamfer line on I-columns / gantry / chords; diagonal streaks on the upper cone; 1 px shed
+seams; flat crane girder and ladle; edge wear absent. Coordinator: crown, merge front-left annexes, tighter apron,
+lighter roof louvre bands; root-cause the chamfer and cone-skew issues.
+
+### v6 round 8 (started 15:40)
+- Root causes: chamfer debug (flat preview vs textured, 2400 px crop of the pour bay, $S/mill/dbg-chamfer.jpg): the
+  bevels exist; the dark matte paint hid them -> cpaint continuous edge line. Cone skew: arc coordinate drift ->
+  `axis_r`. Bend kinks: 8 fillet segments for big pipes, the bustle ring uncapped.
+- Furnace: third catwalk ring (35 m), six risers, straight uptakes into the header, a dark cap; segments 52.
+- Shed: the r5 'monitor' edit had landed inside a comment (never applied); now half-length low monitors; roofs a step
+  darker with per-sheet tone 0.2. Crane girder plated with bolts, chips, mottling; ladle plates + slag lip.
+- Building: plain dark-framed annexes (one window row at most), dark frames on the casthouse and the shed-end annex;
+  plinth pins every 4.6 m, pins up the furnace legs; hearth spill 220 cd + a 90 cd spill under the bustle.
+- Not changed: the +X apron width (the portal and its runner reach x 38.4 of the 40 m edge; a narrower plinth would cut
+  them) -> left as is, noted under "still different".
+- Stacks 32 segments (phone budget).
