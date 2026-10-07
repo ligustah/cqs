@@ -294,3 +294,26 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
     furnace's lamp lenses into the 'frame' swatch, and every rail and brace sampling that swatch glowed orange in the
     final build (the 2048 reviews were clean by chance). Lamp lenses are stacked now (one emissive swatch); check the
     final, not only the review size, for stray emissive texels.
+68. **Match the concept's lens before judging anything.** The mill's "concept camera" (az 52, el 22, fov 38) read 10
+    degrees higher and more distorted than the concept; the concept is a long-lens view (fov ~22). Measure the plinth
+    edges, but AI concepts are not consistent projections: settle the elevation by eye between the plinth slopes and the
+    roof read.
+69. **Grit must be sized for the viewing distance.** Ten rounds of fine weathering (seams, 9-22 cm streaks, chips) never
+    read at the concept camera, where a panel is ~6 px. What reads: per bay x storey value variation, 3-10 m soft
+    streaks, a top-down soot gradient on tall elements, base grime to 2 m, metre-scale stains on the slab; the fine
+    layers are for the close-ups.
+70. **A hero structure must be compact.** Raking legs splayed out and posts converging to a high square deck read as "a
+    derrick / open A-frame" round a bare cone. The concept's furnace is mostly enclosed: plated legs on the diagonals
+    hugging the drum, posts following the bell, ring decks, risers, a stepped dark crown, a dark base band.
+71. **When a defect returns after a fix, debug it instead of adding more.** "No lit chamfer line" came back three times
+    after chamfers were added: a flat-shaded debug render proved the bevels existed and the dark matte paint hid them;
+    a continuous curvature edge line in the paint fixed it. Likewise the diagonal cone streaks were the paint's arc
+    coordinate drifting, not UVs.
+72. **Glow colour saturates only at moderate radiance.** High radiance on an orange tone-maps to salmon / pink; a red
+    spill on light paint reads pink. Yellow-orange (#ffa03c) at ~1.2 on glow boxes, the emissive paint carrying the deep
+    orange, and spill lights the same hue, low and weak.
+73. **Small props need small-scale paint.** Fixed-pitch plate seams and streak columns made a ladle and a booth read as a
+    wooden barrel and a hut; under ~3 m use one or two welded seams, mottling and metal roughness.
+74. **Blind judges find what self-review misses.** From round 2 on, the two fresh judges (vibes, blind; 1:1 quality)
+    named the derrick silhouette, the scattered props, the salmon glow, the smeared streaks and the uniform roughness
+    before self-review did; run them every round from round 2.

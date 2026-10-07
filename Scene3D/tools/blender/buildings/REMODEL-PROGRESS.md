@@ -229,3 +229,10 @@ Checklist review r9: S1 / C2 / C3 / W1 / W2 / L1 / L2 / I1 PASS; G1 FAIL (bars),
 - Bustle a true torus; three hot-blast drops; shed pilaster lamps in three rows; roofs darker with per-bay tone;
   roof exhaust ducts on saddles; stack base pipework, valves, cabinets; runner core 1.4 m; plinth stains stronger;
   furnace main-set UV weights (frame 6.4 -> 12.0 px/m at 2048).
+Round 10 result (16:08-16:30): 182.1k tris; px/m at 2048: furnace frame 12.1 (main set, UV_W), shell 36.4, frame2 24.9,
+pour hot 40.1 (was 21.8); paint-check light 0.84x (the macro layer darkened; FAIL) -> r11 key 0.95.
+Checklist review r10: G1 PASS (soft-sided columns), G2 PASS (darker roofs, per-bay tone, soot), G3 PASS-ish (stains
+read at the concept camera near the furnace), macro grit visible on the furnace, stacks and shed walls (soot tops);
+W1 FAIL (0.84x); L1 runner core read pastel pink (FAIL) -> r11.
+### v6 round 11 (16:40-16:55, pourBay + build): runner #ffa03c at 1.2; key 0.95. paint-check light 0.90x, all
+0.96x, hue 26.7 (c 23.2): W1 PASS. Evidence $S/mill/r11-blind.jpg, r11-closesheet.jpg. Judges requested.

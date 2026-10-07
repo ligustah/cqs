@@ -1211,10 +1211,11 @@ POUR_V5.update({
 # off the shed face (xb -2.6 with the part at x 28: dark plates in front of the light cladding = a deep dark interior),
 # a full dark roof deck behind the lattice girder, the crane under it; the tapping platforms move forward with the wall
 POUR_V6 = dict(POUR_V5)
-POUR_V6.update({'xb': -2.6, 'xf': 6.4, 'roof': True, 'tap_dx': 5.8, 'tap_upper': False, 'runner_glow': 1.5,   # r8: 3.2 read pink-white
+POUR_V6.update({'xb': -2.6, 'xf': 6.4, 'roof': True, 'tap_dx': 5.8, 'tap_upper': False, 'runner_glow': 1.2,   # r8: 3.2 read pink-white
                 'crane_x': 3.6, 'ladle_x': 4.4, 'rails': (7.2, 0.6, 7.4), 'control': (1.6, 5.8, -6.4, -2.2, 3.8),
                 # r2: the runner on the apron in front of the portal, along the wall (the concept's long glowing trough)
-                'runner': (0.0, 24.0, 0.0, 3.6), 'runner_at': (8.9, -9.0, -90.0), 'runner_core': 1.4})
+                'runner': (0.0, 24.0, 0.0, 3.6), 'runner_at': (8.9, -9.0, -90.0), 'runner_core': 0.8,
+                'runner_color': '#ffa03c'})      # r11: the hearth's yellow-orange (#ffb050 at 1.5 read pastel pink on the wide core)
 
 
 def pour_bay(B, P=POUR):
@@ -1348,7 +1349,7 @@ def pour_bay(B, P=POUR):
         for x in (rx0 + 2.0, rx1 - 2.0):
             for s in (-1, 1):
                 B.box((0.25, 0.9, 0.12), at=(x, 1.0, rz + s * (rw / 2 + 0.06)), mat='frame', bevel=0.0)
-        B.R.glowbox(B.world(((rx0 + rx1) / 2, 1.45, rz)), (rx1 - rx0 - 1.2, 0.03, P.get('runner_core', 0.32)), color='#ffb050', radiance=rgl, roty=math.radians(rar))   # the hot core of the stream only: the crust shows round it
+        B.R.glowbox(B.world(((rx0 + rx1) / 2, 1.45, rz)), (rx1 - rx0 - 1.2, 0.03, P.get('runner_core', 0.32)), color=P.get('runner_color', '#ffb050'), radiance=rgl, roty=math.radians(rar))   # the hot core of the stream only: the crust shows round it
         B.box((3.0, 1.9, 3.2), at=(rx0 - 1.2, 1.12, rz), mat='frame2', bevel=0.06)
         B.box((2.6, 0.12, 2.8), at=(rx0 - 1.2, 2.1, rz), mat='hot', bevel=0.0)
         B.box((3.2, 0.3, 3.4), at=(rx0 - 1.2, 2.2, rz), mat='frame', bevel=0.03)
