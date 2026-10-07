@@ -21,5 +21,5 @@ export const { meta, asset, studio, load, build } = colonyBuilding({
   // v6: the concept's lens and warmth: plinth edge slopes 0.30 / 0.24 on the concept = az 48, el 12 with a long lens
   // (fov 22); a mildly warm key (a saturated one browned the gunmetal), a neutral fill lifted for the concept's
   // low-contrast tonality; r1 paint-check: light band 0.90x, all 0.99x, hue 27.5 (concept 23)
-  studio: { az: 48, el: 12, fov: 22, sunaz: 42, sunel: 44, dist: 0.88, key: 0.85, keyColor: '#fff0e0', fill: 1.5, fillColor: '#e8e2da' },
+  studio: { az: 48, el: 12, fov: 22, sunaz: 42, sunel: 44, dist: 0.95, key: 0.85, keyColor: '#fff0e0', fill: 1.5, fillColor: '#e8e2da' },
 });

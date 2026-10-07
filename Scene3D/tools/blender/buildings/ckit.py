@@ -404,6 +404,7 @@ FURNACE_V5.update({
 FURNACE_V6 = dict(FURNACE_V5)
 FURNACE_V6.update({
     'tuyere': (8.95, 14.8, 18.0, 12), 'tuyere_glow': 2.6,   # r2: 12 stocks (20 read as a window grid, not a band)
+    'tuyere_color': '#ff6c08',   # r3: #ff8a28 at radiance 2.6 tone-mapped to a pale salmon; a deeper orange stays molten
     'segments': 60,     # r3 (phone budget): 72 -> 60 facets round the shell (0.95 m facets on the 9 m drum)
     'tower': dict(FURNACE_V5['tower'], top=(7.2, 54.0), top_deck=(54.0, 5.05, 7.6)),
 })
@@ -544,7 +545,7 @@ def furnace(B, P=FURNACE):
         with B.at(at=(rt * math.sin(a), (t0 + t1) / 2, rt * math.cos(a)), rot=(0, math.degrees(a), 0)):
             B.box((0.42, t1 - t0 - 0.6, 0.55), at=(0, 0, 0), mat='frame', bevel=0.03)
             B.cyl(0.14, 0.9, at=(0, -0.15, 0.55), mat='pipeDark', n=10)        # tuyere stock nose
-    K.glow_ring(B, c, rt - 0.2, (t0 + t1) / 2, h=(t1 - t0) - 0.7, n=nw, color='#ff8a28', radiance=P.get('tuyere_glow', 0.7))
+    K.glow_ring(B, c, rt - 0.2, (t0 + t1) / 2, h=(t1 - t0) - 0.7, n=nw, color=P.get('tuyere_color', '#ff8a28'), radiance=P.get('tuyere_glow', 0.7))
     # collar and bosh shoulder
     rc, c0, c1 = P['collar']
     B.lathe([(0, c0), (rc, c0), (rc, c1), (0, c1)], (0, 0, 0), mat='frame', n=n, bevel=0.04)

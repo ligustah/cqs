@@ -96,3 +96,21 @@ Checklist review (BUILDING-GUIDE section 9 + STYLE 8):
 - Phone: tris 199k > 150k (STYLE 4 phone row): FAIL, to fix before the final (doors 14k, stacks 40k, workers).
 Judges: no Agent tool in this session; the two lenses applied by me this round (vibes: "not yet": glow, framing,
 plinth; quality: "not yet": phone tris, plinth texture). Asked the coordinator for blind judges from r2.
+
+### v6 round 2 (13:04-13:22): furnace (12 stocks, glow 2.6), pour bay (runner on the apron in front of the portal),
+hull (stronger stains, 4.6 m slab joints), spills 300 / 180 cd, studio key 0.85 #fff0e0, fill 1.5, dist 0.88.
+Build 192k tris. Evidence $S/mill/r2-sheet.jpg, r2-closesheet.jpg, r2-blind.jpg.
+Checklist review:
+- C2 framing: FAIL the other way: dist 0.88 at 1600 x 1000 (16:10) cut the furnace top -> r3 dist 0.95.
+- W1 warmth: PASS: light 1.02x, all 1.13x, hue 26.2 (c 23.2), light sat 0.21 (c 0.16; borderline).
+- W2 dark steel: PASS-ish: mid band sat 0.20 = concept's 0.21 (the concept's darks are warm too); frames read grey.
+- G3 plinth staining: FAIL: atlas shows fine dots and faint blotches only; render reads clean -> r3 bigger / darker
+  stains (oil spots in 3.5 m cells, ragged), +0.2 dusty grey.
+- L1 process glow: band now continuous but reads pale salmon (#ff8a28 at 2.6 tone-maps pale) and the spill tints
+  the lower drum peach -> r3 #ff6c08, spill #ff8030. Runner on the apron: PASS (bright trough, lights the apron).
+- D1 density: PASS (apron fronts packed; the -X side behind the furnace is sparse but not visible).
+- C3 silhouette: PASS-ish; the pour bay's dark roof deck reads as a slab from this height (the concept's portal top is
+  a lattice girder); kept for the dark interior.
+- Phone tris: 192k: FAIL -> r3 stacks 56 -> 40 segments with laps every 4.4 m, furnace 72 -> 60, door decimate
+  0.3 -> 0.2.
+- Judges: requested from the coordinator for r2 (no Agent tool in this session).

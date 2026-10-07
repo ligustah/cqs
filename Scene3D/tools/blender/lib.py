@@ -592,15 +592,17 @@ def _grit(g, name, base, col, obj, ao):
     ny = g.math('ABSOLUTE', sep.outputs['Y'])
     if name in ('concrete', 'concrete2', 'kerb'):
         top = g.mr(ny, 0.6, 0.9)
-        stain = g.mr(g.noise(obj, 0.045, 4, 0.6), 0.42, 0.64, 0.0, 1.0)
-        stain2 = g.mr(g.noise(obj, 0.22, 3, 0.55), 0.5, 0.68, 0.0, 1.0)
+        # r2: the r1 stains were too faint to read at the concept camera: bigger, darker, more of them
+        stain = g.mr(g.noise(obj, 0.045, 4, 0.6), 0.38, 0.6, 0.0, 1.0)
+        stain2 = g.mr(g.noise(obj, 0.22, 3, 0.55), 0.46, 0.66, 0.0, 1.0)
         vor = g.node('ShaderNodeTexVoronoi')
         g.put(vor.inputs['Vector'], obj)
-        vor.inputs['Scale'].default_value = 0.6
+        vor.inputs['Scale'].default_value = 0.28
         cellc = g.white(vor.outputs['Position'])
-        spot = g.math('MULTIPLY', g.mr(vor.outputs['Distance'], 0.55, 0.2), g.math('GREATER_THAN', cellc, 0.82))
-        k = g.math('ADD', g.math('ADD', g.math('MULTIPLY', stain, 0.45), g.math('MULTIPLY', stain2, 0.25)), g.math('MULTIPLY', spot, 0.6))
-        k = g.math('ADD', k, 0.12)      # an overall dusty grey on the light concrete (the concept's slab is mid grey)
+        spot = g.math('MULTIPLY', g.mr(vor.outputs['Distance'], 0.5, 0.12), g.math('GREATER_THAN', cellc, 0.72))
+        spot = g.math('MULTIPLY', spot, g.mr(g.noise(obj, 1.6, 3, 0.7), 0.3, 0.6, 0.4, 1.0))   # ragged oil-spot edges
+        k = g.math('ADD', g.math('ADD', g.math('MULTIPLY', stain, 0.55), g.math('MULTIPLY', stain2, 0.3)), g.math('MULTIPLY', spot, 0.7))
+        k = g.math('ADD', k, 0.2)       # an overall dusty grey on the light concrete (the concept's slab is mid grey)
         k = g.math('MULTIPLY', k, g.math('ADD', 0.35, g.math('MULTIPLY', top, 0.65)), clamp=True)
         return g.lerp(col, g.vm('MULTIPLY', col, (0.42, 0.40, 0.37)), k)
     if base[0] < 0.25:
