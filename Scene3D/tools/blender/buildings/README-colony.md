@@ -297,6 +297,12 @@ edge wear at any distance, which the swatch still carries. Fill rose to 0.55-0.8
 (furnace shell 27.6 -> 38.4 px/m on the blueprint-shaped furnace; shed cladding 47 -> 51; pour bay 64 -> 77; stack
 and gallery ~40-45 at 2048). Concrete weight 0.7 (it was 1.0: the furnace plinth took as many texels as the shell).
 
+Checks on the final v4 (2026-10-07): `build-artifact.mjs` package check 57 model tiers OK; `pkg-diff.mjs --csp 1
+--units 16 b_steel_mill` desktop 0.00 % (no program over 16 samplers with the parts' occlusion maps), phone 0.44 %;
+`phone-check.mjs steel_mill` heap + GPU 133 MB. Evidence: `images/buildings/steel_mill-v4.jpg` (concept | v3 | v4),
+`steel_mill-v4-close.jpg` (furnace, pour bay, shed wall at 1:1, v3 beside v4 at the same cameras),
+`steel_mill-v4-thumbs.png` (80 / 40 px).
+
 ### Gotchas
 
 - `hulls/common.bake_maps` returns the SHIP frame (x, z, -y of Blender); the kit authors the part frame directly in
@@ -349,6 +355,7 @@ The fix, once in the shared pipeline:
 |---|---|---|---|---|---|
 | deuterium_depot (v3: 4 components) | 5.1 | 120k | 27 | 110 | 4.9 |
 | steel_mill (v3: 6 components) | 6.4 | 127k | 43 | 127 | 4.7 |
+| steel_mill (v4: 5 remodelled parts, 7 placed) | 6.2 | 196k | 46 | 133 | 4.0 |
 | silicon_depot (v3: 5 components) | 3.9 | 71k | 32 | 115 | 6.9 |
 | military_base (v3: 23 components + 1 V-31) | 6.7 | 146k | 49 | 138 | 6.2 |
 | radio_telescope (v3: 2 components) | 3.3 | 58k | 21 | 102 | 6.0 |

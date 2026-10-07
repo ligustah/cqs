@@ -21,9 +21,8 @@ W=/tmp/claude-0/-home-user-cqs/e592383b-a9f6-5dde-82a6-4494b59b11a7/scratchpad/r
 - v3 evidence shots at fixed cameras: scratchpad/ev/v3-{main,furnace,pour,shed}.png (shots.sh swaps the v3 GLB+js in
   from $W/steel_mill-v3.*, shoots, restores).
 
-## In progress
-- r10: paint pass (neutral gunmetal, rust 0.2-0.3) -> rebake all five ($W/r10.log) -> final 4096 build ($W/b10.log).
+- r10 paint pass, final 4096 build (197k tris, 11.6 MB), evidence sheets, thumbnails, build-artifact + package check,
+  pkg-diff desktop/phone (--csp 1 --units 16), phone-check: all done 2026-10-07.
 
-## Next
-- scratchpad/ev/shots.sh v4; sheet-v4.mjs -> images/buildings/steel_mill-v4.jpg (+ close-up sheet), thumbs.mjs 80/40,
-  build-artifact.mjs, phone-check.mjs steel_mill, pkg-diff.mjs --csp 1 --units 16 b_steel_mill; commit all.
+## Status
+DONE (steel mill pilot). Next building: follow README-colony.md "Component remodel".
