@@ -255,14 +255,33 @@ and normals stay at 4096). 358 MB in 246 files before, ~208 MB in ~387 files aft
 Embedded textures decode with `createImageBitmap(Blob)` (glbship.js `EmbeddedImageBitmaps`), never by URL:
 three's GLTFLoader wraps them in a `blob:` URL and `fetch()`es it, and the artifact host's CSP
 (`connect-src`) refuses that, so on the published page every texture inside a GLB failed to load
-(untextured carrier hull and parts, white colony components) while the `assets/tex/*.webp` URI
-textures loaded. Local servers have no CSP, so only a check under the host's policy shows it.
+(white colony components, plain parts) while the `assets/tex/*.webp` URI textures loaded.
+
+**Texture-unit budget.** Most real GPUs give a fragment shader 16 texture units (ANGLE on D3D11 and
+Metal, iOS, most Android); SwiftShader, which every local still uses, gives 32. A material over 16
+samplers fails to link there and its meshes are not drawn. The carrier hull (glTF map, normal,
+roughness, metalness + PATINA detail and hangar interior sets + worn finish + SAO + env, DFG LUT,
+shadow) needed 18, `bell-XL` 17: once 851093d moved the hull's 4096 px maps to URI files that the
+CSP lets through, the hull and the engine bells vanished on the published page (lights, turrets,
+parked ships and the hangar outline stayed; the bells' glowing throats floated alone as blue
+spheres; parked fighters and freighters lost their textured materials and read brown). Before
+851093d every texture was embedded, blocked by the CSP, and the untextured hull had 14 samplers.
+Now: the detail and interior sets' roughness and height go in one packed texture (patina.js
+`packRoughHeight`, R/G) and glTF materials read metalness from the shared metal-roughness texel
+(glbship.js `shareMetalRough`): hull 15, colony components 13.
+
+`tools/pkg-diff.mjs` renders every view through the package and through the dev path and diffs
+the stills; by default the package page gets a host-like CSP and both pages an emulated 16-unit
+GPU (`--csp 0` / `--units 0` to turn either off), the conditions that hid this locally.
 
 **Package check** (`tools/check-package.mjs`, run at the end of `build-artifact.mjs`; `--no-check`
 skips it): every model tier is decoded the way the published page does it (glbship.js `loadGLB`,
 files through `dist/files.json`, the host's CSP) and compared with its source GLB in three's own
 loader: nodes, meshes, triangles, materials, textures per material slot, every texture decoded,
-within its tier's cap and looking like the source's (16 px thumbnails). The build fails on any
+within its tier's cap and looking like the source's (16 px thumbnails); and before any loader, the
+reassembled glTF itself: scene nodes, meshes, primitives, accessors, materials, textures, images,
+geometry bit-identical to the source, every image a packaged URI or an embedded range that
+decodes, the shared file the length its tier was split against. The build fails on any
 difference. `node tools/check-package.mjs [--only <name>]` runs it alone;
 `CHECK_VARIANT=nob64` / `noibm` exercise the loader's fallbacks (no `Uint8Array` base64, no
 `createImageBitmap`).
