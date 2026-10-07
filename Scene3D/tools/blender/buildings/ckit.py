@@ -54,14 +54,16 @@ lib.MATS.update({
 # weathered grey, sat ~0.16 at hue ~23 deg, a step darker than the kit's clean 'panel'; frames are rust-warm gunmetal).
 # Merged under every builder's paint spec; a building family with a cleaner look passes its own.
 WORKS = {
-    'shell': {'color': [0.75, 0.715, 0.66], 'rust': 0.75},
-    'clad': {'color': [0.77, 0.74, 0.69], 'rust': 0.6},
-    'clad2': {'color': [0.70, 0.665, 0.61], 'rust': 0.5, 'blot': 0.035, 'patina': 0.03},   # roofs: big planes, blotches read as camouflage
-    'panel': {'color': [0.78, 0.75, 0.70], 'rust': 0.5},
-    # v4 r4: neutral gunmetal with local rust (the concept); rust 0.4-0.65 tinted every dark beam chocolate brown at 1:1
-    'frame': {'color': [0.27, 0.275, 0.285], 'rust': 0.2, 'edge': 0.9},     # concept gunmetal ~sRGB 70 (kit 55 read black)
-    'frame2': {'color': [0.31, 0.31, 0.315], 'rust': 0.25},
-    'pipeDark': {'rust': 0.25},
+    # v5 (second review): light paint a step less yellow (v4 hue 35 deg vs the concept's 25-28), seams and run-off
+    # stronger (worn, not dirty), and the dark steel a neutral gunmetal: v4's frames rendered at saturation 0.2-0.3
+    # (brown) from warm grime, dirt and rusty edges on a neutral base; the concept's are ~0.09
+    'shell': {'color': [0.76, 0.735, 0.705], 'rust': 0.6, 'streak': 0.26, 'dark': 0.5, 'seam_w': 0.045},
+    'clad': {'color': [0.78, 0.755, 0.725], 'rust': 0.5, 'streak': 0.26},
+    'clad2': {'color': [0.71, 0.69, 0.66], 'rust': 0.45, 'blot': 0.035, 'patina': 0.03},   # roofs: big planes, blotches read as camouflage
+    'panel': {'color': [0.79, 0.765, 0.735], 'rust': 0.45, 'streak': 0.22},
+    'frame': {'color': [0.29, 0.296, 0.31], 'rust': 0.1, 'edge': 0.9},     # concept gunmetal ~sRGB 70-80, neutral
+    'frame2': {'color': [0.33, 0.336, 0.35], 'rust': 0.12},
+    'pipeDark': {'color': [0.30, 0.305, 0.315], 'rust': 0.12},
 }
 
 
@@ -361,6 +363,126 @@ FURNACE_V4.update({
 })
 
 
+# v5 (second review, 2026-10-07): the concept's furnace is the hero: a BROAD light bell (the light cone flares to r 11.4
+# at its foot over a dark stepped bosh, tapering to r 8 at 42 m), a light hearth drum r 9.2, heavy plated raking legs to
+# the cone-foot deck, and only a light, open frame above: four slim tapered posts from the leg tops to a wide top deck,
+# X bracing in the top bay alone (v4's four laced columns and three square decks read as a black scaffold hiding a thin
+# cylinder). A big bustle main round the bosh, the uptakes over the cap, and a 3 m downcomer dropping to -X into the
+# gas-cleaning annex (the concept's elbow pipe on the left).
+FURNACE_V5 = dict(FURNACE)
+FURNACE_V5.update({
+    'base': (32.0, 3.0, 32.0),
+    'hearth': (9.2, 3.0, 15.0), 'hearth_mat': 'shell', 'staves': 0, 'hearth_hoops': (4.4, 9.4, 13.9),
+    'tuyere': (8.95, 15.2, 17.6, 32),
+    'collar': (9.85, 17.6, 18.3),
+    'bustle': (12.6, 21.2, 0.85, 16),
+    'bosh': [(18.3, 20.6, 9.6), (20.6, 22.9, 9.95), (22.9, 25.2, 10.3), (25.2, 26.6, 10.65)],
+    'shaft': [(11.4, 26.6), (11.25, 27.6), (10.5, 31.0), (9.6, 35.0), (8.75, 39.0), (8.1, 42.4)],
+    'hoops': [(34.4, 0.45)],
+    'flange': (8.5, 42.4, 43.1), 'throat_mat': 'frame2',
+    'cone': [(8.3, 43.1), (7.5, 44.6), (5.4, 47.2)],
+    'throat': (5.0, 47.2, 54.0),
+    'cap': (3.7, 54.0, 59.6),
+    'top_deck': None,
+    'uptakes': (4, 0.62, [(5.25, 48.4), (6.3, 55.6), (4.6, 59.9), (1.9, 60.9)]),
+    'header': (1.75, 59.4, 62.4),
+    'downcomer': (1.45, [(0.0, 61.2, 0.0), (-5.5, 61.2, 0.0), (-15.6, 41.0, 1.0), (-15.6, 25.0, 1.0), (-19.0, 21.6, 1.0), (-19.0, 14.0, 1.0)]),
+    'decks': [(26.6, 11.45, 13.4), (43.1, 8.55, 10.4)],
+    'tower': {'style': 'posts', 'legs': ((13.9, 3.0), (12.2, 26.6)), 'leg_section': (4.0, 2.8), 'leg_tie': (15.2, 10.6),
+              'post': (0.95, 0.75), 'top': (8.9, 54.0), 'levels': [43.1], 'xbrace': (43.1, 54.0), 'top_deck': (54.0, 5.05, 9.6),
+              'ladder': (-1, 0), 'ladder_y0': 26.6},
+})
+
+
+def _raking_legs(B, T):
+    """Heavy raking legs: plated tapered box sections from the plinth corners to the first deck, stiffener bands, a
+    base shoe, a cap, anchor nuts, a plate-girder tie to the tuyere platform ring."""
+    (b0, ly0), (b1, ly1) = T['legs']
+    s0, s1 = T.get('leg_section', (2.2, 1.6))
+    for (sx, sz) in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
+        pa, pb = V((sx * b0, ly0, sz * b0)), V((sx * b1, ly1, sz * b1))
+        B.strut(pa, pb, (s0, s0), (s1, s1), 0.22, mat='frame2', bevel=0.04)
+        d = (pb - pa)
+        for t in [0.12 + 0.76 * i / 5 for i in range(6)]:
+            sz_ = s0 + (s1 - s0) * t
+            with B.at(M=K.frame_along(pa, pb)):
+                B.box((sz_ + 0.12, sz_ + 0.12, 0.22), at=(0, 0, d.length * t), mat='frame', bevel=0.02)
+        # flange plates down the two outer faces (a built-up section: crisp vertical shadow lines)
+        with B.at(M=K.frame_along(pa, pb)):
+            for (fx, fy) in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                B.box((0.08 if fx else s1 * 0.9, 0.08 if fy else s1 * 0.9, d.length * 0.9), at=(fx * (s0 + s1) / 4 + fx * 0.05, fy * (s0 + s1) / 4 + fy * 0.05, d.length * 0.5), mat='frame', bevel=0.0)
+        B.box((s0 + 0.8, 0.5, s0 + 0.8), at=(sx * b0, ly0 + 0.25, sz * b0), mat='frame', bevel=0.04)
+        B.box((s1 + 0.6, 0.4, s1 + 0.6), at=(sx * b1, ly1 - 0.2, sz * b1), mat='frame', bevel=0.03)
+        if T.get('leg_tie'):
+            yt, rt_ = T['leg_tie']
+            tt = (yt - ly0) / (ly1 - ly0)
+            bt = b0 + (b1 - b0) * tt
+            a_ = math.atan2(sx, sz)
+            plate_girder(B, (sx * bt, yt - 0.5, sz * bt), (rt_ * math.sin(a_), yt - 0.5, rt_ * math.cos(a_)), h=1.0)
+        for (ex, ez) in ((1, 1), (1, -1), (-1, 1), (-1, -1)):
+            B.cyl(0.07, 0.16, at=(sx * b0 + ex * (s0 / 2 + 0.2), ly0 + 0.58, sz * b0 + ez * (s0 / 2 + 0.2)), mat='frame', n=6)
+        lamp(B, (sx * (b0 + s0 / 2 + 0.1), ly0 + 3.2, sz * b0), (sx, 0, 0), size=0.28)
+
+
+def _posts_tower(B, P, T, prof, c):
+    """v5: the concept's light, open frame: raking legs to the cone-foot deck, then four slim tapered posts to a wide
+    square top deck round the upper drum, ring beams at the hood deck, X bracing in the top bay only, caged ladder."""
+    _raking_legs(B, T)
+    (b1, ly1) = T['legs'][1]
+    ht, yt = T['top']
+    pw, pd = T.get('post', (0.9, 0.7))
+
+    def half_at(y):
+        return b1 + (ht - b1) * (y - ly1) / (yt - ly1)
+    corners = ((-1, -1), (1, -1), (1, 1), (-1, 1))
+    for (sx, sz) in corners:
+        B.strut((sx * b1, ly1, sz * b1), (sx * ht, yt, sz * ht), (pw, pw), (pd, pd), 0.08, mat='frame', bevel=0.02)
+    for ly in T['levels'] + [yt - 0.5]:
+        h_ = half_at(ly)
+        for i in range(4):
+            a, b = corners[i], corners[(i + 1) % 4]
+            ibeam(B, (a[0] * h_, ly - 0.45, a[1] * h_), (b[0] * h_, ly - 0.45, b[1] * h_), h=0.7, b=0.32, mat='frame')
+        # radial ties from the ring beams to the decks round the shell
+        for (sx, sz) in corners:
+            r_ = _shaft_r(prof, ly) if ly < prof[-1][1] else P['throat'][0]
+            B.bar((sx * h_ * 0.98, ly - 0.45, sz * h_ * 0.98), (sx * r_ * 0.75, ly - 0.45, sz * r_ * 0.75), 0.22, 0.45, mat='frame', bevel=0.0)
+    ya, yb = T['xbrace']
+    for i in range(4):
+        a, b = corners[i], corners[(i + 1) % 4]
+        ha, hb = half_at(ya + 0.6), half_at(yb - 1.0)
+        B.bar((a[0] * ha, ya + 0.6, a[1] * ha), (b[0] * hb, yb - 1.0, b[1] * hb), 0.2, 0.2, mat='frame', bevel=0.0)
+        B.bar((b[0] * ha, ya + 0.6, b[1] * ha), (a[0] * hb, yb - 1.0, a[1] * hb), 0.2, 0.2, mat='frame', bevel=0.0)
+    # knee braces from the leg tops to the cone-foot ring beam level (the concept's portal look between the legs)
+    for i in range(4):
+        a, b = corners[i], corners[(i + 1) % 4]
+        for (p, q) in ((a, b), (b, a)):
+            B.bar((p[0] * b1, ly1 - 0.5, p[1] * b1), (p[0] * b1 * 0.55 + q[0] * b1 * 0.45, ly1 - 0.5, p[1] * b1 * 0.55 + q[1] * b1 * 0.45), 0.5, 0.9, mat='frame2', bevel=0.02)
+    # the wide top deck: a square grating deck round the upper drum with toe plates, rails, lamps
+    ty, rin, hw = T['top_deck']
+    pts = [(-hw, -hw), (hw, -hw), (hw, hw), (-hw, hw)]
+    # a grating ring round the drum, then four strips out to the square edge (the ring sits 2 cm lower: no coplanar overlap)
+    B.ring(rin + 2.6, rin, ty - 0.18, ty - 0.02, base=(0, 0, 0), mat='grate', n=48)
+    inner = rin + 1.6
+    for (sx, sz) in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+        if sx:
+            B.box((hw - inner, 0.16, 2 * hw), at=(sx * (hw + inner) / 2, ty - 0.08, 0), mat='grate', bevel=0.0)
+        else:
+            B.box((2 * inner, 0.16, hw - inner), at=(0, ty - 0.08, sz * (hw + inner) / 2), mat='grate', bevel=0.0)
+    for i in range(4):
+        a, b = pts[i], pts[(i + 1) % 4]
+        B.box((abs(b[0] - a[0]) + 0.1 if a[1] == b[1] else 0.08, 0.2, abs(b[1] - a[1]) + 0.1 if a[0] == b[0] else 0.08),
+              at=((a[0] + b[0]) / 2, ty + 0.06, (a[1] + b[1]) / 2), mat='frame', bevel=0.0)
+    K.railing(B, [(x, ty, z) for (x, z) in pts], post=1.8, closed=True)
+    for (x, z) in pts:
+        lamp(B, (x * 1.02, ty + 1.5, z * 1.02), (1 if x > 0 else -1, 0, 1 if z > 0 else -1), size=0.3)
+    lx, lz = T['ladder']
+    ly0_ = T.get('ladder_y0', ly1)
+    hx = half_at(ly0_)
+    K.ladder(B, (lx * (_shaft_r(prof, 30.0) + 0.5), ly0_, 2.2), (lx, 0, 0), T['levels'][0] - ly0_)
+    # the tuyere platform ring at the band's foot
+    K.platform_ring(B, c, P['tuyere'][1], P['hearth'][0] + 0.05, P['hearth'][0] + 1.9, n=48, brackets=12)
+
+
 def _shaft_r(prof, y):
     for (ra, ya), (rb, yb) in zip(prof[:-1], prof[1:]):
         if ya <= y <= yb:
@@ -439,7 +561,7 @@ def furnace(B, P=FURNACE):
     B.lathe([(0, cone[0][1])] + cone + [(0, cone[-1][1])], (0, 0, 0), mat='frame2', n=n, bevel=0.0, sharp=30)
     hoop(B, c, cone[1][0] - 0.1, cone[1][1] - 0.2, 0.4, 0.15, mat='frame', n=n)
     rth, h0, h1 = P['throat']
-    B.lathe([(0, h0), (rth, h0), (rth, h1), (0, h1)], (0, 0, 0), mat='shell', n=40, bevel=0.03)
+    B.lathe([(0, h0), (rth, h0), (rth, h1), (0, h1)], (0, 0, 0), mat=P.get('throat_mat', 'shell'), n=40, bevel=0.03)
     for yy in (h0 + 1.0, h1 - 0.9):
         hoop(B, c, rth, yy, 0.35, 0.12, mat='frame', n=40)
     rcap, k0, k1 = P['cap']
@@ -456,16 +578,41 @@ def furnace(B, P=FURNACE):
         B.tube([(rr * s, yy, rr * cc) for rr, yy in path], ru, mat='pipeDark', n=16, fillet=1.2)
         B.lathe([(ru + 0.12, 0), (ru + 0.12, 0.25), (ru, 0.25), (ru, 0)], (path[0][0] * s, path[0][1], path[0][0] * cc), mat='frame', n=16, closed=True, bevel=0.02)
         B.lathe([(ru + 0.12, 0), (ru + 0.12, 0.25), (ru, 0.25), (ru, 0)], (path[1][0] * s, path[1][1] - 1.0, path[1][0] * cc), mat='frame', n=16, closed=True, bevel=0.02)
+    if P.get('header'):
+        rh, y0h, y1h = P['header']
+        B.lathe([(0, y0h), (rh, y0h), (rh, y1h - 0.4), (rh - 0.5, y1h), (0, y1h)], (0, 0, 0), mat='frame2', n=24, bevel=0.03, sharp=30)
+        hoop(B, c, rh, y0h + 0.8, 0.3, 0.12, mat='frame', n=24)
     rd, dpath = P['downcomer']
-    B.tube(dpath, rd, mat='pipeDark', n=18, fillet=1.6)
-    for t in (0.35, 0.6, 0.85):
+    B.tube(dpath, rd, mat='pipeDark', n=24 if rd > 1.2 else 18, fillet=min(2.4, 1.6 * rd))
+    if len(dpath) > 4:
+        # v5: flanged joints along the big downcomer and a flanged end where the building's main continues
+        for (pa_, pb_) in zip(dpath[1:-1], dpath[2:]):
+            a_, b_ = V(pa_), V(pb_)
+            L_ = (b_ - a_).length
+            with B.at(M=K.frame_along(a_, b_)):
+                for t_ in (0.25, 0.75):
+                    B.cyl(rd + 0.16, 0.32, at=(0, 0, L_ * t_), mat='frame', n=24, bevel=0.02)
+        a_, b_ = V(dpath[-2]), V(dpath[-1])
+        with B.at(M=K.frame_along(a_, b_)):
+            B.cyl(rd + 0.22, 0.4, at=(0, 0, (b_ - a_).length - 0.2), mat='frame', n=24, bevel=0.02)
+    for t in ((0.35, 0.6, 0.85) if len(dpath) <= 4 else ()):
         a, b = V(dpath[-2]), V(dpath[-1])
         q = a + (b - a) * t
         with B.at(M=K.frame_along(a, b)):
             L = (b - a).length * t
             B.cyl(rd + 0.14, 0.3, at=(0, 0, L), mat='frame', n=18, bevel=0.02)
+    # v5: the extras the concept hangs on the body (bustle hangers, the cone-foot and hood decks, the wide top deck)
+    for (ya, ra, rb) in P.get('decks', []):
+        K.platform_ring(B, c, ya, ra, rb, n=48, brackets=12)
+        for k in range(12):
+            a = 2 * math.pi * (k + 0.5) / 12
+            if k % 3 == 0:
+                lamp(B, ((rb + 0.1) * math.sin(a), ya + 1.3, (rb + 0.1) * math.cos(a)), (math.sin(a), 0, math.cos(a)), size=0.26)
     # the tower
     T = P.get('tower')
+    if T and T.get('style') == 'posts':
+        _posts_tower(B, P, T, prof, c)
+        T = None
     if T:
         hf = T['half']
         cols = [(-hf, -hf), (hf, -hf), (hf, hf), (-hf, hf)]
@@ -558,8 +705,8 @@ def furnace(B, P=FURNACE):
         ly0_ = T.get('ladder_y0', T['y0'])
         K.ladder(B, (lx * (hf + 0.66), ly0_, lz * (hf - 1.6)), (lx, 0, 0), T['levels'][-1] - ly0_)
     return works({
-        'shell': {'axis': (0, 0), 'course': 2.25, 'joint': 2.0, 'bolts': 0.32, 'rust': 0.55, 'tone': 0.07},
-        'frame2': {'axis': (0, 0), 'course': 1.6, 'joint': 1.6, 'rust': 0.3, 'tone': 0.08},
+        'shell': {'axis': (0, 0), 'course': 2.25, 'joint': 2.0, 'bolts': 0.32, 'rust': 0.5, 'tone': 0.1, 'drip': 0.3},
+        'frame2': {'axis': (0, 0), 'course': 1.6, 'joint': 1.6, 'rust': 0.15, 'tone': 0.08},
         'concrete2': {'course': 1.5, 'joint': 3.0, 'rust': 0.0, 'dark': 0.25},
         'concrete': {'course': 3.0, 'joint': 3.0, 'rust': 0.0, 'dark': 0.3},
         'hot': {'crust': 0.0},
@@ -617,7 +764,7 @@ def banded_stack(B, P=STACK):
     B.R.obstruction((0.7 * (r + 0.3), T + 0.45, 0.7 * (r + 0.3)))
     return works({
         'shell': {'axis': (0, 0), 'course': 2.2, 'joint': 2.4, 'bolts': 0.3, 'rust': 0.6, 'tone': 0.07},
-        'frame2': {'axis': (0, 0), 'course': 2.2, 'joint': 2.4, 'rust': 0.3, 'tone': 0.09},
+        'frame2': {'axis': (0, 0), 'course': 2.2, 'joint': 2.4, 'rust': 0.15, 'tone': 0.09},
     })
 
 
@@ -654,9 +801,98 @@ SHED_V4.update({
     'paint': {
         'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.45, 'tone': 0.09, 'dark': 0.3, 'stagger': False},
         'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.35, 'tone': 0.05, 'dark': 0.2},
-        'frame2': {'rust': 0.3},
+        'frame2': {'rust': 0.15},
     },
 })
+
+
+SHED_V5 = dict(SHED_V4)
+SHED_V5.update({
+    'canopies': True, 'wall_pipes': [(1, 3.3, 0.32), (-1, 3.3, 0.32), (1, 11.8, 0.22)], 'tray': (1, 9.2),
+    'roof_units': [(1, -11.0), (1, 9.0), (-1, -4.0), (-1, 13.0)], 'ridge_vents': 3, 'dock': (0, 9.0, 3.2, 1.2),
+    'pilaster_lamps': (4.2, 10.4),
+    'paint': {
+        'clad': {'course': 2.8, 'joint': 2.4, 'corr': 0.0, 'bolts': 0.6, 'rust': 0.5, 'tone': 0.13, 'dark': 0.6, 'stagger': False,
+                 'seam_w': 0.05, 'streak': 0.3, 'drip': 0.35},
+        'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.4, 'tone': 0.07, 'dark': 0.35, 'streak': 0.2},
+        'frame2': {'rust': 0.15},
+    },
+})
+
+
+def _shed_dressing(B, P, hx, hz, E, Rg, ov, bay, nb, pd):
+    """v5: door canopies, wall pipe runs with flanges and amber rings on brackets, a cable tray under the eaves, extra
+    pilaster lamps, roof curb units on the slopes, ridge ventilators, a loading dock with a stair at the roller door."""
+    if P.get('canopies'):
+        for dz in P.get('doors', []):
+            x = hx + 0.02
+            B.box((1.3, 0.14, 2.4), at=(x + 0.65, 2.95, dz), mat='frame2', bevel=0.02)
+            B.box((0.1, 0.24, 2.5), at=(x + 1.3, 2.92, dz), mat='frame', bevel=0.0)
+            for s_ in (-1, 1):
+                B.bar((x, 3.9, dz + s_ * 1.1), (x + 1.25, 3.0, dz + s_ * 1.1), 0.06, 0.06, mat='frame', bevel=0.0)
+            # a step and kick plate under the door
+            B.box((1.0, 0.18, 1.9), at=(x + 0.5, 0.09, dz), mat='concrete', bevel=0.02)
+    for (sx, y, r) in P.get('wall_pipes', []):
+        x = sx * (hx + pd + 0.15 + r)
+        # skip the roller door bay (and keep 1.5 m clear of the gable corners)
+        cuts = []
+        rd = P.get('roller')
+        if rd and sx > 0 and y < rd[2] + 0.6:
+            zc = -hz + bay * (rd[0] + 0.5)
+            cuts.append((zc - rd[1] / 2 - 1.0, zc + rd[1] / 2 + 1.0))
+        if sx > 0 and y < 3.8:
+            cuts += [(dz - 1.2, dz + 1.2) for dz in P.get('doors', [])]
+        for (za, zb) in _spans(-hz + 1.5, hz - 1.5, cuts):
+            if zb - za < 3.0:
+                continue
+            K.pipe(B, [(x, y, za), (x, y, zb)], r=r, mat='pipeDark', flanges=True, rings=True, ring_mat='amber')
+            for zz in [za + 0.8 + k * 3.6 for k in range(int((zb - za - 1.0) / 3.6) + 1)]:
+                B.bar((sx * (hx + 0.05), y - r - 0.12, zz), (x + sx * r, y - r - 0.12, zz), 0.12, 0.12, mat='frame', bevel=0.0)
+                B.box((0.08, 0.5, 0.3), at=(sx * (hx + 0.06), y - r - 0.1, zz), mat='frame', bevel=0.0)
+            # a drop at the far end into a valve on the dado
+            K.pipe(B, [(x, y, zb), (x, 0.9, zb)] if y < 6 else [(x, y, zb), (x, y - 2.2, zb)], r=r * 0.8, mat='pipeDark', flanges=True, rings=False)
+    if P.get('tray'):
+        sx, y = P['tray']
+        x = sx * (hx + pd + 0.45)
+        K.cable_tray(B, (x, y, -hz + 1.0), (x, y, hz - 1.0), w=0.5)
+        for zz in [-hz + 1.5 + k * 4.8 for k in range(int((2 * hz - 2.0) / 4.8) + 1)]:
+            B.bar((sx * (hx + 0.05), y - 0.1, zz), (x + sx * 0.25, y - 0.1, zz), 0.1, 0.1, mat='frame', bevel=0.0)
+    for y in P.get('pilaster_lamps', ())[1:]:
+        for sx in (1, -1):
+            for i in range(1, nb):
+                lamp(B, (sx * (hx + pd + 0.02), y, -hz + bay * i), (sx, 0, 0), size=0.28)
+    ang = math.atan2(Rg - E, hx + ov)
+    for (sx, zc) in P.get('roof_units', []):
+        xf = sx * (hx + ov) * 0.45
+        yf = E + (Rg - E) * 0.55
+        with B.at(at=(xf, yf, zc), rot=(0, 0, math.degrees(ang) * sx)):
+            B.box((2.6, 0.5, 3.0), at=(0, 0.25, 0), mat='frame2', bevel=0.04)        # curb
+        # the unit itself stands level on the curb
+        B.box((2.2, 1.3, 2.6), at=(xf, yf + 0.9, zc), mat='panel', bevel=0.05)
+        B.box((2.3, 0.14, 2.7), at=(xf, yf + 1.6, zc), mat='frame', bevel=0.02)
+        for dz in (-0.6, 0.6):
+            B.cyl(0.42, 0.18, at=(xf, yf + 1.68, zc + dz), rot=(90, 0, 0), mat='louvre', n=16, bevel=0.0)
+        louvre_bank(B, (xf + sx * 1.11, yf + 0.5, zc + (0.9 if sx > 0 else -0.9)), (0, 0, -1) if sx > 0 else (0, 0, 1), 1.8, 0.6, pitch=0.15, depth=0.1)
+    nv = P.get('ridge_vents', 0)
+    mw, ml, mh, mr = P['monitor']
+    for k in range(nv):
+        for sz in (-1, 1):
+            zc = sz * (ml / 2 + 0.9 + 1.4 * k)
+            if abs(zc) > hz - 0.8:
+                continue
+            B.vcyl(0.45, 0.9, (0.0, Rg - 0.1, zc), mat='frame2', n=16)
+            B.lathe([(0.0, 0.0), (0.62, 0.0), (0.55, 0.3), (0.0, 0.45)], (0.0, Rg + 0.8, zc), mat='frame', n=16, bevel=0.0)
+    if P.get('dock'):
+        bi, dw, dd, dh = P['dock']
+        zc = -hz + bay * (bi + 0.5)
+        rd = P.get('roller')
+        x0 = hx + pd
+        B.box((dd, dh, dw), at=(x0 + dd / 2, dh / 2, zc), mat='concrete2', bevel=0.04)
+        B.box((0.2, 0.25, dw), at=(x0 + dd - 0.1, dh - 0.12, zc), mat='hazard', bevel=0.0)
+        for dz in (-dw / 2 + 0.6, dw / 2 - 0.6):
+            B.box((0.25, 0.6, 0.35), at=(x0 + dd + 0.12, dh - 0.45, zc + dz), mat='frame', bevel=0.02)   # bumpers
+        K.stair(B, (x0 + 0.6, 0.0, zc + dw / 2 + 2.0), (0, 0, -1), dh, w=1.0)
+        K.railing(B, [(x0 + 0.1, dh, zc - dw / 2 + 0.1), (x0 + dd - 0.2, dh, zc - dw / 2 + 0.1)], post=1.4)
 
 
 def gable_shed(B, P=SHED):
@@ -782,6 +1018,8 @@ def gable_shed(B, P=SHED):
         B.add(lib.bm_prism(prof, -ml / 2 - 0.2, ml / 2 + 0.2), mat='clad2', bevel=0.02)
         ribbed_slope(B, (sx * (mw / 2 + 0.3), ybase + mh), (sx * 0.3, ybase + mh + mr * (1 - 0.3 / (mw / 2 + 0.3))), -ml / 2 - 0.2, ml / 2 + 0.2, pitch=rp, w=0.08, h=0.06)
     B.box((0.5, 0.25, ml + 0.4), at=(0, ybase + mh + mr + 0.06, 0), mat='frame', bevel=0.03)
+    # v5 (second review): the concept's secondary layer on the walls and roof
+    _shed_dressing(B, P, hx, hz, E, Rg, ov, bay, nb, pd)
     # crew door (fleet kit) on the +X face
     if P.get('door'):
         side, dz = P['door']
@@ -791,17 +1029,30 @@ def gable_shed(B, P=SHED):
     return works({
         'clad': {'course': 4.2, 'joint': 1e3, 'corr': 0.22, 'rust': 0.45, 'tone': 0.05, 'dark': 0.25},
         'clad2': {'course': 3.2, 'joint': 12.0, 'corr': 0.3, 'rust': 0.35, 'tone': 0.05, 'dark': 0.2},
-        'frame2': {'rust': 0.3},
+        'frame2': {'rust': 0.15},
     })
 
 
 # ------------------------------------------------------------------------------------------------------------------
 # pour bay
 # ------------------------------------------------------------------------------------------------------------------
+# v5 (second review): an open portal like the concept: no slab roof over the crane (a dark deck over the back third
+# only), a bigger amber bridge girder, the runner along +Z out of the bay toward the casthouse (22 m, brighter), the
+# ladle track along X at the front, a railed control house inside the portal
+POUR_V5 = None   # set below (needs POUR)
 POUR = {   # pourBay, measured: x -9.5..9.5 (open to +X), z -13..13, h 15.5; crane girder 10.8-12.3, truss 13.6-15.3
     'xf': 8.4, 'xb': -8.4, 'zs': 12.0, 'H': 15.4, 'eave': 13.6, 'runway': 8.6, 'crane_x': 5.4,
     'runner': (-3.4, 8.9, -2.6, 2.4), 'rails': (3.4, -6.4, 9.4), 'ladle_x': 1.6,
 }
+
+
+POUR_V5 = dict(POUR)
+POUR_V5.update({
+    'roof': 0.32, 'girder': (1.0, 2.0),
+    'runner': (0.0, 22.0, 0.0, 2.8), 'runner_at': (0.6, -7.6, -90.0), 'runner_glow': 2.6,
+    'rails': (7.2, 2.8, 9.6), 'ladle_x': 6.4,
+    'control': (3.4, 7.9, -6.4, -2.2, 3.8), 'trolley_z': 4.2,
+})
 
 
 def pour_bay(B, P=POUR):
@@ -861,9 +1112,12 @@ def pour_bay(B, P=POUR):
     # building camera); the crane still shows through the open +X face under the eaves girder, as in the concept
     if P.get('roof', True):
         rm_ = P.get('roof_mat', 'frame2')     # v4 r3: dark steel deck (the concept); a light deck read as a slab from above
-        B.box((xf - xb + 0.6, 0.16, 2 * zs + 1.6), at=((xf + xb) / 2, H - 0.05 + 0.08, 0), mat=rm_, bevel=0.03)
-        ribbed_flat(B, xb - 0.3, xf + 0.3, -zs - 0.8, zs + 0.8, H + 0.11, pitch=P.get('rib', 0.9), along='x', mat=rm_)
-        B.box((0.3, 0.55, 2 * zs + 1.9), at=(xf + 0.42, H - 0.02, 0), mat='frame2', bevel=0.03)     # front fascia
+        # v5: 'roof' may be a fraction: a partial deck over the back of the bay only, the front open over the crane
+        fr = 1.0 if P.get('roof') is True or 'roof' not in P else float(P['roof'])
+        xr1 = xb + (xf - xb) * fr
+        B.box((xr1 - xb + 0.6, 0.16, 2 * zs + 1.6), at=((xr1 + xb) / 2, H - 0.05 + 0.08, 0), mat=rm_, bevel=0.03)
+        ribbed_flat(B, xb - 0.3, xr1 + 0.3, -zs - 0.8, zs + 0.8, H + 0.11, pitch=P.get('rib', 0.9), along='x', mat=rm_)
+        B.box((0.3, 0.55, 2 * zs + 1.9), at=(xr1 + 0.42, H - 0.02, 0), mat='frame2', bevel=0.03)     # front fascia
     # back wall: dark plates with stiffeners and girts, a doorway with the warm interior beyond
     xw = xb - 0.4
     B.box((0.25, E, 2 * zs - 1.5), at=(xw, E / 2, 0), mat='frame2', bevel=0.03)
@@ -883,10 +1137,11 @@ def pour_bay(B, P=POUR):
     # the amber double-girder bridge crane
     cx = P['crane_x']
     zr = zs - 0.9
+    gw, gh = P.get('girder', (0.75, 1.5))
     for dx in (-1.05, 1.05):
-        B.box((0.75, 1.5, 2 * zr - 1.2), at=(cx + dx, ry + 1.45, 0), mat='amber', bevel=0.05)
+        B.box((gw, gh, 2 * zr - 1.2), at=(cx + dx * (1 + (gw - 0.75)), ry + 0.7 + gh / 2, 0), mat='amber', bevel=0.05)
         for k in range(12):
-            B.box((0.78, 1.3, 0.05), at=(cx + dx + (0.39 if dx > 0 else -0.39) * 0, ry + 1.45, -zr + 0.6 + (2 * zr - 1.2) * (k + 0.5) / 12), mat='amber', bevel=0.0)
+            B.box((gw + 0.03, gh - 0.2, 0.05), at=(cx + dx * (1 + (gw - 0.75)), ry + 0.7 + gh / 2, -zr + 0.6 + (2 * zr - 1.2) * (k + 0.5) / 12), mat='amber', bevel=0.0)
     for sz in (-1, 1):
         B.box((3.4, 1.1, 1.3), at=(cx, ry + 1.1, sz * zr), mat='amber', bevel=0.05)
         for dx in (-1.2, 1.2):
@@ -901,7 +1156,7 @@ def pour_bay(B, P=POUR):
     B.box((0.9, 0.12, 2 * zr - 1.2), at=(cx + 1.9, ry + 2.2, 0), mat='grate', bevel=0.0)
     K.railing(B, [(cx + 2.3, ry + 2.25, -zr + 0.6), (cx + 2.3, ry + 2.25, zr - 0.6)], post=1.8)
     # trolley with hoist drum and motor, ropes, hook block
-    tz = -1.2
+    tz = P.get('trolley_z', -1.2)
     B.box((3.0, 1.2, 3.2), at=(cx, ry + 2.85, tz), mat='frame2', bevel=0.05)
     B.cyl(0.55, 2.2, at=(cx, ry + 2.75, tz), rot=(0, 90, 0), mat='pipeDark', n=18)
     B.box((1.0, 0.9, 1.0), at=(cx - 0.9, ry + 3.9, tz + 1.0), mat='frame', bevel=0.04)
@@ -916,21 +1171,26 @@ def pour_bay(B, P=POUR):
     B.box((1.82, 0.9, 1.5), at=(cx + 1.6, ry + 0.4, zr - 2.4), mat='glassW', bevel=0.0)
     B.R.window((cx + 2.52, ry + 0.4, zr - 2.4), (1, 0, 0), 1.4, 0.8, lit=True)
     # the runner: trough on stools, refractory lining, molten metal; the tundish at its back end
-    rx0, rx1, rz, rw = P['runner']
-    for x in [rx0 + 0.8 + k * 2.4 for k in range(int((rx1 - rx0 - 1.6) / 2.4) + 1)]:
-        B.box((0.6, 0.5, rw + 0.6), at=(x, 0.41, rz), mat='frame', bevel=0.03)
-    B.box((rx1 - rx0, 0.75, rw), at=((rx0 + rx1) / 2, 1.03, rz), mat='frame2', bevel=0.05)
-    B.box((rx1 - rx0 + 0.02, 0.2, rw - 0.6), at=((rx0 + rx1) / 2, 1.33, rz), mat='refractory', bevel=0.02)
-    B.box((rx1 - rx0 - 0.1, 0.08, rw - 1.1), at=((rx0 + rx1) / 2, 1.40, rz), mat='hot', bevel=0.0)
-    for x in (rx0 + 2.0, rx1 - 2.0):
-        for s in (-1, 1):
-            B.box((0.25, 0.9, 0.12), at=(x, 1.0, rz + s * (rw / 2 + 0.06)), mat='frame', bevel=0.0)
-    B.R.glowbox(((rx0 + rx1) / 2, 1.45, rz), (rx1 - rx0 - 1.2, 0.03, 0.32), color='#ffb050', radiance=1.6)   # the hot core of the stream only: the crust shows round it
-    B.box((3.0, 1.9, 3.2), at=(rx0 - 1.2, 1.12, rz), mat='frame2', bevel=0.06)
-    B.box((2.6, 0.12, 2.8), at=(rx0 - 1.2, 2.1, rz), mat='hot', bevel=0.0)
-    B.box((3.2, 0.3, 3.4), at=(rx0 - 1.2, 2.2, rz), mat='frame', bevel=0.03)
-    B.R.glowbox((rx0 - 1.2, 2.17, rz), (1.0, 0.03, 1.0), color='#ffb050', radiance=1.4)
-    K.railing(B, [(rx0 + 0.5, 1.4, rz - rw / 2 - 0.4), (rx1 - 0.2, 1.4, rz - rw / 2 - 0.4)], post=1.8)
+    # v5: the runner may run in its own frame (P['runner_at'] = (x, z, rotY)): along +Z out of the bay toward the
+    # casthouse, as in the concept, longer and brighter (core glow radiance P['runner_glow'])
+    rax, raz, rar = P.get('runner_at', (0.0, 0.0, 0.0))
+    rgl = P.get('runner_glow', 1.6)
+    with B.at(at=(rax, 0.0, raz), rot=(0, rar, 0)):
+        rx0, rx1, rz, rw = P['runner']
+        for x in [rx0 + 0.8 + k * 2.4 for k in range(int((rx1 - rx0 - 1.6) / 2.4) + 1)]:
+            B.box((0.6, 0.5, rw + 0.6), at=(x, 0.41, rz), mat='frame', bevel=0.03)
+        B.box((rx1 - rx0, 0.75, rw), at=((rx0 + rx1) / 2, 1.03, rz), mat='frame2', bevel=0.05)
+        B.box((rx1 - rx0 + 0.02, 0.2, rw - 0.6), at=((rx0 + rx1) / 2, 1.33, rz), mat='refractory', bevel=0.02)
+        B.box((rx1 - rx0 - 0.1, 0.08, rw - 1.1), at=((rx0 + rx1) / 2, 1.40, rz), mat='hot', bevel=0.0)
+        for x in (rx0 + 2.0, rx1 - 2.0):
+            for s in (-1, 1):
+                B.box((0.25, 0.9, 0.12), at=(x, 1.0, rz + s * (rw / 2 + 0.06)), mat='frame', bevel=0.0)
+        B.R.glowbox(B.world(((rx0 + rx1) / 2, 1.45, rz)), (rx1 - rx0 - 1.2, 0.03, 0.32), color='#ffb050', radiance=rgl, roty=math.radians(rar))   # the hot core of the stream only: the crust shows round it
+        B.box((3.0, 1.9, 3.2), at=(rx0 - 1.2, 1.12, rz), mat='frame2', bevel=0.06)
+        B.box((2.6, 0.12, 2.8), at=(rx0 - 1.2, 2.1, rz), mat='hot', bevel=0.0)
+        B.box((3.2, 0.3, 3.4), at=(rx0 - 1.2, 2.2, rz), mat='frame', bevel=0.03)
+        B.R.glowbox(B.world((rx0 - 1.2, 2.17, rz)), (1.0, 0.03, 1.0), color='#ffb050', radiance=1.4)
+        K.railing(B, [(rx0 + 0.5, 1.4, rz - rw / 2 - 0.4), (rx1 - 0.2, 1.4, rz - rw / 2 - 0.4)], post=1.8)
     # rails and sleepers; the ladle car with its pot
     zr0, x0, x1 = P['rails']
     for k in range(int((x1 - x0) / 0.9)):
@@ -950,6 +1210,27 @@ def pour_bay(B, P=POUR):
         B.cyl(0.25, 0.5, at=(lx, 2.9, zr0 + s * 1.75), mat='frame', n=12)
     B.R.glowbox((lx, 3.68, zr0), (1.0, 0.03, 1.0), color='#ffb050', radiance=1.4)
     K.railing(B, [(lx - 2.2, 1.4, zr0 + 1.25), (lx + 2.2, 1.4, zr0 + 1.25)], post=1.4)
+    # v5: the concept's small railed control house inside the portal beside the runner: light concrete block on a dark
+    # plinth, a lit window toward the runner, a kit crew door with its lamp, a railed roof with a unit
+    if P.get('control'):
+        cx0, cx1, cz0, cz1, ch = P['control']
+        ccx, ccz = (cx0 + cx1) / 2, (cz0 + cz1) / 2
+        B.box((cx1 - cx0, 0.5, cz1 - cz0), at=(ccx, 0.25, ccz), mat='frame2', bevel=0.04)
+        B.box((cx1 - cx0 - 0.2, ch - 0.5, cz1 - cz0 - 0.2), at=(ccx, 0.5 + (ch - 0.5) / 2, ccz), mat='panel', bevel=0.05)
+        for (px, pz) in ((cx0, cz0), (cx1, cz0), (cx1, cz1), (cx0, cz1)):
+            B.box((0.3, ch + 0.1, 0.3), at=(px, (ch + 0.1) / 2, pz), mat='frame', bevel=0.02)
+        B.box((cx1 - cx0 + 0.3, 0.3, cz1 - cz0 + 0.3), at=(ccx, ch + 0.1, ccz), mat='frame', bevel=0.03)
+        # window strip on the +Z face (toward the runner) and on the +X face (toward the apron)
+        for (o, n_, w_) in (((ccx, 2.4, cz1 - 0.08), (0, 0, 1), cx1 - cx0 - 1.6), ((cx1 - 0.08, 2.4, ccz - 0.6), (1, 0, 0), 1.6)):
+            sz_ = (w_, 1.1, 0.12) if n_[2] else (0.12, 1.1, w_)
+            B.box(sz_, at=o, mat='glassW', bevel=0.0)
+            B.box((sz_[0] + 0.2, 0.14, sz_[2] + 0.2), at=(o[0], 1.78, o[2]), mat='frame', bevel=0.0)
+            B.R.window((o[0] + n_[0] * 0.07, o[1], o[2] + n_[2] * 0.07), n_, w_, 1.0, lit=True)
+        B.R.door((cx1 + 0.02, 0.5, cz1 - 1.1), (1, 0, 0))
+        K.railing(B, [(cx0 + 0.1, ch + 0.25, cz0 + 0.1), (cx1 - 0.1, ch + 0.25, cz0 + 0.1), (cx1 - 0.1, ch + 0.25, cz1 - 0.1), (cx0 + 0.1, ch + 0.25, cz1 - 0.1)], post=1.4, closed=True)
+        B.box((1.6, 0.9, 1.2), at=(ccx - 0.5, ch + 0.7, ccz), mat='frame2', bevel=0.04)
+        K.ladder(B, (cx0 - 0.35, 0.0, ccz), (-1, 0, 0), ch + 0.25)
+        lamp(B, (cx1 + 0.02, ch - 0.6, cz0 + 0.6), (1, 0, 0), size=0.26)
     # tapping platforms (two levels) with stairs on the -Z side
     def deck(x0_, x1_, z0_, z1_, y):
         B.box((x1_ - x0_, 0.14, z1_ - z0_), at=((x0_ + x1_) / 2, y - 0.07, (z0_ + z1_) / 2), mat='grate', bevel=0.0)
@@ -967,7 +1248,7 @@ def pour_bay(B, P=POUR):
     for (x, z) in ((-1.6, -7.7), (-4.5, -9.1)):
         lamp(B, (x, 5.6 if z > -8 else 9.0, z), (1, 0, 0), size=0.26)
     return works({
-        'frame2': {'course': 1.5, 'joint': 1.2, 'rust': 0.3, 'tone': 0.1},
+        'frame2': {'course': 1.5, 'joint': 1.2, 'rust': 0.15, 'tone': 0.1},
         'concrete2': {'course': 3.0, 'joint': 3.0, 'rust': 0.0, 'dark': 0.3},
         'amber': {'color': [0.80, 0.52, 0.16], 'rust': 0.4, 'edge': 0.9, 'tone': 0.08},
         'rust': {'rust': 0.0},
@@ -985,6 +1266,43 @@ GALLERY = {   # skipGallery, measured (part bbox 6 x 46 x 28): drive house z 9.6
 }
 
 
+# v5 (second review): the concept's skip bridge is an OPEN dark box truss climbing steeply from a tall clad tower to the
+# furnace top, a big gas main riding on saddles over it and dropping down the tower's far face. Part frame: the head
+# (high, -Z) lands on the furnace's frame at 47 m, the foot on the tower top at 28.5 m.
+GALLERY_V5 = {
+    'A': (0.0, 28.5, 7.6), 'B': (0.0, 47.0, -9.6), 'w': 4.4, 'h': 3.4, 'truss': 0.0, 'open': True,
+    'foot': (6.0, 30.0, (7.6, 13.6)), 'head': None, 'trestle': None,
+    'pipe': (1.15, [(0.0, 52.6, -9.6), (0.0, 34.1, 7.6), (0.0, 34.1, 15.2), (0.0, 3.0, 15.2)]),
+}
+
+
+def _open_bridge(B, P, L):
+    """An open box truss in the gallery frame (x across, y up from the slope, z along): two Warren side trusses the
+    full height, top and bottom lateral X bracing, a grating floor with the skip track, a walkway rail."""
+    w, h = P['w'], P['h']
+    nb = max(2, int(L / 2.8))
+    for s in (-1, 1):
+        warren(B, (s * (w / 2), 0.15, 0.2), (s * (w / 2), 0.15, L - 0.2), h, up=(0, 1, 0), bay=L / nb, chord=0.34, web=0.18)
+    for k in range(nb + 1):
+        z = 0.2 + (L - 0.4) * k / nb
+        B.box((w + 0.3, 0.3, 0.3), at=(0, 0.15, z), mat='frame', bevel=0.02)
+        B.box((w + 0.3, 0.26, 0.26), at=(0, h + 0.15, z), mat='frame', bevel=0.02)
+        if k < nb:
+            z2 = 0.2 + (L - 0.4) * (k + 1) / nb
+            for yy in (0.15, h + 0.15):
+                B.bar((-w / 2, yy, z), (w / 2, yy, z2), 0.12, 0.12, mat='frame', bevel=0.0)
+                B.bar((w / 2, yy, z), (-w / 2, yy, z2), 0.12, 0.12, mat='frame', bevel=0.0)
+    B.box((w - 0.3, 0.12, L - 0.4), at=(0, 0.36, L / 2), mat='grate', bevel=0.0)
+    for dx in (-0.8, 0.8):        # the skip track: two rails on sleepers
+        B.box((0.16, 0.18, L - 0.4), at=(dx, 0.5, L / 2), mat='pipe', bevel=0.0)
+    for k in range(int(L / 1.2)):
+        B.box((2.2, 0.1, 0.22), at=(0, 0.42, 0.4 + 1.2 * k), mat='frame2', bevel=0.0)
+    # the skip car part way up
+    B.box((2.0, 1.4, 2.6), at=(0, 1.3, L * 0.62), mat='frame2', bevel=0.05)
+    B.box((2.1, 0.2, 2.7), at=(0, 2.05, L * 0.62), mat='frame', bevel=0.02)
+    K.railing(B, [(-w / 2 + 0.35, 0.42, 0.4), (-w / 2 + 0.35, 0.42, L - 0.4)], post=1.8)
+
+
 def incline_gallery(B, P=GALLERY):
     A, Bp = V(P['A']), V(P['B'])
     w, h, td = P['w'], P['h'], P['truss']
@@ -993,6 +1311,33 @@ def incline_gallery(B, P=GALLERY):
     up = V((0, 1, 0))
     t = d.normalized()
     n_up = (up - t * up.dot(t)).normalized()          # the gallery's own "up" (perpendicular to the slope)
+    if P.get('open'):
+        with B.at(M=K.frame_along(A, Bp, n_up)):
+            _open_bridge(B, P, L)
+        # saddles and the gas main over the bridge, dropping down the tower's far face
+        pr, path = P['pipe']
+        B.tube(path, pr, mat='pipeDark', n=20, fillet=1.6)
+        a_, b_ = V(path[0]), V(path[1])
+        for k in range(1, 6):
+            q = a_ + (b_ - a_) * (k / 6)
+            lo = Bp + (A - Bp) * (k / 6) + n_up * (h + 0.3)
+            B.bar(lo, q - V((0, pr * 0.8, 0)), 0.35, 0.6, mat='frame', bevel=0.02)
+        for (pa_, pb_) in zip(path[:-1], path[1:]):
+            a_, b_ = V(pa_), V(pb_)
+            L_ = (b_ - a_).length
+            with B.at(M=K.frame_along(a_, b_)):
+                for t_ in ((0.5,) if L_ < 12 else (0.2, 0.5, 0.8)):
+                    B.cyl(pr + 0.14, 0.3, at=(0, 0, L_ * t_), mat='frame', n=20, bevel=0.02)
+        fw, fh, (fz0, fz1) = P['foot']
+        _house(B, (0.0, 0.0, (fz0 + fz1) / 2), (fw, fh, fz1 - fz0), door=True)
+        # a stair tower's worth of landings on the tower's open side: a caged ladder to the top
+        K.ladder(B, (fw / 2 + 0.6, 0.0, fz0 + 1.2), (1, 0, 0), fh)
+        for yy in (10.0, 20.0):
+            lamp(B, (fw / 2 + 0.05, yy, (fz0 + fz1) / 2), (1, 0, 0), size=0.28)
+        return works({
+            'clad': {'course': 1e3, 'joint': 2.4, 'rust': 0.35, 'tone': 0.06, 'corr': 0.22},
+            'panel': {'course': 2.4, 'joint': 1.6, 'rust': 0.45, 'tone': 0.08, 'dark': 0.5},
+        })
     with B.at(M=K.frame_along(A, Bp, n_up)):
         # enclosed body: floor, clad walls, a pitched roof; dark portal ribs every 2.4 m (frames along the gallery)
         B.box((w, 0.25, L), at=(0, 0.125, L / 2), mat='frame2', bevel=0.03)
@@ -1087,10 +1432,13 @@ def _trestle(B, c, w, d, h):
 # ------------------------------------------------------------------------------------------------------------------
 # registry: part name -> (builder, params, texture size, about)
 # ------------------------------------------------------------------------------------------------------------------
+# v5: parts whose light shell gets its own texture set (remodel.py: zones -> a second atlas and material colony_<name>_2)
+SPLIT = {'blastFurnace': ({'shell'}, 4096)}
+
 REMODELS = {
-    'blastFurnace': (furnace, FURNACE_V4, 4096, '60 m blast furnace remodel: concrete plinth, dark staved hearth, recessed glowing tuyere band with 24 window frames, bustle main and downlegs, light plated shaft with five hoops, flange, cone, throat, uptakes and downcomer; four laced columns, four square grating decks on ring girders, X bracing, caged ladder, lamps'),
+    'blastFurnace': (furnace, FURNACE_V5, 4096, '60 m blast furnace remodel: concrete plinth, dark staved hearth, recessed glowing tuyere band with 24 window frames, bustle main and downlegs, light plated shaft with five hoops, flange, cone, throat, uptakes and downcomer; four laced columns, four square grating decks on ring girders, X bracing, caged ladder, lamps'),
     'bandedStack': (banded_stack, STACK, 2048, '46 m banded stack remodel: base block, gusseted flared foot, light / dark plated bands with hoops, two railed platforms, caged ladders, sooted lip, lamps, obstruction light'),
-    'shedSegment': (gable_shed, SHED_V4, 4096, '28 x 36 m clad shed segment remodel: corrugated walls between I-section pilasters, recessed window strips, dark dado, gables with outward verges, corrugated roof, gutters, ridge, louvred monitor, downpipes, kit crew door'),
-    'pourBay': (pour_bay, POUR, 4096, '19 x 26 m pour bay remodel: built-up columns, lattice side, plate girders and Warren roof trusses, runways and an amber double-girder bridge crane with trolley and hook, plated back wall, glowing runner and tundish, rails and ladle car, two tapping platforms with stairs'),
-    'skipGallery': (incline_gallery, GALLERY, 2048, 'inclined skip gallery remodel: clad enclosed gallery with portal ribs and windows on two Warren trusses, lattice trestle, drive house with roller and crew doors, head house'),
+    'shedSegment': (gable_shed, SHED_V5, 4096, '28 x 36 m clad shed segment remodel: corrugated walls between I-section pilasters, recessed window strips, dark dado, gables with outward verges, corrugated roof, gutters, ridge, louvred monitor, downpipes, kit crew door'),
+    'pourBay': (pour_bay, POUR_V5, 4096, '19 x 26 m pour bay remodel: built-up columns, lattice side, plate girders and Warren roof trusses, runways and an amber double-girder bridge crane with trolley and hook, plated back wall, glowing runner and tundish, rails and ladle car, two tapping platforms with stairs'),
+    'skipGallery': (incline_gallery, GALLERY_V5, 2048, 'inclined skip gallery remodel: clad enclosed gallery with portal ribs and windows on two Warren trusses, lattice trestle, drive house with roller and crew doors, head house'),
 }

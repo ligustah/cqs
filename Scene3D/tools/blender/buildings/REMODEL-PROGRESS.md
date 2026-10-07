@@ -26,3 +26,17 @@ W=/tmp/claude-0/-home-user-cqs/e592383b-a9f6-5dde-82a6-4494b59b11a7/scratchpad/r
 
 ## Status
 DONE (steel mill pilot). Next building: follow README-colony.md "Component remodel".
+
+## v5: second fidelity round (2026-10-07, user review of v4; scratch $S/v5, logs there)
+Review points: 1 furnace silhouette (broad light bell, open light frame, downcomer / uptakes / skip bridge), 2 pour bay
+(open portal, amber crane visible, longer brighter runner, control house), 3 density + wear (kit detail on walls,
+plinth, furnace base; seam / grime contrast; trailer texture), 4 furnace shell texel density (second texture set),
+5 neutral gunmetal.
+- S1 geometry (done): ckit FURNACE_V5 (+ _posts_tower, _raking_legs, decks, header, 6-point downcomer), GALLERY_V5
+  (open truss + gas main + tall tower), POUR_V5 (partial roof 0.32, bigger crane girder, runner along +Z 22 m, glow
+  2.6, control house), SHED_V5 (_shed_dressing: canopies, wall pipes, tray, roof units, ridge vents, dock);
+  steel_mill.py layout (furnace z 24, annex / dust catcher / stacks moved, bridge at heading 161.6, base dressing).
+- S1 paint/kit (done, not yet baked): cpaint seam_w / streak / drip, neutral GRIME_D / DIRT_D / EDGE_DARK; WORKS
+  lighter neutral gunmetal, less yellow light paint; remodel.py cull_buried (REMODEL_FLAGS="--no-cull" to skip) and
+  ckit.SPLIT (blastFurnace shell -> colony_blastFurnace_2, own atlas).
+- Next: S2 review bake (2048) of the 5 parts + building 2048, compare rounds; truck trailer (yard_kit); final 4096.

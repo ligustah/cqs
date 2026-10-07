@@ -54,6 +54,11 @@ def arg(flag, default=None, cast=str):
     return default
 
 
+def has_flag(flag):
+    # build-time switches from the environment (REMODEL_FLAGS="--no-cull --no-split"), for A/B checks
+    return flag in os.environ.get('REMODEL_FLAGS', '').split()
+
+
 def has(flag):
     if flag in sys.argv:
         sys.argv.remove(flag)
@@ -189,6 +194,64 @@ def unwrap(ob, margin, weights=UV_WEIGHT):
     return ppm, (sum(a3.values()), sum(a2.values()))
 
 
+def cull_buried(ob):
+    """v5: delete faces buried inside other solids (lathe pole caps inside the next station, box ends inside columns,
+    hoop inner walls on the shell). They are never seen but took UV space: the v4 furnace atlas spent large discs on
+    hidden caps. A face is buried when every sample point (its centre and its corners pulled 20 % in, lifted 4 mm off
+    the face) sees, along the normal and four directions tilted 35 degrees off it, a BACK face first, i.e. lies inside a
+    closed solid. Open or one-sided geometry never reads as inside from every ray, so the test errs toward keeping."""
+    import bmesh
+    from mathutils import Vector
+    from mathutils.bvhtree import BVHTree
+    bm = bmesh.new(); bm.from_mesh(ob.data)
+    bm.faces.ensure_lookup_table()
+    tree = BVHTree.FromBMesh(bm, epsilon=0.0)
+    dead = []
+    for f in bm.faces:
+        n = f.normal
+        if n.length < 0.5:
+            continue
+        c = f.calc_center_median()
+        t1 = (f.verts[1].co - f.verts[0].co).normalized() if len(f.verts) > 1 else Vector((1, 0, 0))
+        t2 = n.cross(t1).normalized()
+        dirs = [n] + [(n * 0.82 + d * 0.57).normalized() for d in (t1, -t1, t2, -t2)]
+        pts = [c] + [v.co + (c - v.co) * 0.2 for v in f.verts]
+        buried = True
+        for q in pts:
+            q = q + n * 0.004
+            for d in dirs:
+                hit, hn, idx, dist = tree.ray_cast(q, d)
+                if hit is None or idx == f.index or hn.dot(d) <= 0.0:
+                    buried = False
+                    break
+            if not buried:
+                break
+        if buried:
+            dead.append(f)
+    nf = len(bm.faces)
+    bmesh.ops.delete(bm, geom=dead, context='FACES')
+    bm.to_mesh(ob.data); bm.free()
+    ob.data.update()
+    print(f'[remodel] culled {len(dead)} buried faces of {nf}', flush=True)
+    return len(dead)
+
+
+def split_off(ob, zones):
+    """v5: a second object with the faces of `zones` (their own texture set), removed from ob."""
+    import bmesh
+    names = [s.material.name for s in ob.material_slots]
+    keep = {i for i, nm in enumerate(names) if nm in zones}
+    ob2 = ob.copy(); ob2.data = ob.data.copy(); ob2.name = ob.name + '_2'
+    bpy.context.collection.objects.link(ob2)
+    for o, drop_in in ((ob, True), (ob2, False)):
+        bm = bmesh.new(); bm.from_mesh(o.data)
+        dead = [f for f in bm.faces if (f.material_index in keep) == drop_in]
+        bmesh.ops.delete(bm, geom=dead, context='FACES')
+        bm.to_mesh(o.data); bm.free()
+        o.data.update()
+    return ob2
+
+
 def gltf_occlusion(mt):
     """Route the ORM's red channel (the baked AO) to the glTF exporter's occlusion slot (the 'glTF Material Output'
     custom group the Blender glTF add-on reads); the exporter then writes occlusionTexture on the same ORM image."""
@@ -248,6 +311,9 @@ def build(name, tex, samples, work, dry=False, preview=None):
     lo, hi = co.min(0), co.max(0)
     t1 = time.time()
     zones = [s.material.name for s in ob.material_slots]
+    if not has_flag('--no-cull'):
+        cull_buried(ob)
+        tris = lib.tris_of(ob)
     print(f'[remodel] {name}: {tris} tris, bbox {np.round(lo, 2).tolist()} .. {np.round(hi, 2).tolist()}, zones {zones}, {t1 - t0:.0f}s', flush=True)
     if dry:
         if preview:
@@ -268,23 +334,51 @@ def build(name, tex, samples, work, dry=False, preview=None):
             export(ob, preview)
             print(f'[remodel] preview -> {preview}', flush=True)
         return {'tris': tris, 'bbox': [lo.tolist(), hi.tolist()]}
-    ppm, (a3, a2) = unwrap(ob, margin=max(0.0005, 1.5 / tex))
-    ppm = {z: v * tex for z, v in ppm.items()}
-    px_per_m = max(ppm.get(z, 0.0) for z in ppm)
-    t2 = time.time()
-    print(f'[remodel] unwrap {t2 - t1:.0f}s, surface {a3:.0f} m2, uv fill {a2:.2f}, px/m at {tex}: '
-          + ', '.join(f'{z} {v:.1f}' for z, v in sorted(ppm.items(), key=lambda kv: -kv[1])), flush=True)
-    maps = HC.bake_maps(ob, size=tex, ao_size=tex // 2, ao_samples=samples, ao_dist=1.2, curv_r=0.05, threads=4)
-    # hulls/common converts Blender -> ship frame (x, z, -y); the kit authors the part frame directly in Blender (Y up)
-    for k in ('pos', 'nrm'):
-        a = maps[k]
-        maps[k] = np.stack([a[..., 0], -a[..., 2], a[..., 1]], -1)
-    t3 = time.time()
-    res = cpaint.paint(maps, zones, spec, os.path.join(work, name), [ppm.get(z, px_per_m) for z in zones], lib.MATS)
-    del maps
-    t4 = time.time()
-    print(f'[remodel] bake {t3 - t2:.0f}s, paint {t4 - t3:.0f}s, stats {res["stats"]}', flush=True)
-    final_material(ob, f'colony_{name}', res)
+    # v5: an optional second texture set (ckit.SPLIT: zones -> their own atlas and material colony_<name>_2), so a
+    # hero's light shell gets a full atlas of its own (the furnace shell 34 -> ~75 px/m at 4096); each material keeps
+    # the colony sampler count (base, ORM, normal, emissive)
+    sets = [(ob, f'colony_{name}', tex, name)]
+    if name in getattr(ckit, 'SPLIT', {}) and not has_flag('--no-split'):
+        zs, tex2 = ckit.SPLIT[name]
+        ob2 = split_off(ob, zs)
+        sets.append((ob2, f'colony_{name}_2', min(tex2, tex), name + '_2'))
+    ppm_all, a3, a2, stats_all = {}, 0.0, 0.0, {}
+    t2 = t3 = t4 = time.time()
+    for (o, mname, tx, wname) in sets:
+        ppm, (a3_, a2_) = unwrap(o, margin=max(0.0005, 1.5 / tx))
+        ppm = {z: v * tx for z, v in ppm.items()}
+        px_per_m = max(ppm.get(z, 0.0) for z in ppm)
+        t2 = time.time()
+        print(f'[remodel] {mname}: unwrap {t2 - t1:.0f}s, surface {a3_:.0f} m2, uv fill {a2_:.2f}, px/m at {tx}: '
+              + ', '.join(f'{z} {v:.1f}' for z, v in sorted(ppm.items(), key=lambda kv: -kv[1])), flush=True)
+        maps = HC.bake_maps(o, size=tx, ao_size=tx // 2, ao_samples=samples, ao_dist=1.2, curv_r=0.05, threads=4)
+        # hulls/common converts Blender -> ship frame (x, z, -y); the kit authors the part frame directly in Blender (Y up)
+        for k in ('pos', 'nrm'):
+            a = maps[k]
+            maps[k] = np.stack([a[..., 0], -a[..., 2], a[..., 1]], -1)
+        t3 = time.time()
+        zones_o = [s_.material.name for s_ in o.material_slots]
+        res = cpaint.paint(maps, zones_o, spec, os.path.join(work, wname), [ppm.get(z, px_per_m) for z in zones_o], lib.MATS)
+        del maps
+        t4 = time.time()
+        print(f'[remodel] {mname}: bake {t3 - t2:.0f}s, paint {t4 - t3:.0f}s, stats {res["stats"]}', flush=True)
+        final_material(o, mname, res)
+        for z, v in ppm.items():
+            if v > 0:
+                ppm_all[z if mname == f'colony_{name}' else f'{z} (set 2)'] = v
+        a3 += a3_; a2 += a2_
+        stats_all[mname] = res['stats']
+        t1 = t4
+    if len(sets) > 1:
+        vl = bpy.context.view_layer
+        for o_ in vl.objects:
+            o_.select_set(False)
+        for (o, *_r) in sets:
+            o.select_set(True)
+        vl.objects.active = ob
+        bpy.ops.object.join()
+    ppm = ppm_all
+    res = {'stats': stats_all if len(sets) > 1 else stats_all[f'colony_{name}']}
     path = os.path.join(OUT, f'{name}.glb')
     export(ob, path)
     t5 = time.time()

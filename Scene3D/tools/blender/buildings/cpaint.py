@@ -38,7 +38,11 @@ DARK = ('frame', 'frame2', 'pipeDark', 'grate', 'louvre', 'roof', 'charcoal')
 RUST_C = HP.srgb2lin([0.47, 0.27, 0.15])
 RUST_D = HP.srgb2lin([0.30, 0.15, 0.08])
 EDGE_LIGHT = HP.srgb2lin([0.86, 0.85, 0.82])
-EDGE_DARK = HP.srgb2lin([0.40, 0.39, 0.37])
+EDGE_DARK = HP.srgb2lin([0.42, 0.42, 0.42])      # v5: neutral bare steel (0.40, 0.39, 0.37 read brown on the frames)
+GRIME_L = HP.srgb2lin([0.40, 0.37, 0.33])         # crease grime on light paint (warm soot and dust)
+GRIME_D = HP.srgb2lin([0.36, 0.355, 0.35])        # v5: on dark steel a neutral soot (the warm grime browned the gunmetal)
+DIRT_L = HP.srgb2lin([0.33, 0.29, 0.24])
+DIRT_D = HP.srgb2lin([0.30, 0.295, 0.29])
 
 
 def zone_cfg(name, spec, mats):
@@ -128,13 +132,21 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
                 ji = np.floor((s + stag) / joint)
                 ds = joint / 2 - np.abs((s + stag) - (ji + 0.5) * joint)
                 d = np.minimum(dt, ds)
-                w = 0.035
+                w = float(c.get('seam_w', 0.035))
                 seam = 1 - HP.smooth(w * 0.3, w, d)
                 pid = (ci.astype(np.int64) * 7919 + ji.astype(np.int64) * 104729 + zi * 13).astype(np.int64)
                 col *= (1 + c['tone'] * (HP.hash3(pid, pid // 7, pid // 13, 11) * 2 - 1))[:, None]
                 col *= (1 - c['dark'] * seam)[:, None]
                 rg += 0.06 * seam
                 h -= 0.006 * (1 - HP.smooth(0.0, w, d))
+                if c.get('drip'):
+                    # v5: grime drips under each course seam (the concept's streaked panel joints): dirt held in the
+                    # joint runs down the panel below it, broken into streaks
+                    below = (ci + 1) * course - t                     # metres below the next seam up
+                    dn = HP.fbm(p * np.array([1.0, 0.05, 1.0], np.float32), 2.2, 3, seed=53 + zi)
+                    drip = wall * HP.smooth(0.9, 0.0, below) * HP.smooth(0.42, 0.62, dn) * float(c['drip'])
+                    col *= (1 - drip)[:, None]
+                    rg += 0.1 * drip
                 if c['bolts']:
                     b = c['bolts']
                     # bolt rows 0.09 m off each course seam and along the joints
@@ -171,18 +183,18 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
             g = c['grime']
             col *= (1 - 0.35 * g * (1 - a))[:, None]
             crease = g * HP.smooth(0.85, 0.45, a)
-            gcol = col * HP.srgb2lin([0.40, 0.37, 0.33])[None] / 0.55
+            gcol = col * (GRIME_L if c['light'] else GRIME_D)[None] / 0.55
             col = col * (1 - 0.6 * crease[:, None]) + gcol * 0.6 * crease[:, None]
             rg += 0.12 * crease
             # blotches and run-off streaks
             blot = HP.fbm(p, 0.08, 3, seed=1 + zi)
             col *= (1 + c.get('blot', 0.07) * (blot - 0.5) * 2)[:, None]
             st = HP.fbm(p * np.array([1.0, 0.06, 1.0], np.float32), 1.4, 3, seed=9)
-            streak = wall * HP.smooth(0.5, 0.7, st) * 0.16 * g
+            streak = wall * HP.smooth(0.5, 0.7, st) * float(c.get('streak', 0.16)) * g
             col *= (1 - streak)[:, None]
             # ground dirt: walls darken and warm toward the slab (splash, dust)
             gd = wall * HP.smooth(2.2, 0.0, p[:, 1]) * (0.55 if c['light'] else 0.3) * g
-            col = col * (1 - 0.45 * gd[:, None]) + HP.srgb2lin([0.33, 0.29, 0.24])[None] * 0.45 * gd[:, None]
+            col = col * (1 - 0.45 * gd[:, None]) + (DIRT_L if c['light'] else DIRT_D)[None] * 0.45 * gd[:, None]
             # rust: streaks down the walls (stronger under seams and in shadowed corners), seams bleeding, chips
             if c['rust'] > 0:
                 rs = HP.fbm(p * np.array([1.0, 0.09, 1.0], np.float32), 0.9, 3, seed=17 + zi)
@@ -204,7 +216,7 @@ def paint(maps, zone_names, spec, out, px_per_m, mats, size=None):
                 wear = edge * HP.smooth(0.32, 0.55, chip) * c['edge']
                 ec = EDGE_LIGHT if c['light'] else EDGE_DARK
                 if not c['light'] and c['rust'] > 0:
-                    rr = HP.smooth(0.5, 0.7, HP.fbm(p, 1.1, 2, seed=41))
+                    rr = HP.smooth(0.5, 0.7, HP.fbm(p, 1.1, 2, seed=41)) * min(1.0, 2.0 * c['rust'])
                     ec = ec[None] * (1 - rr[:, None]) + RUST_C[None] * rr[:, None]
                 col = col * (1 - wear[:, None]) + (ec if ec.ndim == 2 else ec[None]) * wear[:, None]
                 mt = np.maximum(mt, wear * (0.15 if c['light'] else 0.6))

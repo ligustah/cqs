@@ -26,7 +26,7 @@ SPEC = {
     'about': 'blast furnace in a steel tower frame with a skip-hoist gallery, glowing pour bay with an overhead crane, two banded stacks, long clad shed',
 }
 
-FX, FZ = -18.0, 26.0         # furnace axis (front-left of the slab)
+FX, FZ = -18.0, 24.0         # furnace axis (front-left of the slab; v5: 2 m back for the broader furnace)
 SH_X, SH_SEGMENTS = 10.0, (-27.0, 9.0)   # shed: two 36 m fal segments along Z, x -4..24
 PB_X, PB_Z = 28.0, 13.0       # pour bay centre (against the shed's +X face)
 SH = (-4.0, 24.0, -44.0, 28.0)  # shed x0, x1, z0, z1
@@ -223,15 +223,15 @@ def model(B):
              steps=[(12.0, 42.0, '+z')])
     # the furnace tower at the front-left (60 m: shaft, glowing tuyere band, top cone and uptakes, gunmetal frame)
     K.component(B, 'blastFurnace', (FX, 0.0, FZ), heading=0.0)
-    B.R.beacon((FX, 61.0, FZ))
-    B.R.obstruction((FX + 2.0, 60.4, FZ + 2.0))
-    # the skip gallery climbing from the yard behind the furnace to its top (low end with the drive house at +Z of the
-    # part, so it is turned to run from the shed side up to the furnace)
-    K.component(B, 'skipGallery', (-10.5, 0.0, 12.0), heading=165.0)
-    # two banded stacks behind the furnace, the second shorter
-    K.component(B, 'bandedStack', (-15.0, 0.0, -10.0), heading=90.0)
-    K.component(B, 'bandedStack', (-14.0, 0.0, -32.0), heading=90.0, scale=0.87)
-    for z in (-10.0, -32.0):
+    B.R.beacon((FX, 63.0, FZ))
+    B.R.obstruction((FX + 2.0, 60.0, FZ + 2.0))
+    # v5: the skip bridge (an open truss with the gas main over it) from a tall clad tower between the stacks and the
+    # shed up to the furnace's frame at 47 m (part frame: head at -Z, tower at +Z; heading 161.6 points it at the tower)
+    K.component(B, 'skipGallery', (-11.8, 0.0, 5.2), heading=161.6)
+    # two banded stacks behind the furnace, the second shorter (v5: moved back for the bridge tower)
+    K.component(B, 'bandedStack', (-16.0, 0.0, -14.0), heading=90.0)
+    K.component(B, 'bandedStack', (-14.0, 0.0, -34.0), heading=90.0, scale=0.87)
+    for z in (-14.0, -34.0):
         K.pipe(B, [(-3.0, 12.0, z), (-9.0, 12.0, z), (-11.0, 8.0, z)], r=1.3, mat='pipeDark', rings=False)
     # the long shed along +X: two fal shed segments end to end, windowed long face to +X
     for zc in SH_SEGMENTS:
@@ -240,20 +240,31 @@ def model(B):
     K.component(B, 'pourBay', (PB_X, 0.0, PB_Z), heading=0.0)
     for (x, z) in ((PB_X + 9.5, PB_Z - 13.0), (PB_X + 9.5, PB_Z + 13.0)):
         B.R.pin((x, 14.0, z))
-    # tall gas-cleaning block and annex on the furnace's -X side, the dust catcher (parametric kit)
-    # v4 r3: two storeys of light panels (the concept's left annexes are low and light; a 24 m dark block hid the
-    # furnace's light hearth drum from the game camera)
-    K.block(B, (-34.0, 0.0, 34.5), (9.0, 13.0, 11.0),
-            sides={'+z': {'bay': 4.4, 'storey': 6.0, 'windows': [0, 1], 'win': (1.4, 1.2), 'doors': [2.0], 'louvres': [(6.5, 7.5, 2.0, 2.0)]},
-                   '+x': {'bay': 5.4, 'storey': 6.0, 'windows': [1], 'win': (1.4, 1.2), 'doors': [3.0]},
-                   '-x': {'bay': 5.4, 'storey': 6.0}, '-z': {'bay': 4.4, 'storey': 6.0}},
-            roof={'parapet': 0.6, 'units': [('hvac', 0.0, -3.0, {'w': 3.0, 'd': 2.2}), ('antenna', -1.5, 5.5, {'h': 5.0})]}, frame='frameL')
-    K.pipe(B, [(FX - 9.6, 36.0, FZ + 4.0), (-34.0, 36.0, FZ + 4.0), (-34.0, 36.0, 33.0), (-34.0, 13.5, 33.0)], r=1.2, mat='pipeDark', rings=False)
-    K.block(B, (-35.0, 0.0, 20.0), (6.0, 7.0, 8.0),
-            sides={'+z': {'bay': 3.0, 'doors': [3.0], 'windows': []}, '+x': {'bay': 4.0, 'windows': [0], 'win': (1.2, 1.0)}},
-            roof={'parapet': 0.4, 'units': [('hvac', 0.0, 0.0, {'w': 2.6, 'd': 1.8, 'fans': 1})]})
-    K.vtank(B, (-32.0, 8.0), 3.0, 10.0, y0=0.0, top='cone', mat='frame2', skirt=6.0, ladder_side=90.0,
-            bands=[(1.0, 1.4, 'frame'), (8.4, 8.8, 'frame')], platforms=(10.5,))
+    # gas-cleaning annex on the furnace's -X side, under the downcomer's elbow (v5: narrow and low beside the broader
+    # furnace plinth; the concept's light block with the big elbow pipe on its roof), the dust catcher behind
+    K.block(B, (-37.0, 0.0, 24.0), (6.0, 13.0, 15.0),
+            sides={'+z': {'bay': 3.0, 'storey': 6.5, 'windows': [0, 1], 'win': (1.2, 1.2), 'doors': [3.0]},
+                   '+x': {'bay': 5.0, 'storey': 6.5, 'windows': [1], 'win': (1.4, 1.2)},
+                   '-x': {'bay': 5.0, 'storey': 6.5, 'windows': [1], 'win': (1.4, 1.2), 'doors': [7.5], 'louvres': [(11.0, 7.5, 2.0, 2.0)]},
+                   '-z': {'bay': 3.0, 'storey': 6.5}},
+            roof={'parapet': 0.6, 'units': [('vent', 1.0, -5.0, {}), ('antenna', -1.5, 6.0, {'h': 5.0})]}, frame='frameL')
+    K.pipe(B, [(FX - 19.0, 14.2, FZ + 1.0), (FX - 19.0, 13.2, FZ + 1.0)], r=1.45, mat='pipeDark', rings=False)
+    K.ladder(B, (-40.4, 0.0, 20.0), (-1, 0, 0), 13.0)
+    K.block(B, (-35.5, 0.0, -2.0), (7.0, 7.0, 8.0),
+            sides={'+z': {'bay': 3.5, 'doors': [3.5], 'windows': []}, '+x': {'bay': 4.0, 'windows': [0], 'win': (1.2, 1.0)}},
+            roof={'parapet': 0.4, 'units': [('hvac', 0.0, 0.0, {'w': 2.6, 'd': 1.8, 'fans': 1})]}, frame='frameL')
+    K.vtank(B, (-34.0, 7.5), 2.6, 9.0, y0=0.0, top='cone', mat='frame2', skirt=5.0, ladder_side=90.0,
+            bands=[(1.0, 1.4, 'frame'), (7.4, 7.8, 'frame')], platforms=(9.5,))
+    K.pipe(B, [(-36.6, 12.0, 7.5), (-37.0, 12.0, 16.5)], r=0.6, mat='pipeDark', supports=False)
+    # v5: furnace base dressing: cooling-water mains round the plinth on stools, valve skids, a stair to the
+    # plinth top, crates (the concept's busy foot)
+    K.pipe(B, [(FX - 17.2, 0.9, FZ + 6.0), (FX - 17.2, 0.9, FZ + 17.0), (FX + 6.0, 0.9, FZ + 17.0)], r=0.45, mat='pipeDark', supports=True, ground=0.0)
+    K.pipe(B, [(FX - 17.2, 2.0, FZ - 8.0), (FX - 17.2, 2.0, FZ + 4.0), (FX - 16.4, 3.4, FZ + 4.0)], r=0.3, mat='pipeDark', supports=True, ground=0.0)
+    K.cable_tray(B, (FX + 16.4, 2.6, FZ - 14.0), (FX + 16.4, 2.6, FZ + 10.0), w=0.5)
+    K.stair(B, (FX + 6.0, 0.0, FZ + 17.6), (-1, 0, 0), 3.0, w=1.2)
+    for (cx, cz) in ((FX + 9.0, FZ + 17.8), (FX + 10.8, FZ + 18.0)):
+        K.crate(B, (cx, 0.0, cz), (1.4, 1.1, 1.4))
+    K.valve(B, (FX - 17.2, 0.9, FZ + 11.0), (0, 0, 1), r=0.45)
     # v4 r3: the casthouse front block between the furnace and the pour bay (the concept's foreground: light panels in
     # dark frames, crew doors with lamps, a roller door, roof units), so the shed's front gable stands behind layered
     # volumes instead of over an empty apron
@@ -262,7 +273,15 @@ def model(B):
                    '+x': {'bay': 4.5, 'storey': 5.0, 'windows': [1], 'win': (1.4, 1.2), 'doors': [4.5]},
                    '-x': {'bay': 4.5, 'storey': 5.0}, '-z': {'bay': 5.25, 'storey': 5.0}},
             roof={'parapet': 0.5, 'units': [('hvac', -6.0, -1.0, {'w': 3.0, 'd': 2.0}), ('vent', 0.5, 1.5, {}), ('hvac', 6.0, -1.2, {'w': 2.4, 'd': 1.8, 'fans': 1})]})
-    K.pipe(B, [(-4.6, 7.0, 31.0), (-2.0, 7.0, 31.0), (-2.0, 11.2, 31.0), (8.0, 11.2, 31.0)], r=0.45, mat='pipeDark', supports=False)
+    K.pipe(B, [(-3.6, 7.0, 31.0), (-2.0, 7.0, 31.0), (-2.0, 11.2, 31.0), (8.0, 11.2, 31.0)], r=0.45, mat='pipeDark', supports=False)
+    # v5: more of the concept's secondary layer: a pipe run and cable tray along the casthouse front, door canopies,
+    # a stair to its roof, crates and a skid on the apron, extra roof units
+    K.pipe(B, [(-2.0, 3.6, 38.9), (18.0, 3.6, 38.9)], r=0.3, mat='pipeDark', supports=False)
+    K.cable_tray(B, (-2.0, 8.4, 38.8), (18.0, 8.4, 38.8), w=0.45)
+    K.stair(B, (19.0, 0.0, 37.5), (0, 0, -1), 5.0, w=1.1)
+    for (cx, cz, sz) in ((21.0, 39.5, (1.6, 1.2, 1.6)), (22.6, 39.8, (1.2, 1.0, 1.2)), (21.6, 39.5, (1.0, 0.8, 1.0))):
+        K.crate(B, (cx, 0.0 if sz[1] > 0.9 else 1.2, cz), sz)
+    K.hvac(B, (12.0, 10.0, 32.0), w=2.6, d=1.8, fans=2)
     # switch room, control box, stairs, crates on the +X apron
     K.block(B, (33.5, 0.0, -10.0), (6.0, 4.5, 7.0), frame='frameL',
             sides={'+x': {'bay': 3.5, 'doors': [2.0], 'windows': [0], 'win': (1.2, 1.0)}, '+z': {'bay': 3.0, 'windows': [0], 'win': (1.2, 1.0)}},
