@@ -332,7 +332,7 @@ def clutter(B):
     # --- glow spill: the hearth band lights the furnace foot and casthouse roof; the runner lights the portal floor
     # r2: 900 cd / 34 m washed the whole furnace foot and the shed gable orange: a local spill only
     # r5: lower and weaker: at 13 m it painted the light hearth drum peach; the concept lights the ground and the legs
-    B.R.spill((FX + 9.5, 6.5, FZ + 9.5), color='#ff6a10', intensity=170.0, distance=18.0)
+    B.R.spill((FX + 11.0, 4.5, FZ + 11.0), color='#ffa048', intensity=110.0, distance=14.0)   # r6: yellow-orange, on the ground
     B.R.spill((PB_X + 8.6, 3.2, PB_Z + 4.0), color='#ffa04a', intensity=180.0, distance=16.0)
     # --- +X apron along the shed (x 33-40, z -48..0): a pipe cluster on stools at the edge, sheds, pallets, skids
     K.pipe_bundle(B, [(38.6, 0.0, -45.5), (38.6, 0.0, -26.0)], n=3, r=0.22)

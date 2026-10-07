@@ -406,8 +406,8 @@ FURNACE_V5.update({
 # the furnace); a taller, brighter hearth band (the concept's bright molten band: wide openings, fewer stocks)
 FURNACE_V6 = dict(FURNACE_V5)
 FURNACE_V6.update({
-    'tuyere': (8.95, 14.8, 18.0, 12), 'tuyere_glow': 1.6,   # r2: 12 stocks (20 read as a window grid, not a band)
-    'tuyere_color': '#ff6200',   # r4: and radiance 1.6 (2.6 still tone-mapped pale salmon)   # r3: #ff8a28 at radiance 2.6 tone-mapped to a pale salmon; a deeper orange stays molten
+    'tuyere': (8.95, 14.8, 18.0, 12), 'tuyere_glow': 1.2,   # r2: 12 stocks (20 read as a window grid, not a band)
+    'tuyere_color': '#ffa03c',   # r6: a yellow-orange at 1.2 (#ff6200 at 1.6 still read pink-red: the red channel clips first)   # r3: #ff8a28 at radiance 2.6 tone-mapped to a pale salmon; a deeper orange stays molten
     'segments': 60,     # r3 (phone budget): 72 -> 60 facets round the shell (0.95 m facets on the 9 m drum)
     'tower': dict(FURNACE_V5['tower'], top=(7.2, 54.0), top_deck=(54.0, 5.05, 7.6)),
 })

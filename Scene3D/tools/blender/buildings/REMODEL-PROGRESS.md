@@ -155,3 +155,12 @@ Checklist review r4:
 - Gas main: FAIL: ended in the air over the gallery -> r5 runs it into the upper stack.
 - I1 thumbnail: PASS: aspect 1.12, fill 0.71; furnace + glow + stacks read at 40 px, distinct from the siblings.
 - Phone: ~160k (lite) FAIL by ~7 % -> r5 shed ribs 0.9 -> 1.8 m.
+
+### v6 round 5 (14:16-14:34): furnace glow 1.6 #ff6200 + spill 6.5 m, gas main into the upper stack, shed ribs 1.8 m.
+171.8k tris (phone copy ~158.7k after workers + doors). paint-check light 0.95x, all 0.99x, hue 25.2 (c 23.2).
+Evidence $S/mill/r5-blind.jpg, r5-closesheet.jpg; camera test cam-sheet.jpg (el 8 / 5 with fov 18 / 16: the plinth
+became a sliver and the roofs vanished; the concept shows both plinth top and facades: el 12, fov 22 kept).
+Checklist review r5: S1 / C2 / G1 / G2 / D1 / D2 / W1 / W2 / L2 / I1 PASS as r4; gas main PASS (runs into the stack);
+L1 FAIL: band and lower drum still pink-red (the red channel clips first at radiance 1.6; a red spill on light paint
+reads pink) -> r6 #ffa03c at 1.2, spill #ffa048 110 cd at 4.5 m; phone tris FAIL (158.7k vs 150k).
+Judges for r5 requested from the coordinator.

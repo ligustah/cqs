@@ -29,6 +29,8 @@ at a glance at the concept camera. Not a pixel match. Every number in the checkl
    right). Orthographic: `sin(el)^2 = s1 * s2`, `tan(az)^2 = s1 / s2`. The concepts are drawn with a **long lens**:
    use `fov` 22 (the default 38 exaggerates the plinth's near corner and reads ~10 degrees higher than asked).
    Mill: s1 0.30, s2 0.24 -> az 48, el 12-15, fov 22. Eyeballing "about 20-27 degrees down" was wrong by 10+ degrees.
+   But AI concepts are not consistent projections: the mill's plinth slopes say el ~7, its roofs and plinth top say
+   ~15-20. el 8 / 5 made the plinth a sliver and hid the roofs `[mill v6 r5]`; settle by eye between the two.
 3. Put it in the module's studio hint (`src/buildings/<id>.js`):
    `studio: { az, el, fov, dist, sunaz, sunel, key, fill, keyColor, fillColor }` (`fov`, `keyColor`, `fillColor` are
    read by `main.js` for buildings `[mill v6 r0]`). Check the frame: the plinth spans ~95 % of the frame width, as in
@@ -122,9 +124,11 @@ giving the zone's extent (x / z range), so collisions can be checked by reading.
 - Hot surfaces: zone `hot` (emissive paint) + thin glow boxes (`K.glow_ring`, `B.R.glowbox`, < 0.1 m thick).
 - A band reads as a band only with few, thin posts in front of it: 12 tuyere stocks round a 9 m hearth, not 20-32
   (those read as a lit window grid).
-- Glow colour stays saturated only at moderate radiance: #ff8a28 / #ff6c08 at 2.6 tone-mapped to a pale salmon or
-  peach (judge A: "a wide pale-peach section"); use a deep orange (#ff6200) at ~1.6. Spill light colour likewise
-  deep (#ff7418): a pale spill turns light paint peach.
+- Glow colour: high radiance on an orange tone-maps to salmon / peach (#ff8a28 / #ff6c08 at 2.6: judge A "a wide
+  pale-peach section"), and a deep red-orange (#ff6200 at 1.6) still reads pink-red because red clips first. What
+  reads molten: a yellow-orange (#ffa03c) at ~1.2 on the glow boxes, the emissive paint carrying the deep orange.
+  Spill lights the same yellow-orange, low (4-5 m) and weak (~110 cd / 14 m): a red spill on light paint reads pink.
+  `[mill v6 r3-r6]`
 - Spill on the ground and structure: `B.R.spill(p, color, intensity, distance)` -> a runtime point light
   (`colony.js` `spills` -> `interiorLights` kind 'point'). Defaults that worked: hearth 300 cd / 20 m placed 1.5 m
   outside the band toward the camera; runner 180 cd / 16 m, 3 m over it. 900 cd / 34 m washed the whole furnace
