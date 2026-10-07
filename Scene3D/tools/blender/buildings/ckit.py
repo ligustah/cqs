@@ -1610,6 +1610,8 @@ def _trestle(B, c, w, d, h):
 # v5: parts whose light shell gets its own texture set (remodel.py: zones -> a second atlas and material colony_<name>_2)
 # v6: a third set for the furnace's dark legs and bosh (frame2: 28 px/m in the main atlas, soft at the close-up)
 SPLIT = {'blastFurnace': [({'shell'}, 4096), ({'frame2'}, 4096)]}
+# v6 r10: main-set UV weights per part (remodel.py): the furnace main set holds only dark structure, plinth, pipes, glow
+UV_W = {'blastFurnace': {'frame': 0.95, 'pipeDark': 0.9, 'grate': 0.5, 'concrete': 0.55, 'concrete2': 0.55}}
 
 REMODELS = {
     'blastFurnace': (furnace, FURNACE_V6, 4096, '60 m blast furnace remodel: concrete plinth, dark staved hearth, recessed glowing tuyere band with 24 window frames, bustle main and downlegs, light plated shaft with five hoops, flange, cone, throat, uptakes and downcomer; four laced columns, four square grating decks on ring girders, X bracing, caged ladder, lamps'),

@@ -426,7 +426,10 @@ def build(name, tex, samples, work, dry=False, preview=None):
     global CYL
     for (o, mname, tx, wname) in sets:
         CYL = cylz.get(mname, set())
-        ppm, (a3_, a2_) = unwrap(o, margin=max(0.0005, 1.5 / tx))
+        # v6 r10: per-part UV weights (ckit.UV_W[name]) for the main set only: the furnace's main atlas lost its light
+        # shell and legs to sets 2 / 3, so its dark structure can take more texels (13 -> ~25 px/m at 4096)
+        wts = dict(UV_WEIGHT, **(getattr(ckit, 'UV_W', {}).get(name, {}) if mname == f'colony_{name}' else {}))
+        ppm, (a3_, a2_) = unwrap(o, margin=max(0.0005, 1.5 / tx), weights=wts)
         CYL = set()
         ppm = {z: v * tx for z, v in ppm.items()}
         px_per_m = max(ppm.get(z, 0.0) for z in ppm)
