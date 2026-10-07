@@ -3,7 +3,10 @@
 // through the dev path (index.html, raw GLBs), save both stills and a diff image, and fail when they differ by more
 // than the threshold. One headless browser, one view at a time (SwiftShader renders are CPU-heavy).
 //   node tools/pkg-diff.mjs [--root <Scene3D>] [--device desktop|phone] [--only pkg|dev] [--out dir]
-//        [--threshold 0.02] [--csp 0|1] [--units 16] [--json out.json] [view ...]
+//        [--threshold 0.02] [--csp 1|0] [--units 16|0] [--json out.json] [view ...]
+// By default the package page gets a host-like CSP (fetch() of blob: refused) and both pages run on an emulated GPU
+// with 16 fragment texture units (a program with more samplers fails to link): the conditions the published page
+// meets on most real devices, which SwiftShader (32 units, no CSP) would otherwise hide.
 // views: fleet, spaceport (fleet ?shot=spaceport), the ship studios (carrier fighter destroyer freighter corvette
 // vehicle) and b_<building> for every building in src/ships/index.js BUILDINGS (default: all of them).
 // Metric: share of pixels whose largest channel difference is over 32 (of 255). Phone: the package serves the phone
@@ -22,12 +25,12 @@ const device = opt('device', 'desktop');
 const only = opt('only', null);
 const out = resolve(opt('out', join(ROOT, 'shots/pkg-diff', device)));
 const threshold = parseFloat(opt('threshold', device === 'phone' ? '0.06' : '0.02'));
-const csp = opt('csp', '0') === '1';
+const csp = opt('csp', '1') === '1';
 // --units 16: emulate a GPU with 16 fragment texture units (ANGLE on D3D11 / Metal, iOS, most Android): a program with
 // more active samplers fails to link, as it does there (SwiftShader has 32, so it would draw it)
-const units = parseInt(opt('units', '0'));
+const units = parseInt(opt('units', '16'));
 const jsonOut = opt('json', join(out, 'diff.json'));
-// a strict host-like CSP (optional): the page and package files same-origin, three from the CDN, images from data:/blob:
+// a strict host-like CSP: the page and package files same-origin, three from the CDN, images from data:/blob:
 const HOST_CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; connect-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com";
 
 const BUILDINGS = ['shipyard', 'spaceport', 'deuterium_depot', 'steel_mill', 'refinery', 'residence', 'processing_plant', 'oil_tanks', 'silicon_foundry', 'steel_depot', 'trade_center', 'infrastructure', 'university', 'library', 'silicon_depot', 'military_base', 'radio_telescope', 'transmitter'];

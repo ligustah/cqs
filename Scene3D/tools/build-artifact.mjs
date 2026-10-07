@@ -9,7 +9,7 @@
 //   <name>.glb.shared.b64.txt    geometry (meshopt, bit-identical) + the textures every tier uses unchanged
 //   <name>.glb.b64.txt           desktop tier: the model's JSON + its own textures (originals; desktop role caps in tools/artifact-tiers.mjs)
 //   <name>.glb.<tier>.b64.txt    phone tiers (src/lib/device.js, README "Phone budget"): JSON + downscaled textures
-//   assets/tex/<hash>.webp       every texture of 2048 px or more, as a WebP file (shared by content hash)
+//   assets/tex/<hash>.webp       every texture of 2048 px or more, as a plain image file (shared by content hash)
 //   ships      .lite  1024 px textures (the subject of a ship studio)
 //              .mini   256 px, the carrier 512 px (ships in a crowd: fleet, lineup, parked loads, building scenes)
 //   buildings  .lite   512 px, small dressing parts left out of the scene graph (tools/artifact-tiers.mjs LITE_BUILDINGS); the bbox must not move
@@ -81,7 +81,10 @@ async function walk(dir, keep) {
         const key = `${rel}${t.name === 'full' ? '' : `.${t.name}`}.b64.txt`;
         await emit(key, join(DIST, key), 'text/plain', r.tiers[t.name].toString('base64'));
       }
-      for (const [h, b] of Object.entries(r.tex)) if (!files[`assets/tex/${h}.webp`]) await emit(`assets/tex/${h}.webp`, join(DIST, `assets/tex/${h}.webp`), 'image/webp', b);
+      for (const [name, b] of Object.entries(r.tex)) {
+        const key = `assets/tex/${name}`;
+        if (!files[key]) await emit(key, join(DIST, key), TYPES[name.slice(name.lastIndexOf('.'))], b);
+      }
       for (const x of r.report) {
         report.push(`${rel} .${x.tier}: ${x.maxPx} px max${x.cap ? ` (cap ${x.cap})` : ''}, ${x.external} WebP files, ${(x.ownBytes / 1e6).toFixed(2)} MB own textures${x.tris ? `, ${Math.round(x.tris[1] / 1e3)}k of ${Math.round(x.tris[0] / 1e3)}k tris` : ''}`);
       }

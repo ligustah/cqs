@@ -2,7 +2,8 @@
 //   <name>.glb.shared.b64.txt   the geometry (meshopt buffers, bit-identical) and every texture all tiers use unchanged
 //   <name>.glb[.<tier>].b64.txt  per tier: a small GLB whose JSON describes the whole model and whose BIN holds that
 //                                tier's own textures (downscaled copies, or originals another tier does not use)
-//   assets/tex/<hash>.webp       textures of --ext px or more as plain WebP files (no base64 overhead), shared by hash
+//   assets/tex/<hash>.<ext>      textures of --ext px or more as plain image files (no base64 overhead), shared by hash;
+//                                <ext> follows the image's own type (webp, png, jpg), so the host serves the right type
 // The runtime decodes shared + tier into one GLB: BIN = shared bytes, then the tier's bytes (the tier JSON's offsets
 // already point there). Tier 'full' is desktop: original textures (capped at its own cap, if given). A tier may drop
 // nodes (a building's small dressing parts on the phone): they are left out of the scene graph in its JSON only, and the
@@ -15,6 +16,7 @@ import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
 import sharp from 'sharp';
 
 const ALIGN = 16;
+const EXT = { 'image/webp': 'webp', 'image/png': 'png', 'image/jpeg': 'jpg' };
 const pad = (n, a = ALIGN) => Math.ceil(n / a) * a;
 
 export function readGLB(buf) {
@@ -55,7 +57,7 @@ async function dropCheck(path, drop) {
  *   drop: [node names] }]; roleCaps caps the images a material uses in that role (baseColor, metallicRoughness, normal,
  *   occlusion, emissive)
  * ext: textures of at least this many px (after the tier's cap) go out as plain WebP files.
- * Returns { shared: Buffer, tiers: { name: Buffer (GLB) }, tex: { hash: Buffer (webp) }, report }.
+ * Returns { shared: Buffer, tiers: { name: Buffer (GLB) }, tex: { '<hash>.<ext>': Buffer }, report }.
  */
 export async function splitGLB(path, tiers, { ext = 2048, quality = 85 } = {}) {
   const { json, bin } = readGLB(await readFile(path));
@@ -138,10 +140,10 @@ export async function splitGLB(path, tiers, { ext = 2048, quality = 85 } = {}) {
       const bv = j.bufferViews[im.bufferView];
       maxPx = Math.max(maxPx, v.w, v.h);
       if (external(v)) {
-        const h = hashOf(v.bytes);
-        tex[h] = v.bytes;
+        const name = `${hashOf(v.bytes)}.${EXT[v.mime] || 'bin'}`;
+        tex[name] = v.bytes;
         delete im.bufferView;
-        im.uri = `assets/tex/${h}.webp`;
+        im.uri = `assets/tex/${name}`;
         im.mimeType = v.mime;
         // the image's old view stays (indices do not move) as a 1-byte stub nothing reads
         Object.assign(bv, { byteOffset: 0, byteLength: 1 });

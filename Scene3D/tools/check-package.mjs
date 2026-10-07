@@ -11,6 +11,8 @@ import { chromium } from 'playwright-core';
 import { readFile } from 'node:fs/promises';
 import { join, extname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import sharp from 'sharp';
+import { readGLB } from './split-glb.mjs';
 
 const CDN = 'https://cdn.jsdelivr.net/npm/three@0.186.1/';
 const ORIGIN = 'https://artifact.test/';
@@ -71,6 +73,49 @@ window.srcStats = async (url, drop) => stats((await raw.loadAsync('raw/' + url))
 window.harnessReady = true;
 </script>`;
 
+// glTF-level check of one packaged tier, before any loader: reassemble it exactly as glbship.js loadB64 does (tier JSON,
+// BIN = shared bytes + the tier's own bytes) and compare it with the source GLB: scene nodes (after the tier's drop),
+// meshes, primitives, accessors, materials, textures, images; every geometry bufferView and meshopt payload
+// bit-identical to the source; every image either a URI the package holds or an embedded range inside BIN that decodes,
+// within the tier's cap; the shared file the length the tier was split against.
+const readText = async (root, PKG, p) => { const v = PKG[p]; if (v === undefined) throw new Error(`${p} not in the package`); return readFile(join(root, typeof v === 'string' ? v : v.from), 'utf8'); };
+export async function checkTierJSON({ root, PKG, rel, tier }) {
+  const bad = [];
+  const src = readGLB(await readFile(join(root, rel)));
+  const part = readGLB(Buffer.from(await readText(root, PKG, `${rel}${tier.name === 'full' ? '' : `.${tier.name}`}.b64.txt`), 'base64'));
+  const shared = Buffer.from(await readText(root, PKG, `${rel}.shared.b64.txt`), 'base64');
+  const j = part.json, J = src.json;
+  const bin = Buffer.concat([shared, part.bin]);
+  if (j.extras?.sharedByteLength !== shared.length) bad.push(`shared file ${shared.length} bytes, tier expects ${j.extras?.sharedByteLength}`);
+  const drop = new Set(tier.drop || []);
+  const reach = (g) => { const seen = new Set(); const go = (i) => { if (seen.has(i) || drop.has(g.nodes[i].name)) return; seen.add(i); for (const c of g.nodes[i].children || []) go(c); }; for (const i of g.scenes[g.scene ?? 0].nodes) go(i); return seen; };
+  const count = (g) => { const r = reach(g); const ms = new Set([...r].map((i) => g.nodes[i].mesh).filter((m) => m !== undefined));
+    return { nodes: r.size, meshes: ms.size, primitives: [...ms].reduce((n, m) => n + g.meshes[m].primitives.length, 0), accessors: g.accessors.length,
+      materials: (g.materials || []).length, textures: (g.textures || []).length, images: (g.images || []).length }; };
+  const [a, b] = [count(j), count(J)];
+  for (const k of Object.keys(b)) if (a[k] !== b[k]) bad.push(`${k} ${a[k]} != source ${b[k]}`);
+  if (JSON.stringify(j.meshes) !== JSON.stringify(J.meshes)) bad.push('mesh definitions differ from the source');
+  if (JSON.stringify(j.accessors) !== JSON.stringify(J.accessors)) bad.push('accessors differ from the source');
+  if (JSON.stringify(j.materials) !== JSON.stringify(J.materials)) bad.push('materials differ from the source');
+  const imageViews = new Set((J.images || []).map((im) => im.bufferView));
+  const range = (buf, o, l) => buf.subarray(o || 0, (o || 0) + l);
+  J.bufferViews.forEach((v, i) => {
+    if (imageViews.has(i)) return;
+    const w = j.bufferViews[i];
+    if ((v.buffer ?? 0) === 0 && !range(bin, w.byteOffset, w.byteLength).equals(range(src.bin, v.byteOffset, v.byteLength))) bad.push(`bufferView ${i} differs from the source`);
+    const mo = v.extensions?.EXT_meshopt_compression, mw = w.extensions?.EXT_meshopt_compression;
+    if (mo && (mo.buffer ?? 0) === 0 && !range(bin, mw.byteOffset, mw.byteLength).equals(range(src.bin, mo.byteOffset, mo.byteLength))) bad.push(`meshopt payload of bufferView ${i} differs from the source`);
+  });
+  for (const [i, im] of (j.images || []).entries()) {
+    if (im.uri !== undefined) { if (PKG[im.uri] === undefined) bad.push(`image ${i}: ${im.uri} not in the package`); continue; }
+    const v = j.bufferViews[im.bufferView];
+    if (!v || (v.byteOffset || 0) + v.byteLength > bin.length) { bad.push(`image ${i}: bufferView outside BIN`); continue; }
+    try { const m = await sharp(range(bin, v.byteOffset, v.byteLength)).metadata(); if (tier.cap && Math.max(m.width, m.height) > tier.cap) bad.push(`image ${i}: ${m.width}x${m.height} over the tier cap ${tier.cap}`); }
+    catch (e) { bad.push(`image ${i}: embedded bytes do not decode (${e.message})`); }
+  }
+  return { counts: a, bad };
+}
+
 /**
  * models: [{ rel: 'assets/ships/carrier.glb', tiers: [{ name, cap, roleCaps, drop }] }] (build-artifact.mjs tiersOf)
  * Returns { ok, rows, failures }.
@@ -106,6 +151,11 @@ export async function checkPackage({ root, models, distFiles = 'dist/files.json'
       await pg.waitForFunction(() => window.harnessReady === true, null, { timeout: 60000 });
       return { ctx, pg, errs };
     };
+    for (const { rel, tiers } of models) for (const t of tiers) {
+      const { counts, bad } = await checkTierJSON({ root, PKG, rel, tier: t });
+      log(`${bad.length ? 'FAIL' : 'ok  '} ${`${rel} .${t.name}`.padEnd(48)} glTF ${Object.entries(counts).map(([k, v]) => `${k} ${v}`).join(' ')}${bad.length ? '\n       ' + bad.slice(0, 12).join('\n       ') : ''}`);
+      if (bad.length) failures.push(`${rel} .${t.name} (glTF): ${bad.slice(0, 4).join('; ')}`);
+    }
     for (const lite of [false, true]) {
       const { ctx, pg, errs } = await open(lite, true);
       const ref = await open(lite, false);

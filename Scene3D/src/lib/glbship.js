@@ -146,6 +146,10 @@ async function loadB64(url, tier) {
   const jsonLen = dv.getUint32(12, true);
   const ownLen = 20 + jsonLen < part.length ? dv.getUint32(20 + jsonLen, true) : 0;
   const sharedLen = b64Bytes(sharedText);
+  // the tier's offsets are only valid against the shared file it was split with (a stale or mismatched copy would
+  // silently scramble geometry and textures): tools/split-glb.mjs records its length in the tier JSON
+  const want = JSON.parse(new TextDecoder().decode(part.subarray(20, 20 + jsonLen))).extras?.sharedByteLength;
+  if (want !== undefined && want !== sharedLen) throw new Error(`${url}: shared buffer is ${sharedLen} bytes, the ${LITE ? tier : 'full'} tier expects ${want}`);
   // one GLB: the tier's JSON, then BIN = shared bytes + the tier's own bytes (decoded in place, no second copy)
   const binLen = sharedLen + ownLen;
   let bytes = new Uint8Array(12 + 8 + jsonLen + 8 + binLen);

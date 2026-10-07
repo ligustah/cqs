@@ -37,3 +37,10 @@ Scratch: $S = /tmp/claude-0/-home-user-cqs/e592383b-a9f6-5dde-82a6-4494b59b11a7/
 ## Next
 3. Decide steel mill GLB (current vs 851093d), rebuild dist, check-package, pkg-diff all views desktop+phone with
    --csp 1 --units 16, phone-check, scale-check, file diff vs published hashes.
+- split-glb names external textures by their own type; loadB64 checks the shared length against the tier JSON;
+  check-package.mjs gained a glTF-level tier check (counts incl. primitives, bit-identical geometry, images). Verified
+  that the check FAILS on the 851093d package (fighter: textures 0/5 of 21 under CSP) and passes on the fixed build.
+- Steel mill: current GLB (8703e98 remodel) renders complete in dev ($S/after-dev/desktop/b_steel_mill.dev.png) =>
+  not broken/missing => packaged as current (with its matching src/buildings/steel_mill.js).
+- dist rebuilt: 399 files, 208.7 MB (199.0 MiB); check-package 57 tiers OK.
+- pkg-diff defaults now --csp 1 --units 16.
