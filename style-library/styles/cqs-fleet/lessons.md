@@ -264,3 +264,28 @@ in `Scene3D/tools/blender/hulls/README-<id>.md`.
 59. **Light plinth-level blocks carry depth.** An empty apron in front of a light gable read as a flat stage; the
     concept layers a low casthouse block (light panels, doors, lamps, roof units) between the furnace and the pour bay.
     A tall dark annex beside the furnace hid its light hearth drum: annexes stay low and light.
+60. **The hero shape must be broad and in front of its structure, not inside it.** The v4 furnace (cone foot r 8.4 inside
+    four laced columns 9.6 m out, three square decks) read as a black scaffold round a thin cylinder. v5 widened the
+    light bell to r 11.4 over a narrower dark bosh, kept the heavy raking legs, and replaced the tower above them with
+    four slim tapered posts and one braced top bay: the frame reads as framing the shell, as in the concept. Lattice
+    and decks belong at the top section and the legs only.
+61. **Hidden faces cost atlas.** Stacked lathes (a station per solid) leave a cap disc inside the next station and a
+    band's inner wall inside the shell; on the furnace these were large discs in the UV atlas. `remodel.cull_buried`
+    deletes faces whose samples are inside closed solids by winding number. The first, cheap version (5 samples, the
+    first hit only) both culled a VISIBLE face (the plinth top: its samples sat under the leg shoes) and missed
+    coincident caps; sample densely (corners, edge midpoints, fan centroids) and count every crossing. Always re-render
+    the preview after changing a culling rule.
+62. **Revolved shells: unroll, and stack the annuli.** Smart projection cut the cones into foreshortened curved strips,
+    but the real waste was the hollow islands: a hoop's flat annulus is a 20 m circle of 3 cm ribbon that the packer
+    treats as a 20 m island. Stacking islands with area < 12 % of their box (plus unrolling 24 x 6 m sectors) took the
+    furnace shell set from fill 0.50 to 0.79.
+63. **A second texture set beats a bigger one.** The furnace's light shell is 15 % of its surface but the whole read at
+    close range: its own 4096 atlas and material (`ckit.SPLIT`) doubled its density (34 -> ~70 px/m) without raising any
+    material's sampler count (glbship / patina limit 16; each colony material keeps base, ORM, normal, emissive).
+64. **A colour cast hides in the weathering, not the base.** The v4 gunmetal base was neutral but rendered brown
+    (saturation 0.2-0.3 vs the concept's ~0.09): warm crease grime, warm ground dirt, warm bare-steel edges and rusty
+    chips were all tuned for light paint and applied to dark steel too. Weathering colours are per light / dark zone now.
+65. **Dark pipes vanish on a dusk backdrop.** Near-black mains disappeared against the slate background; the concept's
+    are mid grey. Mains and big pipes in mid-grey neutral paint (low metal), frames a step darker.
+66. **A glow box takes its own shape.** A 1 m square glow box over a round ladle read as an orange sticker; let the
+    emissive paint carry round or small hot surfaces, and keep glow boxes thin, for long runners and openings only.

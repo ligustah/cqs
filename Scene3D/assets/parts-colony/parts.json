@@ -341,107 +341,144 @@
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "tris": 70680,
+   "tris": 49718,
    "bbox": {
     "min": [
-     -13.7,
+     -21.27,
      -0.0,
-     -14.6
+     -16.72
     ],
     "max": [
-     13.7,
-     60.0,
-     14.6
+     16.72,
+     62.652,
+     16.72
     ],
     "size": [
-     27.4,
-     60.0,
-     29.2
+     37.99,
+     62.652,
+     33.44
     ]
    },
    "tex": 4096,
-   "kb": 6170,
+   "kb": 5539,
    "about": "60 m blast furnace remodel: concrete plinth, dark staved hearth, recessed glowing tuyere band with 24 window frames, bustle main and downlegs, light plated shaft with five hoops, flange, cone, throat, uptakes and downcomer; four laced columns, four square grating decks on ring girders, X bracing, caged ladder, lamps",
    "remodel": {
     "builder": "ckit.furnace",
     "script": "tools/blender/buildings/remodel.py",
     "pxPerM": {
-     "concrete2": 26.3,
-     "concrete": 24.6,
-     "shell": 33.9,
-     "frame": 15.6,
-     "pipeDark": 19.9,
-     "hot": 17.4,
-     "frame2": 28.7,
-     "lamp": 16.6,
-     "grate": 12.3
+     "concrete2": 25.5,
+     "concrete": 24.0,
+     "frame": 15.2,
+     "pipeDark": 19.5,
+     "hot": 16.9,
+     "frame2": 28.2,
+     "grate": 12.0,
+     "lamp": 16.5,
+     "shell (set 2)": 71.9
     },
-    "surfaceM2": 14919,
+    "surfaceM2": 14370,
     "paint": {
-     "Y_all": 0.1409,
-     "Y_light": 0.2485,
-     "light_share": 0.479
+     "colony_blastFurnace": {
+      "Y_all": 0.0963,
+      "Y_light": 0.1641,
+      "light_share": 0.202
+     },
+     "colony_blastFurnace_2": {
+      "Y_all": 0.3686,
+      "Y_light": 0.3686,
+      "light_share": 1.0
+     }
     },
     "seconds": {
-     "model": 1,
-     "unwrap": 8,
-     "bake": 216,
-     "paint": 94,
-     "export": 6
+     "model": 383,
+     "unwrap": -228,
+     "bake": 129,
+     "paint": 99,
+     "export": 10
     },
     "date": "2026-10-07"
    },
    "lights": {
     "pins": [
      [
-      -10.562,
-      52.6,
-      -10.562
+      3.572,
+      27.9,
+      13.33
      ],
      [
-      10.562,
-      52.6,
-      -10.562
+      13.33,
+      27.9,
+      -3.572
      ],
      [
-      10.562,
-      52.6,
-      10.562
+      -3.572,
+      27.9,
+      -13.33
      ],
      [
-      -10.562,
-      52.6,
-      10.562
+      -13.33,
+      27.9,
+      3.572
      ],
      [
-      10.25,
-      30.4,
-      0.0
+      2.795,
+      44.4,
+      10.432
      ],
      [
-      0.0,
-      30.4,
-      10.25
+      10.432,
+      44.4,
+      -2.795
      ],
      [
-      10.25,
-      43.8,
-      0.0
+      -2.795,
+      44.4,
+      -10.432
      ],
      [
-      0.0,
-      43.8,
-      10.25
+      -10.432,
+      44.4,
+      2.795
      ],
      [
-      10.25,
-      54.0,
-      0.0
+      -16.3,
+      6.2,
+      -13.9
      ],
      [
-      0.0,
-      54.0,
-      10.25
+      16.3,
+      6.2,
+      -13.9
+     ],
+     [
+      16.3,
+      6.2,
+      13.9
+     ],
+     [
+      -16.3,
+      6.2,
+      13.9
+     ],
+     [
+      -10.004,
+      55.5,
+      -10.004
+     ],
+     [
+      10.004,
+      55.5,
+      -10.004
+     ],
+     [
+      10.004,
+      55.5,
+      10.004
+     ],
+     [
+      -10.004,
+      55.5,
+      10.004
      ]
     ],
     "beacons": [],
@@ -451,453 +488,483 @@
     "glow": [
      {
       "p": [
-       0.747,
-       18.7,
-       7.111
+       0.858,
+       16.4,
+       8.708
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 0.1047
+      "rotY": 0.0982
      },
      {
       "p": [
-       2.209,
-       18.7,
-       6.8
+       2.54,
+       16.4,
+       8.373
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 0.3142
+      "rotY": 0.2945
      },
      {
       "p": [
-       3.575,
-       18.7,
-       6.192
+       4.125,
+       16.4,
+       7.717
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 0.5236
+      "rotY": 0.4909
      },
      {
       "p": [
-       4.784,
-       18.7,
-       5.313
+       5.551,
+       16.4,
+       6.764
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 0.733
+      "rotY": 0.6872
      },
      {
       "p": [
-       5.784,
-       18.7,
-       4.203
+       6.764,
+       16.4,
+       5.551
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 0.9425
+      "rotY": 0.8836
      },
      {
       "p": [
-       6.532,
-       18.7,
-       2.908
+       7.717,
+       16.4,
+       4.125
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 1.1519
+      "rotY": 1.0799
      },
      {
       "p": [
-       6.994,
-       18.7,
-       1.487
+       8.373,
+       16.4,
+       2.54
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 1.3614
+      "rotY": 1.2763
      },
      {
       "p": [
-       7.15,
-       18.7,
-       0.0
+       8.708,
+       16.4,
+       0.858
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 1.5708
+      "rotY": 1.4726
      },
      {
       "p": [
-       6.994,
-       18.7,
-       -1.487
+       8.708,
+       16.4,
+       -0.858
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 1.7802
+      "rotY": 1.669
      },
      {
       "p": [
-       6.532,
-       18.7,
-       -2.908
+       8.373,
+       16.4,
+       -2.54
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 1.9897
+      "rotY": 1.8653
      },
      {
       "p": [
-       5.784,
-       18.7,
-       -4.203
+       7.717,
+       16.4,
+       -4.125
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 2.1991
+      "rotY": 2.0617
      },
      {
       "p": [
-       4.784,
-       18.7,
-       -5.313
+       6.764,
+       16.4,
+       -5.551
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 2.4086
+      "rotY": 2.258
      },
      {
       "p": [
-       3.575,
-       18.7,
-       -6.192
+       5.551,
+       16.4,
+       -6.764
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 2.618
+      "rotY": 2.4544
      },
      {
       "p": [
-       2.209,
-       18.7,
-       -6.8
+       4.125,
+       16.4,
+       -7.717
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 2.8274
+      "rotY": 2.6507
      },
      {
       "p": [
-       0.747,
-       18.7,
-       -7.111
+       2.54,
+       16.4,
+       -8.373
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 3.0369
+      "rotY": 2.8471
      },
      {
       "p": [
-       -0.747,
-       18.7,
-       -7.111
+       0.858,
+       16.4,
+       -8.708
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 3.2463
+      "rotY": 3.0434
      },
      {
       "p": [
-       -2.209,
-       18.7,
-       -6.8
+       -0.858,
+       16.4,
+       -8.708
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 3.4558
+      "rotY": 3.2398
      },
      {
       "p": [
-       -3.575,
-       18.7,
-       -6.192
+       -2.54,
+       16.4,
+       -8.373
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 3.6652
+      "rotY": 3.4361
      },
      {
       "p": [
-       -4.784,
-       18.7,
-       -5.313
+       -4.125,
+       16.4,
+       -7.717
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 3.8746
+      "rotY": 3.6325
      },
      {
       "p": [
-       -5.784,
-       18.7,
-       -4.203
+       -5.551,
+       16.4,
+       -6.764
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 4.0841
+      "rotY": 3.8288
      },
      {
       "p": [
-       -6.532,
-       18.7,
-       -2.908
+       -6.764,
+       16.4,
+       -5.551
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 4.2935
+      "rotY": 4.0252
      },
      {
       "p": [
-       -6.994,
-       18.7,
-       -1.487
+       -7.717,
+       16.4,
+       -4.125
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 4.5029
+      "rotY": 4.2215
      },
      {
       "p": [
-       -7.15,
-       18.7,
-       -0.0
+       -8.373,
+       16.4,
+       -2.54
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 4.7124
+      "rotY": 4.4179
      },
      {
       "p": [
-       -6.994,
-       18.7,
-       1.487
+       -8.708,
+       16.4,
+       -0.858
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 4.9218
+      "rotY": 4.6142
      },
      {
       "p": [
-       -6.532,
-       18.7,
-       2.908
+       -8.708,
+       16.4,
+       0.858
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 5.1313
+      "rotY": 4.8106
      },
      {
       "p": [
-       -5.784,
-       18.7,
-       4.203
+       -8.373,
+       16.4,
+       2.54
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 5.3407
+      "rotY": 5.0069
      },
      {
       "p": [
-       -4.784,
-       18.7,
-       5.313
+       -7.717,
+       16.4,
+       4.125
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 5.5501
+      "rotY": 5.2033
      },
      {
       "p": [
-       -3.575,
-       18.7,
-       6.192
+       -6.764,
+       16.4,
+       5.551
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 5.7596
+      "rotY": 5.3996
      },
      {
       "p": [
-       -2.209,
-       18.7,
-       6.8
+       -5.551,
+       16.4,
+       6.764
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 5.969
+      "rotY": 5.596
      },
      {
       "p": [
-       -0.747,
-       18.7,
-       7.111
+       -4.125,
+       16.4,
+       7.717
       ],
       "size": [
-       1.228,
-       1.5,
+       1.409,
+       1.7,
        0.06
       ],
       "color": "#ff8a28",
       "radiance": 0.7,
-      "rotY": 6.1785
+      "rotY": 5.7923
+     },
+     {
+      "p": [
+       -2.54,
+       16.4,
+       8.373
+      ],
+      "size": [
+       1.409,
+       1.7,
+       0.06
+      ],
+      "color": "#ff8a28",
+      "radiance": 0.7,
+      "rotY": 5.9887
+     },
+     {
+      "p": [
+       -0.858,
+       16.4,
+       8.708
+      ],
+      "size": [
+       1.409,
+       1.7,
+       0.06
+      ],
+      "color": "#ff8a28",
+      "radiance": 0.7,
+      "rotY": 6.185
      }
     ],
     "floods": [],
@@ -981,7 +1048,7 @@
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "tris": 23912,
+   "tris": 20136,
    "bbox": {
     "min": [
      -6.23,
@@ -1000,31 +1067,29 @@
     ]
    },
    "tex": 2048,
-   "kb": 1680,
+   "kb": 1342,
    "about": "46 m banded stack remodel: base block, gusseted flared foot, light / dark plated bands with hoops, two railed platforms, caged ladders, sooted lip, lamps, obstruction light",
    "remodel": {
     "builder": "ckit.banded_stack",
     "script": "tools/blender/buildings/remodel.py",
     "pxPerM": {
-     "frame2": 34.5,
-     "concrete2": 31.4,
-     "shell": 39.9,
-     "frame": 17.6,
-     "soot": 15.4,
-     "grate": 14.7,
-     "lamp": 18.5
+     "frame2": 44.4,
+     "concrete2": 39.9,
+     "shell": 51.7,
+     "grate": 19.0,
+     "lamp": 24.5
     },
-    "surfaceM2": 2294,
+    "surfaceM2": 1718,
     "paint": {
-     "Y_all": 0.1563,
-     "Y_light": 0.3029,
-     "light_share": 0.404
+     "Y_all": 0.2026,
+     "Y_light": 0.4147,
+     "light_share": 0.347
     },
     "seconds": {
-     "model": 0,
-     "unwrap": 4,
-     "bake": 22,
-     "paint": 19,
+     "model": 46,
+     "unwrap": -42,
+     "bake": 25,
+     "paint": 17,
      "export": 1
     },
     "date": "2026-10-07"
@@ -1164,7 +1229,7 @@
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "tris": 15426,
+   "tris": 12745,
    "bbox": {
     "min": [
      -9.5,
@@ -1174,47 +1239,46 @@
     "max": [
      9.6,
      15.655,
-     13.2
+     14.41
     ],
     "size": [
      19.1,
      15.77,
-     26.4
+     27.61
     ]
    },
    "tex": 4096,
-   "kb": 1899,
+   "kb": 1766,
    "about": "19 x 26 m pour bay remodel: built-up columns, lattice side, plate girders and Warren roof trusses, runways and an amber double-girder bridge crane with trolley and hook, plated back wall, glowing runner and tundish, rails and ladle car, two tapping platforms with stairs",
    "remodel": {
     "builder": "ckit.pour_bay",
     "script": "tools/blender/buildings/remodel.py",
     "pxPerM": {
-     "concrete2": 58.7,
-     "concrete": 54.0,
-     "frame": 35.1,
-     "lamp": 37.9,
-     "frame2": 66.5,
-     "interior": 19.6,
-     "amber": 62.1,
-     "hazard": 77.1,
-     "grate": 27.4,
-     "pipeDark": 44.2,
-     "glassW": 31.3,
-     "refractory": 46.9,
-     "hot": 39.2,
-     "rust": 60.2
+     "concrete2": 66.7,
+     "concrete": 61.0,
+     "frame": 39.9,
+     "lamp": 43.3,
+     "frame2": 75.5,
+     "interior": 22.3,
+     "amber": 70.7,
+     "grate": 31.2,
+     "glassW": 35.6,
+     "refractory": 53.3,
+     "hot": 44.5,
+     "rust": 68.0,
+     "panel": 88.8
     },
-    "surfaceM2": 5173,
+    "surfaceM2": 4209,
     "paint": {
-     "Y_all": 0.0903,
-     "Y_light": 0.178,
-     "light_share": 0.216
+     "Y_all": 0.109,
+     "Y_light": 0.1942,
+     "light_share": 0.171
     },
     "seconds": {
-     "model": 0,
-     "unwrap": 2,
+     "model": 231,
+     "unwrap": -225,
      "bake": 130,
-     "paint": 103,
+     "paint": 95,
      "export": 6
     },
     "date": "2026-10-07"
@@ -1242,6 +1306,11 @@
       12.0
      ],
      [
+      8.22,
+      3.2,
+      -5.8
+     ],
+     [
       -1.3,
       5.6,
       -7.7
@@ -1254,7 +1323,28 @@
     ],
     "beacons": [],
     "nav": [],
-    "slits": [],
+    "slits": [
+     {
+      "p": [
+       8.02,
+       3.22,
+       -3.3
+      ],
+      "u": [
+       0.0,
+       0.0,
+       -1.0
+      ],
+      "n": [
+       1.0,
+       0.0,
+       0.0
+      ],
+      "len": 0.6,
+      "width": 0.14,
+      "door": true
+     }
+    ],
     "windows": [
      {
       "p": [
@@ -1270,6 +1360,38 @@
       "size": [
        1.4,
        0.8
+      ]
+     },
+     {
+      "p": [
+       5.65,
+       2.4,
+       -2.21
+      ],
+      "n": [
+       0.0,
+       0.0,
+       1.0
+      ],
+      "size": [
+       2.9,
+       1.0
+      ]
+     },
+     {
+      "p": [
+       7.89,
+       2.4,
+       -4.9
+      ],
+      "n": [
+       1.0,
+       0.0,
+       0.0
+      ],
+      "size": [
+       1.6,
+       1.0
       ]
      }
     ],
@@ -1290,37 +1412,24 @@
      },
      {
       "p": [
-       2.75,
+       0.6,
        1.45,
-       -2.6
+       3.4
       ],
       "size": [
-       11.1,
+       20.8,
        0.03,
        0.32
       ],
       "color": "#ffb050",
-      "radiance": 1.6
+      "radiance": 2.6,
+      "rotY": -1.5708
      },
      {
       "p": [
-       -4.6,
+       0.6,
        2.17,
-       -2.6
-      ],
-      "size": [
-       1.0,
-       0.03,
-       1.0
-      ],
-      "color": "#ffb050",
-      "radiance": 1.4
-     },
-     {
-      "p": [
-       1.6,
-       3.68,
-       3.4
+       -8.8
       ],
       "size": [
        1.0,
@@ -1334,7 +1443,31 @@
     "floods": [],
     "lenses": []
    },
-   "placements": [],
+   "placements": [
+    {
+     "part": "door",
+     "p": [
+      7.925,
+      1.7,
+      -3.3
+     ],
+     "n": [
+      1.0,
+      0.0,
+      0.0
+     ],
+     "up": [
+      0.0,
+      1.0,
+      0.0
+     ],
+     "snap": false,
+     "seat": {
+      "check": false
+     },
+     "id": "crew door"
+    }
+   ],
    "blueprint": {
     "raw": "assets/buildings/raw/pourBay.glb",
     "params": {
@@ -1412,54 +1545,51 @@
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "tris": 7168,
+   "tris": 6205,
    "bbox": {
     "min": [
      -3.075,
      0.0,
-     -14.075
+     -10.442
     ],
     "max": [
-     3.11,
-     46.23,
-     14.075
+     4.52,
+     53.383,
+     16.49
     ],
     "size": [
-     6.185,
-     46.23,
-     28.15
+     7.595,
+     53.383,
+     26.932
     ]
    },
    "tex": 2048,
-   "kb": 1111,
+   "kb": 750,
    "about": "inclined skip gallery remodel: clad enclosed gallery with portal ribs and windows on two Warren trusses, lattice trestle, drive house with roller and crew doors, head house",
    "remodel": {
     "builder": "ckit.incline_gallery",
     "script": "tools/blender/buildings/remodel.py",
     "pxPerM": {
-     "frame2": 36.1,
-     "clad": 45.3,
-     "clad2": 45.1,
-     "frame": 19.3,
-     "glassW": 18.2,
-     "panel": 42.2,
-     "roof": 24.3,
-     "interior": 11.3,
-     "lamp": 21.3,
-     "concrete": 29.2
+     "frame": 22.0,
+     "grate": 15.1,
+     "frame2": 42.9,
+     "pipeDark": 28.2,
+     "panel": 50.9,
+     "roof": 30.5,
+     "lamp": 24.7
     },
-    "surfaceM2": 2656,
+    "surfaceM2": 2048,
     "paint": {
-     "Y_all": 0.2568,
-     "Y_light": 0.3708,
-     "light_share": 0.641
+     "Y_all": 0.2737,
+     "Y_light": 0.4012,
+     "light_share": 0.585
     },
     "seconds": {
-     "model": 0,
-     "unwrap": 1,
-     "bake": 37,
-     "paint": 24,
-     "export": 2
+     "model": 45,
+     "unwrap": -39,
+     "bake": 24,
+     "paint": 15,
+     "export": 1
     },
     "date": "2026-10-07"
    },
@@ -1467,13 +1597,18 @@
     "pins": [
      [
       3.18,
-      12.0,
-      10.1
+      29.4,
+      8.1
      ],
      [
-      3.18,
-      45.4,
-      -13.5
+      3.35,
+      10.0,
+      10.6
+     ],
+     [
+      3.35,
+      20.0,
+      10.6
      ]
     ],
     "beacons": [],
@@ -1483,7 +1618,7 @@
       "p": [
        2.0,
        2.72,
-       14.1
+       13.7
       ],
       "u": [
        1.0,
@@ -1511,7 +1646,7 @@
      "p": [
       2.0,
       1.2,
-      14.005
+      13.605
      ],
      "n": [
       0.0,
@@ -1611,50 +1746,55 @@
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "tris": 8042,
+   "tris": 12262,
    "bbox": {
     "min": [
-     -14.6,
-     0.0,
-     -18.395
+     -15.236,
+     -0.278,
+     -18.9
     ],
     "max": [
-     14.6,
+     17.795,
      24.025,
      18.395
     ],
     "size": [
-     29.2,
-     24.025,
-     36.79
+     33.031,
+     24.303,
+     37.295
     ]
    },
    "tex": 4096,
-   "kb": 1641,
+   "kb": 2017,
    "about": "28 x 36 m clad shed segment remodel: corrugated walls between I-section pilasters, recessed window strips, dark dado, gables with outward verges, corrugated roof, gutters, ridge, louvred monitor, downpipes, kit crew door",
    "remodel": {
     "builder": "ckit.gable_shed",
     "script": "tools/blender/buildings/remodel.py",
     "pxPerM": {
-     "frame2": 42.8,
-     "frame": 22.6,
+     "frame2": 42.9,
+     "frame": 22.8,
      "lamp": 24.7,
-     "clad": 50.9,
-     "clad2": 47.9,
-     "interior": 12.6
+     "clad": 51.0,
+     "clad2": 48.1,
+     "interior": 12.7,
+     "concrete": 34.9,
+     "pipeDark": 29.0,
+     "panel": 50.4,
+     "concrete2": 37.7,
+     "hazard": 51.0
     },
-    "surfaceM2": 7158,
+    "surfaceM2": 7517,
     "paint": {
-     "Y_all": 0.2958,
-     "Y_light": 0.361,
-     "light_share": 0.792
+     "Y_all": 0.2986,
+     "Y_light": 0.3663,
+     "light_share": 0.77
     },
     "seconds": {
-     "model": 0,
-     "unwrap": 4,
-     "bake": 113,
-     "paint": 94,
-     "export": 7
+     "model": 226,
+     "unwrap": -221,
+     "bake": 116,
+     "paint": 105,
+     "export": 6
     },
     "date": "2026-10-07"
    },
@@ -1708,6 +1848,46 @@
      [
       -14.67,
       4.2,
+      10.8
+     ],
+     [
+      14.67,
+      10.4,
+      -10.8
+     ],
+     [
+      14.67,
+      10.4,
+      -3.6
+     ],
+     [
+      14.67,
+      10.4,
+      3.6
+     ],
+     [
+      14.67,
+      10.4,
+      10.8
+     ],
+     [
+      -14.67,
+      10.4,
+      -10.8
+     ],
+     [
+      -14.67,
+      10.4,
+      -3.6
+     ],
+     [
+      -14.67,
+      10.4,
+      3.6
+     ],
+     [
+      -14.67,
+      10.4,
       10.8
      ]
     ],

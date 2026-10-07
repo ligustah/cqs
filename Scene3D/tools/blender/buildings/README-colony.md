@@ -303,6 +303,29 @@ Checks on the final v4 (2026-10-07): `build-artifact.mjs` package check 57 model
 `steel_mill-v4-close.jpg` (furnace, pour bay, shed wall at 1:1, v3 beside v4 at the same cameras),
 `steel_mill-v4-thumbs.png` (80 / 40 px).
 
+### v5: second fidelity round (2026-10-07, the user's review of v4)
+
+The review against the concept found five problems; what fixed each (parameter sets in `ckit.py`, all generic):
+
+| # | v4 problem | v5 fix |
+|---|---|---|
+| 1 | furnace: a thin cylinder inside a tall black square lattice tower (read as a scaffold) | `FURNACE_V5`: a broad light bell (cone foot r 11.4 over a dark stepped bosh r 9.6-10.65, tapering to r 8.1 at 42 m; hearth drum r 9.2), heavy plated raking legs (4.0 -> 2.8 m box, corner angles, bands, base shoes) to the cone-foot deck, then a light open frame: four slim tapered posts (`_posts_tower`) to a wide square top deck, X bracing in the top bay only, decks round the cone foot and the hood; a 0.85 m bustle main at r 12.6; four uptakes over the cap into a header drum; a 2.9 m downcomer from the header down the -X side into the gas-cleaning annex. `GALLERY_V5`: the skip bridge as an open box truss with a skip car and track, the gas main on saddles over it, landing on a 30 m clad tower between the stacks and the shed |
+| 2 | pour bay: a solid dark slab roof hid the crane | `POUR_V5`: `roof` 0.32 (a dark deck over the back third only; purlins and X rods over the crane), bridge girders 1.0 x 2.0 m, the runner along +Z out of the bay toward the casthouse (22 m, core glow 2.6) via `runner_at`, the ladle track at the front, a railed control house inside the portal (`control`: lit windows, kit door, roof unit, ladder) |
+| 3 | clean CG, large plain panels | `SHED_V5` / `_shed_dressing`: door canopies and steps, wall pipe runs with flanges, amber rings and brackets (both long faces), a cable tray under the eaves, a second row of pilaster lamps, roof curb units, ridge ventilators, a loading dock with a stair at the roller door; `steel_mill.py`: cooling-water mains on stools, a valve, a cable tray and stair at the furnace plinth, pipe run, tray, stair, crates and a roof unit at the casthouse. Paint (`cpaint.py`): `seam_w`, `streak` / `streak_f` (thin run-off), `drip` (grime held in each course seam running down the panel below); clad seams `dark` 0.6, tone 0.13. The yard truck's trailer (`yard_kit.truck`): external posts, rails, corner posts, rear doors with lock rods, guards, marker lamps |
+| 4 | furnace shell 34 px/m, soft at 1:1 | a second texture set (`ckit.SPLIT`: the `shell` zone -> its own 4096 atlas and material `colony_blastFurnace_2`, same 4 maps, so no material exceeds the colony sampler count) whose revolved faces are unrolled (`remodel.CYL`: 24 sectors x 6 m bands, u = arc length, v = height); hollow islands (annuli of hoops and lap rings: area < 12 % of their box) are stacked like thin structure; buried faces culled before unwrapping (`remodel.cull_buried`). Shell 34 -> ~70 px/m at 4096 (fill 0.79) |
+| 5 | dark steel warm brown (saturation 0.2-0.3; the concept's ~0.09) | the base was neutral: the brown came from the weathering. Dark zones now take a neutral soot (`GRIME_D`), neutral ground dirt (`DIRT_D`), neutral bare-steel edges (`EDGE_DARK`), rusty edges scaled by the zone's `rust`; `WORKS` frame / frame2 / mains lighter neutral gunmetal (sRGB 0.33 / 0.37 / 0.42), rust 0.1-0.15; the light paint a step less yellow |
+
+`remodel.cull_buried` (all parts, `REMODEL_FLAGS="--no-cull"` to skip): a face is buried when every sample (centre,
+corners and edge midpoints pulled 5 % in, fan-triangle centroids, 4 mm off the face) has a positive winding number
+(solids containing it, counted along five rays: back faces +1, front faces -1, coincident faces at one hit all counted)
+or when it lies on the ground facing down. The furnace lost 7,636 of 33,046 faces (lathe caps inside the next station,
+stacked bands, footing undersides); first versions with five samples and a first-hit test wrongly culled the furnace
+plinth top (its samples sat under the leg shoes) and kept coincident caps. Check every part's preview after a change.
+
+Process: three 2048 review rounds (bake all five parts ~4 min, building ~70 s, four evidence shots ~3 min), then the
+final 4096 build. Evidence: `images/buildings/steel_mill-v5.jpg` (concept | v4 | v5 at the concept camera),
+`steel_mill-v5-close.jpg` (the v4 close-up cameras), `steel_mill-v5-thumbs.png` (80 / 40 px).
+
 ### Gotchas
 
 - `hulls/common.bake_maps` returns the SHIP frame (x, z, -y of Blender); the kit authors the part frame directly in
