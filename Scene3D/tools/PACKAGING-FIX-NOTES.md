@@ -44,3 +44,7 @@ Scratch: $S = /tmp/claude-0/-home-user-cqs/e592383b-a9f6-5dde-82a6-4494b59b11a7/
   not broken/missing => packaged as current (with its matching src/buildings/steel_mill.js).
 - dist rebuilt: 399 files, 208.7 MB (199.0 MiB); check-package 57 tiers OK.
 - pkg-diff defaults now --csp 1 --units 16.
+- Desktop pkg-diff (csp+16 units) running -> $S/after/desktop, log $S/after-desktop.log. fleet/spaceport/6 studios OK
+  (spaceport diff = planet cloud speckle only; metric now "solid" share, 2% threshold; broken 851093d fleet = 23%).
+- dist vs published: $S/filediff1.txt (7 changed: 4 src + 3 steel_mill tier files; 20 tex added, 8 removed, all steel mill).
+- Brown fighters = carrier's parked fighters, lit by the amber hangar lights, exposed when the hull failed to link.
