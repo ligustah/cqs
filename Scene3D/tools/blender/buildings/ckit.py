@@ -1480,7 +1480,7 @@ def pour_bay(B, P=POUR):
         # r14: the ladle a rough, scorched steel shell: dark brown-grey, slag drips from the lip (vstreak), blotchy heat tint
         # r22 (judge B r21: "a polished copper / bronze pot"): near-black scorched steel, matte, non-metal, heavier blotching
         'rust': {'color': [0.15, 0.135, 0.125], 'rust': 0.0, 'edge': 0.6, 'course': 1.6, 'joint': 1e3, 'blot': 0.4, 'tone': 0.1, 'rough': 0.93,
-                 'metal': 0.0, 'vstreak': 0.25, 'vsrc': 4.0,   # r23: the drip columns read as barrel staves 'photo': ('wxSteel', 2.0, 1.0, 0.0, 0.3, 0.0)},
+                 'metal': 0.0, 'vstreak': 0.25, 'vsrc': 4.0, 'photo': ('wxSteel', 2.0, 1.0, 0.0, 0.3, 0.0)},   # r23: vstreak 0.25 (the drip columns read as barrel staves)
         'panel': {'vstreak': 0.0, 'mstreak': 0.0, 'blot': 0.12},
         'hot': {'crust': 0.95},     # r16 0.95 (r12 0.65): a darker cooled skin broken by bright cracks (judge B: flat orange paint)
     })
