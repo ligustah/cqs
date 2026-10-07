@@ -322,6 +322,12 @@ or when it lies on the ground facing down. The furnace lost 7,636 of 33,046 face
 stacked bands, footing undersides); first versions with five samples and a first-hit test wrongly culled the furnace
 plinth top (its samples sat under the leg shoes) and kept coincident caps. Check every part's preview after a change.
 
+Checks on the final v5 (2026-10-07): 180k tris (v4 197k: culling), building GLB 11.9 MB; `build-artifact.mjs` package
+check 57 model tiers OK; `pkg-diff.mjs --csp 1 --units 16 b_steel_mill` desktop 0.00 %, phone 0.01 % (the furnace's two
+materials link under 16 texture units); `phone-check.mjs steel_mill` 6.0 MB fetched, heap + GPU 137 MB, ready 4.6 s.
+Shell texel density at 4096: furnace 71.9 px/m (set 2), frame2 28.2; pour bay panel 88.8; shed cladding 50.9; final
+chain all five parts ~25 min at 24 AO samples, building ~10 min.
+
 Process: three 2048 review rounds (bake all five parts ~4 min, building ~70 s, four evidence shots ~3 min), then the
 final 4096 build. Evidence: `images/buildings/steel_mill-v5.jpg` (concept | v4 | v5 at the concept camera),
 `steel_mill-v5-close.jpg` (the v4 close-up cameras), `steel_mill-v5-thumbs.png` (80 / 40 px).
@@ -381,6 +387,7 @@ The fix, once in the shared pipeline:
 | deuterium_depot (v3: 4 components) | 5.1 | 120k | 27 | 110 | 4.9 |
 | steel_mill (v3: 6 components) | 6.4 | 127k | 43 | 127 | 4.7 |
 | steel_mill (v4: 5 remodelled parts, 7 placed) | 6.2 | 196k | 46 | 133 | 4.0 |
+| steel_mill (v5: second review, furnace 2 texture sets) | 6.0 | 179k | 50 | 137 | 4.6 |
 | silicon_depot (v3: 5 components) | 3.9 | 71k | 32 | 115 | 6.9 |
 | military_base (v3: 23 components + 1 V-31) | 6.7 | 146k | 49 | 138 | 6.2 |
 | radio_telescope (v3: 2 components) | 3.3 | 58k | 21 | 102 | 6.0 |

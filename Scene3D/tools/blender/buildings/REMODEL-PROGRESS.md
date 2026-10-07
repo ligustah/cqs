@@ -46,3 +46,11 @@ plinth, furnace base; seam / grime contrast; trailer texture), 4 furnace shell t
 - Texel density: remodel.unwrap stacks HOLLOW islands (annuli: area < 12 % of the bbox) and unrolls the split set's
   revolved faces (CYL: 24 sectors x 6 m bands): furnace shell set fill 0.50 -> 0.79, 66 px/m at 4096 (v4 34).
 - yard_kit truck: van body detail (posts, rails, rear doors, guards); assets/parts-yard/truck.glb rebuilt.
+- S2 round 3 + final (done): culling by winding number (dense samples; first versions culled the furnace plinth
+  top), leg corner angles in the strut frame, downcomer onto the annex; final 4096 build. Final showed orange rails
+  (lamp lenses packed into the frame swatch): lamps now stacked, final rebuilt (rf2.log / bfin2.log).
+- Evidence: images/buildings/steel_mill-v5.jpg, -v5-close.jpg, -v5-thumbs.png. Checks: build-artifact 57 tiers OK,
+  pkg-diff desktop 0.00 % / phone 0.01 %, phone-check 137 MB. README v5 section, lessons 60-67.
+
+## Status
+v5 DONE (2026-10-07).
