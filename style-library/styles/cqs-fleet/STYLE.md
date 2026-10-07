@@ -77,6 +77,9 @@ Keep iterating without asking the user until it passes.
 - **Naval-industrial,** near-future and credible: faceted hard-surface forms with chamfered, layered plates.
 - **Engineering logic you can read:** radiators, shielding between drive and crew, RCS quads, hatches and rails
   at human scale.
+- **Pipes and ducts connect.** Every run goes from a visible source to a visible destination (a vessel nozzle, a
+  header, a valve, a pump house, a stack inlet), with flanged ends and its own supports at most 6 m apart. A run
+  never passes through, or emerges from, an unrelated housing, wall or roof.
 - **No aerodynamic wings, and no launch hardware.** Ships land and take off under their own power, so
   installations have no launch rails, cradles, towers or blast pits.
 - **Ships:**
