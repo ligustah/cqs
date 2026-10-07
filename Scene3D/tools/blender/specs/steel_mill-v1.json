@@ -532,29 +532,6 @@
   {
    "part": "door",
    "p": [
-    36.405,
-    1.2,
-    -8.6
-   ],
-   "n": [
-    1.0,
-    0.0,
-    0.0
-   ],
-   "up": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "id": "crew door"
-  },
-  {
-   "part": "door",
-   "p": [
     35.905,
     1.2,
     31.9
@@ -574,34 +551,6 @@
     "check": false
    },
    "id": "crew door"
-  },
-  {
-   "part": "yard:truck",
-   "p": [
-    31.5,
-    0.0,
-    -32.0
-   ],
-   "n": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "up": [
-    0.0,
-    0.0,
-    -1.0
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "along": [
-    -1.0,
-    0.0,
-    -0.0
-   ],
-   "id": "truck"
   },
   {
    "part": "yard:forklift",
@@ -790,29 +739,6 @@
    "id": "flood"
   },
   {
-   "part": "door",
-   "p": [
-    36.905,
-    1.2,
-    -45.1
-   ],
-   "n": [
-    1.0,
-    0.0,
-    0.0
-   ],
-   "up": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "id": "crew door"
-  },
-  {
    "part": "yard:worker",
    "p": [
     34.0,
@@ -869,29 +795,6 @@
    "id": "worker"
   },
   {
-   "part": "door",
-   "p": [
-    30.5,
-    1.2,
-    41.505
-   ],
-   "n": [
-    0.0,
-    0.0,
-    1.0
-   ],
-   "up": [
-    0.0,
-    1.0,
-    0.0
-   ],
-   "snap": false,
-   "seat": {
-    "check": false
-   },
-   "id": "crew door"
-  },
-  {
    "part": "yard:worker",
    "p": [
     -2.0,
@@ -946,6 +849,75 @@
     0.342
    ],
    "id": "worker"
+  },
+  {
+   "part": "door",
+   "p": [
+    -25.1,
+    4.2,
+    39.305
+   ],
+   "n": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "up": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "id": "crew door"
+  },
+  {
+   "part": "door",
+   "p": [
+    -12.4,
+    4.2,
+    39.305
+   ],
+   "n": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "up": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "id": "crew door"
+  },
+  {
+   "part": "door",
+   "p": [
+    -36.9,
+    1.2,
+    21.905
+   ],
+   "n": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "up": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "snap": false,
+   "seat": {
+    "check": false
+   },
+   "id": "crew door"
   }
  ]
 }

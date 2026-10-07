@@ -341,63 +341,63 @@
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "tris": 46527,
+   "tris": 44243,
    "bbox": {
     "min": [
      -21.27,
      -0.0,
-     -16.72
+     -16.0
     ],
     "max": [
-     16.72,
+     16.0,
      62.652,
-     16.72
+     16.0
     ],
     "size": [
-     37.99,
+     37.27,
      62.652,
-     33.44
+     32.0
     ]
    },
    "tex": 2048,
-   "kb": 3915,
+   "kb": 3952,
    "about": "60 m blast furnace remodel: concrete plinth, dark staved hearth, recessed glowing tuyere band with 24 window frames, bustle main and downlegs, light plated shaft with five hoops, flange, cone, throat, uptakes and downcomer; four laced columns, four square grating decks on ring girders, X bracing, caged ladder, lamps",
    "remodel": {
     "builder": "ckit.furnace",
     "script": "tools/blender/buildings/remodel.py",
     "pxPerM": {
-     "concrete2": 11.5,
-     "concrete": 10.8,
-     "frame": 6.8,
-     "pipeDark": 8.7,
-     "hot": 7.4,
-     "grate": 5.4,
-     "shell (set 2)": 34.7,
-     "frame2 (set 3)": 29.6
+     "concrete2": 12.2,
+     "concrete": 11.4,
+     "frame": 7.1,
+     "pipeDark": 9.1,
+     "hot": 7.7,
+     "grate": 5.7,
+     "shell (set 2)": 35.3,
+     "frame2 (set 3)": 33.6
     },
-    "surfaceM2": 14013,
+    "surfaceM2": 13590,
     "paint": {
      "colony_blastFurnace": {
-      "Y_all": 0.1016,
-      "Y_light": 0.1526,
-      "light_share": 0.284
+      "Y_all": 0.1032,
+      "Y_light": 0.1542,
+      "light_share": 0.302
      },
      "colony_blastFurnace_2": {
-      "Y_all": 0.3429,
-      "Y_light": 0.3429,
+      "Y_all": 0.346,
+      "Y_light": 0.346,
       "light_share": 1.0
      },
      "colony_blastFurnace_3": {
-      "Y_all": 0.0994,
+      "Y_all": 0.0888,
       "Y_light": null,
       "light_share": 0.0
      }
     },
     "seconds": {
-     "model": 275,
-     "unwrap": -85,
-     "bake": 44,
-     "paint": 41,
+     "model": 304,
+     "unwrap": -92,
+     "bake": 45,
+     "paint": 47,
      "export": 5
     },
     "date": "2026-10-07"
@@ -425,64 +425,64 @@
       3.572
      ],
      [
-      2.795,
-      44.4,
-      10.432
+      0.0,
+      50.3,
+      7.4
      ],
      [
-      10.432,
-      44.4,
-      -2.795
+      7.4,
+      50.3,
+      0.0
      ],
      [
-      -2.795,
-      44.4,
-      -10.432
+      0.0,
+      55.3,
+      6.4
      ],
      [
-      -10.432,
-      44.4,
-      2.795
+      6.4,
+      55.3,
+      0.0
      ],
      [
-      -16.3,
+      -14.9,
       6.2,
-      -13.9
+      -12.8
      ],
      [
-      16.3,
+      14.9,
       6.2,
-      -13.9
+      -12.8
      ],
      [
-      16.3,
+      14.9,
       6.2,
-      13.9
+      12.8
      ],
      [
-      -16.3,
+      -14.9,
       6.2,
-      13.9
+      12.8
      ],
      [
-      -7.964,
-      55.5,
-      -7.964
+      -11.024,
+      45.5,
+      -11.024
      ],
      [
-      7.964,
-      55.5,
-      -7.964
+      11.024,
+      45.5,
+      -11.024
      ],
      [
-      7.964,
-      55.5,
-      7.964
+      11.024,
+      45.5,
+      11.024
      ],
      [
-      -7.964,
-      55.5,
-      7.964
+      -11.024,
+      45.5,
+      11.024
      ]
     ],
     "beacons": [],
@@ -501,8 +501,8 @@
        2.5,
        0.06
       ],
-      "color": "#ff8a28",
-      "radiance": 2.6,
+      "color": "#ff6200",
+      "radiance": 1.6,
       "rotY": 0.2618
      },
      {
@@ -516,8 +516,8 @@
        2.5,
        0.06
       ],
-      "color": "#ff8a28",
-      "radiance": 2.6,
+      "color": "#ff6200",
+      "radiance": 1.6,
       "rotY": 0.7854
      },
      {
@@ -531,8 +531,8 @@
        2.5,
        0.06
       ],
-      "color": "#ff8a28",
-      "radiance": 2.6,
+      "color": "#ff6200",
+      "radiance": 1.6,
       "rotY": 1.309
      },
      {
@@ -546,8 +546,8 @@
        2.5,
        0.06
       ],
-      "color": "#ff8a28",
-      "radiance": 2.6,
+      "color": "#ff6200",
+      "radiance": 1.6,
       "rotY": 1.8326
      },
      {
@@ -561,8 +561,8 @@
        2.5,
        0.06
       ],
-      "color": "#ff8a28",
-      "radiance": 2.6,
+      "color": "#ff6200",
+      "radiance": 1.6,
       "rotY": 2.3562
      },
      {
@@ -576,8 +576,8 @@
        2.5,
        0.06
       ],
-      "color": "#ff8a28",
-      "radiance": 2.6,
+      "color": "#ff6200",
+      "radiance": 1.6,
       "rotY": 2.8798
      },
      {
@@ -591,8 +591,8 @@
        2.5,
        0.06
       ],
-      "color": "#ff8a28",
-      "radiance": 2.6,
+      "color": "#ff6200",
+      "radiance": 1.6,
       "rotY": 3.4034
      },
      {
@@ -606,8 +606,8 @@
        2.5,
        0.06
       ],
-      "color": "#ff8a28",
-      "radiance": 2.6,
+      "color": "#ff6200",
+      "radiance": 1.6,
       "rotY": 3.927
      },
      {
@@ -621,8 +621,8 @@
        2.5,
        0.06
       ],
-      "color": "#ff8a28",
-      "radiance": 2.6,
+      "color": "#ff6200",
+      "radiance": 1.6,
       "rotY": 4.4506
      },
      {
@@ -636,8 +636,8 @@
        2.5,
        0.06
       ],
-      "color": "#ff8a28",
-      "radiance": 2.6,
+      "color": "#ff6200",
+      "radiance": 1.6,
       "rotY": 4.9742
      },
      {
@@ -651,8 +651,8 @@
        2.5,
        0.06
       ],
-      "color": "#ff8a28",
-      "radiance": 2.6,
+      "color": "#ff6200",
+      "radiance": 1.6,
       "rotY": 5.4978
      },
      {
@@ -666,8 +666,8 @@
        2.5,
        0.06
       ],
-      "color": "#ff8a28",
-      "radiance": 2.6,
+      "color": "#ff6200",
+      "radiance": 1.6,
       "rotY": 6.0214
      }
     ],
@@ -752,7 +752,7 @@
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "tris": 20136,
+   "tris": 12990,
    "bbox": {
     "min": [
      -6.23,
@@ -771,28 +771,28 @@
     ]
    },
    "tex": 2048,
-   "kb": 1390,
+   "kb": 1157,
    "about": "46 m banded stack remodel: base block, gusseted flared foot, light / dark plated bands with hoops, two railed platforms, caged ladders, sooted lip, lamps, obstruction light",
    "remodel": {
     "builder": "ckit.banded_stack",
     "script": "tools/blender/buildings/remodel.py",
     "pxPerM": {
-     "frame2": 44.6,
-     "concrete2": 40.0,
-     "shell": 51.9,
-     "grate": 19.1
+     "frame2": 45.1,
+     "concrete2": 40.6,
+     "shell": 52.4,
+     "grate": 19.3
     },
-    "surfaceM2": 1717,
+    "surfaceM2": 1716,
     "paint": {
-     "Y_all": 0.1922,
-     "Y_light": 0.3596,
-     "light_share": 0.347
+     "Y_all": 0.1968,
+     "Y_light": 0.369,
+     "light_share": 0.348
     },
     "seconds": {
-     "model": 84,
-     "unwrap": -76,
+     "model": 87,
+     "unwrap": -82,
      "bake": 40,
-     "paint": 36,
+     "paint": 42,
      "export": 2
     },
     "date": "2026-10-07"
@@ -932,7 +932,7 @@
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "tris": 11794,
+   "tris": 12016,
    "bbox": {
     "min": [
      -3.7,
@@ -951,36 +951,37 @@
     ]
    },
    "tex": 2048,
-   "kb": 1145,
+   "kb": 1213,
    "about": "19 x 26 m pour bay remodel: built-up columns, lattice side, plate girders and Warren roof trusses, runways and an amber double-girder bridge crane with trolley and hook, plated back wall, glowing runner and tundish, rails and ladle car, two tapping platforms with stairs",
    "remodel": {
     "builder": "ckit.pour_bay",
     "script": "tools/blender/buildings/remodel.py",
     "pxPerM": {
-     "concrete2": 33.5,
-     "concrete": 30.7,
+     "concrete2": 33.7,
+     "concrete": 30.8,
      "frame": 20.1,
-     "frame2": 38.0,
+     "frame2": 38.1,
      "interior": 11.2,
-     "amber": 35.5,
+     "amber": 35.7,
+     "hazard": 44.5,
      "grate": 15.7,
-     "glassW": 17.9,
-     "refractory": 26.8,
-     "hot": 22.4,
-     "rust": 34.2,
-     "panel": 44.6
+     "glassW": 18.0,
+     "refractory": 26.9,
+     "hot": 22.5,
+     "rust": 34.3,
+     "panel": 44.8
     },
-    "surfaceM2": 3881,
+    "surfaceM2": 3911,
     "paint": {
-     "Y_all": 0.1144,
-     "Y_light": 0.1997,
-     "light_share": 0.119
+     "Y_all": 0.1142,
+     "Y_light": 0.2004,
+     "light_share": 0.118
     },
     "seconds": {
-     "model": 105,
-     "unwrap": -92,
+     "model": 111,
+     "unwrap": -98,
      "bake": 50,
-     "paint": 42,
+     "paint": 48,
      "export": 2
     },
     "date": "2026-10-07"
@@ -1242,51 +1243,52 @@
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "tris": 6301,
+   "tris": 6596,
    "bbox": {
     "min": [
      -3.075,
      0.0,
-     -10.681
+     -14.879
     ],
     "max": [
      4.52,
-     55.383,
+     51.116,
      16.49
     ],
     "size": [
      7.595,
-     55.383,
-     27.171
+     51.116,
+     31.369
     ]
    },
    "tex": 2048,
-   "kb": 1061,
+   "kb": 1084,
    "about": "inclined skip gallery remodel: clad enclosed gallery with portal ribs and windows on two Warren trusses, lattice trestle, drive house with roller and crew doors, head house",
    "remodel": {
     "builder": "ckit.incline_gallery",
     "script": "tools/blender/buildings/remodel.py",
     "pxPerM": {
-     "frame2": 30.2,
-     "clad": 38.2,
-     "clad2": 32.5,
-     "frame": 16.6,
-     "glassW": 14.8,
-     "panel": 38.2,
-     "roof": 22.9,
-     "pipeDark": 21.2
+     "frame2": 31.3,
+     "clad": 41.0,
+     "clad2": 35.1,
+     "frame": 17.9,
+     "glassW": 15.9,
+     "panel": 41.0,
+     "roof": 24.6,
+     "interior": 10.3,
+     "pipeDark": 23.0
     },
-    "surfaceM2": 2876,
+    "surfaceM2": 2659,
     "paint": {
-     "Y_all": 0.2445,
-     "Y_light": 0.3204,
-     "light_share": 0.651
+     "Y_all": 0.2534,
+     "Y_light": 0.323,
+     "light_share": 0.686
     },
     "seconds": {
-     "model": 84,
-     "unwrap": -74,
-     "bake": 43,
-     "paint": 31,
+     "model": 100,
+     "unwrap": -84,
+     "bake": 44,
+     "paint": 40,
      "export": 2
     },
     "date": "2026-10-07"
@@ -1444,7 +1446,7 @@
     "normal": "+Y",
     "anchor": "footprint centre at y = 0, front +Z"
    },
-   "tris": 12262,
+   "tris": 11819,
    "bbox": {
     "min": [
      -15.236,
@@ -1453,44 +1455,44 @@
     ],
     "max": [
      17.795,
-     24.025,
+     21.305,
      18.395
     ],
     "size": [
      33.031,
-     24.303,
+     21.583,
      37.295
     ]
    },
    "tex": 2048,
-   "kb": 1287,
+   "kb": 1252,
    "about": "28 x 36 m clad shed segment remodel: corrugated walls between I-section pilasters, recessed window strips, dark dado, gables with outward verges, corrugated roof, gutters, ridge, louvred monitor, downpipes, kit crew door",
    "remodel": {
     "builder": "ckit.gable_shed",
     "script": "tools/blender/buildings/remodel.py",
     "pxPerM": {
-     "frame2": 21.5,
-     "frame": 11.4,
-     "clad": 25.5,
-     "clad2": 24.1,
-     "interior": 6.4,
-     "concrete": 17.5,
-     "pipeDark": 14.5,
-     "panel": 25.2,
-     "concrete2": 18.8,
-     "hazard": 25.5
+     "frame2": 22.2,
+     "frame": 11.7,
+     "clad": 26.3,
+     "clad2": 25.9,
+     "interior": 6.6,
+     "concrete": 18.3,
+     "pipeDark": 14.8,
+     "panel": 26.1,
+     "concrete2": 19.7,
+     "hazard": 26.3
     },
-    "surfaceM2": 7516,
+    "surfaceM2": 7388,
     "paint": {
-     "Y_all": 0.2236,
-     "Y_light": 0.269,
-     "light_share": 0.76
+     "Y_all": 0.2625,
+     "Y_light": 0.3163,
+     "light_share": 0.772
     },
     "seconds": {
-     "model": 97,
-     "unwrap": -87,
-     "bake": 45,
-     "paint": 43,
+     "model": 112,
+     "unwrap": -101,
+     "bake": 42,
+     "paint": 58,
      "export": 2
     },
     "date": "2026-10-07"
