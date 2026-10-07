@@ -142,6 +142,17 @@ at every asset you changed: a packaging step can silently drop geometry or textu
 Optimise, make a lightweight (phone) tier, publish an interactive preview, run the project's checks,
 and commit after each accepted step. Cloud containers restart, so keep work resumable.
 
+## The living guide (every iteration)
+
+Each asset family keeps one guide: an ordered, copy-pasteable recipe from concept to release. It holds commands, the
+parameter defaults that worked, timings, gotchas (symptom, cause, fix) and a measurable checklist. Buildings use
+`Scene3D/tools/blender/buildings/BUILDING-GUIDE.md`. Two rules:
+1. **Write it down in the same iteration.** Every step, setting or fix that worked, and every trap hit, goes into the
+   guide before the iteration ends. The next asset follows the guide and never rediscovers it.
+2. **Review against it after every iteration.** Go through the checklist item by item, pass or fail, with evidence (a
+   crop, a measured value, a judge's words), and log the review with the iteration. When the review shows a missing or
+   wrong item, fix the guide in that same iteration.
+
 ## Capturing corrections (the part that makes the library grow)
 
 Whenever the user corrects, rejects, prefers or praises something, record it **in the same turn**:

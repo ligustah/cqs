@@ -24,6 +24,7 @@ shipyards.
   bevelled edges, crisp features) and project or repaint its texture; never ship the raw mesh. fal
   meshes serve only as small parts (about 3 m and under, cleaned and flattened) or as measuring
   blueprints; never scale one up past its source detail (correction 41: the transmitter modules).
+- **Living guide** (correction 44): keep each asset family's guide (buildings: Scene3D/tools/blender/buildings/BUILDING-GUIDE.md) current. Record every step, setting and gotcha in the same iteration it is learned. After each iteration, review the work against the guide's checklist, item by item with evidence, and fix the guide wherever the review shows a gap. Never rediscover a known fix.
 - **Concept vibes** (correction 43): a concept-led asset must have very similar vibes to its concept: the same mood, grit, density, warmth and silhouette at a glance. It does not need to be a pixel match. Keep iterating, without asking, until it does.
 - **Quality bar** (correction 42, "look like from a 20 year old video game"): current-generation real-time
   art. Clean, dense hard-surface geometry whose bevels catch light; texel density that holds at close
