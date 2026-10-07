@@ -58,7 +58,7 @@ WORKS = {
     'clad': {'color': [0.77, 0.74, 0.69], 'rust': 0.6},
     'clad2': {'color': [0.70, 0.665, 0.61], 'rust': 0.5, 'blot': 0.035, 'patina': 0.03},   # roofs: big planes, blotches read as camouflage
     'panel': {'color': [0.78, 0.75, 0.70], 'rust': 0.5},
-    'frame': {'rust': 0.55, 'edge': 0.9},
+    'frame': {'color': [0.29, 0.29, 0.30], 'rust': 0.4, 'edge': 0.9},     # v4 r3: concept gunmetal ~sRGB 74 (kit 55 read black)
     'frame2': {'color': [0.30, 0.285, 0.27], 'rust': 0.65},
     'pipeDark': {'rust': 0.5},
 }
@@ -354,7 +354,7 @@ FURNACE_V4.update({
     'top_deck': None,
     'uptakes': (4, 0.6, [(3.9, 48.0), (4.9, 55.2), (3.6, 58.6), (2.2, 59.2)]),
     'downcomer': (1.05, [(0.0, 57.6, -2.4), (0.0, 57.6, -6.4), (0.0, 55.0, -8.6), (0.0, 31.0, -9.6)]),
-    'tower': {'half': 9.6, 'y0': 29.0, 'y1': 53.2, 'w': 1.3, 'levels': [29.0, 42.4, 52.6], 'ring': 2.0, 'walk': 1.6,
+    'tower': {'half': 9.6, 'y0': 29.0, 'y1': 53.2, 'w': 1.3, 'levels': [29.0, 42.4, 52.6], 'ring': 1.5, 'walk': 1.2,
               'xbrace': [(29.0, 42.4), (42.4, 52.6)], 'ladder': (1, 1), 'ladder_y0': 3.0, 'legs': ((11.4, 3.0), (9.6, 29.0)), 'leg_section': (2.8, 2.0), 'leg_tie': (17.6, 9.4),
               'ring_in': {52.6: 3.95, 42.4: 6.95}},
 })
@@ -859,8 +859,9 @@ def pour_bay(B, P=POUR):
     # v4 r2: a profiled roof deck on the purlins (the open roof read as loose rafters poking over the shed from the
     # building camera); the crane still shows through the open +X face under the eaves girder, as in the concept
     if P.get('roof', True):
-        B.box((xf - xb + 0.6, 0.16, 2 * zs + 1.6), at=((xf + xb) / 2, H - 0.05 + 0.08, 0), mat='clad2', bevel=0.03)
-        ribbed_flat(B, xb - 0.3, xf + 0.3, -zs - 0.8, zs + 0.8, H + 0.11, pitch=P.get('rib', 0.9), along='x')
+        rm_ = P.get('roof_mat', 'frame2')     # v4 r3: dark steel deck (the concept); a light deck read as a slab from above
+        B.box((xf - xb + 0.6, 0.16, 2 * zs + 1.6), at=((xf + xb) / 2, H - 0.05 + 0.08, 0), mat=rm_, bevel=0.03)
+        ribbed_flat(B, xb - 0.3, xf + 0.3, -zs - 0.8, zs + 0.8, H + 0.11, pitch=P.get('rib', 0.9), along='x', mat=rm_)
         B.box((0.3, 0.55, 2 * zs + 1.9), at=(xf + 0.42, H - 0.02, 0), mat='frame2', bevel=0.03)     # front fascia
     # back wall: dark plates with stiffeners and girts, a doorway with the warm interior beyond
     xw = xb - 0.4

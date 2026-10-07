@@ -241,24 +241,37 @@ def model(B):
     for (x, z) in ((PB_X + 9.5, PB_Z - 13.0), (PB_X + 9.5, PB_Z + 13.0)):
         B.R.pin((x, 14.0, z))
     # tall gas-cleaning block and annex on the furnace's -X side, the dust catcher (parametric kit)
-    K.block(B, (-34.0, 0.0, 34.5), (9.0, 24.0, 11.0),
-            sides={'+z': {'bay': 4.4, 'storey': 6.0, 'windows': [1, 2], 'win': (1.2, 1.2), 'doors': [2.0], 'louvres': [(6.5, 12.5, 2.0, 2.0)]},
-                   '+x': {'bay': 5.4, 'storey': 6.0, 'windows': [1, 2, 3], 'win': (1.2, 1.2), 'doors': [3.0]},
+    # v4 r3: two storeys of light panels (the concept's left annexes are low and light; a 24 m dark block hid the
+    # furnace's light hearth drum from the game camera)
+    K.block(B, (-34.0, 0.0, 34.5), (9.0, 13.0, 11.0),
+            sides={'+z': {'bay': 4.4, 'storey': 6.0, 'windows': [0, 1], 'win': (1.4, 1.2), 'doors': [2.0], 'louvres': [(6.5, 7.5, 2.0, 2.0)]},
+                   '+x': {'bay': 5.4, 'storey': 6.0, 'windows': [1], 'win': (1.4, 1.2), 'doors': [3.0]},
                    '-x': {'bay': 5.4, 'storey': 6.0}, '-z': {'bay': 4.4, 'storey': 6.0}},
-            roof={'parapet': 0.6, 'units': [('hvac', 0.0, -3.0, {'w': 3.0, 'd': 2.2}), ('antenna', -1.5, 5.5, {'h': 5.0})]})
-    K.pipe(B, [(FX - 9.0, 40.0, FZ + 4.0), (-34.0, 40.0, FZ + 4.0), (-34.0, 40.0, 33.0), (-34.0, 24.5, 33.0)], r=1.2, mat='pipeDark', rings=False)
+            roof={'parapet': 0.6, 'units': [('hvac', 0.0, -3.0, {'w': 3.0, 'd': 2.2}), ('antenna', -1.5, 5.5, {'h': 5.0})]}, frame='frameL')
+    K.pipe(B, [(FX - 9.6, 36.0, FZ + 4.0), (-34.0, 36.0, FZ + 4.0), (-34.0, 36.0, 33.0), (-34.0, 13.5, 33.0)], r=1.2, mat='pipeDark', rings=False)
     K.block(B, (-35.0, 0.0, 20.0), (6.0, 7.0, 8.0),
             sides={'+z': {'bay': 3.0, 'doors': [3.0], 'windows': []}, '+x': {'bay': 4.0, 'windows': [0], 'win': (1.2, 1.0)}},
             roof={'parapet': 0.4, 'units': [('hvac', 0.0, 0.0, {'w': 2.6, 'd': 1.8, 'fans': 1})]})
     K.vtank(B, (-32.0, 8.0), 3.0, 10.0, y0=0.0, top='cone', mat='frame2', skirt=6.0, ladder_side=90.0,
             bands=[(1.0, 1.4, 'frame'), (8.4, 8.8, 'frame')], platforms=(10.5,))
+    # v4 r3: the casthouse front block between the furnace and the pour bay (the concept's foreground: light panels in
+    # dark frames, crew doors with lamps, a roller door, roof units), so the shed's front gable stands behind layered
+    # volumes instead of over an empty apron
+    K.block(B, (8.0, 0.0, 34.0), (21.0, 10.0, 9.0), frame='frameL',
+            sides={'+z': {'bay': 5.25, 'storey': 5.0, 'windows': [1], 'win': (1.6, 1.2), 'win_per_bay': 2, 'doors': [2.6, 18.4], 'rollers': [(10.5, 5.0, 5.6)]},
+                   '+x': {'bay': 4.5, 'storey': 5.0, 'windows': [1], 'win': (1.4, 1.2), 'doors': [4.5]},
+                   '-x': {'bay': 4.5, 'storey': 5.0}, '-z': {'bay': 5.25, 'storey': 5.0}},
+            roof={'parapet': 0.5, 'units': [('hvac', -6.0, -1.0, {'w': 3.0, 'd': 2.0}), ('vent', 0.5, 1.5, {}), ('hvac', 6.0, -1.2, {'w': 2.4, 'd': 1.8, 'fans': 1})]})
+    K.pipe(B, [(-4.6, 7.0, 31.0), (-2.0, 7.0, 31.0), (-2.0, 11.2, 31.0), (8.0, 11.2, 31.0)], r=0.45, mat='pipeDark', supports=False)
     # switch room, control box, stairs, crates on the +X apron
-    K.block(B, (33.5, 0.0, -10.0), (6.0, 4.5, 7.0),
+    K.block(B, (33.5, 0.0, -10.0), (6.0, 4.5, 7.0), frame='frameL',
             sides={'+x': {'bay': 3.5, 'doors': [2.0], 'windows': [0], 'win': (1.2, 1.0)}, '+z': {'bay': 3.0, 'windows': [0], 'win': (1.2, 1.0)}},
             roof={'parapet': 0.4, 'units': [('hvac', 0.0, 0.0, {'w': 2.4, 'd': 1.6, 'fans': 1})]})
-    K.block(B, (33.0, 0.0, 32.0), (4.0, 3.6, 5.0),
-            sides={'+x': {'bay': 2.5, 'doors': [2.5]}, '+z': {'bay': 2.0, 'windows': [0], 'win': (1.2, 1.0)}},
-            roof={'parapet': 0.3})
+    # the pour bay's control house (the concept: a light concrete block with a railed roof beside the runner)
+    K.block(B, (33.0, 0.0, 32.0), (6.0, 5.0, 6.0), frame='frameL',
+            sides={'+x': {'bay': 3.0, 'doors': [3.0]}, '+z': {'bay': 3.0, 'windows': [0], 'win': (1.4, 1.0)}},
+            roof={'parapet': 0.3, 'units': [('hvac', -1.0, -1.0, {'w': 2.0, 'd': 1.6, 'fans': 1})]})
+    K.railing(B, [(30.1, 5.3, 34.9), (35.9, 5.3, 34.9), (35.9, 5.3, 29.1)], post=1.4)
     for (cx, cz) in ((37.5, -6.0), (37.5, 28.0), (27.0, 37.0), (29.0, 37.5)):
         K.crate(B, (cx, 0.0, cz), (1.6, 1.2, 1.6))
     # yard dressing: lamp posts, cabinets, workers, a truck at the shed's back end, a forklift by the switch room
@@ -268,7 +281,7 @@ def model(B):
         K.cabinet(B, (x, 0.0, z), rot=r)
     K.truck(B, (31.5, 0.0, -32.0), heading=180)
     K.forklift(B, (37.0, 0.0, -16.0), heading=200)
-    for (x, z, hd) in ((36.5, 22.0, 90), (37.0, 6.0, 260), (10.0, 37.0, 10), (24.0, 34.0, 200)):
+    for (x, z, hd) in ((36.5, 22.0, 90), (37.0, 6.0, 260), (10.0, 40.5, 10), (24.0, 34.0, 200)):
         K.worker(B, (x, 0.0, z), heading=hd)
     K.flood_on_wall(B, (SH_X + 14.05, 16.0, -12.0), (1, 0, 0), (36.0, 0.0, -14.0))
     K.flood_on_wall(B, (SH_X + 14.05, 16.0, -36.0), (1, 0, 0), (36.0, 0.0, -34.0))
