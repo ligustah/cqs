@@ -65,7 +65,17 @@ def has(flag):
 # a lattice-heavy part: the furnace's frame and decks were 70 % of its 16,000 m2)
 UV_WEIGHT = {'frame': 0.45, 'grate': 0.35, 'pipeDark': 0.6, 'pipe': 0.5, 'louvre': 0.4, 'interior': 0.25, 'soot': 0.4,
              'glassW': 0.4, 'lamp': 0.5, 'refractory': 0.6, 'hot': 0.5, 'concrete2': 0.75, 'amber': 0.8, 'frame2': 0.85,
-             'roof': 0.6, 'rust': 0.8}
+             'roof': 0.6, 'rust': 0.8, 'concrete': 0.7}
+# v4 r3: thin structure (rails, lacing, rods, rungs, small brackets) is thousands of islands a few texels wide, and each
+# paid a 1.5 px margin round it: 86 % of the furnace's 10,900 islands held 9 % of its surface but cost most of the atlas
+# (fill 0.37). Islands of these zones under STACK_AREA m2 are now stacked: each zone's tiny islands are normalised into
+# one shared square swatch (they overlap; the bake keeps one of them per texel) and packed as one island
+# (merge_overlap). At any distance a 10 cm bar shows one painted tone with edge wear, which the swatch still carries.
+STACK_ZONES = {'frame', 'frame2', 'grate', 'pipeDark', 'pipe', 'soot', 'refractory', 'rust', 'interior', 'louvre',
+               'amber', 'hazard', 'roof'}
+STACK_AREA = 2.0
+STACK_NARROW = 0.25     # any zone: islands narrower than this (m; ribs, trims, rungs) are stacked too
+NO_STACK = {'hot', 'lamp', 'glassW'}
 
 
 def unwrap(ob, margin, weights=UV_WEIGHT):
@@ -108,7 +118,49 @@ def unwrap(ob, margin, weights=UV_WEIGHT):
     isl = {}
     for f in bm.faces:
         isl.setdefault(find(f.index), []).append(f)
+    import math as _m
+
+    def uv_area(fs):
+        a = 0.0
+        for f in fs:
+            q = [l[uvl].uv for l in f.loops]
+            a += abs(sum(q[i].x * q[i - 1].y - q[i - 1].x * q[i].y for i in range(len(q)))) / 2
+        return a
+    # the smart projection's UV-per-3D area scale (one scale for every island: area_weight 0, no scale to bounds)
+    allf = [fs for fs in isl.values()]
+    kuv = sum(uv_area(fs) for fs in allf) / max(1e-9, sum(f.calc_area() for fs in allf for f in fs))
+    stacks = {}
+    for k, fs in list(isl.items()):
+        z = names[fs[0].material_index]
+        if z in NO_STACK:
+            continue
+        uvs = [l[uvl].uv for f in fs for l in f.loops]
+        short = min(max(u.x for u in uvs) - min(u.x for u in uvs), max(u.y for u in uvs) - min(u.y for u in uvs)) / _m.sqrt(kuv)
+        a = sum(f.calc_area() for f in fs)
+        if (z in STACK_ZONES and a < STACK_AREA) or short < STACK_NARROW or a < 0.15:
+            stacks.setdefault(z, []).append(fs)
+            del isl[k]
+    stacked = {f.index for g in stacks.values() for fs in g for f in fs}
+    nst = 0
+    for zi, (z, groups) in enumerate(sorted(stacks.items())):
+        # one square swatch per zone, a sixth of the zone's stacked area at the zone's weight (they overlap)
+        tot = sum(f.calc_area() for fs in groups for f in fs)
+        side = _m.sqrt(kuv * tot * weights.get(z, 1.0) ** 2 / 6.0)
+        x0 = 2.0 + 10.0 * zi       # parked off the unit square, apart, until the pack moves them in
+        for fs in groups:
+            uvs = [l[uvl].uv for f in fs for l in f.loops]
+            ux0 = min(u.x for u in uvs); ux1 = max(u.x for u in uvs)
+            uy0 = min(u.y for u in uvs); uy1 = max(u.y for u in uvs)
+            sx = side / max(ux1 - ux0, 1e-6); sy = side / max(uy1 - uy0, 1e-6)
+            for f in fs:
+                for l in f.loops:
+                    u = l[uvl].uv
+                    l[uvl].uv = (x0 + (u.x - ux0) * sx, 0.5 + (u.y - uy0) * sy)
+            nst += 1
+        isl.setdefault(('stack', z), [])
     for fs in isl.values():
+        if not fs:
+            continue
         w = weights.get(names[fs[0].material_index], 1.0)
         if w >= 0.999:
             continue
@@ -120,11 +172,14 @@ def unwrap(ob, margin, weights=UV_WEIGHT):
     bm.to_mesh(me); bm.free()
     bpy.ops.object.mode_set(mode='EDIT')
     bpy.ops.mesh.select_all(action='SELECT')
-    bpy.ops.uv.pack_islands(rotate=True, margin=margin)
+    bpy.ops.uv.pack_islands(rotate=True, margin=margin, merge_overlap=True)
+    print(f'[remodel] stacked {nst} tiny islands of {sorted(stacks)} into {len(stacks)} swatches; {len(isl) - len(stacks)} islands packed', flush=True)
     bpy.ops.object.mode_set(mode='OBJECT')
     uv = np.empty(len(me.loops) * 2); me.uv_layers.active.data.foreach_get('uv', uv); uv = uv.reshape(-1, 2)
     a3, a2 = {}, {}
     for p in me.polygons:
+        if p.index in stacked:      # swatches overlap: their texel density is not a density
+            continue
         q = uv[list(p.loop_indices)]
         z = names[p.material_index]
         a3[z] = a3.get(z, 0.0) + p.area
