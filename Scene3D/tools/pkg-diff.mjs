@@ -9,7 +9,8 @@
 // meets on most real devices, which SwiftShader (32 units, no CSP) would otherwise hide.
 // views: fleet, spaceport (fleet ?shot=spaceport), the ship studios (carrier fighter destroyer freighter corvette
 // vehicle) and b_<building> for every building in src/ships/index.js BUILDINGS (default: all of them).
-// Metric: share of pixels whose largest channel difference is over 32 (of 255). Phone: the package serves the phone
+// Metric: share of pixels whose largest channel difference is over 32 (of 255) and whose 8 neighbours differ too
+// (solid areas: animated cloud edges leave only speckle). --rediff recomputes the diffs of stills already in --out. Phone: the package serves the phone
 // tiers (512-1024 px textures, buildings without small dressing) while dev loads the full GLBs, so compare phone with
 // a looser threshold (the default is 0.06 there) or against a package render of a known-good build.
 import { chromium } from 'playwright-core';
@@ -20,6 +21,7 @@ import sharp from 'sharp';
 
 const a = process.argv.slice(2);
 const opt = (k, d) => { const i = a.indexOf(`--${k}`); if (i < 0) return d; const v = a[i + 1]; a.splice(i, 2); return v; };
+const rediff = a.includes('--rediff') && !!a.splice(a.indexOf('--rediff'), 1);
 const ROOT = resolve(opt('root', fileURLToPath(new URL('..', import.meta.url))));
 const device = opt('device', 'desktop');
 const only = opt('only', null);
@@ -55,7 +57,7 @@ const DESK = { viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1 };
 const D = device === 'phone' ? PHONE : DESK;
 
 await mkdir(out, { recursive: true });
-const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--enable-webgl'] });
+const browser = rediff ? null : await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--enable-webgl'] });
 
 async function render(mode, name) {
   const ctx = await browser.newContext(D);
@@ -124,9 +126,27 @@ async function diff(pa, pb, outPng) {
     else d[i * 3] = d[i * 3 + 1] = d[i * 3 + 2] = A.data[i * 3 + 1] >> 2; // dimmed package frame for context
   }
   await sharp(d, { raw: { width: A.info.width, height: A.info.height, channels: 3 } }).png().toFile(outPng);
-  return { share: +(over / n).toFixed(4), mean: +(sum / n).toFixed(2) };
+  // solid share: differing pixels whose 8 neighbours differ too. Animated cloud edges on the planet (frame timing)
+  // leave thin speckle; a missing or untextured part leaves solid areas
+  const W = A.info.width, H = A.info.height;
+  let solid = 0;
+  for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+    let all = true;
+    for (let dy = -1; dy <= 1 && all; dy++) for (let dx = -1; dx <= 1; dx++) if (d[((y + dy) * W + x + dx) * 3] !== 255) { all = false; break; }
+    if (all) solid++;
+  }
+  return { share: +(over / n).toFixed(4), solid: +(solid / n).toFixed(4), mean: +(sum / n).toFixed(2) };
 }
 
+// --rediff: only recompute the diffs of stills already in --out
+if (rediff) {
+  const rep = {};
+  for (const name of views) {
+    try { rep[name] = await diff(join(out, `${name}.pkg.png`), join(out, `${name}.dev.png`), join(out, `${name}.diff.png`)); } catch { continue; }
+    console.log(`${name}: diff ${(rep[name].share * 100).toFixed(2)}%, solid ${(rep[name].solid * 100).toFixed(2)}% ${rep[name].solid <= threshold ? 'ok' : 'FAIL'}`);
+  }
+  process.exit(0);
+}
 const report = {};
 let failed = 0;
 for (const name of views) {
@@ -134,12 +154,12 @@ for (const name of views) {
   for (const mode of only ? [only] : ['pkg', 'dev']) r[mode] = await render(mode, name);
   if (r.pkg && r.dev) {
     r.diff = r.pkg.ok && r.dev.ok ? await diff(r.pkg.png, r.dev.png, join(out, `${name}.diff.png`)) : { share: 1 };
-    r.pass = r.diff.share <= threshold && !r.pkg.logs.some((l) => /^\d*x? ?\[(error|pageerror|fatal|fail|404)\]/.test(l));
+    r.pass = r.diff.solid <= threshold && !r.pkg.logs.some((l) => /^\d*x? ?\[(error|pageerror|fatal|fail|404)\]/.test(l));
     if (!r.pass) failed++;
   }
   report[name] = r;
   const line = Object.entries(r).filter(([k]) => k === 'pkg' || k === 'dev').map(([k, v]) => `${k} ${v.s}s${v.logs.length ? ` [${v.logs.length} msgs]` : ''}`).join(', ');
-  console.log(`${name}: ${line}${r.diff ? `, diff ${(r.diff.share * 100).toFixed(2)}% (mean ${r.diff.mean}) ${r.pass ? 'ok' : 'FAIL'}` : ''}`);
+  console.log(`${name}: ${line}${r.diff ? `, diff ${(r.diff.share * 100).toFixed(2)}%, solid ${((r.diff.solid ?? 1) * 100).toFixed(2)}% (mean ${r.diff.mean}) ${r.pass ? 'ok' : 'FAIL'}` : ''}`);
   for (const k of ['pkg', 'dev']) for (const l of r[k]?.logs.slice(0, 6) || []) console.log(`  ${k} ${l}`);
   await writeFile(jsonOut, JSON.stringify({ device, threshold, csp, report }, null, 1));
 }
