@@ -385,3 +385,66 @@ r22 check (grit regions not re-fitted to the new camera, so G0 numbers are not c
   makes the wall set pack worse (3.0 px/m at 512 on the annex walls, ~half the single set): HULL_SPLIT is off for the
   mill; kept as an opt-in. Grit regions re-fitted to the r22 camera (tools/buildings/grit-regions/steel_mill.json).
 - r25 = the 4096 final (correction 46: 25 rounds).
+
+### v6 round 25: the 4096 final (22:33-23:30, reshoot 23:35)
+Parts at their registry sizes (furnace / shed / pour bay 4096, stack / gallery 2048), building 4096 x 10 samples,
+189.6k tris desktop. px/m at 4096: furnace shell 67.6, frame2 55.0, pipeDark 35.4 (main set: frame 26.4, fill 0.14);
+shed clad 52.5; pour bay panel 91, hot 82; gallery panel 45 (2048); stack shell 51 (2048). Studio final: key 1.35
+(1.5 gave light 1.16x at the tighter frame).
+Checks (final camera, regions re-fitted): light 1.06x, hue 27.2 (c 23.2), sat 0.226 (c 0.164); shadow side 0.91x;
+grit std: shell 0.51x (hp 1.41), wall 0.96x (hp 1.52), roof 0.69x (hp 0.81), plinth 0.65x (hp 1.18).
+Evidence (repo): style-library/styles/cqs-fleet/images/buildings/steel_mill-v6.jpg (concept | v5 | v6),
+steel_mill-v6-close.jpg (concept crop | v5 | final per close-up), steel_mill-v6-thumbs.png (80 / 40 px; v6 icon
+aspect 1.23, fill 0.65). v5 shot from git 698deb2 with today's studio (tools/buildings/review/shoot-rev.sh).
+
+Checklist review r25 (BUILDING-GUIDE section 9):
+| row | result | evidence |
+|---|---|---|
+| C1 camera | PASS | el 10 / dist 0.88 / fov 22; plinth-edge slopes lowered toward the concept's 0.29 / 0.24 |
+| C2 framing | PASS | whole plant in frame, the tower dominates the left |
+| C3 silhouette | PASS-ish | furnace forward-left, gallery, two banded stacks, long shed, portal pour bay; the furnace still reads rounder than the concept's straight lower drum |
+| S1 hero structure | PASS | slim posts, legs tight to the drum, light cone, dark slim upper section |
+| G0 grit measured | FAIL (shell 0.51x, roof 0.69x, plinth 0.65x std; wall 0.96x) | grit-crops in $REVIEW_DIR; the 4096 textures are smoother at the concept camera than the concept's painted grit |
+| G1-G4 | PASS | photo weathering, drips, roof soot, stained slab, seams |
+| M1 mood | PASS | shadow 0.91x |
+| W1 warmth | PASS | light 1.06x, hue +4 deg; sat 0.23 vs 0.16 (warmer than the concept) |
+| W2 dark steel | PASS | neutral gunmetal |
+| D1 / D2 density | PASS | clutter on the masses, no bare run > 15 m |
+| L1 glow | PASS | hearth band brightest; runner a second hot spot with crust and cracks |
+| L2 lamps | PASS | |
+| T1 texel density | PARTIAL | light >= 50 (shell 68, clad 52, pour 91); hull walls ~50 (casthouse 49 at 2048 x2); furnace main-set dark parts 26 (< 25 target only for grating 14) |
+| T2 close crispness | PASS-ish | no moire (shadowRadius 1.5), hull walls ~2x sharper than r21; the stacked swatches stay soft at 1:1 |
+| T3 material variety | PASS | ladle matte near-black steel (still warm-tinted by the bay's glow) |
+| P1 pipe logic | PASS | every run traced (rounds 19-22): no free ends, flanges, supports <= 6 m, nothing through unrelated geometry |
+| I1 thumbnail | PASS | aspect 1.23, fill 0.65 |
+Release checks (r25): `tools/build-artifact.mjs` exit 0, "package check: 57 model tiers match their source GLB";
+`tools/phone-check.mjs steel_mill`: ok, ready 6.1 s, fetched 6.5 MB, tris 178k, heap+gpu 134 MB (budget 300);
+`tools/pkg-diff.mjs --csp 1 --units 16 b_steel_mill`: diff 0.00 % ok; `--device phone`: 0.40 % ok.
+
+### STYLE.md proposals (r25 update)
+- Phone tris: the final mill measures 178k on the phone tier with heap+gpu 134 MB, fetched 6.5 MB: propose the tri
+  row as advisory for hero process buildings (<= 200k) with heap+gpu (< 300 MB) and fetched (<= 7 MB) binding.
+- Section 8: add P1 pipe logic (correction 45) and the 25-round iteration budget (correction 46).
+- Section 4 texel density: state it for non-stacked surfaces (stacked swatches report meaningless px/m) and measure on
+  the built GLB (tools/buildings/review/glbppm.py).
+
+## State at handoff (2026-10-08)
+**Done:** steel mill v6, 25 rounds (24 reviews + the 4096 final), committed and pushed on
+claude/vibrant-knuth-tx4hru. Assets: assets/buildings/steel_mill.glb / .lite.glb, assets/parts-colony/*.glb +
+parts.json, src/buildings/steel_mill.js (studio hint: az 48, el 10, fov 22, dist 0.88, key 1.35 #fff3e8, fill 0.6
+#f0dcc8, env 0.5, shadowNB 6, shadowRadius 1.5). Evidence in style-library/styles/cqs-fleet/images/buildings/
+(steel_mill-v6.jpg, -v6-close.jpg, -v6-thumbs.png); the checklist review is above (r25). Everything needed to continue
+is in the repo: BUILDING-GUIDE.md (section 0b: the bpy venv and the review toolkit tools/buildings/review/), the
+weathering library (tools/blender/buildings/weather/, fal v27 recorded in pipeline/fal-pipeline.json), grit regions
+and cameras per building. No scratchpad path is needed (REVIEW_DIR / BPY env vars).
+**Open items (mill):**
+1. Grit at the concept camera: G0 std 0.5-0.7x on the shell, roof and plinth crops (the concept's painted grit is
+   coarser); the user to steer (judge A r21: "too clean").
+2. The packer: remodel.unwrap packs the furnace main set and the hull's wall set at ~0.10-0.14 fill (half the square
+   empty, see uvdraw.py); fixing it would roughly double those texel densities. Tested and ruled out: wedge cuts of
+   hollow islands, AABB / CONVEX shapes, FRACTION margins, the UDIM source, a separate ground set (HULL_SPLIT).
+3. Silhouette: the furnace still reads rounder than the concept's straight lower drum; the ladle still warm-tinted.
+4. Phone tris 178k vs the 150k row (proposal above).
+5. The coordinator's last judges ran on r21; the r22-r25 changes have not been judged.
+**Next building:** follow BUILDING-GUIDE.md from stage A with the toolkit; budget 25 rounds (correction 46); run the
+P1 audit views from the first full build.

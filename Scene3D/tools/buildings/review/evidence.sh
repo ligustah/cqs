@@ -11,10 +11,10 @@ cams, C, O, T, V = sys.argv[1:6]
 c = Image.open(C); rows = []
 for k, box in json.load(open(cams))['concept_crops'].items():
     c.crop(tuple(box)).save(f'{O}/cc-{k}.png')
-    rows.append(f'{k}: concept={O}/cc-{k}.png|{k}: previous={O}/{V}-{k}.png|{k}: {T}={O}/{T}-{k}.png')
+    rows.append(f'{k}: concept={O}/cc-{k}.png|{k}: {V}={O}/{V}-{k}.png|{k}: final={O}/{T}-{k}.png')
 print('\n'.join(rows))
 PY
 )
-python3 $HERE/sheet.py $IMAGES/$B-$VER.jpg "$B $VER at the concept camera (1600 x 1000): concept | previous | $VER" "concept=$C|previous=$O/$V-main.png|$VER=$O/$T-main.png" --cw 1100 --ch 733
+python3 $HERE/sheet.py $IMAGES/$B-$VER.jpg "$B $VER at the concept camera (1600 x 1000): concept | $V | $VER" "concept=$C|$V=$O/$V-main.png|$VER=$O/$T-main.png" --cw 1100 --ch 733
 mapfile -t R <<< "$ROWS"
-python3 $HERE/sheet.py $IMAGES/$B-$VER-close.jpg "$B close-ups (az 52, el 22, fov 38, <= 34 m): concept crop | previous | $VER" "${R[@]}" --cw 1100 --ch 688
+python3 $HERE/sheet.py $IMAGES/$B-$VER-close.jpg "$B close-ups (az 52, el 22, fov 38, <= 34 m): concept crop | $V | $VER" "${R[@]}" --cw 1100 --ch 688
