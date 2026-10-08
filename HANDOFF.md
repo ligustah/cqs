@@ -68,8 +68,15 @@ All of it is original IP, built with the **model-forge** skill (`.claude/skills/
 
 - **Fleet, vehicle, shipyard, spaceport:** done and published.
 - **Packaging fix** (host CSP and the 16-texture-unit limit): published as artifact version 24.
-- **Steel mill:** the remodel pilot for all colony buildings. It is in its last iteration rounds (capped at 25 by the
-  user); round 25 is the final 4096 build with its evidence. See REMODEL-PROGRESS.md for the final state.
+- **Steel mill:** v6 is done. It is the remodel pilot for all colony buildings. Round 25 of 25 was the 4096 final,
+  published as artifact version 27.
+  - Its release checks pass: package, pkg-diff on desktop and phone, and phone-check (134 MB, 6.5 MB fetched).
+  - The judges (last run on round 21) still said "not yet" on grit and on the silhouette of the furnace drum.
+  - Evidence: `images/buildings/steel_mill-v6*.jpg`. Open items: REMODEL-PROGRESS.md "State at handoff".
+  - The biggest open bug is the UV packer: it fills only 10-14 % of the furnace and hull atlases. It is a gotcha in
+    BUILDING-GUIDE.md.
+- **The review toolkit** is in `Scene3D/tools/buildings/review/` and needs the env vars `REVIEW_DIR` and `BPY`. The
+  weathering library is in `Scene3D/tools/blender/buildings/weather/`.
 - **The other 15 colony buildings:** built in v3, from raw fal components. That is below the quality bar. They are
   to be rebuilt with the steel mill recipe in BUILDING-GUIDE.md, the transmitter included.
 - **User preferences:**
